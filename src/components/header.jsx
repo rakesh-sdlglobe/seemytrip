@@ -116,25 +116,25 @@ const Header = () => {
             <div className="container">
                 <nav id="navigation" className="navigation navigation-landscape">
                     <div className="nav-header">
-                        <Link to="/" className="nav-brand" href="#"><img src={trainImage} className="logo" alt="" /></Link>
+                        <Link to="/" className="nav-brand" ><img src={trainImage} className="logo" alt="" /></Link>
                         <div className="nav-toggle" />
                         <div className="mobile_nav">
                             <ul>
                                 <li className="currencyDropdown me-2">
-                                    <a href="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#currencyModal"><span className="fw-medium">INR</span></a>
+                                    <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#currencyModal"><span className="fw-medium">INR</span></Link>
                                 </li>
                                 <li className="languageDropdown me-2">
-                                    <a href="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#countryModal"><img src={indian_flag} className="img-fluid" width={17} alt="Country" /></a>
+                                    <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#countryModal"><img src={indian_flag} className="img-fluid" width={17} alt="Country" /></Link>
                                 </li>
                                 <li>
-                                    <a href="#" className="bg-light-primary text-primary rounded" data-bs-toggle="modal" data-bs-target="#login"><i className="fa-regular fa-circle-user fs-6" /></a>
+                                    <Link to="#" className="bg-light-primary text-primary rounded" data-bs-toggle="modal" data-bs-target="#login"><i className="fa-regular fa-circle-user fs-6" /></Link>
                                 </li>
                             </ul>
                         </div>
                     </div>
                     <div className="nav-menus-wrapper" style={{ transitionProperty: 'none' }}>
                         <ul className="nav-menu">
-                            {/* <li><a href="#" onClick={(e) => e.preventDefault()}>Home<span className="submenu-indicator" /></a>
+                            {/* <li><Link to="#" onClick={(e) => e.preventDefault()}>Home<span className="submenu-indicator" /></Link>
                                 <ul className="nav-dropdown nav-submenu">
                                     <li>
                                         <Link to="/">Home version 01</Link>
@@ -156,9 +156,9 @@ const Header = () => {
                                     </li>
                                 </ul>
                             </li> */}
-                            <li><a href="#" onClick={(e) => e.preventDefault()}>Listing<span className="submenu-indicator" /></a>
+                            <li><Link to="#" onClick={(e) => e.preventDefault()}>Listing<span className="submenu-indicator" /></Link>
                                 <ul className="nav-dropdown nav-submenu">
-                                    <li><a href="#" onClick={(e) => e.preventDefault()}>Hotel<span className="submenu-indicator" /></a>
+                                    <li><Link to="#" onClick={(e) => e.preventDefault()}>Hotel<span className="submenu-indicator" /></Link>
                                         <ul className="nav-dropdown nav-submenu">
                                             <li><Link to="/hotel-list-01">Hotel list 01</Link></li>
                                             <li><Link to="/hotel-list-02">Hotel list 02</Link></li>
@@ -167,14 +167,14 @@ const Header = () => {
                                             <li><Link to="/hotel-detail-02">Hotel Detail 02</Link></li>
                                         </ul>
                                     </li>
-                                    <li><a href="#" onClick={(e) => e.preventDefault()}>Flight<span className="submenu-indicator" /></a>
+                                    <li><Link to="#" onClick={(e) => e.preventDefault()}>Flight<span className="submenu-indicator" /></Link>
                                         <ul className="nav-dropdown nav-submenu">
                                             <li><Link to="/flight-list-01">Flight List 01</Link></li>
                                             <li><Link to="/flight-list-02">Flight List 02</Link></li>
                                             <li><Link to="/flight-detail">Flight Detail</Link></li>
                                         </ul>
                                     </li>
-                                    <li><a href="#" onClick={(e) => e.preventDefault()}>Rental<span className="submenu-indicator" /></a>
+                                    <li><Link to="#" onClick={(e) => e.preventDefault()}>Rental<span className="submenu-indicator" /></Link>
                                         <ul className="nav-dropdown nav-submenu">
                                             <li><Link to="/rental-list-01">Rental List 01</Link></li>
                                             <li><Link to="/rental-list-02">Rental List 02</Link></li>
@@ -182,7 +182,7 @@ const Header = () => {
                                             <li><Link to="/rental-detail">Rental Detail</Link></li>
                                         </ul>
                                     </li>
-                                    <li><a href="#" onClick={(e) => e.preventDefault()}>Car<span className="submenu-indicator" /></a>
+                                    <li><Link to="#" onClick={(e) => e.preventDefault()}>Car<span className="submenu-indicator" /></Link>
                                         <ul className="nav-dropdown nav-submenu">
                                             <li><Link to="/car-list-01">Car List 01</Link></li>
                                             <li><Link to="/car-list-02">Car List 02</Link></li>
@@ -190,7 +190,7 @@ const Header = () => {
                                             <li><Link to="/car-detail">Car Detail</Link></li>
                                         </ul>
                                     </li>
-                                    <li><a href="#" onClick={(e) => e.preventDefault()}>Destination<span className="submenu-indicator" /></a>
+                                    <li><Link to="#" onClick={(e) => e.preventDefault()}>Destination<span className="submenu-indicator" /></Link>
                                         <ul className="nav-dropdown nav-submenu">
                                             <li><Link to="/destination-list-01">Destination List 01</Link></li>
                                             <li><Link to="/destination-list-02">Destination List 02</Link></li>
@@ -205,16 +205,16 @@ const Header = () => {
                                     <li><Link to="/my-profile">User Dashboard</Link></li>
                                 </ul>
                             </li>
-                            <li><a href="#" onClick={(e) => e.preventDefault()}>Pages<span className="submenu-indicator" /></a>
+                            <li><Link to="#" onClick={(e) => e.preventDefault()}>Pages<span className="submenu-indicator" /></Link>
                                 <ul className="nav-dropdown nav-submenu">
-                                    <li><a href="#" onClick={(e) => e.preventDefault()}>Blog<span className="submenu-indicator" /></a>
+                                    <li><Link to="#" onClick={(e) => e.preventDefault()}>Blog<span className="submenu-indicator" /></Link>
                                         <ul className="nav-dropdown nav-submenu">
                                             <li><Link to="/classic-blog">Classic Blog</Link></li>
                                             <li><Link to="/blog-grid">Blog Grid Style</Link></li>
                                             <li><Link to="/single-blog">Single Blog</Link></li>
                                         </ul>
                                     </li>
-                                    <li><a href="#" onClick={(e) => e.preventDefault()}>Authentication<span className="submenu-indicator" /></a>
+                                    <li><Link to="#" onClick={(e) => e.preventDefault()}>Authentication<span className="submenu-indicator" /></Link>
                                         <ul className="nav-dropdown nav-submenu">
                                             <li><Link to="/sign-in">Sign In</Link></li>
                                             <li><Link to="/sign-up">Sign Up</Link></li>
@@ -229,7 +229,7 @@ const Header = () => {
                                     <li><Link to="/error-page">Error Page</Link></li>
                                     <li><Link to="/pricing">Pricing</Link></li>
                                     <li><Link to="/privacy-policy">Privacy Policy</Link></li>
-                                    <li><a href="#" onClick={(e) => e.preventDefault()}>Contact Us<span className="submenu-indicator" /></a>
+                                    <li><Link to="#" onClick={(e) => e.preventDefault()}>Contact Us<span className="submenu-indicator" /></Link>
                                         <ul className="nav-dropdown nav-submenu">
                                             <li><Link to="/contact-v1">Contact V.01</Link></li>
                                             <li><Link to="/contact-v2">Contact V0.2</Link></li>
@@ -237,7 +237,7 @@ const Header = () => {
                                     </li>
                                 </ul>
                             </li>
-                            <li><a href="#" onClick={(e) => e.preventDefault()}>Menu<span className="submenu-indicator" /></a>
+                            <li><Link to="#" onClick={(e) => e.preventDefault()}>Menu<span className="submenu-indicator" /></Link>
                                 <ul className="nav-dropdown nav-submenu xxl-menu">
                                     <li>
                                         <Link to="/home-stay">
@@ -307,17 +307,17 @@ const Header = () => {
                                     </li>
                                 </ul>
                             </li>
-                            <li><a href="../documantion/index.html" target="_blank">Docs</a></li>
+                            <li><Link to="../documantion/index.html" target="_blank">Docs</Link></li>
                         </ul>
                         <ul className="nav-menu nav-menu-social align-to-right">
                             <li className="currencyDropdown me-2">
-                                <a href="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#currencyModal"><span className="fw-medium">INR</span></a>
+                                <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#currencyModal"><span className="fw-medium">INR</span></Link>
                             </li>
                             <li className="languageDropdown me-2">
-                                <a href="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#countryModal"><img src={indian_flag} className="img-fluid" width={17} alt="Country" /></a>
+                                <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#countryModal"><img src={indian_flag} className="img-fluid" width={17} alt="Country" /></Link>
                             </li>
                             <li className="list-buttons">
-                                {/* <a href="#" className data-bs-toggle="modal" data-bs-target="#login"><i className="fa-regular fa-circle-user fs-6 me-2" />Sign In / Register</a> */}
+                                {/* <Link to="#" className data-bs-toggle="modal" data-bs-target="#login"><i className="fa-regular fa-circle-user fs-6 me-2" />Sign In / Register</Link> */}
                                 {isLoggedIn ? (
                                     <div className="user-profile">
                                         <i className="fa-regular fa-circle-user fs-6 me-2" />

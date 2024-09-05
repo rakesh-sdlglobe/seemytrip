@@ -73,7 +73,7 @@ const Login = () => {
                                     </div>
                                   </div>
                                   <div className="modal-flex-last">
-                                    <a href="JavaScript:Void(0);" className="text-primary fw-medium">Forget Password?</a>
+                                    <Link to="#" onClick={(e)=>{e.preventDefault()}} className="text-primary fw-medium">Forget Password?</Link>
                                   </div>
                                 </div>
                               </div>
@@ -86,15 +86,15 @@ const Login = () => {
                               {/* Google and facebook button */}
                               <div className="social-login py-4 px-md-2">
                                 <ul className="row align-items-center justify-content-center g-3 p-0 m-0">
-                                  <li className="col"><a href="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-facebook color--facebook fs-2" /></a></li>
-                                  <li className="col"><a href="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-whatsapp color--whatsapp fs-2" /></a></li>
-                                  <li className="col"><a href="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-linkedin color--linkedin fs-2" /></a></li>
-                                  <li className="col"><a href="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-dribbble color--dribbble fs-2" /></a></li>
-                                  <li className="col"><a href="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-twitter color--twitter fs-2" /></a></li>
+                                  <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-facebook color--facebook fs-2" /></Link></li>
+                                  <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-whatsapp color--whatsapp fs-2" /></Link></li>
+                                  <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-linkedin color--linkedin fs-2" /></Link></li>
+                                  <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-dribbble color--dribbble fs-2" /></Link></li>
+                                  <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-twitter color--twitter fs-2" /></Link></li>
                                 </ul>
                               </div>
                               {/* Copyright */}
-                              <div className="text-primary-hover mt-3 text-center"> Copyrights ©2023 GeoTrip.com. Build by <a href="https://www.themezhub.com/">Themezhub</a>. </div>
+                              <div className="text-primary-hover mt-3 text-center"> Copyrights ©2023 GeoTrip.com. Build by <Link to="https://www.themezhub.com/">Themezhub</Link>. </div>
                             </form>
                             {/* Form END */}
                           </div>

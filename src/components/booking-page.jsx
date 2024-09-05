@@ -11,7 +11,7 @@ import '../assets/css/prism.css';
 import '../assets/css/bootstrap-icons.css';
 import '../assets/css/fontawesome.css';
 import '../assets/css/style.css';
-import { trainImage,m } from '../assets/images';
+import { m } from '../assets/images';
 import { Link } from 'react-router-dom';
 import Header02 from './header02';
 
@@ -90,7 +90,7 @@ const BookingPage= ()=>{
                             <div className="row">
                               <div className="col-xl-4 col-lg-3 col-md">
                                 <div className="cardImage__caps rounded-2 overflow-hidden h-100">
-                                  <img className="img-fluid h-100 object-fit" src={m} alt="image" />
+                                  <img className="img-fluid h-100 object-fit" src={m} alt="img" />
                                 </div>
                               </div>
                               <div className="col-xl col-lg col-md ">
@@ -176,7 +176,7 @@ const BookingPage= ()=>{
                                           <div className="col-sm-auto">
                                             <div className="d-flex align-items-center justify-content-start">
                                               <div className="d-start fl-pic">
-                                                <img className="img-fluid" src="https://placehold.co/110x110" width={45} alt="image" />
+                                                <img className="img-fluid" src="https://placehold.co/110x110" width={45} alt="img" />
                                               </div>
                                               <div className="d-end fl-title ps-2">
                                                 <div className="text-dark fw-medium">Qutar Airways</div>
@@ -222,7 +222,7 @@ const BookingPage= ()=>{
                                           <div className="col-sm-auto">
                                             <div className="d-flex align-items-center justify-content-start">
                                               <div className="d-start fl-pic">
-                                                <img className="img-fluid" src="https://placehold.co/110x110" width={45} alt="image" />
+                                                <img className="img-fluid" src="https://placehold.co/110x110" width={45} alt="img" />
                                               </div>
                                               <div className="d-end fl-title ps-2">
                                                 <div className="text-dark fw-medium">Qutar Airways</div>
@@ -316,7 +316,7 @@ const BookingPage= ()=>{
                               <div className="col-12">
                                 <p className="text-muted-2 text-sm text-uppercase fw-medium mb-1">You Selected</p>
                                 <div className="d-flex align-items-center flex-column">
-                                  <p className="mb-0">King Bed Appolo Resort with 3 Rooms. <a href="#" className="fw-medum text-primary">Change your Selection</a></p>
+                                  <p className="mb-0">King Bed Appolo Resort with 3 Rooms. <Link to="#" className="fw-medum text-primary">Change your Selection</Link></p>
                                 </div>
                               </div>
                             </div>
@@ -373,11 +373,11 @@ const BookingPage= ()=>{
                         </div>
                         <div className="foot-socials">
                           <ul>
-                            <li><a href="JavaScript:Void(0);"><i className="fa-brands fa-facebook" /></a></li>
-                            <li><a href="JavaScript:Void(0);"><i className="fa-brands fa-linkedin" /></a></li>
-                            <li><a href="JavaScript:Void(0);"><i className="fa-brands fa-google-plus" /></a></li>
-                            <li><a href="JavaScript:Void(0);"><i className="fa-brands fa-twitter" /></a></li>
-                            <li><a href="JavaScript:Void(0);"><i className="fa-brands fa-dribbble" /></a></li>
+                            <li><Link to="#" onClick={(e)=>{e.preventDefault()}}><i className="fa-brands fa-facebook" /></Link></li>
+                            <li><Link to="#" onClick={(e)=>{e.preventDefault()}}><i className="fa-brands fa-linkedin" /></Link></li>
+                            <li><Link to="#" onClick={(e)=>{e.preventDefault()}}><i className="fa-brands fa-google-plus" /></Link></li>
+                            <li><Link to="#" onClick={(e)=>{e.preventDefault()}}><i className="fa-brands fa-twitter" /></Link></li>
+                            <li><Link to="#" onClick={(e)=>{e.preventDefault()}}><i className="fa-brands fa-dribbble" /></Link></li>
                           </ul>
                         </div>
                       </div>
@@ -386,12 +386,12 @@ const BookingPage= ()=>{
                       <div className="footer-widget">
                         <h4 className="widget-title">The Navigation</h4>
                         <ul className="footer-menu">
-                          <li><a href="JavaScript:Void(0);">Talent Marketplace</a></li>
-                          <li><a href="JavaScript:Void(0);">Payroll Services</a></li>
-                          <li><a href="JavaScript:Void(0);">Direct Contracts</a></li>
-                          <li><a href="JavaScript:Void(0);">Hire Worldwide</a></li>
-                          <li><a href="JavaScript:Void(0);">Hire in the USA</a></li>
-                          <li><a href="JavaScript:Void(0);">How to Hire</a></li>
+                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Talent Marketplace</Link></li>
+                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Payroll Services</Link></li>
+                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Direct Contracts</Link></li>
+                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Hire Worldwide</Link></li>
+                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Hire in the USA</Link></li>
+                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>How to Hire</Link></li>
                         </ul>
                       </div>
                     </div>
@@ -399,12 +399,12 @@ const BookingPage= ()=>{
                       <div className="footer-widget">
                         <h4 className="widget-title">Our Resources</h4>
                         <ul className="footer-menu">
-                          <li><a href="JavaScript:Void(0);">Free Business tools</a></li>
-                          <li><a href="JavaScript:Void(0);">Affiliate Program</a></li>
-                          <li><a href="JavaScript:Void(0);">Success Stories</a></li>
-                          <li><a href="JavaScript:Void(0);">Upwork Reviews</a></li>
-                          <li><a href="JavaScript:Void(0);">Resources</a></li>
-                          <li><a href="JavaScript:Void(0);">Help &amp; Support</a></li>
+                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Free Business tools</Link></li>
+                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Affiliate Program</Link></li>
+                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Success Stories</Link></li>
+                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Upwork Reviews</Link></li>
+                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Resources</Link></li>
+                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Help &amp; Support</Link></li>
                         </ul>
                       </div>
                     </div>
@@ -412,11 +412,11 @@ const BookingPage= ()=>{
                       <div className="footer-widget">
                         <h4 className="widget-title">The Company</h4>
                         <ul className="footer-menu">
-                          <li><a href="JavaScript:Void(0);">About Us</a></li>
-                          <li><a href="JavaScript:Void(0);">Leadership</a></li>
-                          <li><a href="JavaScript:Void(0);">Contact Us</a></li>
-                          <li><a href="JavaScript:Void(0);">Investor Relations</a></li>
-                          <li><a href="JavaScript:Void(0);">Trust, Safety &amp; Security</a></li>
+                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>About Us</Link></li>
+                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Leadership</Link></li>
+                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Contact Us</Link></li>
+                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Investor Relations</Link></li>
+                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Trust, Safety &amp; Security</Link></li>
                         </ul>
                       </div>
                     </div>
@@ -455,9 +455,9 @@ const BookingPage= ()=>{
                     </div>
                     <div className="col-xl-6 col-lg-6 col-md-6">
                       <ul className="p-0 d-flex justify-content-start justify-content-md-end text-start text-md-end m-0">
-                        <li><a href="#">Terms of services</a></li>
-                        <li className="ms-3"><a href="#">Privacy Policies</a></li>
-                        <li className="ms-3"><a href="#">Cookies</a></li>
+                        <li><Link to="#">Terms of services</Link></li>
+                        <li className="ms-3"><Link to="#">Privacy Policies</Link></li>
+                        <li className="ms-3"><Link to="#">Cookies</Link></li>
                       </ul>
                     </div>
                   </div>
@@ -471,7 +471,7 @@ const BookingPage= ()=>{
                 <div className="modal-content" id="loginmodal">
                   <div className="modal-header">
                     <h4 className="modal-title fs-6">Sign In / Register</h4>
-                    <a href="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></a>
+                    <Link to="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></Link>
                   </div>
                   <div className="modal-body">
                     <div className="modal-login-form py-4 px-md-3 px-0">
@@ -495,7 +495,7 @@ const BookingPage= ()=>{
                             </div>
                           </div>
                           <div className="modal-flex-last">
-                            <a href="JavaScript:Void(0);" className="text-primary fw-medium">Forget Password?</a>
+                            <Link to="#" onClick={(e)=>{e.preventDefault()}} className="text-primary fw-medium">Forget Password?</Link>
                           </div>
                         </div>
                       </form>
@@ -507,16 +507,16 @@ const BookingPage= ()=>{
                     </div>
                     <div className="social-login py-4 px-2">
                       <ul className="row align-items-center justify-content-between g-3 p-0 m-0">
-                        <li className="col"><a href="#" className="square--60 border br-dashed rounded-2 full-width"><i className="fa-brands fa-facebook color--facebook fs-2" /></a></li>
-                        <li className="col"><a href="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-whatsapp color--whatsapp fs-2" /></a></li>
-                        <li className="col"><a href="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-linkedin color--linkedin fs-2" /></a></li>
-                        <li className="col"><a href="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-dribbble color--dribbble fs-2" /></a></li>
-                        <li className="col"><a href="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-twitter color--twitter fs-2" /></a></li>
+                        <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 full-width"><i className="fa-brands fa-facebook color--facebook fs-2" /></Link></li>
+                        <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-whatsapp color--whatsapp fs-2" /></Link></li>
+                        <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-linkedin color--linkedin fs-2" /></Link></li>
+                        <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-dribbble color--dribbble fs-2" /></Link></li>
+                        <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-twitter color--twitter fs-2" /></Link></li>
                       </ul>
                     </div>
                   </div>
                   <div className="modal-footer align-items-center justify-content-center">
-                    <p>Don't have an account yet?<a href="signup.html" className="text-primary fw-medium ms-1">Sign Up</a></p>
+                    <p>Don't have an account yet?<Link to="signup.html" className="text-primary fw-medium ms-1">Sign Up</Link></p>
                   </div>
                 </div>
               </div>
@@ -528,7 +528,7 @@ const BookingPage= ()=>{
                 <div className="modal-content">
                   <div className="modal-header">
                     <h4 className="modal-title fs-6" id="currenyModalLabel">Select Your Currency</h4>
-                    <a href="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></a>
+                    <Link to="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></Link>
                   </div>
                   <div className="modal-body">
                     <div className="allCurrencylist">
@@ -539,40 +539,40 @@ const BookingPage= ()=>{
                         <div className="suggestedCurrencylists">
                           <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-md-2 row-cols-2 gy-2 gx-3 m-0 p-0">
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">United State Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">USD</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Pound Sterling</div>
                                 <div className="text-muted-2 text-md text-uppercase">GBP</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency active" href="#">
+                              <Link className="selectCurrency active" to="#">
                                 <div className="text-dark text-md fw-medium">Indian Rupees</div>
                                 <div className="text-muted-2 text-md text-uppercase">Inr</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Euro</div>
                                 <div className="text-muted-2 text-md text-uppercase">EUR</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Australian Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">aud</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Thai Baht</div>
                                 <div className="text-muted-2 text-md text-uppercase">thb</div>
-                              </a>
+                              </Link>
                             </li>
                           </ul>
                         </div>
@@ -584,118 +584,118 @@ const BookingPage= ()=>{
                         <div className="suggestedCurrencylists">
                           <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-md-2 row-cols-2 gy-2 gx-3 m-0 p-0">
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">United State Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">USD</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Property currency</div>
                                 <div className="text-muted-2 text-md text-uppercase">GBP</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Argentine Peso</div>
                                 <div className="text-muted-2 text-md text-uppercase">EUR</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Azerbaijani Manat</div>
                                 <div className="text-muted-2 text-md text-uppercase">Inr</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Australian Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">aud</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Bahraini Dinar</div>
                                 <div className="text-muted-2 text-md text-uppercase">thb</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Brazilian Real</div>
                                 <div className="text-muted-2 text-md text-uppercase">USD</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Bulgarian Lev</div>
                                 <div className="text-muted-2 text-md text-uppercase">GBP</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Canadian Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">EUR</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Chilean Peso</div>
                                 <div className="text-muted-2 text-md text-uppercase">Inr</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Colombian Peso</div>
                                 <div className="text-muted-2 text-md text-uppercase">aud</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Danish Krone</div>
                                 <div className="text-muted-2 text-md text-uppercase">thb</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Egyptian Pound</div>
                                 <div className="text-muted-2 text-md text-uppercase">USD</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Hungarian Forint</div>
                                 <div className="text-muted-2 text-md text-uppercase">GBP</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Japanese Yen</div>
                                 <div className="text-muted-2 text-md text-uppercase">EUR</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Jordanian Dinar</div>
                                 <div className="text-muted-2 text-md text-uppercase">Inr</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Kuwaiti Dinar</div>
                                 <div className="text-muted-2 text-md text-uppercase">aud</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Malaysian Ringgit</div>
                                 <div className="text-muted-2 text-md text-uppercase">thb</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Singapore Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">thb</div>
-                              </a>
+                              </Link>
                             </li>
                           </ul>
                         </div>
@@ -711,7 +711,7 @@ const BookingPage= ()=>{
                 <div className="modal-content">
                   <div className="modal-header">
                     <h4 className="modal-title fs-6" id="countryModalLabel">Select Your Country</h4>
-                    <a href="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></a>
+                    <Link to="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></Link>
                   </div>
                   <div className="modal-body">
                     <div className="allCountrieslist">
@@ -722,40 +722,40 @@ const BookingPage= ()=>{
                         <div className="suggestedCurrencylists">
                           <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-2 gy-2 gx-3 m-0 p-0">
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">United State Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Pound Sterling</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry active" href="#">
+                              <Link className="selectCountry active" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Indian Rupees</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Euro</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Australian Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Thai Baht</div>
-                              </a>
+                              </Link>
                             </li>
                           </ul>
                         </div>
@@ -767,118 +767,118 @@ const BookingPage= ()=>{
                         <div className="suggestedCurrencylists">
                           <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-2 gy-2 gx-3 m-0 p-0">
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">United State Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Property currency</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Argentine Peso</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Azerbaijani Manat</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Australian Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Bahraini Dinar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Brazilian Real</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Bulgarian Lev</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Canadian Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Chilean Peso</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Colombian Peso</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Danish Krone</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Egyptian Pound</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Hungarian Forint</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Japanese Yen</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Jordanian Dinar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Kuwaiti Dinar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Malaysian Ringgit</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Singapore Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                           </ul>
                         </div>
@@ -888,7 +888,7 @@ const BookingPage= ()=>{
                 </div>
               </div>
             </div>
-            <a id="back2Top" className="top-scroll" title="Back to top" href="#"><i className="fa-solid fa-sort-up" /></a>
+            <Link id="back2Top" className="top-scroll" title="Back to top" to="#"><i className="fa-solid fa-sort-up" /></Link>
           </div>
           {/* ============================================================== */}
           {/* End Wrapper */}

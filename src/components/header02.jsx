@@ -1,6 +1,6 @@
 import React from 'react';
 import { indian_flag, trainImage } from '../assets/images';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 
 const Header02 = () => {
   return (
@@ -26,13 +26,13 @@ const Header02 = () => {
               <div className="mobile_nav">
                 <ul>
                   <li className="currencyDropdown me-2">
-                    <a href="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#currencyModal"><span className="fw-medium">INR</span></a>
+                    <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#currencyModal"><span className="fw-medium">INR</span></Link>
                   </li>
                   <li className="languageDropdown me-2">
-                    <a href="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#countryModal"><img src="https://placehold.co/100x100" className="img-fluid" width={17} alt="Country" /></a>
+                    <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#countryModal"><img src="https://placehold.co/100x100" className="img-fluid" width={17} alt="Country" /></Link>
                   </li>
                   <li>
-                    <a href="#" className="bg-light-primary text-primary rounded" data-bs-toggle="modal" data-bs-target="#login"><i className="fa-regular fa-circle-user fs-6" /></a>
+                    <Link to="#" className="bg-light-primary text-primary rounded" data-bs-toggle="modal" data-bs-target="#login"><i className="fa-regular fa-circle-user fs-6" /></Link>
                   </li>
                 </ul>
               </div>
@@ -46,10 +46,10 @@ const Header02 = () => {
               </ul>
               <ul className="nav-menu nav-menu-social align-to-right">
                 <li className="currencyDropdown me-2">
-                  <a href="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#currencyModal"><span className="fw-medium">INR</span></a>
+                  <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#currencyModal"><span className="fw-medium">INR</span></Link>
                 </li>
                 <li className="languageDropdown me-2">
-                  <a href="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#countryModal"><img src={indian_flag} className="img-fluid" width={17} alt="Country" /></a>
+                  <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#countryModal"><img src={indian_flag} className="img-fluid" width={17} alt="Country" /></Link>
                 </li>
                 <li className="list-buttons">
                   <NavLink to="/login" activeClassName="active"><i className="fa-regular fa-circle-user fs-6 me-2" />Sign In / Register</NavLink>

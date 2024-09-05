@@ -11,8 +11,9 @@ import '../assets/css/prism.css';
 import '../assets/css/bootstrap-icons.css';
 import '../assets/css/fontawesome.css';
 import '../assets/css/style.css';
-import { trainImage } from '../assets/images';
 import Header02 from './header02';
+import { Link } from 'react-router-dom';
+import Footer from './footer';
 
 const HomeFlight = () => {
       return (
@@ -181,7 +182,7 @@ const HomeFlight = () => {
                 <div className="row justify-content-between gy-4 gx-xl-4 gx-lg-3 gx-md-3 gx-4">
                   <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                     <div className="pop-touritems">
-                      <a href="#" className="card rounded-3 border br-dashed border-2 m-0">
+                      <Link to="#" className="card rounded-3 border br-dashed border-2 m-0">
                         <div className="offers-container d-flex align-items-center justify-content-start p-2">
                           <div className="offers-flex position-relative">
                             <div className="offers-pic bg-light-success p-3 rounded-3 d-flex align-items-center justify-content-center h-100">
@@ -200,12 +201,12 @@ const HomeFlight = () => {
                             </div>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                   <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                     <div className="pop-touritems">
-                      <a href="#" className="card rounded-3 border br-dashed border-2 m-0">
+                      <Link to="#" className="card rounded-3 border br-dashed border-2 m-0">
                         <div className="offers-container d-flex align-items-center justify-content-start p-2">
                           <div className="offers-flex position-relative">
                             <div className="offers-pic bg-light-warning p-3 rounded-3 d-flex align-items-center justify-content-center h-100">
@@ -224,12 +225,12 @@ const HomeFlight = () => {
                             </div>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                   <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                     <div className="pop-touritems">
-                      <a href="#" className="card rounded-3 border br-dashed border-2 m-0">
+                      <Link to="#" className="card rounded-3 border br-dashed border-2 m-0">
                         <div className="offers-container d-flex align-items-center justify-content-start p-2">
                           <div className="offers-flex position-relative">
                             <div className="offers-pic bg-light-info p-3 rounded-3 d-flex align-items-center justify-content-center h-100">
@@ -248,7 +249,7 @@ const HomeFlight = () => {
                             </div>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -266,14 +267,14 @@ const HomeFlight = () => {
                   </div>
                   <div className="col-4">
                     <div className="text-end grpx-btn">
-                      <a href="#" className="btn btn-light-primary btn-md fw-medium">More<i className="fa-solid fa-arrow-trend-up ms-2" /></a>
+                      <Link to="#" className="btn btn-light-primary btn-md fw-medium">More<i className="fa-solid fa-arrow-trend-up ms-2" /></Link>
                     </div>
                   </div>
                 </div>
                 <div className="row justify-content-center gy-4 gx-3">
                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div className="pop-touritem">
-                      <a href="flight-search.html" className="card rounded-3 border br-dashed h-100 m-0">
+                      <Link to="flight-search.html" className="card rounded-3 border br-dashed h-100 m-0">
                         <div className="flight-thumb-wrapper">
                           <div className="popFlights-item-overHidden">
                             <img src="https://placehold.co/1200x800" className="img-fluid" alt="" />
@@ -302,12 +303,12 @@ const HomeFlight = () => {
                             </h5>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div className="pop-touritem">
-                      <a href="flight-search.html" className="card rounded-3 border br-dashed h-100 m-0">
+                      <Link to="flight-search.html" className="card rounded-3 border br-dashed h-100 m-0">
                         <div className="flight-thumb-wrapper">
                           <div className="popFlights-item-overHidden">
                             <img src="https://placehold.co/1200x800" className="img-fluid" alt="" />
@@ -336,12 +337,12 @@ const HomeFlight = () => {
                             </h5>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div className="pop-touritem">
-                      <a href="flight-search.html" className="card rounded-3 border br-dashed h-100 m-0">
+                      <Link to="flight-search.html" className="card rounded-3 border br-dashed h-100 m-0">
                         <div className="flight-thumb-wrapper">
                           <div className="popFlights-item-overHidden">
                             <img src="https://placehold.co/1200x800" className="img-fluid" alt="" />
@@ -370,12 +371,12 @@ const HomeFlight = () => {
                             </h5>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div className="pop-touritem">
-                      <a href="flight-search.html" className="card rounded-3 border br-dashed h-100 m-0">
+                      <Link to="flight-search.html" className="card rounded-3 border br-dashed h-100 m-0">
                         <div className="flight-thumb-wrapper">
                           <div className="popFlights-item-overHidden">
                             <img src="https://placehold.co/1200x800" className="img-fluid" alt="" />
@@ -404,7 +405,7 @@ const HomeFlight = () => {
                             </h5>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -422,7 +423,7 @@ const HomeFlight = () => {
                   </div>
                   <div className="col-4">
                     <div className="text-end grpx-btn">
-                      <a href="#" className="btn btn-light-primary btn-md fw-medium">More<i className="fa-solid fa-arrow-trend-up ms-2" /></a>
+                      <Link to="#" className="btn btn-light-primary btn-md fw-medium">More<i className="fa-solid fa-arrow-trend-up ms-2" /></Link>
                     </div>
                   </div>
                 </div>
@@ -430,7 +431,7 @@ const HomeFlight = () => {
                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div className="cardCities cursor rounded-2">
                       <div className="cardCities-image ratio ratio-4">
-                        <img src="https://placehold.co/800x800" className="img-fluid object-fit" alt="image" />
+                        <img src="https://placehold.co/800x800" className="img-fluid object-fit" alt="img" />
                       </div>
                       <div className="citiesCard-content d-flex flex-column justify-content-between text-center px-4 py-4">
                         <div className="cardCities-bg" />
@@ -453,7 +454,7 @@ const HomeFlight = () => {
                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div className="cardCities cursor rounded-2">
                       <div className="cardCities-image ratio ratio-4">
-                        <img src="https://placehold.co/800x800" className="img-fluid object-fit" alt="image" />
+                        <img src="https://placehold.co/800x800" className="img-fluid object-fit" alt="img" />
                       </div>
                       <div className="citiesCard-content d-flex flex-column justify-content-between text-center px-4 py-4">
                         <div className="cardCities-bg" />
@@ -476,7 +477,7 @@ const HomeFlight = () => {
                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div className="cardCities cursor rounded-2">
                       <div className="cardCities-image ratio ratio-4">
-                        <img src="https://placehold.co/800x800" className="img-fluid object-fit" alt="image" />
+                        <img src="https://placehold.co/800x800" className="img-fluid object-fit" alt="img" />
                       </div>
                       <div className="citiesCard-content d-flex flex-column justify-content-between text-center px-4 py-4">
                         <div className="cardCities-bg" />
@@ -499,7 +500,7 @@ const HomeFlight = () => {
                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div className="cardCities cursor rounded-2">
                       <div className="cardCities-image ratio ratio-4">
-                        <img src="https://placehold.co/800x800" className="img-fluid object-fit" alt="image" />
+                        <img src="https://placehold.co/800x800" className="img-fluid object-fit" alt="img" />
                       </div>
                       <div className="citiesCard-content d-flex flex-column justify-content-between text-center px-4 py-4">
                         <div className="cardCities-bg" />
@@ -571,7 +572,7 @@ const HomeFlight = () => {
                           <div className="col-xl-4 col-lg-4 col-md-5 col-sm-12">
                             <div className="appLink-buttons text-md-end mt-md-0 mt-4">
                               <div className="app-wrap">
-                                <a href="#" className="d-inline-flex">
+                                <Link to="#" className="d-inline-flex">
                                   <div className="cardApp-box bg-dark border-primary d-inline-flex py-3 px-4 rounded align-items-center mb-3">
                                     <div className="cardApp-icon"><i className="fa-brands fa-google-play text-light fs-1" /></div>
                                     <div className="cardApp-caption text-start ps-3">
@@ -579,8 +580,8 @@ const HomeFlight = () => {
                                       <h5 className="fw-bold text-light fs-5 m-0">Google Play</h5>
                                     </div>
                                   </div>
-                                </a>
-                                <a href="#" className="d-inline-flex">
+                                </Link>
+                                <Link to="#" className="d-inline-flex">
                                   <div className="cardApp-box bg-primary d-inline-flex py-3 px-4 rounded align-items-center">
                                     <div className="cardApp-icon"><i className="fa-brands fa-apple text-light fs-1" /></div>
                                     <div className="cardApp-caption text-start ps-3">
@@ -588,7 +589,7 @@ const HomeFlight = () => {
                                       <h5 className="fw-bold text-light fs-5 m-0">App Store</h5>
                                     </div>
                                   </div>
-                                </a>
+                                </Link>
                               </div>
                             </div>
                           </div>
@@ -611,14 +612,14 @@ const HomeFlight = () => {
                   </div>
                   <div className="col-4">
                     <div className="text-end grpx-btn">
-                      <a href="#" className="btn btn-light-primary btn-md fw-medium">More<i className="fa-solid fa-arrow-trend-up ms-2" /></a>
+                      <Link to="#" className="btn btn-light-primary btn-md fw-medium">More<i className="fa-solid fa-arrow-trend-up ms-2" /></Link>
                     </div>
                   </div>
                 </div>
                 <div className="row justify-content-center gy-4 gx-3">
                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div className="pop-touritem">
-                      <a href="#" className="card rounded-3 border br-dashed m-0">
+                      <Link to="#" className="card rounded-3 border br-dashed m-0">
                         <div className="flight-thumb-wrapper">
                           <div className="popFlights-item-overHidden">
                             <img src="https://placehold.co/1200x800" className="img-fluid" alt="" />
@@ -654,12 +655,12 @@ const HomeFlight = () => {
                             </div>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div className="pop-touritem">
-                      <a href="#" className="card rounded-3 border br-dashed m-0">
+                      <Link to="#" className="card rounded-3 border br-dashed m-0">
                         <div className="flight-thumb-wrapper">
                           <div className="popFlights-item-overHidden">
                             <img src="https://placehold.co/1200x800" className="img-fluid" alt="" />
@@ -695,12 +696,12 @@ const HomeFlight = () => {
                             </div>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div className="pop-touritem">
-                      <a href="#" className="card rounded-3 border br-dashed m-0">
+                      <Link to="#" className="card rounded-3 border br-dashed m-0">
                         <div className="flight-thumb-wrapper">
                           <div className="popFlights-item-overHidden">
                             <img src="https://placehold.co/1200x800" className="img-fluid" alt="" />
@@ -736,12 +737,12 @@ const HomeFlight = () => {
                             </div>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div className="pop-touritem">
-                      <a href="#" className="card rounded-3 border br-dashed m-0">
+                      <Link to="#" className="card rounded-3 border br-dashed m-0">
                         <div className="flight-thumb-wrapper">
                           <div className="popFlights-item-overHidden">
                             <img src="https://placehold.co/1200x800" className="img-fluid" alt="" />
@@ -777,7 +778,7 @@ const HomeFlight = () => {
                             </div>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -795,7 +796,7 @@ const HomeFlight = () => {
                   </div>
                   <div className="col-4">
                     <div className="text-end grpx-btn">
-                      <a href="#" className="btn btn-light-primary btn-md fw-medium">More<i className="fa-solid fa-arrow-trend-up ms-2" /></a>
+                      <Link to="#" className="btn btn-light-primary btn-md fw-medium">More<i className="fa-solid fa-arrow-trend-up ms-2" /></Link>
                     </div>
                   </div>
                 </div>
@@ -823,52 +824,52 @@ const HomeFlight = () => {
                           <div className="row row-cols-xl-5 row-cols-lg-5 row-cols-md-3 row-cols-sm-2 row-cols-2 g-3">
                             <div className="col">
                               <ul className="flightsLists-Wraps p-0">
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>France</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Turkey</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Japan</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Itly</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Poland</span></a></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>France</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Turkey</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Japan</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Itly</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Poland</span></Link></li>
                               </ul>
                             </div>
                             <div className="col">
                               <ul className="flightsLists-Wraps p-0">
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>South Korea</span></a>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>South Korea</span></Link>
                                 </li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Spain</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Maxico</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Austria</span></a>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Spain</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Maxico</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Austria</span></Link>
                                 </li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Canada</span></a></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Canada</span></Link></li>
                               </ul>
                             </div>
                             <div className="col">
                               <ul className="flightsLists-Wraps p-0">
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Thailand</span></a>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Thailand</span></Link>
                                 </li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>New York</span></a>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>New York</span></Link>
                                 </li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Russia</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Vietnaam</span></a>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Russia</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Vietnaam</span></Link>
                                 </li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Denver</span></a></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Denver</span></Link></li>
                               </ul>
                             </div>
                             <div className="col">
                               <ul className="flightsLists-Wraps p-0">
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Liverpool</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Indonesia</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Chaina</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Zarmeny</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Purtugal</span></a></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Liverpool</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Indonesia</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Chaina</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Zarmeny</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Purtugal</span></Link></li>
                               </ul>
                             </div>
                             <div className="col">
                               <ul className="flightsLists-Wraps p-0">
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>India</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Malaysia</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Pakistan</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Los Vegas</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Singapure</span></a></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>India</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Malaysia</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Pakistan</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Los Vegas</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Singapure</span></Link></li>
                               </ul>
                             </div>
                           </div>
@@ -877,52 +878,52 @@ const HomeFlight = () => {
                           <div className="row row-cols-xl-5 row-cols-lg-5 row-cols-md-3 row-cols-sm-2 row-cols-2 g-3">
                             <div className="col">
                               <ul className="flightsLists-Wraps p-0">
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>France</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Turkey</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Japan</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Itly</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Poland</span></a></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>France</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Turkey</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Japan</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Itly</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Poland</span></Link></li>
                               </ul>
                             </div>
                             <div className="col">
                               <ul className="flightsLists-Wraps p-0">
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>South Korea</span></a>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>South Korea</span></Link>
                                 </li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Spain</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Maxico</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Austria</span></a>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Spain</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Maxico</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Austria</span></Link>
                                 </li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Canada</span></a></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Canada</span></Link></li>
                               </ul>
                             </div>
                             <div className="col">
                               <ul className="flightsLists-Wraps p-0">
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Thailand</span></a>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Thailand</span></Link>
                                 </li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>New York</span></a>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>New York</span></Link>
                                 </li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Russia</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Vietnaam</span></a>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Russia</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Vietnaam</span></Link>
                                 </li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Denver</span></a></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Denver</span></Link></li>
                               </ul>
                             </div>
                             <div className="col">
                               <ul className="flightsLists-Wraps p-0">
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Liverpool</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Indonesia</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Chaina</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Zarmeny</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Purtugal</span></a></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Liverpool</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Indonesia</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Chaina</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Zarmeny</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Purtugal</span></Link></li>
                               </ul>
                             </div>
                             <div className="col">
                               <ul className="flightsLists-Wraps p-0">
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>India</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Malaysia</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Pakistan</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Los Vegas</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Singapure</span></a></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>India</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Malaysia</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Pakistan</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Los Vegas</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Singapure</span></Link></li>
                               </ul>
                             </div>
                           </div>
@@ -931,52 +932,52 @@ const HomeFlight = () => {
                           <div className="row row-cols-xl-5 row-cols-lg-5 row-cols-md-3 row-cols-sm-2 row-cols-2 g-3">
                             <div className="col">
                               <ul className="flightsLists-Wraps p-0">
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>France</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Turkey</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Japan</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Itly</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Poland</span></a></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>France</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Turkey</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Japan</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Itly</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Poland</span></Link></li>
                               </ul>
                             </div>
                             <div className="col">
                               <ul className="flightsLists-Wraps p-0">
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>South Korea</span></a>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>South Korea</span></Link>
                                 </li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Spain</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Maxico</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Austria</span></a>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Spain</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Maxico</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Austria</span></Link>
                                 </li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Canada</span></a></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Canada</span></Link></li>
                               </ul>
                             </div>
                             <div className="col">
                               <ul className="flightsLists-Wraps p-0">
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Thailand</span></a>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Thailand</span></Link>
                                 </li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>New York</span></a>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>New York</span></Link>
                                 </li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Russia</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Vietnaam</span></a>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Russia</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Vietnaam</span></Link>
                                 </li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Denver</span></a></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Denver</span></Link></li>
                               </ul>
                             </div>
                             <div className="col">
                               <ul className="flightsLists-Wraps p-0">
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Liverpool</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Indonesia</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Chaina</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Zarmeny</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Purtugal</span></a></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Liverpool</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Indonesia</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Chaina</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Zarmeny</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Purtugal</span></Link></li>
                               </ul>
                             </div>
                             <div className="col">
                               <ul className="flightsLists-Wraps p-0">
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>India</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Malaysia</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Pakistan</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Los Vegas</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Singapure</span></a></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>India</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Malaysia</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Pakistan</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Los Vegas</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Singapure</span></Link></li>
                               </ul>
                             </div>
                           </div>
@@ -985,52 +986,52 @@ const HomeFlight = () => {
                           <div className="row row-cols-xl-5 row-cols-lg-5 row-cols-md-3 row-cols-sm-2 row-cols-2 g-3">
                             <div className="col">
                               <ul className="flightsLists-Wraps p-0">
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>France</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Turkey</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Japan</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Itly</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Poland</span></a></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>France</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Turkey</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Japan</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Itly</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Poland</span></Link></li>
                               </ul>
                             </div>
                             <div className="col">
                               <ul className="flightsLists-Wraps p-0">
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>South Korea</span></a>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>South Korea</span></Link>
                                 </li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Spain</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Maxico</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Austria</span></a>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Spain</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Maxico</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Austria</span></Link>
                                 </li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Canada</span></a></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Canada</span></Link></li>
                               </ul>
                             </div>
                             <div className="col">
                               <ul className="flightsLists-Wraps p-0">
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Thailand</span></a>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Thailand</span></Link>
                                 </li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>New York</span></a>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>New York</span></Link>
                                 </li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Russia</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Vietnaam</span></a>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Russia</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Vietnaam</span></Link>
                                 </li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Denver</span></a></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Denver</span></Link></li>
                               </ul>
                             </div>
                             <div className="col">
                               <ul className="flightsLists-Wraps p-0">
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Liverpool</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Indonesia</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Chaina</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Zarmeny</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Purtugal</span></a></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Liverpool</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Indonesia</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Chaina</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Zarmeny</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Purtugal</span></Link></li>
                               </ul>
                             </div>
                             <div className="col">
                               <ul className="flightsLists-Wraps p-0">
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>India</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Malaysia</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Pakistan</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Los Vegas</span></a></li>
-                                <li><a href="#" className="text-md text-muted-2"><span>Flight</span> To <span>Singapure</span></a></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>India</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Malaysia</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Pakistan</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Los Vegas</span></Link></li>
+                                <li><Link to="#" className="text-md text-muted-2"><span>Flight</span> To <span>Singapure</span></Link></li>
                               </ul>
                             </div>
                           </div>
@@ -1081,112 +1082,7 @@ const HomeFlight = () => {
             </div>
             {/* ============================ Call To Action Start ================================== */}
             {/* ============================ Footer Start ================================== */}
-            <footer className="footer skin-light-footer">
-              <div>
-                <div className="container">
-                  <div className="row">
-                    <div className="col-lg-3 col-md-4">
-                      <div className="footer-widget">
-                        <div className="d-flex align-items-start flex-column mb-3">
-                          <div className="d-inline-block"><img src="assets/img/logo.png" className="img-fluid" width={160} alt="Footer Logo" />
-                          </div>
-                        </div>
-                        <div className="footer-add pe-xl-3">
-                          <p>We make your dream more beautiful &amp; enjoyful with lots of happiness.</p>
-                        </div>
-                        <div className="foot-socials">
-                          <ul>
-                            <li><a href="JavaScript:Void(0);"><i className="fa-brands fa-facebook" /></a></li>
-                            <li><a href="JavaScript:Void(0);"><i className="fa-brands fa-linkedin" /></a></li>
-                            <li><a href="JavaScript:Void(0);"><i className="fa-brands fa-google-plus" /></a></li>
-                            <li><a href="JavaScript:Void(0);"><i className="fa-brands fa-twitter" /></a></li>
-                            <li><a href="JavaScript:Void(0);"><i className="fa-brands fa-dribbble" /></a></li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-2 col-md-4">
-                      <div className="footer-widget">
-                        <h4 className="widget-title">The Navigation</h4>
-                        <ul className="footer-menu">
-                          <li><a href="JavaScript:Void(0);">Talent Marketplace</a></li>
-                          <li><a href="JavaScript:Void(0);">Payroll Services</a></li>
-                          <li><a href="JavaScript:Void(0);">Direct Contracts</a></li>
-                          <li><a href="JavaScript:Void(0);">Hire Worldwide</a></li>
-                          <li><a href="JavaScript:Void(0);">Hire in the USA</a></li>
-                          <li><a href="JavaScript:Void(0);">How to Hire</a></li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div className="col-lg-2 col-md-4">
-                      <div className="footer-widget">
-                        <h4 className="widget-title">Our Resources</h4>
-                        <ul className="footer-menu">
-                          <li><a href="JavaScript:Void(0);">Free Business tools</a></li>
-                          <li><a href="JavaScript:Void(0);">Affiliate Program</a></li>
-                          <li><a href="JavaScript:Void(0);">Success Stories</a></li>
-                          <li><a href="JavaScript:Void(0);">Upwork Reviews</a></li>
-                          <li><a href="JavaScript:Void(0);">Resources</a></li>
-                          <li><a href="JavaScript:Void(0);">Help &amp; Support</a></li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div className="col-lg-2 col-md-6">
-                      <div className="footer-widget">
-                        <h4 className="widget-title">The Company</h4>
-                        <ul className="footer-menu">
-                          <li><a href="JavaScript:Void(0);">About Us</a></li>
-                          <li><a href="JavaScript:Void(0);">Leadership</a></li>
-                          <li><a href="JavaScript:Void(0);">Contact Us</a></li>
-                          <li><a href="JavaScript:Void(0);">Investor Relations</a></li>
-                          <li><a href="JavaScript:Void(0);">Trust, Safety &amp; Security</a></li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div className="col-lg-3 col-md-6">
-                      <div className="footer-widget">
-                        <h4 className="widget-title">Payment Methods</h4>
-                        <div className="pmt-wrap">
-                          <img src="https://placehold.co/300x50" className="img-fluid" alt="" />
-                        </div>
-                        <div className="our-prtwrap mt-4">
-                          <div className="prtn-title">
-                            <p className="text-muted-2 fw-medium">Our Partners</p>
-                          </div>
-                          <div className="prtn-thumbs d-flex align-items-center justify-content-start">
-                            <div className="pmt-wrap pe-4">
-                              <img src="https://placehold.co/300x100" className="img-fluid" alt="" />
-                            </div>
-                            <div className="pmt-wrap pe-4">
-                              <img src="https://placehold.co/300x100" className="img-fluid" alt="" />
-                            </div>
-                            <div className="pmt-wrap pe-4">
-                              <img src="https://placehold.co/300x100" className="img-fluid" alt="" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="footer-bottom border-top">
-                <div className="container">
-                  <div className="row align-items-center justify-content-between">
-                    <div className="col-xl-6 col-lg-6 col-md-6">
-                      <p className="mb-0">© 2023 GeoTrip Design by Themezhub.</p>
-                    </div>
-                    <div className="col-xl-6 col-lg-6 col-md-6">
-                      <ul className="p-0 d-flex justify-content-start justify-content-md-end text-start text-md-end m-0">
-                        <li><a href="#">Terms of services</a></li>
-                        <li className="ms-3"><a href="#">Privacy Policies</a></li>
-                        <li className="ms-3"><a href="#">Cookies</a></li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </footer>
+            <Footer/>
             {/* ============================ Footer End ================================== */}
             {/* Log In Modal */}
             <div className="modal fade" id="login" tabIndex={-1} role="dialog" aria-labelledby="loginmodal" aria-hidden="true">
@@ -1194,7 +1090,7 @@ const HomeFlight = () => {
                 <div className="modal-content" id="loginmodal">
                   <div className="modal-header">
                     <h4 className="modal-title fs-6">Sign In / Register</h4>
-                    <a href="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></a>
+                    <Link to="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></Link>
                   </div>
                   <div className="modal-body">
                     <div className="modal-login-form py-4 px-md-3 px-0">
@@ -1218,7 +1114,7 @@ const HomeFlight = () => {
                             </div>
                           </div>
                           <div className="modal-flex-last">
-                            <a href="JavaScript:Void(0);" className="text-primary fw-medium">Forget Password?</a>
+                            <Link to="#" onClick={(e)=>{e.preventDefault()}} className="text-primary fw-medium">Forget Password?</Link>
                           </div>
                         </div>
                       </form>
@@ -1230,16 +1126,16 @@ const HomeFlight = () => {
                     </div>
                     <div className="social-login py-4 px-2">
                       <ul className="row align-items-center justify-content-between g-3 p-0 m-0">
-                        <li className="col"><a href="#" className="square--60 border br-dashed rounded-2 full-width"><i className="fa-brands fa-facebook color--facebook fs-2" /></a></li>
-                        <li className="col"><a href="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-whatsapp color--whatsapp fs-2" /></a></li>
-                        <li className="col"><a href="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-linkedin color--linkedin fs-2" /></a></li>
-                        <li className="col"><a href="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-dribbble color--dribbble fs-2" /></a></li>
-                        <li className="col"><a href="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-twitter color--twitter fs-2" /></a></li>
+                        <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 full-width"><i className="fa-brands fa-facebook color--facebook fs-2" /></Link></li>
+                        <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-whatsapp color--whatsapp fs-2" /></Link></li>
+                        <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-linkedin color--linkedin fs-2" /></Link></li>
+                        <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-dribbble color--dribbble fs-2" /></Link></li>
+                        <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-twitter color--twitter fs-2" /></Link></li>
                       </ul>
                     </div>
                   </div>
                   <div className="modal-footer align-items-center justify-content-center">
-                    <p>Don't have an account yet?<a href="signup.html" className="text-primary fw-medium ms-1">Sign Up</a></p>
+                    <p>Don't have an account yet?<Link to="signup.html" className="text-primary fw-medium ms-1">Sign Up</Link></p>
                   </div>
                 </div>
               </div>
@@ -1251,7 +1147,7 @@ const HomeFlight = () => {
                 <div className="modal-content">
                   <div className="modal-header">
                     <h4 className="modal-title fs-6" id="currenyModalLabel">Select Your Currency</h4>
-                    <a href="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></a>
+                    <Link to="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></Link>
                   </div>
                   <div className="modal-body">
                     <div className="allCurrencylist">
@@ -1262,40 +1158,40 @@ const HomeFlight = () => {
                         <div className="suggestedCurrencylists">
                           <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-md-2 row-cols-2 gy-2 gx-3 m-0 p-0">
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">United State Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">USD</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Pound Sterling</div>
                                 <div className="text-muted-2 text-md text-uppercase">GBP</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency active" href="#">
+                              <Link className="selectCurrency active" to="#">
                                 <div className="text-dark text-md fw-medium">Indian Rupees</div>
                                 <div className="text-muted-2 text-md text-uppercase">Inr</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Euro</div>
                                 <div className="text-muted-2 text-md text-uppercase">EUR</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Australian Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">aud</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Thai Baht</div>
                                 <div className="text-muted-2 text-md text-uppercase">thb</div>
-                              </a>
+                              </Link>
                             </li>
                           </ul>
                         </div>
@@ -1307,118 +1203,118 @@ const HomeFlight = () => {
                         <div className="suggestedCurrencylists">
                           <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-md-2 row-cols-2 gy-2 gx-3 m-0 p-0">
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">United State Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">USD</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Property currency</div>
                                 <div className="text-muted-2 text-md text-uppercase">GBP</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Argentine Peso</div>
                                 <div className="text-muted-2 text-md text-uppercase">EUR</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Azerbaijani Manat</div>
                                 <div className="text-muted-2 text-md text-uppercase">Inr</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Australian Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">aud</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Bahraini Dinar</div>
                                 <div className="text-muted-2 text-md text-uppercase">thb</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Brazilian Real</div>
                                 <div className="text-muted-2 text-md text-uppercase">USD</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Bulgarian Lev</div>
                                 <div className="text-muted-2 text-md text-uppercase">GBP</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Canadian Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">EUR</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Chilean Peso</div>
                                 <div className="text-muted-2 text-md text-uppercase">Inr</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Colombian Peso</div>
                                 <div className="text-muted-2 text-md text-uppercase">aud</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Danish Krone</div>
                                 <div className="text-muted-2 text-md text-uppercase">thb</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Egyptian Pound</div>
                                 <div className="text-muted-2 text-md text-uppercase">USD</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Hungarian Forint</div>
                                 <div className="text-muted-2 text-md text-uppercase">GBP</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Japanese Yen</div>
                                 <div className="text-muted-2 text-md text-uppercase">EUR</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Jordanian Dinar</div>
                                 <div className="text-muted-2 text-md text-uppercase">Inr</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Kuwaiti Dinar</div>
                                 <div className="text-muted-2 text-md text-uppercase">aud</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Malaysian Ringgit</div>
                                 <div className="text-muted-2 text-md text-uppercase">thb</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Singapore Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">thb</div>
-                              </a>
+                              </Link>
                             </li>
                           </ul>
                         </div>
@@ -1434,7 +1330,7 @@ const HomeFlight = () => {
                 <div className="modal-content">
                   <div className="modal-header">
                     <h4 className="modal-title fs-6" id="countryModalLabel">Select Your Country</h4>
-                    <a href="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></a>
+                    <Link to="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></Link>
                   </div>
                   <div className="modal-body">
                     <div className="allCountrieslist">
@@ -1445,40 +1341,40 @@ const HomeFlight = () => {
                         <div className="suggestedCurrencylists">
                           <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-2 gy-2 gx-3 m-0 p-0">
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">United State Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Pound Sterling</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry active" href="#">
+                              <Link className="selectCountry active" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Indian Rupees</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Euro</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Australian Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Thai Baht</div>
-                              </a>
+                              </Link>
                             </li>
                           </ul>
                         </div>
@@ -1490,118 +1386,118 @@ const HomeFlight = () => {
                         <div className="suggestedCurrencylists">
                           <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-2 gy-2 gx-3 m-0 p-0">
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">United State Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Property currency</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Argentine Peso</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Azerbaijani Manat</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Australian Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Bahraini Dinar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Brazilian Real</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Bulgarian Lev</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Canadian Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Chilean Peso</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Colombian Peso</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Danish Krone</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Egyptian Pound</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Hungarian Forint</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Japanese Yen</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Jordanian Dinar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Kuwaiti Dinar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Malaysian Ringgit</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Singapore Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                           </ul>
                         </div>
@@ -1611,7 +1507,7 @@ const HomeFlight = () => {
                 </div>
               </div>
             </div>
-            <a id="back2Top" className="top-scroll" title="Back to top" href="#"><i className="fa-solid fa-sort-up" /></a>
+            <Link id="back2Top" className="top-scroll" title="Back to top" to="#"><i className="fa-solid fa-sort-up" /></Link>
           </div>
           {/* ============================================================== */}
           {/* End Wrapper */}

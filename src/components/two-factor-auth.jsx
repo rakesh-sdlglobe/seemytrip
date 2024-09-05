@@ -12,6 +12,7 @@ import '../assets/css/bootstrap-icons.css';
 import '../assets/css/fontawesome.css';
 import '../assets/css/style.css';
 import { trainImage } from '../assets/images';
+import { Link } from 'react-router-dom';
 
 
 const TwofactorAuth = () => {
@@ -47,9 +48,9 @@ const TwofactorAuth = () => {
                         <div className="col-lg-6 order-1">
                           <div className="p-4 p-sm-7">
                             {/* Logo */}
-                            <a href="index.html">
+                            <Link to="index.html">
                               <img className="img-fluid mb-4" src={trainImage} width={70} alt="logo" />
-                            </a>
+                            </Link>
                             {/* Title */}
                             <h1 className="mb-2 fs-2">Two-Factor Authentication</h1>
                             <p className="mb-0">We have to send a code to paythemezhub@gmail.com.</p>
@@ -82,8 +83,8 @@ const TwofactorAuth = () => {
                                     <span className="text-md">Don't Get a Code?</span>
                                   </div>
                                   <div className="modal-flex-last">
-                                    <a href="JavaScript:Void(0);" className="text-primary fw-medium text-decoration-underline">Click
-                                      to Resend</a>
+                                    <Link to="#" onClick={(e)=>{e.preventDefault()}} className="text-primary fw-medium text-decoration-underline">Click
+                                      to Resend</Link>
                                   </div>
                                 </div>
                                 <div className="form-group">
@@ -92,7 +93,7 @@ const TwofactorAuth = () => {
                                 </div>
                               </div>
                               {/* Copyright */}
-                              <div className="text-primary-hover text-center"> Copyrights ©2023 GeoTrip.com. Build by <a href="https://www.themezhub.com/">Themezhub</a>. </div>
+                              <div className="text-primary-hover text-center"> Copyrights ©2023 GeoTrip.com. Build by <Link to="https://www.themezhub.com/">Themezhub</Link>. </div>
                             </form>
                             {/* Form END */}
                           </div>
@@ -105,15 +106,6 @@ const TwofactorAuth = () => {
             </section>
             {/* ============================== Login Section End ================== */}
           </div>
-          {/* ============================================================== */}
-          {/* End Wrapper */}
-          {/* ============================================================== */}
-          {/* ============================================================== */}
-          {/* All Jquery */}
-          {/* ============================================================== */}
-          {/* ============================================================== */}
-          {/* This page plugins */}
-          {/* ============================================================== */}
         </div>
       );
     }

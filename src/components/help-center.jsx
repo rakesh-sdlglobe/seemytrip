@@ -11,7 +11,9 @@ import '../assets/css/prism.css';
 import '../assets/css/bootstrap-icons.css';
 import '../assets/css/fontawesome.css';
 import '../assets/css/style.css';
-import { trainImage } from '../assets/images';
+import { Link } from 'react-router-dom';
+import Footer from './footer';
+import Header02 from './header02';
 
 const HelpCenter = () => {
       return (
@@ -31,228 +33,7 @@ const HelpCenter = () => {
             {/* Top header  */}
             {/* ============================================================== */}
             {/* Start Navigation */}
-            <div className="header header-light">
-              <div className="container">
-                <nav id="navigation" className="navigation navigation-landscape">
-                  <div className="nav-header">
-                    <a className="nav-brand" href="#"><img src={trainImage} className="logo" alt="" /></a>
-                    <div className="nav-toggle" />
-                    <div className="mobile_nav">
-                      <ul>
-                        <li className="currencyDropdown me-2">
-                          <a href="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#currencyModal"><span className="fw-medium">INR</span></a>
-                        </li>
-                        <li className="languageDropdown me-2">
-                          <a href="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#countryModal"><img src="https://placehold.co/100x100" className="img-fluid" width={17} alt="Country" /></a>
-                        </li>
-                        <li>
-                          <a href="#" className="bg-light-primary text-primary rounded" data-bs-toggle="modal" data-bs-target="#login"><i className="fa-regular fa-circle-user fs-6" /></a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div className="nav-menus-wrapper" style={{transitionProperty: 'none'}}>
-                    <ul className="nav-menu">
-                      <li><a href="JavaScript:Void(0);">Home<span className="submenu-indicator" /></a>
-                        <ul className="nav-dropdown nav-submenu">
-                          <li>
-                            <a href="index.html">Home version 01</a>
-                          </li>
-                          <li>
-                            <a href="home-2.html">Home version 02</a>
-                          </li>
-                          <li>
-                            <a href="home-3.html">Home version 03</a>
-                          </li>
-                          <li>
-                            <a href="home-4.html">Home version 04</a>
-                          </li>
-                          <li>
-                            <a href="home-5.html">Home version 05</a>
-                          </li>
-                          <li>
-                            <a href="slider-home.html">Home version 06</a>
-                          </li>
-                        </ul>
-                      </li>
-                      <li><a href="JavaScript:Void(0);">Listing<span className="submenu-indicator" /></a>
-                        <ul className="nav-dropdown nav-submenu">
-                          <li><a href="JavaScript:Void(0);">Hotel<span className="submenu-indicator" /></a>
-                            <ul className="nav-dropdown nav-submenu">
-                              <li><a href="hotel-list-01.html">Hotel list 01</a></li>
-                              <li><a href="hotel-list-02.html">Hotel list 02</a></li>
-                              <li><a href="hotel-list-03.html">Hotel list 03</a></li>
-                              <li><a href="hotel-detail.html">Hotel Detail 01</a></li>
-                              <li><a href="hotel-detail-2.html">Hotel Detail 02</a></li>
-                            </ul>
-                          </li>
-                          <li><a href="JavaScript:Void(0);">Flight<span className="submenu-indicator" /></a>
-                            <ul className="nav-dropdown nav-submenu">
-                              <li><a href="flight-list-01.html">Flight List 01</a></li>
-                              <li><a href="flight-list-02.html">Flight List 02</a></li>
-                              <li><a href="Flight-detail.html">Flight Detail</a></li>
-                            </ul>
-                          </li>
-                          <li><a href="JavaScript:Void(0);">Rental<span className="submenu-indicator" /></a>
-                            <ul className="nav-dropdown nav-submenu">
-                              <li><a href="property-list-01.html">Rental List 01</a></li>
-                              <li><a href="property-list-02.html">Rental List 02</a></li>
-                              <li><a href="property-list-03.html">Rental List 03</a></li>
-                              <li><a href="rental-detail.html">Rental Detail</a></li>
-                            </ul>
-                          </li>
-                          <li><a href="JavaScript:Void(0);">Car<span className="submenu-indicator" /></a>
-                            <ul className="nav-dropdown nav-submenu">
-                              <li><a href="car-list-01.html">Car List 01</a></li>
-                              <li><a href="car-list-02.html">Car List 02</a></li>
-                              <li><a href="car-list-03.html">Car List 03</a></li>
-                              <li><a href="car-detail.html">Car Detail</a></li>
-                            </ul>
-                          </li>
-                          <li><a href="JavaScript:Void(0);">Destination<span className="submenu-indicator" /></a>
-                            <ul className="nav-dropdown nav-submenu">
-                              <li><a href="destination-01.html">Destination List 01</a></li>
-                              <li><a href="destination-02.html">Destination List 02</a></li>
-                              <li><a href="destination-03.html">Destination List 03</a></li>
-                              <li><a href="destination-detail.html">Destination Detail</a></li>
-                            </ul>
-                          </li>
-                          <li>
-                            <a href="join-us.html">Join with GeoTrip</a>
-                          </li>
-                          <li>
-                            <a href="add-listing.html">Add Listing</a>
-                          </li>
-                          <li>
-                            <a href="compare-listing.html">Compare Listing</a>
-                          </li>
-                          <li>
-                            <a href="booking-page.html">Booking Page</a>
-                          </li>
-                          <li>
-                            <a href="my-profile.html">User Dashboard</a>
-                          </li>
-                        </ul>
-                      </li>
-                      <li><a href="JavaScript:Void(0);">Pages<span className="submenu-indicator" /></a>
-                        <ul className="nav-dropdown nav-submenu">
-                          <li><a href="JavaScript:Void(0);">Blog<span className="submenu-indicator" /></a>
-                            <ul className="nav-dropdown nav-submenu">
-                              <li><a href="classic-blog.html">Classic Blog</a></li>
-                              <li><a href="blog.html">Blog Grid Style</a></li>
-                              <li><a href="blog-detail.html">Single Blog</a></li>
-                            </ul>
-                          </li>
-                          <li><a href="JavaScript:Void(0);">Authentication<span className="submenu-indicator" /></a>
-                            <ul className="nav-dropdown nav-submenu">
-                              <li><a href="login.html">Sign In</a></li>
-                              <li><a href="register.html">Sign Up</a></li>
-                              <li><a href="forgot-password.html">Forgot Password</a></li>
-                              <li><a href="two-factor-auth.html">Two factor authentication</a></li>
-                            </ul>
-                          </li>
-                          <li><a href="about-us.html">About Us</a></li>
-                          <li><a href="career-page.html">Career Page</a></li>
-                          <li><a href="help-center.html">Help Center</a></li>
-                          <li><a href="faq.html">FAQ's</a></li>
-                          <li><a href="404.html">Error Page</a></li>
-                          <li><a href="pricing.html">Pricing</a></li>
-                          <li><a href="privacy-policy.html">Privacy Policy</a></li>
-                          <li><a href="JavaScript:Void(0);">Contact Us<span className="submenu-indicator" /></a>
-                            <ul className="nav-dropdown nav-submenu">
-                              <li><a href="contact-v1.html">Contact V.01</a></li>
-                              <li><a href="contact-v2.html">Contact V0.2</a></li>
-                            </ul>
-                          </li>
-                        </ul>
-                      </li>
-                      <li><a href="JavaScript:Void(0);">Menu<span className="submenu-indicator" /></a>
-                        <ul className="nav-dropdown nav-submenu xxl-menu">
-                          <li>
-                            <a href="home-stay.html">
-                              <div className="mega-advance-menu">
-                                <div className="mega-first square--50 rounded-2 gray-simple text-success fs-4"><i className="fa-solid fa-spa" /></div>
-                                <div className="mega-last ps-2">
-                                  <h6 className="lh-base fs-6 font--bold m-0">Home Stays</h6>
-                                  <p className="text-sm-muted m-0">Beautiful Place for stays</p>
-                                </div>
-                              </div>
-                            </a>
-                          </li>
-                          <li>
-                            <a href="home-hotel.html">
-                              <div className="mega-advance-menu">
-                                <div className="mega-first square--50 rounded-2 gray-simple text-warning fs-4"><i className="fa-solid fa-hotel" /></div>
-                                <div className="mega-last ps-2">
-                                  <h6 className="lh-base fs-6 font--bold m-0">Home Hotel</h6>
-                                  <p className="text-sm-muted m-0">Beautiful Place for stays</p>
-                                </div>
-                              </div>
-                            </a>
-                          </li>
-                          <li>
-                            <a href="home-flight.html">
-                              <div className="mega-advance-menu">
-                                <div className="mega-first square--50 rounded-2 gray-simple text-primary fs-4"><i className="fa-solid fa-plane" /></div>
-                                <div className="mega-last ps-2">
-                                  <h6 className="lh-base fs-6 font--bold m-0">Home Flight</h6>
-                                  <p className="text-sm-muted m-0">Beautiful Place for stays</p>
-                                </div>
-                              </div>
-                            </a>
-                          </li>
-                          <li>
-                            <a href="home-rental.html">
-                              <div className="mega-advance-menu">
-                                <div className="mega-first square--50 rounded-2 gray-simple text-purple fs-4"><i className="fa-solid fa-eye" /></div>
-                                <div className="mega-last ps-2">
-                                  <h6 className="lh-base fs-6 font--bold m-0">Home Rental</h6>
-                                  <p className="text-sm-muted m-0">Beautiful Place for stays</p>
-                                </div>
-                              </div>
-                            </a>
-                          </li>
-                          <li>
-                            <a href="home-car.html">
-                              <div className="mega-advance-menu">
-                                <div className="mega-first square--50 rounded-2 gray-simple text-seagreen fs-4"><i className="fa-brands fa-dropbox" /></div>
-                                <div className="mega-last ps-2">
-                                  <h6 className="lh-base fs-6 font--bold m-0">Home Cabs</h6>
-                                  <p className="text-sm-muted m-0">Beautiful Place for stays</p>
-                                </div>
-                              </div>
-                            </a>
-                          </li>
-                          <li>
-                            <a href="home-stay.html">
-                              <div className="mega-advance-menu">
-                                <div className="mega-first square--50 rounded-2 gray-simple text-info fs-4"><i className="fa-solid fa-person-walking-luggage" /></div>
-                                <div className="mega-last ps-2">
-                                  <h6 className="lh-base fs-6 font--bold m-0">Home Destination</h6>
-                                  <p className="text-sm-muted m-0">Beautiful Place for stays</p>
-                                </div>
-                              </div>
-                            </a>
-                          </li>
-                        </ul>
-                      </li>
-                      <li><a href="../documantion/index.html" target="_blank">Docs</a></li>
-                    </ul>
-                    <ul className="nav-menu nav-menu-social align-to-right">
-                      <li className="currencyDropdown me-2">
-                        <a href="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#currencyModal"><span className="fw-medium">INR</span></a>
-                      </li>
-                      <li className="languageDropdown me-2">
-                        <a href="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#countryModal"><img src="https://placehold.co/100x100" className="img-fluid" width={17} alt="Country" /></a>
-                      </li>
-                      <li className="list-buttons">
-                        <a href="#" className="bg-primary" data-bs-toggle="modal" data-bs-target="#login"><i className="fa-regular fa-circle-user fs-6 me-2" />Sign In / Register</a>
-                      </li>
-                    </ul>
-                  </div>
-                </nav>
-              </div>
-            </div>
+            <Header02/>
             {/* End Navigation */}
             <div className="clearfix" />
             {/* ============================================================== */}
@@ -277,14 +58,14 @@ const HelpCenter = () => {
                             <h6 className="text-white mb-3">Popular questions</h6>
                             {/* Questions List START */}
                             <div className="list-group hstack gap-3 justify-content-center flex-wrap mb-0">
-                              <a className="btn-link text-white text-decoration-underline p-0 mb-0" href="#"> How can we help?</a>
-                              <a className="btn-link text-white text-decoration-underline p-0 mb-0" href="#"> How to upload data to
-                                the system? </a>
-                              <a className="btn-link text-white text-decoration-underline p-0 mb-0" href="#"> Installation Guide?
-                              </a>
-                              <a className="btn-link text-white text-decoration-underline p-0 mb-0" href="#"> How to view expired
-                                tickets? </a>
-                              <a className="btn-link text-white p-0 mb-0" href="#!">View all question</a>
+                              <Link className="btn-link text-white text-decoration-underline p-0 mb-0" to="#"> How can we help?</Link>
+                              <Link className="btn-link text-white text-decoration-underline p-0 mb-0" to="#"> How to upload data to
+                                the system? </Link>
+                              <Link className="btn-link text-white text-decoration-underline p-0 mb-0" to="#"> Installation Guide?
+                              </Link>
+                              <Link className="btn-link text-white text-decoration-underline p-0 mb-0" to="#"> How to view expired
+                                tickets? </Link>
+                              <Link className="btn-link text-white p-0 mb-0" to="#!">View all question</Link>
                             </div>
                             {/* Questions list END */}
                           </div>
@@ -311,11 +92,11 @@ const HelpCenter = () => {
                       {/* List START */}
                       <div className="card-body">
                         <ul className="nav flex-column">
-                          <li className="nav-item"><a className="nav-link d-flex" href="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />How To Customize Gulp?</a></li>
-                          <li className="nav-item"><a className="nav-link d-flex" href="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Change Color &amp; Logo</a></li>
-                          <li className="nav-item"><a className="nav-link d-flex" href="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Apply Dark Mode &amp; RTL Version</a></li>
-                          <li className="nav-item"><a className="nav-link d-flex" href="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Add Custom Fields &amp; Area</a></li>
-                          <li className="nav-item"><a className="nav-link d-flex" href="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Updates and Support</a></li>
+                          <li className="nav-item"><Link className="nav-link d-flex" to="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />How To Customize Gulp?</Link></li>
+                          <li className="nav-item"><Link className="nav-link d-flex" to="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Change Color &amp; Logo</Link></li>
+                          <li className="nav-item"><Link className="nav-link d-flex" to="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Apply Dark Mode &amp; RTL Version</Link></li>
+                          <li className="nav-item"><Link className="nav-link d-flex" to="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Add Custom Fields &amp; Area</Link></li>
+                          <li className="nav-item"><Link className="nav-link d-flex" to="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Updates and Support</Link></li>
                         </ul>
                       </div>
                       {/* List END */}
@@ -333,11 +114,11 @@ const HelpCenter = () => {
                       {/* List START */}
                       <div className="card-body">
                         <ul className="nav flex-column">
-                          <li className="nav-item"><a className="nav-link d-flex" href="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />How To Customize Gulp?</a></li>
-                          <li className="nav-item"><a className="nav-link d-flex" href="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Change Color &amp; Logo</a></li>
-                          <li className="nav-item"><a className="nav-link d-flex" href="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Apply Dark Mode &amp; RTL Version</a></li>
-                          <li className="nav-item"><a className="nav-link d-flex" href="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Add Custom Fields &amp; Area</a></li>
-                          <li className="nav-item"><a className="nav-link d-flex" href="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Updates and Support</a></li>
+                          <li className="nav-item"><Link className="nav-link d-flex" to="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />How To Customize Gulp?</Link></li>
+                          <li className="nav-item"><Link className="nav-link d-flex" to="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Change Color &amp; Logo</Link></li>
+                          <li className="nav-item"><Link className="nav-link d-flex" to="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Apply Dark Mode &amp; RTL Version</Link></li>
+                          <li className="nav-item"><Link className="nav-link d-flex" to="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Add Custom Fields &amp; Area</Link></li>
+                          <li className="nav-item"><Link className="nav-link d-flex" to="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Updates and Support</Link></li>
                         </ul>
                       </div>
                       {/* List END */}
@@ -355,11 +136,11 @@ const HelpCenter = () => {
                       {/* List START */}
                       <div className="card-body">
                         <ul className="nav flex-column">
-                          <li className="nav-item"><a className="nav-link d-flex" href="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />How To Customize Gulp?</a></li>
-                          <li className="nav-item"><a className="nav-link d-flex" href="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Change Color &amp; Logo</a></li>
-                          <li className="nav-item"><a className="nav-link d-flex" href="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Apply Dark Mode &amp; RTL Version</a></li>
-                          <li className="nav-item"><a className="nav-link d-flex" href="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Add Custom Fields &amp; Area</a></li>
-                          <li className="nav-item"><a className="nav-link d-flex" href="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Updates and Support</a></li>
+                          <li className="nav-item"><Link className="nav-link d-flex" to="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />How To Customize Gulp?</Link></li>
+                          <li className="nav-item"><Link className="nav-link d-flex" to="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Change Color &amp; Logo</Link></li>
+                          <li className="nav-item"><Link className="nav-link d-flex" to="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Apply Dark Mode &amp; RTL Version</Link></li>
+                          <li className="nav-item"><Link className="nav-link d-flex" to="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Add Custom Fields &amp; Area</Link></li>
+                          <li className="nav-item"><Link className="nav-link d-flex" to="#"><i className="fa-solid fa-circle-arrow-right pt-1 me-2" />Updates and Support</Link></li>
                         </ul>
                       </div>
                       {/* List END */}
@@ -385,7 +166,7 @@ const HelpCenter = () => {
                         <div className="ms-3">
                           <h4 className="mb-1">Contact Support?</h4>
                           <p className="mb-3">Not finding the help you need?</p>
-                          <a href="contact-us.html" className="btn btn-seegreen fw-semibold px-5 mb-0">Contact Us</a>
+                          <Link to="contact-us.html" className="btn btn-seegreen fw-semibold px-5 mb-0">Contact Us</Link>
                         </div>
                       </div>
                     </div>
@@ -401,7 +182,7 @@ const HelpCenter = () => {
                         <div className="ms-3">
                           <h4 className="mb-1">Submit a Ticket</h4>
                           <p className="mb-3">Prosperous impression had conviction For every delay</p>
-                          <a href="#" className="btn btn-danger fw-semibold px-5 mb-0">Submit ticket</a>
+                          <Link to="#" className="btn btn-danger fw-semibold px-5 mb-0">Submit ticket</Link>
                         </div>
                       </div>
                     </div>
@@ -513,45 +294,45 @@ const HelpCenter = () => {
                   <div className="col-xl-4 col-lg-4 col-md-4 col-sm-12">
                     <div className="blogGrid-wrap d-flex flex-column h-100">
                       <div className="blogGrid-pics">
-                        <a href="#" className="d-block"><img src="https://placehold.co/1200x800" className="img-fluid rounded" alt="Blog image" /></a>
+                        <Link to="#" className="d-block"><img src="https://placehold.co/1200x800" className="img-fluid rounded" alt="Blog img" /></Link>
                       </div>
                       <div className="blogGrid-caps pt-3">
                         <div className="d-flex align-items-center mb-1"><span className="label text-success bg-light-success">Destination</span></div>
-                        <h4 className="fw-bold fs-6 lh-base"><a href="#" className="text-dark">Make Your Next Journey Delhi To Paris in
-                            Comfirtable And Best Price</a></h4>
+                        <h4 className="fw-bold fs-6 lh-base"><Link to="#" className="text-dark">Make Your Next Journey Delhi To Paris in
+                            Comfirtable And Best Price</Link></h4>
                         <p className="mb-3">Think of a news blog that's filled with content hourly on the Besides, random text risks
                           to be unintendedly humorous or offensive day of going live.</p>
-                        <a className="text-primary fw-medium" href="#">Read More<i className="fa-solid fa-arrow-trend-up ms-2" /></a>
+                        <Link className="text-primary fw-medium" to="#">Read More<i className="fa-solid fa-arrow-trend-up ms-2" /></Link>
                       </div>
                     </div>
                   </div>
                   <div className="col-xl-4 col-lg-4 col-md-4 col-sm-12">
                     <div className="blogGrid-wrap d-flex flex-column h-100">
                       <div className="blogGrid-pics">
-                        <a href="#" className="d-block"><img src="https://placehold.co/1200x800" className="img-fluid rounded" alt="Blog image" /></a>
+                        <Link to="#" className="d-block"><img src="https://placehold.co/1200x800" className="img-fluid rounded" alt="Blog img" /></Link>
                       </div>
                       <div className="blogGrid-caps pt-3">
                         <div className="d-flex align-items-center mb-1"><span className="label text-success bg-light-success">Journey</span></div>
-                        <h4 className="fw-bold fs-6 lh-base"><a href="#" className="text-dark">Make Your Next Journey Delhi To Paris in
-                            Comfirtable And Best Price</a></h4>
+                        <h4 className="fw-bold fs-6 lh-base"><Link to="#" className="text-dark">Make Your Next Journey Delhi To Paris in
+                            Comfirtable And Best Price</Link></h4>
                         <p className="mb-3">Think of a news blog that's filled with content hourly on the Besides, random text risks
                           to be unintendedly humorous or offensive day of going live.</p>
-                        <a className="text-primary fw-medium" href="#">Read More<i className="fa-solid fa-arrow-trend-up ms-2" /></a>
+                        <Link className="text-primary fw-medium" to="#">Read More<i className="fa-solid fa-arrow-trend-up ms-2" /></Link>
                       </div>
                     </div>
                   </div>
                   <div className="col-xl-4 col-lg-4 col-md-4 col-sm-12">
                     <div className="blogGrid-wrap d-flex flex-column h-100">
                       <div className="blogGrid-pics">
-                        <a href="#" className="d-block"><img src="https://placehold.co/1200x800" className="img-fluid rounded" alt="Blog image" /></a>
+                        <Link to="#" className="d-block"><img src="https://placehold.co/1200x800" className="img-fluid rounded" alt="Blog img" /></Link>
                       </div>
                       <div className="blogGrid-caps pt-3">
                         <div className="d-flex align-items-center mb-1"><span className="label text-success bg-light-success">Business</span></div>
-                        <h4 className="fw-bold fs-6 lh-base"><a href="#" className="text-dark">Make Your Next Journey Delhi To Paris in
-                            Comfirtable And Best Price</a></h4>
+                        <h4 className="fw-bold fs-6 lh-base"><Link to="#" className="text-dark">Make Your Next Journey Delhi To Paris in
+                            Comfirtable And Best Price</Link></h4>
                         <p className="mb-3">Think of a news blog that's filled with content hourly on the Besides, random text risks
                           to be unintendedly humorous or offensive day of going live.</p>
-                        <a className="text-primary fw-medium" href="#">Read More<i className="fa-solid fa-arrow-trend-up ms-2" /></a>
+                        <Link className="text-primary fw-medium" to="#">Read More<i className="fa-solid fa-arrow-trend-up ms-2" /></Link>
                       </div>
                     </div>
                   </div>
@@ -560,111 +341,7 @@ const HelpCenter = () => {
             </section>
             {/* ================================ Article Section Start ======================================= */}
             {/* ============================ Footer Start ================================== */}
-            <footer className="footer skin-dark-footer">
-              <div>
-                <div className="container">
-                  <div className="row">
-                    <div className="col-lg-3 col-md-4">
-                      <div className="footer-widget">
-                        <div className="d-flex align-items-start flex-column mb-3">
-                          <div className="d-inline-block"><img src="assets/img/logo-light.png" className="img-fluid" width={160} alt="Footer Logo" /></div>
-                        </div>
-                        <div className="footer-add pe-xl-3">
-                          <p>We make your dream more beautiful &amp; enjoyful with lots of happiness.</p>
-                        </div>
-                        <div className="foot-socials">
-                          <ul>
-                            <li><a href="JavaScript:Void(0);"><i className="fa-brands fa-facebook" /></a></li>
-                            <li><a href="JavaScript:Void(0);"><i className="fa-brands fa-linkedin" /></a></li>
-                            <li><a href="JavaScript:Void(0);"><i className="fa-brands fa-google-plus" /></a></li>
-                            <li><a href="JavaScript:Void(0);"><i className="fa-brands fa-twitter" /></a></li>
-                            <li><a href="JavaScript:Void(0);"><i className="fa-brands fa-dribbble" /></a></li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-2 col-md-4">
-                      <div className="footer-widget">
-                        <h4 className="widget-title">The Navigation</h4>
-                        <ul className="footer-menu">
-                          <li><a href="JavaScript:Void(0);">Talent Marketplace</a></li>
-                          <li><a href="JavaScript:Void(0);">Payroll Services</a></li>
-                          <li><a href="JavaScript:Void(0);">Direct Contracts</a></li>
-                          <li><a href="JavaScript:Void(0);">Hire Worldwide</a></li>
-                          <li><a href="JavaScript:Void(0);">Hire in the USA</a></li>
-                          <li><a href="JavaScript:Void(0);">How to Hire</a></li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div className="col-lg-2 col-md-4">
-                      <div className="footer-widget">
-                        <h4 className="widget-title">Our Resources</h4>
-                        <ul className="footer-menu">
-                          <li><a href="JavaScript:Void(0);">Free Business tools</a></li>
-                          <li><a href="JavaScript:Void(0);">Affiliate Program</a></li>
-                          <li><a href="JavaScript:Void(0);">Success Stories</a></li>
-                          <li><a href="JavaScript:Void(0);">Upwork Reviews</a></li>
-                          <li><a href="JavaScript:Void(0);">Resources</a></li>
-                          <li><a href="JavaScript:Void(0);">Help &amp; Support</a></li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div className="col-lg-2 col-md-6">
-                      <div className="footer-widget">
-                        <h4 className="widget-title">The Company</h4>
-                        <ul className="footer-menu">
-                          <li><a href="JavaScript:Void(0);">About Us</a></li>
-                          <li><a href="JavaScript:Void(0);">Leadership</a></li>
-                          <li><a href="JavaScript:Void(0);">Contact Us</a></li>
-                          <li><a href="JavaScript:Void(0);">Investor Relations</a></li>
-                          <li><a href="JavaScript:Void(0);">Trust, Safety &amp; Security</a></li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div className="col-lg-3 col-md-6">
-                      <div className="footer-widget">
-                        <h4 className="widget-title">Payment Methods</h4>
-                        <div className="pmt-wrap">
-                          <img src="https://placehold.co/300x50" className="img-fluid" alt="" />
-                        </div>
-                        <div className="our-prtwrap mt-4">
-                          <div className="prtn-title">
-                            <p className="text-light opacity-75 fw-medium">Our Partners</p>
-                          </div>
-                          <div className="prtn-thumbs d-flex align-items-center justify-content-start">
-                            <div className="pmt-wrap pe-4">
-                              <img src="https://placehold.co/300x100" className="img-fluid" alt="" />
-                            </div>
-                            <div className="pmt-wrap pe-4">
-                              <img src="https://placehold.co/300x100" className="img-fluid" alt="" />
-                            </div>
-                            <div className="pmt-wrap pe-4">
-                              <img src="https://placehold.co/300x100" className="img-fluid" alt="" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="footer-bottom border-top">
-                <div className="container">
-                  <div className="row align-items-center justify-content-between">
-                    <div className="col-xl-6 col-lg-6 col-md-6">
-                      <p className="mb-0">© 2023 GeoTrip Design by Themezhub.</p>
-                    </div>
-                    <div className="col-xl-6 col-lg-6 col-md-6">
-                      <ul className="p-0 d-flex justify-content-start justify-content-md-end text-start text-md-end m-0">
-                        <li><a href="#">Terms of services</a></li>
-                        <li className="ms-3"><a href="#">Privacy Policies</a></li>
-                        <li className="ms-3"><a href="#">Cookies</a></li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </footer>
+            <Footer/>
             {/* ============================ Footer End ================================== */}
             {/* Log In Modal */}
             <div className="modal fade" id="login" tabIndex={-1} role="dialog" aria-labelledby="loginmodal" aria-hidden="true">
@@ -672,7 +349,7 @@ const HelpCenter = () => {
                 <div className="modal-content" id="loginmodal">
                   <div className="modal-header">
                     <h4 className="modal-title fs-6">Sign In / Register</h4>
-                    <a href="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></a>
+                    <Link to="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></Link>
                   </div>
                   <div className="modal-body">
                     <div className="modal-login-form py-4 px-md-3 px-0">
@@ -696,7 +373,7 @@ const HelpCenter = () => {
                             </div>
                           </div>
                           <div className="modal-flex-last">
-                            <a href="JavaScript:Void(0);" className="text-primary fw-medium">Forget Password?</a>
+                            <Link to="#" onClick={(e)=>{e.preventDefault()}} className="text-primary fw-medium">Forget Password?</Link>
                           </div>
                         </div>
                       </form>
@@ -708,16 +385,16 @@ const HelpCenter = () => {
                     </div>
                     <div className="social-login py-4 px-2">
                       <ul className="row align-items-center justify-content-between g-3 p-0 m-0">
-                        <li className="col"><a href="#" className="square--60 border br-dashed rounded-2 full-width"><i className="fa-brands fa-facebook color--facebook fs-2" /></a></li>
-                        <li className="col"><a href="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-whatsapp color--whatsapp fs-2" /></a></li>
-                        <li className="col"><a href="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-linkedin color--linkedin fs-2" /></a></li>
-                        <li className="col"><a href="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-dribbble color--dribbble fs-2" /></a></li>
-                        <li className="col"><a href="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-twitter color--twitter fs-2" /></a></li>
+                        <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 full-width"><i className="fa-brands fa-facebook color--facebook fs-2" /></Link></li>
+                        <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-whatsapp color--whatsapp fs-2" /></Link></li>
+                        <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-linkedin color--linkedin fs-2" /></Link></li>
+                        <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-dribbble color--dribbble fs-2" /></Link></li>
+                        <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-twitter color--twitter fs-2" /></Link></li>
                       </ul>
                     </div>
                   </div>
                   <div className="modal-footer align-items-center justify-content-center">
-                    <p>Don't have an account yet?<a href="signup.html" className="text-primary fw-medium ms-1">Sign Up</a></p>
+                    <p>Don't have an account yet?<Link to="signup.html" className="text-primary fw-medium ms-1">Sign Up</Link></p>
                   </div>
                 </div>
               </div>
@@ -729,7 +406,7 @@ const HelpCenter = () => {
                 <div className="modal-content">
                   <div className="modal-header">
                     <h4 className="modal-title fs-6" id="currenyModalLabel">Select Your Currency</h4>
-                    <a href="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></a>
+                    <Link to="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></Link>
                   </div>
                   <div className="modal-body">
                     <div className="allCurrencylist">
@@ -740,40 +417,40 @@ const HelpCenter = () => {
                         <div className="suggestedCurrencylists">
                           <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-md-2 row-cols-2 gy-2 gx-3 m-0 p-0">
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">United State Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">USD</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Pound Sterling</div>
                                 <div className="text-muted-2 text-md text-uppercase">GBP</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency active" href="#">
+                              <Link className="selectCurrency active" to="#">
                                 <div className="text-dark text-md fw-medium">Indian Rupees</div>
                                 <div className="text-muted-2 text-md text-uppercase">Inr</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Euro</div>
                                 <div className="text-muted-2 text-md text-uppercase">EUR</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Australian Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">aud</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Thai Baht</div>
                                 <div className="text-muted-2 text-md text-uppercase">thb</div>
-                              </a>
+                              </Link>
                             </li>
                           </ul>
                         </div>
@@ -785,118 +462,118 @@ const HelpCenter = () => {
                         <div className="suggestedCurrencylists">
                           <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-md-2 row-cols-2 gy-2 gx-3 m-0 p-0">
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">United State Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">USD</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Property currency</div>
                                 <div className="text-muted-2 text-md text-uppercase">GBP</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Argentine Peso</div>
                                 <div className="text-muted-2 text-md text-uppercase">EUR</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Azerbaijani Manat</div>
                                 <div className="text-muted-2 text-md text-uppercase">Inr</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Australian Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">aud</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Bahraini Dinar</div>
                                 <div className="text-muted-2 text-md text-uppercase">thb</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Brazilian Real</div>
                                 <div className="text-muted-2 text-md text-uppercase">USD</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Bulgarian Lev</div>
                                 <div className="text-muted-2 text-md text-uppercase">GBP</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Canadian Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">EUR</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Chilean Peso</div>
                                 <div className="text-muted-2 text-md text-uppercase">Inr</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Colombian Peso</div>
                                 <div className="text-muted-2 text-md text-uppercase">aud</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Danish Krone</div>
                                 <div className="text-muted-2 text-md text-uppercase">thb</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Egyptian Pound</div>
                                 <div className="text-muted-2 text-md text-uppercase">USD</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Hungarian Forint</div>
                                 <div className="text-muted-2 text-md text-uppercase">GBP</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Japanese Yen</div>
                                 <div className="text-muted-2 text-md text-uppercase">EUR</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Jordanian Dinar</div>
                                 <div className="text-muted-2 text-md text-uppercase">Inr</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Kuwaiti Dinar</div>
                                 <div className="text-muted-2 text-md text-uppercase">aud</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Malaysian Ringgit</div>
                                 <div className="text-muted-2 text-md text-uppercase">thb</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Singapore Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">thb</div>
-                              </a>
+                              </Link>
                             </li>
                           </ul>
                         </div>
@@ -912,7 +589,7 @@ const HelpCenter = () => {
                 <div className="modal-content">
                   <div className="modal-header">
                     <h4 className="modal-title fs-6" id="countryModalLabel">Select Your Country</h4>
-                    <a href="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></a>
+                    <Link to="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></Link>
                   </div>
                   <div className="modal-body">
                     <div className="allCountrieslist">
@@ -923,40 +600,40 @@ const HelpCenter = () => {
                         <div className="suggestedCurrencylists">
                           <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-2 gy-2 gx-3 m-0 p-0">
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">United State Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Pound Sterling</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry active" href="#">
+                              <Link className="selectCountry active" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Indian Rupees</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Euro</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Australian Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Thai Baht</div>
-                              </a>
+                              </Link>
                             </li>
                           </ul>
                         </div>
@@ -968,118 +645,118 @@ const HelpCenter = () => {
                         <div className="suggestedCurrencylists">
                           <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-2 gy-2 gx-3 m-0 p-0">
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">United State Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Property currency</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Argentine Peso</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Azerbaijani Manat</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Australian Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Bahraini Dinar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Brazilian Real</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Bulgarian Lev</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Canadian Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Chilean Peso</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Colombian Peso</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Danish Krone</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Egyptian Pound</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Hungarian Forint</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Japanese Yen</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Jordanian Dinar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Kuwaiti Dinar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Malaysian Ringgit</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Singapore Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                           </ul>
                         </div>
@@ -1089,7 +766,7 @@ const HelpCenter = () => {
                 </div>
               </div>
             </div>
-            <a id="back2Top" className="top-scroll" title="Back to top" href="#"><i className="fa-solid fa-sort-up" /></a>
+            <Link id="back2Top" className="top-scroll" title="Back to top" to="#"><i className="fa-solid fa-sort-up" /></Link>
           </div>
           {/* ============================================================== */}
           {/* End Wrapper */}

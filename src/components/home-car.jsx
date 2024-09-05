@@ -11,8 +11,9 @@ import '../assets/css/prism.css';
 import '../assets/css/bootstrap-icons.css';
 import '../assets/css/fontawesome.css';
 import '../assets/css/style.css';
-import { trainImage } from '../assets/images';
 import Header02 from './header02';
+import { Link } from 'react-router-dom';
+import Footer from './footer';
 
 const HomeCar = () => {
       return (
@@ -20,23 +21,23 @@ const HomeCar = () => {
           <meta charSet="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <title>GeoTrip - Tour &amp; Travel Booking Agency HTML Template | ThemezHub</title>
-          <link rel="icon" type="image/x-icon" href="assets/img/favicon.png" />
+          <link rel="icon" type="image/x-icon" to="assets/img/favicon.png" />
           {/* All Plugins */}
-          <link href="assets/css/bootstrap.min.css" rel="stylesheet" />
-          <link href="assets/css/animation.css" rel="stylesheet" />
-          <link href="assets/css/dropzone.min.css" rel="stylesheet" />
-          <link href="assets/css/flatpickr.min.css" rel="stylesheet" />
-          <link href="assets/css/flickity.min.css" rel="stylesheet" />
-          <link href="assets/css/lightbox.min.css" rel="stylesheet" />
-          <link href="assets/css/magnifypopup.css" rel="stylesheet" />
-          <link href="assets/css/select2.min.css" rel="stylesheet" />
-          <link href="assets/css/rangeSlider.min.css" rel="stylesheet" />
-          <link href="assets/css/prism.css" rel="stylesheet" />
+          <link to="assets/css/bootstrap.min.css" rel="stylesheet" />
+          <link to="assets/css/animation.css" rel="stylesheet" />
+          <link to="assets/css/dropzone.min.css" rel="stylesheet" />
+          <link to="assets/css/flatpickr.min.css" rel="stylesheet" />
+          <link to="assets/css/flickity.min.css" rel="stylesheet" />
+          <link to="assets/css/lightbox.min.css" rel="stylesheet" />
+          <link to="assets/css/magnifypopup.css" rel="stylesheet" />
+          <link to="assets/css/select2.min.css" rel="stylesheet" />
+          <link to="assets/css/rangeSlider.min.css" rel="stylesheet" />
+          <link to="assets/css/prism.css" rel="stylesheet" />
           {/* Fontawesome & Bootstrap Icons CSS */}
-          <link href="assets/css/bootstrap-icons.css" rel="stylesheet" />
-          <link href="assets/css/fontawesome.css" rel="stylesheet" />
+          <link to="assets/css/bootstrap-icons.css" rel="stylesheet" />
+          <link to="assets/css/fontawesome.css" rel="stylesheet" />
           {/* Custom CSS */}
-          <link href="assets/css/style.css" rel="stylesheet" />
+          <link to="assets/css/style.css" rel="stylesheet" />
           {/* ============================================================== */}
           {/* Preloader - style you can find in spinners.css */}
           {/* ============================================================== */}
@@ -139,7 +140,7 @@ const HomeCar = () => {
                 <div className="row align-items-center justify-content-center g-xl-4 g-lg-4 g-md-3 g-4">
                   <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                     <div className="pop-touritems">
-                      <a href="#" className="card rounded-3 border br-dashed border-2 m-0">
+                      <Link to="#" className="card rounded-3 border br-dashed border-2 m-0">
                         <div className="offers-container d-flex align-items-center justify-content-start p-2">
                           <div className="offers-flex position-relative">
                             <div className="offer-tags position-absolute start-0 top-0 mt-2 ms-2"><span className="label text-light bg-danger fw-medium">20% Off</span></div>
@@ -163,12 +164,12 @@ const HomeCar = () => {
                             </div>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                   <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                     <div className="pop-touritems">
-                      <a href="#" className="card rounded-3 border br-dashed border-2 m-0">
+                      <Link to="#" className="card rounded-3 border br-dashed border-2 m-0">
                         <div className="offers-container d-flex align-items-center justify-content-start p-2">
                           <div className="offers-flex position-relative">
                             <div className="offer-tags position-absolute start-0 top-0 mt-2 ms-2"><span className="label text-light bg-danger fw-medium">15% Off</span></div>
@@ -192,12 +193,12 @@ const HomeCar = () => {
                             </div>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                   <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                     <div className="pop-touritems">
-                      <a href="#" className="card rounded-3 border br-dashed border-2 m-0">
+                      <Link to="#" className="card rounded-3 border br-dashed border-2 m-0">
                         <div className="offers-container d-flex align-items-center justify-content-start p-2">
                           <div className="offers-flex position-relative">
                             <div className="offer-tags position-absolute start-0 top-0 mt-2 ms-2"><span className="label text-light bg-danger fw-medium">30% Off</span></div>
@@ -221,7 +222,7 @@ const HomeCar = () => {
                             </div>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -243,7 +244,7 @@ const HomeCar = () => {
                   {/* Single */}
                   <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                     <div className="pop-touritem">
-                      <a href="#" className="card rounded-3 shadow-wrap m-0">
+                      <Link to="#" className="card rounded-3 shadow-wrap m-0">
                         <div className="flight-thumb-wrapper">
                           <div className=" position-absolute top-0 left-0 ms-3 mt-3 z-1">
                             <div className="label bg-primary text-light d-inline-flex align-items-center justify-content-center">
@@ -309,13 +310,13 @@ const HomeCar = () => {
                             </div>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                   {/* Single */}
                   <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                     <div className="pop-touritem">
-                      <a href="#" className="card rounded-3 shadow-wrap m-0">
+                      <Link to="#" className="card rounded-3 shadow-wrap m-0">
                         <div className="flight-thumb-wrapper">
                           <div className=" position-absolute top-0 left-0 ms-3 mt-3 z-1">
                             <div className="label bg-primary text-light d-inline-flex align-items-center justify-content-center">
@@ -381,13 +382,13 @@ const HomeCar = () => {
                             </div>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                   {/* Single */}
                   <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                     <div className="pop-touritem">
-                      <a href="#" className="card rounded-3 shadow-wrap m-0">
+                      <Link to="#" className="card rounded-3 shadow-wrap m-0">
                         <div className="flight-thumb-wrapper">
                           <div className=" position-absolute top-0 left-0 ms-3 mt-3 z-1">
                             <div className="label bg-primary text-light d-inline-flex align-items-center justify-content-center">
@@ -453,13 +454,13 @@ const HomeCar = () => {
                             </div>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                   {/* Single */}
                   <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                     <div className="pop-touritem">
-                      <a href="#" className="card rounded-3 shadow-wrap m-0">
+                      <Link to="#" className="card rounded-3 shadow-wrap m-0">
                         <div className="flight-thumb-wrapper">
                           <div className=" position-absolute top-0 left-0 ms-3 mt-3 z-1">
                             <div className="label bg-primary text-light d-inline-flex align-items-center justify-content-center">
@@ -525,13 +526,13 @@ const HomeCar = () => {
                             </div>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                   {/* Single */}
                   <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                     <div className="pop-touritem">
-                      <a href="#" className="card rounded-3 shadow-wrap m-0">
+                      <Link to="#" className="card rounded-3 shadow-wrap m-0">
                         <div className="flight-thumb-wrapper">
                           <div className=" position-absolute top-0 left-0 ms-3 mt-3 z-1">
                             <div className="label bg-primary text-light d-inline-flex align-items-center justify-content-center">
@@ -597,13 +598,13 @@ const HomeCar = () => {
                             </div>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                   {/* Single */}
                   <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                     <div className="pop-touritem">
-                      <a href="#" className="card rounded-3 shadow-wrap m-0">
+                      <Link to="#" className="card rounded-3 shadow-wrap m-0">
                         <div className="flight-thumb-wrapper">
                           <div className=" position-absolute top-0 left-0 ms-3 mt-3 z-1">
                             <div className="label bg-primary text-light d-inline-flex align-items-center justify-content-center">
@@ -669,7 +670,7 @@ const HomeCar = () => {
                             </div>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -698,7 +699,7 @@ const HomeCar = () => {
                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div className="destination-blocks bg-white p-2 rounded">
                       <div className="destination-blocks-pics p-1">
-                        <a href="#"><img src="https://placehold.co/650x850" className="img-fluid rounded" alt="" /></a>
+                        <Link to="#"><img src="https://placehold.co/650x850" className="img-fluid rounded" alt="" /></Link>
                       </div>
                       <div className="destination-blocks-captions">
                         <div className="touritem-flexxer text-center p-3">
@@ -717,7 +718,7 @@ const HomeCar = () => {
                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div className="destination-blocks bg-white p-2 rounded">
                       <div className="destination-blocks-pics p-1">
-                        <a href="#"><img src="https://placehold.co/650x850" className="img-fluid rounded" alt="" /></a>
+                        <Link to="#"><img src="https://placehold.co/650x850" className="img-fluid rounded" alt="" /></Link>
                       </div>
                       <div className="destination-blocks-captions">
                         <div className="touritem-flexxer text-center p-3">
@@ -736,7 +737,7 @@ const HomeCar = () => {
                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div className="destination-blocks bg-white p-2 rounded">
                       <div className="destination-blocks-pics p-1">
-                        <a href="#"><img src="https://placehold.co/650x850" className="img-fluid rounded" alt="" /></a>
+                        <Link to="#"><img src="https://placehold.co/650x850" className="img-fluid rounded" alt="" /></Link>
                       </div>
                       <div className="destination-blocks-captions">
                         <div className="touritem-flexxer text-center p-3">
@@ -755,7 +756,7 @@ const HomeCar = () => {
                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div className="destination-blocks bg-white p-2 rounded">
                       <div className="destination-blocks-pics p-1">
-                        <a href="#"><img src="https://placehold.co/650x850" className="img-fluid rounded" alt="" /></a>
+                        <Link to="#"><img src="https://placehold.co/650x850" className="img-fluid rounded" alt="" /></Link>
                       </div>
                       <div className="destination-blocks-captions">
                         <div className="touritem-flexxer text-center p-3">
@@ -774,7 +775,7 @@ const HomeCar = () => {
                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div className="destination-blocks bg-white p-2 rounded">
                       <div className="destination-blocks-pics p-1">
-                        <a href="#"><img src="https://placehold.co/650x850" className="img-fluid rounded" alt="" /></a>
+                        <Link to="#"><img src="https://placehold.co/650x850" className="img-fluid rounded" alt="" /></Link>
                       </div>
                       <div className="destination-blocks-captions">
                         <div className="touritem-flexxer text-center p-3">
@@ -793,7 +794,7 @@ const HomeCar = () => {
                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div className="destination-blocks bg-white p-2 rounded">
                       <div className="destination-blocks-pics p-1">
-                        <a href="#"><img src="https://placehold.co/650x850" className="img-fluid rounded" alt="" /></a>
+                        <Link to="#"><img src="https://placehold.co/650x850" className="img-fluid rounded" alt="" /></Link>
                       </div>
                       <div className="destination-blocks-captions">
                         <div className="touritem-flexxer text-center p-3">
@@ -812,7 +813,7 @@ const HomeCar = () => {
                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div className="destination-blocks bg-white p-2 rounded">
                       <div className="destination-blocks-pics p-1">
-                        <a href="#"><img src="https://placehold.co/650x850" className="img-fluid rounded" alt="" /></a>
+                        <Link to="#"><img src="https://placehold.co/650x850" className="img-fluid rounded" alt="" /></Link>
                       </div>
                       <div className="destination-blocks-captions">
                         <div className="touritem-flexxer text-center p-3">
@@ -831,7 +832,7 @@ const HomeCar = () => {
                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div className="destination-blocks bg-white p-2 rounded">
                       <div className="destination-blocks-pics p-1">
-                        <a href="#"><img src="https://placehold.co/650x850" className="img-fluid rounded" alt="" /></a>
+                        <Link to="#"><img src="https://placehold.co/650x850" className="img-fluid rounded" alt="" /></Link>
                       </div>
                       <div className="destination-blocks-captions">
                         <div className="touritem-flexxer text-center p-3">
@@ -859,7 +860,7 @@ const HomeCar = () => {
                   <div className="col-xl-12 col-lg-12 col-md-12">
                     <div className="video-play-wrap text-center">
                       <div className="video-play-btn d-flex align-items-center justify-content-center">
-                        <a href="https://www.youtube.com/watch?v=A8EI6JaFbv4" data-bs-toggle="modal" data-bs-target="#popup-video" className="square--90 circle bg-white fs-2 text-primary"><i className="fa-solid fa-play" /></a>
+                        <Link to="https://www.youtube.com/watch?v=A8EI6JaFbv4" data-bs-toggle="modal" data-bs-target="#popup-video" className="square--90 circle bg-white fs-2 text-primary"><i className="fa-solid fa-play" /></Link>
                       </div>
                     </div>
                   </div>
@@ -1090,45 +1091,45 @@ const HomeCar = () => {
                   <div className="col-xl-4 col-lg-4 col-md-4 col-sm-12">
                     <div className="blogGrid-wrap d-flex flex-column h-100">
                       <div className="blogGrid-pics">
-                        <a href="#" className="d-block"><img src="https://placehold.co/1200x800" className="img-fluid rounded" alt="Blog image" /></a>
+                        <Link to="#" className="d-block"><img src="https://placehold.co/1200x800" className="img-fluid rounded" alt="Blog img" /></Link>
                       </div>
                       <div className="blogGrid-caps pt-3">
                         <div className="d-flex align-items-center mb-1"><span className="label text-success bg-light-success">Destination</span></div>
-                        <h4 className="fw-bold fs-6 lh-base"><a href="#" className="text-dark">Make Your Next Journey Delhi To Paris in
-                            Comfirtable And Best Price</a></h4>
+                        <h4 className="fw-bold fs-6 lh-base"><Link to="#" className="text-dark">Make Your Next Journey Delhi To Paris in
+                            Comfirtable And Best Price</Link></h4>
                         <p className="mb-3">Think of a news blog that's filled with content hourly on the Besides, random text risks
                           to be unintendedly humorous or offensive day of going live.</p>
-                        <a className="text-primary fw-medium" href="#">Read More<i className="fa-solid fa-arrow-trend-up ms-2" /></a>
+                        <Link className="text-primary fw-medium" to="#">Read More<i className="fa-solid fa-arrow-trend-up ms-2" /></Link>
                       </div>
                     </div>
                   </div>
                   <div className="col-xl-4 col-lg-4 col-md-4 col-sm-12">
                     <div className="blogGrid-wrap d-flex flex-column h-100">
                       <div className="blogGrid-pics">
-                        <a href="#" className="d-block"><img src="https://placehold.co/1200x800" className="img-fluid rounded" alt="Blog image" /></a>
+                        <Link to="#" className="d-block"><img src="https://placehold.co/1200x800" className="img-fluid rounded" alt="Blog img" /></Link>
                       </div>
                       <div className="blogGrid-caps pt-3">
                         <div className="d-flex align-items-center mb-1"><span className="label text-success bg-light-success">Journey</span></div>
-                        <h4 className="fw-bold fs-6 lh-base"><a href="#" className="text-dark">Make Your Next Journey Delhi To Paris in
-                            Comfirtable And Best Price</a></h4>
+                        <h4 className="fw-bold fs-6 lh-base"><Link to="#" className="text-dark">Make Your Next Journey Delhi To Paris in
+                            Comfirtable And Best Price</Link></h4>
                         <p className="mb-3">Think of a news blog that's filled with content hourly on the Besides, random text risks
                           to be unintendedly humorous or offensive day of going live.</p>
-                        <a className="text-primary fw-medium" href="#">Read More<i className="fa-solid fa-arrow-trend-up ms-2" /></a>
+                        <Link className="text-primary fw-medium" to="#">Read More<i className="fa-solid fa-arrow-trend-up ms-2" /></Link>
                       </div>
                     </div>
                   </div>
                   <div className="col-xl-4 col-lg-4 col-md-4 col-sm-12">
                     <div className="blogGrid-wrap d-flex flex-column h-100">
                       <div className="blogGrid-pics">
-                        <a href="#" className="d-block"><img src="https://placehold.co/1200x800" className="img-fluid rounded" alt="Blog image" /></a>
+                        <Link to="#" className="d-block"><img src="https://placehold.co/1200x800" className="img-fluid rounded" alt="Blog img" /></Link>
                       </div>
                       <div className="blogGrid-caps pt-3">
                         <div className="d-flex align-items-center mb-1"><span className="label text-success bg-light-success">Business</span></div>
-                        <h4 className="fw-bold fs-6 lh-base"><a href="#" className="text-dark">Make Your Next Journey Delhi To Paris in
-                            Comfirtable And Best Price</a></h4>
+                        <h4 className="fw-bold fs-6 lh-base"><Link to="#" className="text-dark">Make Your Next Journey Delhi To Paris in
+                            Comfirtable And Best Price</Link></h4>
                         <p className="mb-3">Think of a news blog that's filled with content hourly on the Besides, random text risks
                           to be unintendedly humorous or offensive day of going live.</p>
-                        <a className="text-primary fw-medium" href="#">Read More<i className="fa-solid fa-arrow-trend-up ms-2" /></a>
+                        <Link className="text-primary fw-medium" to="#">Read More<i className="fa-solid fa-arrow-trend-up ms-2" /></Link>
                       </div>
                     </div>
                   </div>
@@ -1166,111 +1167,7 @@ const HomeCar = () => {
             </div>
             {/* ============================ Call To Action Start ================================== */}
             {/* ============================ Footer Start ================================== */}
-            <footer className="footer skin-dark-footer">
-              <div>
-                <div className="container">
-                  <div className="row">
-                    <div className="col-lg-3 col-md-4">
-                      <div className="footer-widget">
-                        <div className="d-flex align-items-start flex-column mb-3">
-                          <div className="d-inline-block"><img src="assets/img/logo-light.png" className="img-fluid" width={160} alt="Footer Logo" /></div>
-                        </div>
-                        <div className="footer-add pe-xl-3">
-                          <p>We make your dream more beautiful &amp; enjoyful with lots of happiness.</p>
-                        </div>
-                        <div className="foot-socials">
-                          <ul>
-                            <li><a href="JavaScript:Void(0);"><i className="fa-brands fa-facebook" /></a></li>
-                            <li><a href="JavaScript:Void(0);"><i className="fa-brands fa-linkedin" /></a></li>
-                            <li><a href="JavaScript:Void(0);"><i className="fa-brands fa-google-plus" /></a></li>
-                            <li><a href="JavaScript:Void(0);"><i className="fa-brands fa-twitter" /></a></li>
-                            <li><a href="JavaScript:Void(0);"><i className="fa-brands fa-dribbble" /></a></li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-2 col-md-4">
-                      <div className="footer-widget">
-                        <h4 className="widget-title">The Navigation</h4>
-                        <ul className="footer-menu">
-                          <li><a href="JavaScript:Void(0);">Talent Marketplace</a></li>
-                          <li><a href="JavaScript:Void(0);">Payroll Services</a></li>
-                          <li><a href="JavaScript:Void(0);">Direct Contracts</a></li>
-                          <li><a href="JavaScript:Void(0);">Hire Worldwide</a></li>
-                          <li><a href="JavaScript:Void(0);">Hire in the USA</a></li>
-                          <li><a href="JavaScript:Void(0);">How to Hire</a></li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div className="col-lg-2 col-md-4">
-                      <div className="footer-widget">
-                        <h4 className="widget-title">Our Resources</h4>
-                        <ul className="footer-menu">
-                          <li><a href="JavaScript:Void(0);">Free Business tools</a></li>
-                          <li><a href="JavaScript:Void(0);">Affiliate Program</a></li>
-                          <li><a href="JavaScript:Void(0);">Success Stories</a></li>
-                          <li><a href="JavaScript:Void(0);">Upwork Reviews</a></li>
-                          <li><a href="JavaScript:Void(0);">Resources</a></li>
-                          <li><a href="JavaScript:Void(0);">Help &amp; Support</a></li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div className="col-lg-2 col-md-6">
-                      <div className="footer-widget">
-                        <h4 className="widget-title">The Company</h4>
-                        <ul className="footer-menu">
-                          <li><a href="JavaScript:Void(0);">About Us</a></li>
-                          <li><a href="JavaScript:Void(0);">Leadership</a></li>
-                          <li><a href="JavaScript:Void(0);">Contact Us</a></li>
-                          <li><a href="JavaScript:Void(0);">Investor Relations</a></li>
-                          <li><a href="JavaScript:Void(0);">Trust, Safety &amp; Security</a></li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div className="col-lg-3 col-md-6">
-                      <div className="footer-widget">
-                        <h4 className="widget-title">Payment Methods</h4>
-                        <div className="pmt-wrap">
-                          <img src="https://placehold.co/300x50" className="img-fluid" alt="" />
-                        </div>
-                        <div className="our-prtwrap mt-4">
-                          <div className="prtn-title">
-                            <p className="text-light opacity-75 fw-medium">Our Partners</p>
-                          </div>
-                          <div className="prtn-thumbs d-flex align-items-center justify-content-start">
-                            <div className="pmt-wrap pe-4">
-                              <img src="https://placehold.co/300x100" className="img-fluid" alt="" />
-                            </div>
-                            <div className="pmt-wrap pe-4">
-                              <img src="https://placehold.co/300x100" className="img-fluid" alt="" />
-                            </div>
-                            <div className="pmt-wrap pe-4">
-                              <img src="https://placehold.co/300x100" className="img-fluid" alt="" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="footer-bottom border-top">
-                <div className="container">
-                  <div className="row align-items-center justify-content-between">
-                    <div className="col-xl-6 col-lg-6 col-md-6">
-                      <p className="mb-0">© 2023 GeoTrip Design by Themezhub.</p>
-                    </div>
-                    <div className="col-xl-6 col-lg-6 col-md-6">
-                      <ul className="p-0 d-flex justify-content-start justify-content-md-end text-start text-md-end m-0">
-                        <li><a href="#">Terms of services</a></li>
-                        <li className="ms-3"><a href="#">Privacy Policies</a></li>
-                        <li className="ms-3"><a href="#">Cookies</a></li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </footer>
+            <Footer/>
             {/* ============================ Footer End ================================== */}
             {/* Log In Modal */}
             <div className="modal fade" id="login" tabIndex={-1} role="dialog" aria-labelledby="loginmodal" aria-hidden="true">
@@ -1278,7 +1175,7 @@ const HomeCar = () => {
                 <div className="modal-content" id="loginmodal">
                   <div className="modal-header">
                     <h4 className="modal-title fs-6">Sign In / Register</h4>
-                    <a href="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></a>
+                    <Link to="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></Link>
                   </div>
                   <div className="modal-body">
                     <div className="modal-login-form py-4 px-md-3 px-0">
@@ -1302,7 +1199,7 @@ const HomeCar = () => {
                             </div>
                           </div>
                           <div className="modal-flex-last">
-                            <a href="JavaScript:Void(0);" className="text-primary fw-medium">Forget Password?</a>
+                            <Link to="#" onClick={(e)=>{e.preventDefault()}} className="text-primary fw-medium">Forget Password?</Link>
                           </div>
                         </div>
                       </form>
@@ -1314,16 +1211,16 @@ const HomeCar = () => {
                     </div>
                     <div className="social-login py-4 px-2">
                       <ul className="row align-items-center justify-content-between g-3 p-0 m-0">
-                        <li className="col"><a href="#" className="square--60 border br-dashed rounded-2 full-width"><i className="fa-brands fa-facebook color--facebook fs-2" /></a></li>
-                        <li className="col"><a href="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-whatsapp color--whatsapp fs-2" /></a></li>
-                        <li className="col"><a href="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-linkedin color--linkedin fs-2" /></a></li>
-                        <li className="col"><a href="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-dribbble color--dribbble fs-2" /></a></li>
-                        <li className="col"><a href="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-twitter color--twitter fs-2" /></a></li>
+                        <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 full-width"><i className="fa-brands fa-facebook color--facebook fs-2" /></Link></li>
+                        <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-whatsapp color--whatsapp fs-2" /></Link></li>
+                        <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-linkedin color--linkedin fs-2" /></Link></li>
+                        <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-dribbble color--dribbble fs-2" /></Link></li>
+                        <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-twitter color--twitter fs-2" /></Link></li>
                       </ul>
                     </div>
                   </div>
                   <div className="modal-footer align-items-center justify-content-center">
-                    <p>Don't have an account yet?<a href="signup.html" className="text-primary fw-medium ms-1">Sign Up</a></p>
+                    <p>Don't have an account yet?<Link to="signup.html" className="text-primary fw-medium ms-1">Sign Up</Link></p>
                   </div>
                 </div>
               </div>
@@ -1335,7 +1232,7 @@ const HomeCar = () => {
                 <div className="modal-content">
                   <div className="modal-header">
                     <h4 className="modal-title fs-6" id="currenyModalLabel">Select Your Currency</h4>
-                    <a href="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></a>
+                    <Link to="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></Link>
                   </div>
                   <div className="modal-body">
                     <div className="allCurrencylist">
@@ -1346,40 +1243,40 @@ const HomeCar = () => {
                         <div className="suggestedCurrencylists">
                           <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-md-2 row-cols-2 gy-2 gx-3 m-0 p-0">
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">United State Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">USD</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Pound Sterling</div>
                                 <div className="text-muted-2 text-md text-uppercase">GBP</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency active" href="#">
+                              <Link className="selectCurrency active" to="#">
                                 <div className="text-dark text-md fw-medium">Indian Rupees</div>
                                 <div className="text-muted-2 text-md text-uppercase">Inr</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Euro</div>
                                 <div className="text-muted-2 text-md text-uppercase">EUR</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Australian Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">aud</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Thai Baht</div>
                                 <div className="text-muted-2 text-md text-uppercase">thb</div>
-                              </a>
+                              </Link>
                             </li>
                           </ul>
                         </div>
@@ -1391,118 +1288,118 @@ const HomeCar = () => {
                         <div className="suggestedCurrencylists">
                           <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-md-2 row-cols-2 gy-2 gx-3 m-0 p-0">
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">United State Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">USD</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Property currency</div>
                                 <div className="text-muted-2 text-md text-uppercase">GBP</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Argentine Peso</div>
                                 <div className="text-muted-2 text-md text-uppercase">EUR</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Azerbaijani Manat</div>
                                 <div className="text-muted-2 text-md text-uppercase">Inr</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Australian Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">aud</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Bahraini Dinar</div>
                                 <div className="text-muted-2 text-md text-uppercase">thb</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Brazilian Real</div>
                                 <div className="text-muted-2 text-md text-uppercase">USD</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Bulgarian Lev</div>
                                 <div className="text-muted-2 text-md text-uppercase">GBP</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Canadian Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">EUR</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Chilean Peso</div>
                                 <div className="text-muted-2 text-md text-uppercase">Inr</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Colombian Peso</div>
                                 <div className="text-muted-2 text-md text-uppercase">aud</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Danish Krone</div>
                                 <div className="text-muted-2 text-md text-uppercase">thb</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Egyptian Pound</div>
                                 <div className="text-muted-2 text-md text-uppercase">USD</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Hungarian Forint</div>
                                 <div className="text-muted-2 text-md text-uppercase">GBP</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Japanese Yen</div>
                                 <div className="text-muted-2 text-md text-uppercase">EUR</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Jordanian Dinar</div>
                                 <div className="text-muted-2 text-md text-uppercase">Inr</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Kuwaiti Dinar</div>
                                 <div className="text-muted-2 text-md text-uppercase">aud</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Malaysian Ringgit</div>
                                 <div className="text-muted-2 text-md text-uppercase">thb</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCurrency" href="#">
+                              <Link className="selectCurrency" to="#">
                                 <div className="text-dark text-md fw-medium">Singapore Dollar</div>
                                 <div className="text-muted-2 text-md text-uppercase">thb</div>
-                              </a>
+                              </Link>
                             </li>
                           </ul>
                         </div>
@@ -1518,7 +1415,7 @@ const HomeCar = () => {
                 <div className="modal-content">
                   <div className="modal-header">
                     <h4 className="modal-title fs-6" id="countryModalLabel">Select Your Country</h4>
-                    <a href="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></a>
+                    <Link to="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></Link>
                   </div>
                   <div className="modal-body">
                     <div className="allCountrieslist">
@@ -1529,40 +1426,40 @@ const HomeCar = () => {
                         <div className="suggestedCurrencylists">
                           <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-2 gy-2 gx-3 m-0 p-0">
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">United State Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Pound Sterling</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry active" href="#">
+                              <Link className="selectCountry active" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Indian Rupees</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Euro</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Australian Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Thai Baht</div>
-                              </a>
+                              </Link>
                             </li>
                           </ul>
                         </div>
@@ -1574,118 +1471,118 @@ const HomeCar = () => {
                         <div className="suggestedCurrencylists">
                           <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-2 gy-2 gx-3 m-0 p-0">
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">United State Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Property currency</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Argentine Peso</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Azerbaijani Manat</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Australian Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Bahraini Dinar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Brazilian Real</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Bulgarian Lev</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Canadian Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Chilean Peso</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Colombian Peso</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Danish Krone</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Egyptian Pound</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Hungarian Forint</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Japanese Yen</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Jordanian Dinar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Kuwaiti Dinar</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Malaysian Ringgit</div>
-                              </a>
+                              </Link>
                             </li>
                             <li className="col">
-                              <a className="selectCountry" href="#">
+                              <Link className="selectCountry" to="#">
                                 <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
                                 <div className="text-dark text-md fw-medium ps-2">Singapore Dollar</div>
-                              </a>
+                              </Link>
                             </li>
                           </ul>
                         </div>
@@ -1699,12 +1596,12 @@ const HomeCar = () => {
             <div className="modal fade" id="popup-video" tabIndex={-1} role="dialog" aria-labelledby="popupvideo" aria-hidden="true">
               <div className="modal-dialog modal-dialog-centered" role="document">
                 <div className="modal-content" id="popupvideo">
-                  <iframe className="embed-responsive-item full-width" height={480} src="https://www.youtube.com/embed/qN3OueBm9F4?rel=0" frameBorder={0} allowFullScreen />
+                  <iframe className="embed-responsive-item full-width" title="YouTube video: Example Title" height={480} src="https://www.youtube.com/embed/qN3OueBm9F4?rel=0" frameBorder={0} allowFullScreen />
                 </div>
               </div>
             </div>
             {/* End Video Modal */}
-            <a id="back2Top" className="top-scroll" title="Back to top" href="#"><i className="fa-solid fa-sort-up" /></a>
+            <Link id="back2Top" className="top-scroll" title="Back to top" to="#"><i className="fa-solid fa-sort-up" /></Link>
           </div>
           {/* ============================================================== */}
           {/* End Wrapper */}
