@@ -14,33 +14,25 @@ import '../assets/css/style.css';
 import { Link } from 'react-router-dom';
 import Header02 from './header02';
 import Footer from './footer';
+import PersonalInfo from './personal_info';
 
 
 const MyProfile = () => {
       return (
         <div>
          
-          {/* ============================================================== */}
           {/* Preloader - style you can find in spinners.css */}
-          {/* ============================================================== */}
           <div id="preloader">
             <div className="preloader"><span /><span /></div>
           </div>
-          {/* ============================================================== */}
           {/* Main wrapper - style you can find in pages.scss */}
-          {/* ============================================================== */}
           <div id="main-wrapper">
-            {/* ============================================================== */}
             {/* Top header  */}
-            {/* ============================================================== */}
             {/* Start Navigation */}
            <Header02/>
             {/* End Navigation */}
             <div className="clearfix" />
-            {/* ============================================================== */}
             {/* Top header  */}
-            {/* ============================================================== */}
-            {/* ============================ User Dashboard Menu ============================ */}
             <div className="dashboard-menus border-top d-none d-lg-block">
               <div className="container">
                 <div className="row">
@@ -153,70 +145,7 @@ const MyProfile = () => {
                   </div>
                   <div className="col-xl-8 col-lg-8 col-md-12">
                     {/* Personal Information */}
-                    <div className="card mb-4">
-                      <div className="card-header">
-                        <h4><i className="fa-solid fa-file-invoice me-2" />Personal Information</h4>
-                      </div>
-                      <div className="card-body">
-                        <div className="row align-items-center justify-content-start">
-                          <div className="col-xl-12 col-lg-12 col-md-12 mb-4">
-                            <div className="d-flex align-items-center">
-                              <label className="position-relative me-4" htmlFor="uploadfile-1" title="Replace this pic">
-                                {/* Avatar place holder */}
-                                <span className="avatar avatar-xl">
-                                  <img id="uploadfile-1-preview" className="avatar-img rounded-circle border border-white border-3 shadow" src="https://placehold.co/500x500" alt="" />
-                                </span>
-                              </label>
-                              {/* Upload button */}
-                              <label className="btn btn-sm btn-light-primary px-4 fw-medium mb-0" htmlFor="uploadfile-1">Change</label>
-                              <input id="uploadfile-1" className="form-control d-none" type="file" />
-                            </div>
-                          </div>
-                          <div className="col-xl-6 col-lg-6 col-md-6">
-                            <div className="form-group">
-                              <label className="form-label">First Name</label>
-                              <input type="text" className="form-control" defaultValue="Adam K" />
-                            </div>
-                          </div>
-                          <div className="col-xl-6 col-lg-6 col-md-6">
-                            <div className="form-group">
-                              <label className="form-label">Last Name</label>
-                              <input type="text" className="form-control" defaultValue="Divliars" />
-                            </div>
-                          </div>
-                          <div className="col-xl-6 col-lg-6 col-md-6">
-                            <div className="form-group">
-                              <label className="form-label">Email ID</label>
-                              <input type="text" className="form-control" defaultValue="adamkruck@gmail.com" />
-                            </div>
-                          </div>
-                          <div className="col-xl-6 col-lg-6 col-md-6">
-                            <div className="form-group">
-                              <label className="form-label">Mobile</label>
-                              <input type="text" className="form-control" defaultValue={9856542563} />
-                            </div>
-                          </div>
-                          <div className="col-xl-6 col-lg-6 col-md-6">
-                            <div className="form-group">
-                              <label className="form-label">Date of Birth</label>
-                              <input type="date" className="form-control" defaultValue="02/04/2000" />
-                            </div>
-                          </div>
-                          <div className="col-xl-6 col-lg-6 col-md-6">
-                            <div className="form-group">
-                              <label className="form-label">Gender</label>
-                              <input type="text" className="form-control" defaultValue="Male" />
-                            </div>
-                          </div>
-                          <div className="col-xl-12 col-lg-12 col-md-12">
-                            <div className="form-group">
-                              <label className="form-label">About Info</label>
-                              <textarea className="form-control ht-120" defaultValue={"Lorem ipsum dolor sit amet, nec virtute nusquam ex. Ex sed diceret constituam inciderint, accusamus imperdiet has te. Id qui liber nemore semper, modus appareat philosophia ut eam. Assum tibique singulis at mel."} />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    <PersonalInfo/>
                     <div className="card mb-4">
                       <div className="card-header">
                         <h4><i className="fa-solid fa-envelope-circle-check me-2" />Update Your Email</h4>
@@ -812,15 +741,6 @@ const MyProfile = () => {
             </div>
             <Link id="back2Top" className="top-scroll" title="Back to top" to="#"><i className="fa-solid fa-sort-up" /></Link>
           </div>
-          {/* ============================================================== */}
-          {/* End Wrapper */}
-          {/* ============================================================== */}
-          {/* ============================================================== */}
-          {/* All Jquery */}
-          {/* ============================================================== */}
-          {/* ============================================================== */}
-          {/* This page plugins */}
-          {/* ============================================================== */}
         </div>
       );
     }

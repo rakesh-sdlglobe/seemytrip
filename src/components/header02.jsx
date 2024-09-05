@@ -13,6 +13,39 @@ const Header02 = () => {
             font-weight: bold;
             position: relative;
           }
+         .dropdown-item {
+            padding: 10px 20px;
+            position: relative;
+            transition: transform 0.3s ease, color 0.3s ease;
+          }
+
+          .dropdown-item:hover {
+            color: #14728a; /* Text color change on hover */
+            transform: scale(1.05); /* Slight scaling effect */
+          }
+
+          .dropdown-item::after {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background-color: #14728a;
+            left: 0;
+            bottom: 0;
+            transition: width 0.3s ease;
+          }
+
+          .dropdown-item:hover::after {
+            width: 100%; /* Underline expands fully on hover */
+          }
+          .dropdown-item:focus,
+          .dropdown-item:active {
+            background-color: #14728a !important;
+            color: inherit; /* Ensures the color doesn't change */
+            outline: none; /* Removes the outline on focus */
+          }
+
+
         `}
       </style>
 
@@ -51,9 +84,23 @@ const Header02 = () => {
                 <li className="languageDropdown me-2">
                   <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#countryModal"><img src={indian_flag} className="img-fluid" width={17} alt="Country" /></Link>
                 </li>
-                <li className="list-buttons">
+                {/* <li className="list-buttons">
                   <NavLink to="/login" activeClassName="active"><i className="fa-regular fa-circle-user fs-6 me-2" />Sign In / Register</NavLink>
+                </li> */}
+                <li className="nav-item dropdown">
+                  <Link className="nav-link dropdown-toggle d-flex align-items-center" to="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i className="fa-regular fa-circle-user fs-5 me-2" />
+                    <span>John Doe</span>
+                  </Link>
+                  <ul className="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
+                    <li><Link className="dropdown-item" to="/my-profile">Profile</Link></li>
+                    <li><Link className="dropdown-item" to="#">Settings</Link></li>
+                    <li><hr className="dropdown-divider" /></li>
+                    <li><Link className="dropdown-item" to="#">Logout</Link></li>
+                  </ul>
                 </li>
+
+
               </ul>
             </div>
           </nav>
