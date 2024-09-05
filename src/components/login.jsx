@@ -11,10 +11,45 @@ import '../assets/css/prism.css';
 import '../assets/css/bootstrap-icons.css';
 import '../assets/css/fontawesome.css';
 import '../assets/css/style.css';
-import { Link } from 'react-router-dom';
 import {trainImage, login } from '../assets/images';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  setName,
+  setEmail,
+  setPassword,
+  setError,
+} from "../store/Actions/authActions";
+import {
+  selectEmail,
+  selectPassword,
+  selectError,
+} from "../store/Selectors/authSelectors";
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Login = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const email = useSelector(selectEmail);
+  const password = useSelector(selectPassword);
+  const error = useSelector(selectError);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post("http://localhost:3002/api/login", {
+        email,
+        password,
+      });
+      const userName = response.data.user.name
+      dispatch(setName(userName));
+      alert("Login Successful");
+      navigate("/");
+    } catch (err) {
+      dispatch(setError("Login failed. Please check your credentials."));
+    }
+  };
       return (
         <div>
           <div id="preloader">
@@ -47,21 +82,49 @@ const Login = () => {
                               <img className="img-fluid mb-4" src={trainImage} width={70} alt="logo" />
                             </Link>
                             {/* Title */}
-                            <h1 className="mb-2 fs-2">Welcome Back Adam!</h1>
+                            {/* <h1 className="mb-2 fs-2">Welcome Back Adam!</h1> */}
                             <p className="mb-0">Are you new here?<Link to="/register" className="fw-medium text-primary"> Create an
                                 account</Link></p>
                             {/* Form START */}
-                            <form className="mt-4 text-start">
+                            <form className="mt-4 text-start" onSubmit={handleSubmit}>
+                            {error && (
+                            <div className="alert alert-danger">{error}</div>
+                          )}
                               <div className="form py-4">
-                                <div className="form-floating mb-4">
-                                  <input type="email" className="form-control" placeholder="name@example.com" required />
-                                  <label>User Name</label>
-                                </div>
-                                <div className="form-floating mb-4">
-                                  <input type="password" className="form-control" id="password-field" name="password" placeholder="Password" required />
-                                  <label>Password</label>
-                                  <span className="toggle-password position-absolute top-50 end-0 translate-middle-y me-3 fa-regular fa-eye" />
-                                </div>
+                              <div className="form-group">
+                              <label className="form-label">
+                                Enter email ID
+                              </label>
+                              <input
+                                type="email"
+                                className="form-control"
+                                placeholder="name@example.com"
+                                value={email}
+                                onChange={(e) =>
+                                  dispatch(setEmail(e.target.value))
+                                }
+                                required
+                              />
+                            </div>
+                            <div className="form-group">
+                              <label className="form-label">
+                                Enter Password
+                              </label>
+                              <div className="position-relative">
+                                <input
+                                  type="password"
+                                  className="form-control"
+                                  name="password"
+                                  placeholder="Password"
+                                  value={password}
+                                  onChange={(e) =>
+                                    dispatch(setPassword(e.target.value))
+                                  }
+                                  required
+                                />
+                                <span className="fa-solid fa-eye toggle-password position-absolute top-50 end-0 translate-middle-y me-3" />
+                              </div>
+                            </div>
                                 <div className="form-group">
                                   <button type="submit" className="btn btn-primary full-width font--bold btn-lg">Log In</button>
                                 </div>

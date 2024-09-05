@@ -1,8 +1,32 @@
 import React from 'react';
 import { indian_flag, trainImage } from '../assets/images';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useNavigate  } from 'react-router-dom';
+import { useSelector,useDispatch } from 'react-redux';
+import { logout } from '../store/Actions/authActions';
+import { persistor } from '../store/store';
 
 const Header02 = () => {
+  const authState = useSelector((state) => state.auth || {});
+    const userName = authState?.name;     
+    const isLoggedIn = Boolean(userName);
+    const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    try {
+      
+      dispatch(logout());
+      persistor.purge().then(() => {
+        console.log('Persistor purged');
+        navigate('/'); 
+      });
+      console.log(localStorage.getItem('authToken')); // Check if the token is removed
+    } catch (error) {
+      console.log(error);
+      
+    }
+
+  };
   return (
     <>
       {/* Internal CSS */}
@@ -87,20 +111,26 @@ const Header02 = () => {
                 {/* <li className="list-buttons">
                   <NavLink to="/login" activeClassName="active"><i className="fa-regular fa-circle-user fs-6 me-2" />Sign In / Register</NavLink>
                 </li> */}
-                <li className="nav-item dropdown">
-                  <Link className="nav-link dropdown-toggle d-flex align-items-center" to="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i className="fa-regular fa-circle-user fs-5 me-2" />
-                    <span>John Doe</span>
-                  </Link>
-                  <ul className="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
-                    <li><Link className="dropdown-item" to="/my-profile">Profile</Link></li>
-                    <li><Link className="dropdown-item" to="#">Settings</Link></li>
-                    <li><hr className="dropdown-divider" /></li>
-                    <li><Link className="dropdown-item" to="#">Logout</Link></li>
-                  </ul>
-                </li>
-
-
+                {
+                  isLoggedIn ? (
+                    <li className="nav-item dropdown">
+                    <Link className="nav-link dropdown-toggle d-flex align-items-center" to="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      <i className="fa-regular fa-circle-user fs-5 me-2" />
+                      <span>{userName}</span>
+                    </Link>
+                    <ul className="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
+                      <li><Link className="dropdown-item" to="/my-profile">Profile</Link></li>
+                      <li><Link className="dropdown-item" to="#">Settings</Link></li>
+                      <li><hr className="dropdown-divider" /></li>
+                      <li><Link className="dropdown-item" to="#"  onClick={handleLogout}>Logout</Link></li>
+                    </ul>
+                  </li>
+                  ) : (
+                    <li className="list-buttons">
+                    <Link to="/login"><i className="fa-regular fa-circle-user fs-6 me-2" />Sign In / Register</Link>
+                    </li>
+                  )
+                }
               </ul>
             </div>
           </nav>

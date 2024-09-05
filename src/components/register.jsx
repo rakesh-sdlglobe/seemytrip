@@ -13,9 +13,56 @@ import '../assets/css/fontawesome.css';
 import '../assets/css/style.css';
 import { Link } from 'react-router-dom';
 import { trainImage, login } from '../assets/images';
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  setName,
+  setEmail,
+  setPassword,
+  setConfirmPassword,
+  setError,
+} from "../store/Actions/authActions";
+import {
+  selectName,
+  selectEmail,
+  selectPassword,
+  selectConfirmPassword,
+  selectError,
+} from "../store/Selectors/authSelectors";
 
 
 const Register = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const name = useSelector(selectName);
+  const email = useSelector(selectEmail);
+  const password = useSelector(selectPassword);
+  const confirmPassword = useSelector(selectConfirmPassword);
+  const error = useSelector(selectError);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (password !== confirmPassword) {
+      dispatch(setError("Passwords do not match"));
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:3002/api/signup", {
+        name,
+        email,
+        password,
+      });
+      const userName = response.data.user.name;
+      dispatch(setName(userName));
+      alert("Signup Successful");
+      navigate("/");
+    } catch (err) {
+      dispatch(setError("Registration failed. Please try again."));
+    }
+  };
       return (
         <div>
           
@@ -55,26 +102,80 @@ const Register = () => {
                             <h1 className="mb-2 fs-2">Create New Account</h1>
                             <p className="mb-0">Already a Member?<Link to= "/login" className="fw-medium text-primary"> Signin</Link></p>
                             {/* Form START */}
-                            <form className="mt-4 text-start">
+                            <form className="mt-4 text-start" onSubmit={handleSubmit}>
+                            {error && (
+                            <div className="alert alert-danger">{error}</div>
+                          )}
                               <div className="form py-4">
+                              <div className="form-group">
+                              <label className="form-label">Enter Name</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="your name"
+                                value={name}
+                                onChange={(e) =>
+                                  dispatch(setName(e.target.value))
+                                }
+                                required
+                              />
+                            </div>
+                            <div className="form-group">
+                              <label className="form-label">
+                                Enter email ID
+                              </label>
+                              <input
+                                type="email"
+                                className="form-control"
+                                placeholder="name@example.com"
+                                value={email}
+                                onChange={(e) =>
+                                  dispatch(setEmail(e.target.value))
+                                }
+                                required
+                              />
+                            </div>
+                            <div className="form-group">
+                              <label className="form-label">
+                                Enter Password
+                              </label>
+                              <div className="position-relative">
+                                <input
+                                  type="password"
+                                  className="form-control"
+                                  name="password"
+                                  placeholder="Password"
+                                  value={password}
+                                  onChange={(e) =>
+                                    dispatch(setPassword(e.target.value))
+                                  }
+                                  required
+                                />
+                                <span className="fa-solid fa-eye toggle-password position-absolute top-50 end-0 translate-middle-y me-3" />
+                              </div>
+                            </div>
+                            <div className="form-group">
+                              <label className="form-label">
+                                Confirm Password
+                              </label>
+                              <input
+                                type="password"
+                                className="form-control"
+                                placeholder="*********"
+                                value={confirmPassword}
+                                onChange={(e) =>
+                                  dispatch(setConfirmPassword(e.target.value))
+                                }
+                                required
+                              />
+                            </div>
                                 <div className="form-group">
-                                  <label className="form-label">Enter email ID</label>
-                                  <input type="email" className="form-control" placeholder="name@example.com" />
-                                </div>
-                                <div className="form-group">
-                                  <label className="form-label">Enter Password</label>
-                                  <div className="position-relative">
-                                    <input type="password" className="form-control" id="password-field" name="password" placeholder="Password" />
-                                    <span className="fa-solid fa-eye toggle-password position-absolute top-50 end-0 translate-middle-y me-3" />
-                                  </div>
-                                </div>
-                                <div className="form-group">
-                                  <label className="form-label">Confirm Password</label>
-                                  <input type="password" className="form-control" placeholder="*********" />
-                                </div>
-                                <div className="form-group">
-                                  <button type="submit" className="btn btn-primary full-width font--bold btn-lg">Create An
-                                    Account</button>
+                                <button
+                                type="submit"
+                                className="btn btn-primary full-width font--bold btn-lg"
+                              >
+                                Create An Account
+                              </button>
                                 </div>
                                 <div className="modal-flex-item d-flex align-items-center justify-content-between mb-3">
                                   <div className="modal-flex-first">
