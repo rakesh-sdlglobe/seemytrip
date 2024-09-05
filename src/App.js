@@ -54,6 +54,12 @@ import PrivacyPolicy from './components/privacy-policy';
 import BookingPage2 from './components/bookingpage-02';
 import BookingPage3 from './components/bookingpage-03';
 import BookingPageSuccess from './components/bookingpage-success';
+import MyBooking from './components/my-booking.jsx'
+import Travelers from './components/travelers.jsx'
+import PaymentDetails from './components/payment-detail.jsx'
+import MyWishlists from './components/my-wishlists.jsx';
+import Settings from './components/settings.jsx'
+import DeleteAccount from './components/delete-account.jsx'
 
 function App() {
   return (
@@ -119,6 +125,12 @@ function App() {
           <Route path= "/booking-page-2" element={<BookingPage2/>}/>
           <Route path= "/booking-page-3" element={<BookingPage3/>}/>
           <Route path= "/booking-page-success" element={<BookingPageSuccess/>}/>
+          <Route path= "/my-booking" element ={<MyBooking/>}/>
+          <Route path= "/travelers" element ={<Travelers/>}/>
+          <Route path= "/payment-detail" element ={<PaymentDetails/>}/>
+          <Route path= "/my-wishlists" element ={<MyWishlists/>}/>
+          <Route path= "/settings" element ={<Settings/>}/>
+          <Route path= "/delete-account" element ={<DeleteAccount/>}/>
         </Routes>
       </Router>
     </div>
