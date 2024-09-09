@@ -22,7 +22,7 @@ import Destination03 from './components/destination-03';
 import DestinationDetail from './components/destination-detail';
 import Faq from './components/faq';
 import FlightDetail from './components/Flight-detail';
-import FlightList01 from './components/flight-list-01';
+import FlightList01 from './components/train_serach_result/flight-list-01.jsx';
 import FlightList02 from './components/flight-list-02';
 import ForgotPassword from './components/forgot-password';
 import HelpCenter from './components/help-center';
