@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage';
 import {thunk} from 'redux-thunk';  
 import authReducer from './Reducers/authReducer';
 import { encryptTransform } from 'redux-persist-transform-encrypt';
+import  {filterReducer}  from './Reducers/filterReducer';
 
 const encryptor = encryptTransform({
   secretKey: process.env.REACT_APP_SECRET_KEY,
@@ -20,6 +21,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   auth: authReducer,
+  filters: filterReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
