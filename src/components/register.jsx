@@ -13,7 +13,6 @@ import '../assets/css/fontawesome.css';
 import '../assets/css/style.css';
 import { Link } from 'react-router-dom';
 import { trainImage, login } from '../assets/images';
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -23,6 +22,7 @@ import {
   setPassword,
   setConfirmPassword,
   setError,
+  register 
 } from "../store/Actions/authActions";
 import {
   selectName,
@@ -57,19 +57,8 @@ const Register = () => {
       return;
     }
 
-    try {
-      const response = await axios.post("http://localhost:3002/api/signup", {
-        name,
-        email,
-        password,
-      });
-      const userName = response.data.user.name;
-      dispatch(setName(userName));
-      alert("Signup Successful");
-      navigate("/");
-    } catch (err) {
-      dispatch(setError("Registration failed. Please try again."));
-    }
+    dispatch(register(name, email, password));
+    navigate("/");
   };
   return (
     <div>

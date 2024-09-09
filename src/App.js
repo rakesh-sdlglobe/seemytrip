@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 import Home from './components/home';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './components/login';
@@ -60,8 +61,20 @@ import PaymentDetails from './components/payment-detail.jsx'
 import MyWishlists from './components/my-wishlists.jsx';
 import Settings from './components/settings.jsx'
 import DeleteAccount from './components/delete-account.jsx'
+import { useDispatch } from 'react-redux';
+import { setUser } from './store/Actions/authActions';
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    const user = localStorage.getItem('user');
+    
+    if (token && user) {
+      dispatch(setUser(JSON.parse(user))); 
+    }
+  }, [dispatch]);
   return (
     <div className="App">
       <Router>

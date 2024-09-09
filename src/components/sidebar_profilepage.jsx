@@ -1,18 +1,22 @@
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { selectUserProfile} from '../store/Selectors/userSelector';
+
 
 const SideBarProfilePage = () => {
+    const userProfile = useSelector(selectUserProfile);
     return (
         <div className="col-xl-4 col-lg-4 col-md-12">
             <div className="card rounded-2 me-xl-5 mb-4">
                 <div className="card-top bg-primary position-relative">
-                    <div className="position-absolute end-0 top-0 mt-4 me-3"><Link to="login.html" className="square--40 circle bg-light-dark text-light"><i className="fa-solid fa-right-from-bracket" /></Link></div>
+                    {/* <div className="position-absolute end-0 top-0 mt-4 me-3"><Link to="login.html" className="square--40 circle bg-light-dark text-light"><i className="fa-solid fa-right-from-bracket" /></Link></div> */}
                     <div className="py-5 px-3">
                         <div className="crd-thumbimg text-center">
                             <div className="p-2 d-flex align-items-center justify-content-center brd"><img src="https://placehold.co/500x500" className="img-fluid circle" width={120} alt="" /></div>
                         </div>
                         <div className="crd-capser text-center">
-                            <h5 className="mb-0 text-light fw-semibold">Adam K. Divliars</h5>
-                            <span className="text-light opacity-75 fw-medium text-md"><i className="fa-solid fa-location-dot me-2" />California, USA</span>
+                            <h5 className="mb-0 text-light fw-semibold">{userProfile?.name}</h5>
+                            <span className="text-light opacity-75 fw-medium text-md"><i className="fa-solid fa-location-dot me-2" />Karnataka, India</span>
                         </div>
                     </div>
                 </div>
