@@ -3,30 +3,20 @@ import { indian_flag, trainImage } from '../assets/images';
 import { NavLink, Link, useNavigate  } from 'react-router-dom';
 import { useSelector,useDispatch } from 'react-redux';
 import { logout } from '../store/Actions/authActions';
-import { persistor } from '../store/store';
+import { selectName } from '../store/Selectors/authSelectors';
+
 
 const Header02 = () => {
-  const authState = useSelector((state) => state.auth || {});
-    const userName = authState?.name;     
-    const isLoggedIn = Boolean(userName);
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const user = useSelector(selectName);
+  const isLoggedIn = Boolean(user);
 
   const handleLogout = () => {
-    try {
-      
-      dispatch(logout());
-      persistor.purge().then(() => {
-        console.log('Persistor purged');
-        navigate('/'); 
-      });
-      console.log(localStorage.getItem('authToken')); // Check if the token is removed
-    } catch (error) {
-      console.log(error);
-      
-    }
-
+    dispatch(logout());
+    navigate('/login'); 
   };
+
   return (
     <>
       {/* Internal CSS */}
@@ -116,7 +106,7 @@ const Header02 = () => {
                     <li className="nav-item dropdown">
                     <Link className="nav-link dropdown-toggle d-flex align-items-center" to="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                       <i className="fa-regular fa-circle-user fs-5 me-2" />
-                      <span>{userName}</span>
+                      <span>{user}</span>
                     </Link>
                     <ul className="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
                       <li><Link className="dropdown-item" to="/my-profile">Profile</Link></li>

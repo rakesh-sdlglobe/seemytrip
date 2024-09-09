@@ -1,5 +1,4 @@
 // src/redux/reducers/authReducer.js
-
 import {
   SET_NAME,
   SET_EMAIL,
@@ -7,15 +6,17 @@ import {
   SET_CONFIRM_PASSWORD,
   SET_ERROR,
   CLEAR_FORM,
-  LOGOUT
-} from "../Actions/authActions";
+  LOGOUT,
+  SET_USER,
+} from '../Actions/authActions';
 
 const initialState = {
-  name: "",
-  email: "",
-  password: "",
-  confirmPassword: "",
-  error: "",
+  name:  localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).name : '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+  error: '',
+  user: localStorage.getItem('authToken') ? JSON.parse(localStorage.getItem('user')) : null, 
 };
 
 const authReducer = (state = initialState, action) => {
@@ -32,9 +33,22 @@ const authReducer = (state = initialState, action) => {
       return { ...state, error: action.payload };
     case CLEAR_FORM:
       return initialState;
+    case SET_USER:
+      const { name } = action.payload;      
+      localStorage.setItem('user', JSON.stringify(action.payload));
+      return { 
+        ...state, 
+        user: action.payload, 
+        name: name, 
+      };
     case LOGOUT:
-      console.log('State after logout:', initialState);
-      return initialState; 
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user');
+        return {
+          ...initialState, 
+          name: '', 
+          user: null,
+        };
     default:
       return state;
   }
