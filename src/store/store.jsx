@@ -5,6 +5,7 @@ import authReducer from './Reducers/authReducer';
 import userReducer from './Reducers/userReducer';
 import  {filterReducer}  from './Reducers/filterReducer';
 
+
 const rootReducer = combineReducers({
   auth: authReducer,
   user: userReducer,
@@ -15,3 +16,4 @@ const rootReducer = combineReducers({
 const store = createStore(rootReducer, applyMiddleware(thunk));
 
 export { store };
+
