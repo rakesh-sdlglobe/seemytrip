@@ -1,26 +1,61 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserProfile, editUserProfile } from '../store/Actions/userActions';
+import { selectUserProfile} from '../store/Selectors/userSelector';
+
 
 const PersonalInfo = () => {
-    // State to manage whether the inputs are editable
+    const dispatch = useDispatch();
+    const userProfile = useSelector(selectUserProfile);   
+  
     const [isEditable, setIsEditable] = useState(false);
     const [showModal, setShowModal] = useState(false);
-
-    // Toggle edit mode
+    const [formData, setFormData] = useState({
+      name: '',
+      email: '',
+    });
+  
+    useEffect(() => {
+      dispatch(getUserProfile());
+    }, [dispatch]);
+  
+    useEffect(() => {
+      if (userProfile) {
+        setFormData({
+          name: userProfile.name || '',
+          email: userProfile.email || '',
+        });
+      }
+    }, [userProfile]);
+  
     const toggleEdit = () => {
-        setIsEditable(!isEditable);
+      setIsEditable(!isEditable);
     };
-
-    // Show modal
+  
+    const handleChange = (e) => {
+      setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+  
+   
+const handleSave = () => {
+    const userData = {
+      name: formData.name,
+      email: formData.email,
+    };
+    
+    dispatch(editUserProfile(userData));
+    setIsEditable(false);
+  };
+  
+  
     const handleVerifyClick = () => {
-        setShowModal(true);
+      setShowModal(true);
     };
-
-    // Close modal
+  
     const handleCloseModal = () => {
-        setShowModal(false);
+      setShowModal(false);
     };
-
     return (
         <>
             <div className="card mb-4">
@@ -31,7 +66,8 @@ const PersonalInfo = () => {
                         {isEditable ? (
                             <>
                                 <i className="fa fa-save me-2" />
-                                Save
+                                <button onClick={handleSave}>Save</button>
+                                
                             </>
                         ) : (
                             <>
@@ -62,7 +98,11 @@ const PersonalInfo = () => {
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">First Name</label>
-                                <input type="text" className="form-control" defaultValue="Adam K" disabled={!isEditable} />
+                                <input type="text" className="form-control" 
+                                name="name" 
+                                value={formData.name} 
+                                onChange={handleChange}
+                                disabled={!isEditable} />
                             </div>
                         </div>
                         <div className="col-xl-6 col-lg-6 col-md-6">
@@ -74,7 +114,11 @@ const PersonalInfo = () => {
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">Email ID</label>
-                                <input type="text" className="form-control" defaultValue="adamkruck@gmail.com" disabled={!isEditable} />
+                                <input type="text" className="form-control"
+                                 name="email" 
+                                 value={formData.email} 
+                                 onChange={handleChange}
+                                 disabled={!isEditable} />
                                 {isEditable && (
                                     <button className="btn btn-text-secondary btn-sm verify-button" onClick={handleVerifyClick}>Verify</button>
                                 )}

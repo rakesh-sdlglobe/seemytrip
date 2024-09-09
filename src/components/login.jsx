@@ -14,10 +14,9 @@ import '../assets/css/style.css';
 import {trainImage, login } from '../assets/images';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  setName,
   setEmail,
   setPassword,
-  setError,
+  Loginn,
 } from "../store/Actions/authActions";
 import {
   selectEmail,
@@ -25,7 +24,6 @@ import {
   selectError,
 } from "../store/Selectors/authSelectors";
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -37,18 +35,8 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const response = await axios.post("http://localhost:3002/api/login", {
-        email,
-        password,
-      });
-      const userName = response.data.user.name
-      dispatch(setName(userName));
-      alert("Login Successful");
-      navigate("/");
-    } catch (err) {
-      dispatch(setError("Login failed. Please check your credentials."));
-    }
+    dispatch(Loginn(email, password));
+    navigate("/");
   };
       return (
         <div>
