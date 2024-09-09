@@ -14,10 +14,9 @@ import '../assets/css/style.css';
 import {trainImage, login } from '../assets/images';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  setName,
   setEmail,
   setPassword,
-  setError,
+  Loginn,
 } from "../store/Actions/authActions";
 import {
   selectEmail,
@@ -25,7 +24,9 @@ import {
   selectError,
 } from "../store/Selectors/authSelectors";
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+
+import { useState } from 'react';
+
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -33,22 +34,17 @@ const Login = () => {
   const email = useSelector(selectEmail);
   const password = useSelector(selectPassword);
   const error = useSelector(selectError);
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const response = await axios.post("http://localhost:3002/api/login", {
-        email,
-        password,
-      });
-      const userName = response.data.user.name
-      dispatch(setName(userName));
-      alert("Login Successful");
-      navigate("/");
-    } catch (err) {
-      dispatch(setError("Login failed. Please check your credentials."));
-    }
+    dispatch(Loginn(email, password));
+    navigate("/");
   };
       return (
         <div>
@@ -112,7 +108,7 @@ const Login = () => {
                               </label>
                               <div className="position-relative">
                                 <input
-                                  type="password"
+                                  type={passwordVisible ? "text" : "password"}
                                   className="form-control"
                                   name="password"
                                   placeholder="Password"
@@ -122,7 +118,10 @@ const Login = () => {
                                   }
                                   required
                                 />
-                                <span className="fa-solid fa-eye toggle-password position-absolute top-50 end-0 translate-middle-y me-3" />
+                                  <span
+                                  className={`fa-solid ${passwordVisible ? "fa-eye-slash" : "fa-eye"} toggle-password position-absolute top-50 end-0 translate-middle-y me-3`}
+                                  onClick={togglePasswordVisibility}
+                                />
                               </div>
                             </div>
                                 <div className="form-group">
@@ -170,15 +169,6 @@ const Login = () => {
             </section>
             {/* ============================== Login Section End ================== */}
           </div>
-          {/* ============================================================== */}
-          {/* End Wrapper */}
-          {/* ============================================================== */}
-          {/* ============================================================== */}
-          {/* All Jquery */}
-          {/* ============================================================== */}
-          {/* ============================================================== */}
-          {/* This page plugins */}
-          {/* ============================================================== */}
         </div>
       );
 }

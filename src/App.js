@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 import Home from './components/home';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './components/login';
@@ -22,7 +23,7 @@ import Destination03 from './components/destination-03';
 import DestinationDetail from './components/destination-detail';
 import Faq from './components/faq';
 import FlightDetail from './components/Flight-detail';
-import FlightList01 from './components/flight-list-01';
+import FlightList01 from './components/train_serach_result/flight-list-01.jsx';
 import FlightList02 from './components/flight-list-02';
 import ForgotPassword from './components/forgot-password';
 import HelpCenter from './components/help-center';
@@ -54,8 +55,26 @@ import PrivacyPolicy from './components/privacy-policy';
 import BookingPage2 from './components/bookingpage-02';
 import BookingPage3 from './components/bookingpage-03';
 import BookingPageSuccess from './components/bookingpage-success';
+import MyBooking from './components/my-booking.jsx'
+import Travelers from './components/travelers.jsx'
+import PaymentDetails from './components/payment-detail.jsx'
+import MyWishlists from './components/my-wishlists.jsx';
+import Settings from './components/settings.jsx'
+import DeleteAccount from './components/delete-account.jsx'
+import { useDispatch } from 'react-redux';
+import { setUser } from './store/Actions/authActions';
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const token = localStorage.getItem('authToken');
+    const user = localStorage.getItem('user');
+    
+    if (token && user) {
+      dispatch(setUser(JSON.parse(user))); 
+    }
+  }, [dispatch]);
   return (
     <div className="App">
       <Router>
@@ -119,6 +138,12 @@ function App() {
           <Route path= "/booking-page-2" element={<BookingPage2/>}/>
           <Route path= "/booking-page-3" element={<BookingPage3/>}/>
           <Route path= "/booking-page-success" element={<BookingPageSuccess/>}/>
+          <Route path= "/my-booking" element ={<MyBooking/>}/>
+          <Route path= "/travelers" element ={<Travelers/>}/>
+          <Route path= "/payment-detail" element ={<PaymentDetails/>}/>
+          <Route path= "/my-wishlists" element ={<MyWishlists/>}/>
+          <Route path= "/settings" element ={<Settings/>}/>
+          <Route path= "/delete-account" element ={<DeleteAccount/>}/>
         </Routes>
       </Router>
     </div>
