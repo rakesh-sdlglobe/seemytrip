@@ -57,8 +57,7 @@ const Register = () => {
       return;
     }
 
-    dispatch(register(name, email, password));
-    navigate("/");
+    dispatch(register(name, email, password, navigate));
   };
   return (
     <div>

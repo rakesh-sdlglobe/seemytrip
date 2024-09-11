@@ -42,9 +42,8 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    dispatch(Loginn(email, password));
-    navigate("/");
+    dispatch(Loginn(email, password, navigate));
+    
   };
       return (
         <div>
