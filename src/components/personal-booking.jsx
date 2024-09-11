@@ -1,6 +1,33 @@
-import { Link } from "react-router-dom";
+import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { myBookings } from '../store/Actions/userActions';
+import { selectUserBookings } from '../store/Selectors/userSelector';
 
 const PersonalBooking = () => {
+    const dispatch = useDispatch();
+    const userBooking = useSelector(selectUserBookings) || [];
+
+    useEffect(() => {
+        dispatch(myBookings());
+    }, [dispatch]);
+
+    console.log("User Booking Data:", userBooking); // Debugging log
+
+    // Ensure userBooking is an array and has items
+    if (!Array.isArray(userBooking) || userBooking.length === 0) {
+        return (
+            <div className="card">
+                <div className="card-header">
+                    <h4><i className="fa-solid fa-ticket me-2" />My Bookings</h4>
+                </div>
+                <div className="card-body">
+                    <p>No bookings available.</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="card">
             <div className="card-header">
@@ -12,270 +39,91 @@ const PersonalBooking = () => {
                         <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2">
                             <li className="col-md-3 col-6">
                                 <input type="checkbox" className="btn-check" id="allbkk" defaultChecked />
-                                <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="allbkk">All
-                                    Booking (24)</label>
+                                <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="allbkk">
+                                    All Booking ({userBooking.length})
+                                </label>
                             </li>
                             <li className="col-md-3 col-6">
                                 <input type="checkbox" className="btn-check" id="processing" />
-                                <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="processing">Processing (02)</label>
+                                <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="processing">
+                                    Processing ({userBooking.filter(b => b.status === 'Processing').length})
+                                </label>
                             </li>
                             <li className="col-md-3 col-6">
                                 <input type="checkbox" className="btn-check" id="cancelled" />
-                                <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="cancelled">Cancelled (04)</label>
+                                <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="cancelled">
+                                    Cancelled ({userBooking.filter(b => b.status === 'Cancelled').length})
+                                </label>
                             </li>
                             <li className="col-md-3 col-6">
                                 <input type="checkbox" className="btn-check" id="completed" />
-                                <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="completed">Completed (10)</label>
+                                <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="completed">
+                                    Completed ({userBooking.filter(b => b.status === 'Completed').length})
+                                </label>
                             </li>
                         </ul>
                     </div>
                 </div>
                 <div className="row align-items-center justify-content-start">
                     <div className="col-xl-12 col-lg-12 col-md-12">
-                        {/* Single Item */}
-                        <div className="card border br-dashed mb-4">
-                            {/* Card header */}
-                            <div className="card-header nds-block border-bottom flex-column flex-md-row justify-content-between align-items-center">
-                                {/* Icon and Title */}
-                                <div className="d-flex align-items-center">
-                                    <div className="square--50 circle bg-light-purple text-purple flex-shrink-0"><i className="fa-solid fa-plane" /></div>
-                                    {/* Title */}
-                                    <div className="ms-2">
-                                        <h6 className="card-title text-dark fs-5 mb-1">Chicago To San Francisco</h6>
-                                        <ul className="nav nav-divider small">
-                                            <li className="nav-item text-muted">Booking ID: BKR24530</li>
-                                            <li className="nav-item ms-2"><span className="label bg-light-success text-success">Business
-                                                class</span></li>
-                                        </ul>
+                        {userBooking.map((booking, index) => (
+                            <div className="card border br-dashed mb-4" key={index}>
+                                {/* Card header */}
+                                <div className="card-header nds-block border-bottom flex-column flex-md-row justify-content-between align-items-center">
+                                    {/* Icon and Title */}
+                                    <div className="d-flex align-items-center">
+                                        <div className="square--50 circle bg-light-purple text-purple flex-shrink-0">
+                                            <i className="fa-solid fa-plane" />
+                                        </div>
+                                        <div className="ms-2">
+                                            <h6 className="card-title text-dark fs-5 mb-1">
+                                                {booking.from_station || "Unknown Station"} TO {booking.to_station || "Unknown Station"}
+                                                {booking.status === 'Cancelled' && <label className="badge text-danger bg-light-danger fw-medium text-md ms-2">Cancelled</label>}
+                                                {booking.status === 'Processing' && <label className="badge text-info bg-light-info fw-medium text-md ms-2">Processing</label>}
+                                                {booking.status === 'Completed' && <label className="badge text-success bg-light-success fw-medium text-md ms-2">Completed</label>}
+                                            </h6>
+                                            <ul className="nav nav-divider small">
+                                                <li className="nav-item text-muted">Booking ID: {booking.booking_id}</li>
+                                                <li className="nav-item ms-2">
+                                                    <span className="label bg-light-success text-success">{booking.class || "N/A"}</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    {/* Button */}
+                                    <div className="d-flex align-items-center mt-2 mt-md-0">
+                                        <Link to={`/bookingDetails/${booking.booking_id}`} className="btn btn-sm btn-outline-primary ms-3">
+                                            <i className="fa-solid fa-info-circle me-2" />
+                                            Details
+                                        </Link>
                                     </div>
                                 </div>
-                                {/* Button */}
-                                <div className="mt-2 mt-md-0">
-                                    <Link to="#" className="btn btn-md btn-light-seegreen fw-medium mb-0">Manage Booking</Link>
-                                </div>
-                            </div>
-                            {/* Card body */}
-                            <div className="card-body">
-                                <div className="row g-3">
-                                    <div className="col-sm-6 col-md-4">
-                                        <span>Departure time</span>
-                                        <h6 className="mb-0">Fri 12 Aug 14:00 PM</h6>
-                                    </div>
-                                    <div className="col-sm-6 col-md-4">
-                                        <span>Arrival time</span>
-                                        <h6 className="mb-0">Fri 12 Aug 18:00 PM</h6>
-                                    </div>
-                                    <div className="col-md-4">
-                                        <span>Booked by</span>
-                                        <h6 className="mb-0">Daniel Duekaza</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {/* Single Item */}
-                        <div className="card border br-dashed mb-4">
-                            {/* Card header */}
-                            <div className="card-header nds-block border-bottom flex-column flex-md-row justify-content-between align-items-center">
-                                {/* Icon and Title */}
-                                <div className="d-flex align-items-center">
-                                    <div className="square--50 circle bg-light-danger text-danger flex-shrink-0"><i className="fa-solid fa-hotel" /></div>
-                                    {/* Title */}
-                                    <div className="ms-2">
-                                        <h6 className="card-title text-dark fs-5 mb-1">Dorsett Singapore</h6>
-                                        <ul className="nav nav-divider small">
-                                            <li className="nav-item text-muted">Booking ID: BKR24532</li>
-                                            <li className="nav-item ms-2"><span className="text-dark fw-medium">3Day/4N</span></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                {/* Button */}
-                                <div className="mt-2 mt-md-0">
-                                    <Link to="#" className="btn btn-md btn-light-seegreen fw-medium mb-0">Manage Booking</Link>
-                                </div>
-                            </div>
-                            {/* Card body */}
-                            <div className="card-body">
-                                <div className="row g-3">
-                                    <div className="col-sm-6 col-md-4">
-                                        <span>Check-In</span>
-                                        <h6 className="mb-0">Tue 10 Sep 10:00 AM</h6>
-                                    </div>
-                                    <div className="col-sm-6 col-md-4">
-                                        <span>Check-Out</span>
-                                        <h6 className="mb-0">Tue 14 Sep 18:00 PM</h6>
-                                    </div>
-                                    <div className="col-md-4">
-                                        <span>Total Guest</span>
-                                        <h6 className="mb-0">3 Adult . 2 Child</h6>
+                                {/* Card body */}
+                                <div className="card-body py-4">
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <div className="text-muted">
+                                                <span className="text-dark">Booking Date:</span>
+                                                <br />
+                                                {booking.booking_date || "N/A"}
+                                            </div>
+                                        </div>
+                                        <div className="col-md-6 text-md-end">
+                                            <div className="text-muted">
+                                                <span className="text-dark">Departure Date:</span>
+                                                <br />
+                                                {booking.departure_date || "N/A"}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        {/* Single Item */}
-                        <div className="card border br-dashed mb-4">
-                            {/* Card header */}
-                            <div className="card-header nds-block border-bottom flex-column flex-md-row justify-content-between align-items-center">
-                                {/* Icon and Title */}
-                                <div className="d-flex align-items-center">
-                                    <div className="square--50 circle bg-light-success text-success flex-shrink-0"><i className="fa-solid fa-car" /></div>
-                                    {/* Title */}
-                                    <div className="ms-2">
-                                        <h6 className="card-title text-dark fs-5 mb-1">Dallas To San Denver</h6>
-                                        <ul className="nav nav-divider small">
-                                            <li className="nav-item text-muted">Booking ID: BKR24534</li>
-                                            <li className="nav-item ms-2"><span className="text-dark fw-medium">Accord, BMW</span></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                {/* Button */}
-                                <div className="mt-2 mt-md-0">
-                                    <Link to="#" className="btn btn-md btn-light-seegreen fw-medium mb-0">Manage Booking</Link>
-                                </div>
-                            </div>
-                            {/* Card body */}
-                            <div className="card-body">
-                                <div className="row g-3">
-                                    <div className="col-sm-6 col-md-4">
-                                        <span>Pickup address</span>
-                                        <h6 className="mb-0">220K.V Jail Road</h6>
-                                    </div>
-                                    <div className="col-sm-6 col-md-4">
-                                        <span>Drop address</span>
-                                        <h6 className="mb-0">11185 Mary Ball Rd</h6>
-                                    </div>
-                                    <div className="col-md-4">
-                                        <span>Booked by</span>
-                                        <h6 className="mb-0">Daniel Duekaza</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {/* Single Item */}
-                        <div className="card border br-dashed mb-4">
-                            {/* Card header */}
-                            <div className="card-header nds-block border-bottom flex-column flex-md-row justify-content-between align-items-center">
-                                {/* Icon and Title */}
-                                <div className="d-flex align-items-center">
-                                    <div className="square--50 circle bg-light-purple text-purple flex-shrink-0"><i className="fa-solid fa-plane" /></div>
-                                    {/* Title */}
-                                    <div className="ms-2">
-                                        <h6 className="card-title text-dark fs-5 mb-1">Chicago To Houston<label className="badge text-danger bg-light-danger fw-medium text-md ms-2">Cancelled</label></h6>
-                                        <ul className="nav nav-divider small">
-                                            <li className="nav-item text-muted">Booking ID: BKR24530</li>
-                                            <li className="nav-item ms-2"><span className="label bg-light-success text-success">Business
-                                                class</span></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                {/* Button */}
-                                <div className="mt-2 mt-md-0">
-                                    <Link to="#" className="btn btn-md btn-light-seegreen fw-medium mb-0">ReBooking</Link>
-                                </div>
-                            </div>
-                            {/* Card body */}
-                            <div className="card-body">
-                                <div className="row g-3">
-                                    <div className="col-sm-6 col-md-4">
-                                        <span>Departure time</span>
-                                        <h6 className="mb-0">Fri 12 Aug 14:00 PM</h6>
-                                    </div>
-                                    <div className="col-sm-6 col-md-4">
-                                        <span>Arrival time</span>
-                                        <h6 className="mb-0">Fri 12 Aug 18:00 PM</h6>
-                                    </div>
-                                    <div className="col-md-4">
-                                        <span>Booked by</span>
-                                        <h6 className="mb-0">Daniel Duekaza</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {/* Single Item */}
-                        <div className="card border br-dashed mb-4">
-                            {/* Card header */}
-                            <div className="card-header nds-block border-bottom flex-column flex-md-row justify-content-between align-items-center">
-                                {/* Icon and Title */}
-                                <div className="d-flex align-items-center">
-                                    <div className="square--50 circle bg-light-purple text-purple flex-shrink-0"><i className="fa-solid fa-plane" /></div>
-                                    {/* Title */}
-                                    <div className="ms-2">
-                                        <h6 className="card-title text-dark fs-5 mb-1">Chicago To Houston<label className="badge text-info bg-light-info fw-medium text-md ms-2">Processing</label></h6>
-                                        <ul className="nav nav-divider small">
-                                            <li className="nav-item text-muted">Booking ID: BKR24528</li>
-                                            <li className="nav-item ms-2"><span className="label bg-light-success text-success">Business
-                                                class</span></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                {/* Button */}
-                                <div className="mt-2 mt-md-0">
-                                    <Link to="#" className="btn btn-md btn-light-seegreen fw-medium mb-0">Edit Booking</Link>
-                                </div>
-                            </div>
-                            {/* Card body */}
-                            <div className="card-body">
-                                <div className="row g-3">
-                                    <div className="col-sm-6 col-md-4">
-                                        <span>Departure time</span>
-                                        <h6 className="mb-0">Fri 12 Aug 14:00 PM</h6>
-                                    </div>
-                                    <div className="col-sm-6 col-md-4">
-                                        <span>Arrival time</span>
-                                        <h6 className="mb-0">Fri 12 Aug 18:00 PM</h6>
-                                    </div>
-                                    <div className="col-md-4">
-                                        <span>Booked by</span>
-                                        <h6 className="mb-0">Daniel Duekaza</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {/* Single Item */}
-                        <div className="card border br-dashed">
-                            {/* Card header */}
-                            <div className="card-header nds-block border-bottom flex-column flex-md-row justify-content-between align-items-center">
-                                {/* Icon and Title */}
-                                <div className="d-flex align-items-center">
-                                    <div className="square--50 circle bg-light-purple text-purple flex-shrink-0"><i className="fa-solid fa-plane" /></div>
-                                    {/* Title */}
-                                    <div className="ms-2">
-                                        <h6 className="card-title text-dark fs-5 mb-1">Chicago To Houston<label className="badge text-success bg-light-success fw-medium text-md ms-2">Completed</label>
-                                        </h6>
-                                        <ul className="nav nav-divider small">
-                                            <li className="nav-item text-muted">Booking ID: BKR24530</li>
-                                            <li className="nav-item ms-2"><span className="label bg-light-success text-success">Business
-                                                class</span></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                {/* Button */}
-                                <div className="mt-2 mt-md-0">
-                                    <Link to="#" className="btn btn-md btn-light-seegreen fw-medium mb-0">Give Feedback</Link>
-                                </div>
-                            </div>
-                            {/* Card body */}
-                            <div className="card-body">
-                                <div className="row g-3">
-                                    <div className="col-sm-6 col-md-4">
-                                        <span>Departure time</span>
-                                        <h6 className="mb-0">Fri 12 Aug 14:00 PM</h6>
-                                    </div>
-                                    <div className="col-sm-6 col-md-4">
-                                        <span>Arrival time</span>
-                                        <h6 className="mb-0">Fri 12 Aug 18:00 PM</h6>
-                                    </div>
-                                    <div className="col-md-4">
-                                        <span>Booked by</span>
-                                        <h6 className="mb-0">Daniel Duekaza</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        ))}
                     </div>
                 </div>
             </div>
         </div>
     );
-}
+};
 
 export default PersonalBooking;

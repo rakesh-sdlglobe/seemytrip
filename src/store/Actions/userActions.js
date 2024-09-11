@@ -4,6 +4,8 @@ export const FETCH_USER_PROFILE_SUCCESS = 'FETCH_USER_PROFILE_SUCCESS';
 export const FETCH_USER_PROFILE_FAILURE = 'FETCH_USER_PROFILE_FAILURE';
 export const EDIT_USER_PROFILE_SUCCESS = 'EDIT_USER_PROFILE_SUCCESS';
 export const EDIT_USER_PROFILE_FAILURE = 'EDIT_USER_PROFILE_FAILURE';
+export const FETCH_USER_BOOKINGS_SUCCESS = 'FETCH_USER_BOOKINGS_SUCCESS';
+export const FETCH_USER_BOOKINGS_FAILURE = 'FETCH_USER_BOOKINGS_FAILURE';
 
 // Fetch user profile
 export const getUserProfile = () => {
@@ -41,3 +43,22 @@ export const editUserProfile = (userData) => {
     }
   };
 };
+
+export const myBookings = () => {
+  return async (dispatch) => {
+    const authToken = localStorage.getItem('authToken'); 
+    
+    try {
+      const response = await axios.get('http://localhost:3002/api/users/myBookings', {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      console.log('Booking Data:', response.data.bookings); 
+      dispatch({ type: FETCH_USER_BOOKINGS_SUCCESS, payload: response.data.bookings });
+    } catch (error) {
+      console.error('Error fetching bookings:', error.response?.data?.message || 'Error fetching bookings');
+      dispatch({ type: FETCH_USER_BOOKINGS_FAILURE, payload: error.response?.data?.message || 'Error fetching bookings' });
+    }
+  };
+}

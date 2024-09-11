@@ -14,7 +14,7 @@ const Header02 = () => {
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate('/login'); 
+    navigate('/register')
   };
 
   return (
