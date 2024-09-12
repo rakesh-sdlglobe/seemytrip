@@ -7,12 +7,16 @@ import { selectUserProfile} from '../store/Selectors/userSelector';
 
 const PersonalInfo = () => {
     const dispatch = useDispatch();
-    const userProfile = useSelector(selectUserProfile);   
+    const userProfile = useSelector(selectUserProfile);  
   
     const [isEditable, setIsEditable] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [formData, setFormData] = useState({
       name: '',
+      lastname:'',
+      mobile: '',
+      dob: '',
+      gender:'Male',
       email: '',
     });
   
@@ -24,6 +28,10 @@ const PersonalInfo = () => {
       if (userProfile) {
         setFormData({
           name: userProfile.name || '',
+          lastname : userProfile.lastname ||  '',
+          mobile : userProfile.mobile || '',
+          dob:  userProfile.dob ? new Date(userProfile.dob).toISOString().split('T')[0] : '',
+          gender: userProfile.gender || 'Male',
           email: userProfile.email || '',
         });
       }
@@ -39,11 +47,16 @@ const PersonalInfo = () => {
   
    
 const handleSave = () => {
+    
     const userData = {
       name: formData.name,
+      lastname:formData.lastname,
+      mobile:formData.mobile,
+      dob:formData.dob,
+      gender:formData.gender,
       email: formData.email,
     };
-    
+      
     dispatch(editUserProfile(userData));
     setIsEditable(false);
   };
@@ -62,20 +75,24 @@ const handleSave = () => {
                 <div className="card-header d-flex justify-content-between align-items-center">
                     <h4><i className="fa-solid fa-file-invoice me-2" />Personal Information</h4>
                     {/* Edit button */}
-                    <button className="btn btn-primary" onClick={toggleEdit}>
+                    <div>
                         {isEditable ? (
                             <>
-                                <i className="fa fa-save me-2" />
-                                <button onClick={handleSave}>Save</button>
-                                
+                                <button className="btn btn-primary" onClick={handleSave}>
+                                    <i className="fa fa-save me-2" />
+                                    Save
+                                </button>
+                                <button className="btn btn-secondary ms-2" onClick={toggleEdit}>
+                                    Cancel
+                                </button>
                             </>
                         ) : (
-                            <>
+                            <button className="btn btn-primary" onClick={toggleEdit}>
                                 <i className="fa fa-edit me-2" />
                                 Edit
-                            </>
+                            </button>
                         )}
-                    </button>
+                    </div>
 
                 </div>
                 <div className="card-body">
@@ -108,7 +125,11 @@ const handleSave = () => {
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">Last Name</label>
-                                <input type="text" className="form-control" defaultValue="Divliars" disabled={!isEditable} />
+                                <input type="text" className="form-control" 
+                                name="lastname" 
+                                value={formData.lastname} 
+                                onChange={handleChange}
+                                disabled={!isEditable} />
                             </div>
                         </div>
                         <div className="col-xl-6 col-lg-6 col-md-6">
@@ -127,22 +148,30 @@ const handleSave = () => {
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">Mobile</label>
-                                <input type="text" className="form-control" defaultValue="9856542563" disabled={!isEditable} />
+                                <input type="text" className="form-control" 
+                                name="mobile" 
+                                value={formData.mobile} 
+                                onChange={handleChange}
+                                disabled={!isEditable} />
                                 {isEditable && (
                                     <button className="btn btn-text-secondary btn-sm verify-button" onClick={handleVerifyClick}>Verify</button>
                                 )}
                             </div>
                         </div>
                         <div className="col-xl-6 col-lg-6 col-md-6">
-                            <div className="form-group">
+                            <div className="form-group position-relative">
                                 <label className="form-label">Date of Birth</label>
-                                <input type="date" className="form-control" defaultValue="2000-02-04" disabled={!isEditable} />
+                                <input type="date" className="form-control" name="dob" value={formData.dob} onChange={handleChange} disabled={!isEditable} />
                             </div>
                         </div>
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">Gender</label>
-                                <select className="form-control custom-select" defaultValue="Male" disabled={!isEditable}>
+                                <select className="form-control custom-select" 
+                                    name="gender"
+                                    value={formData.gender}
+                                    onChange={handleChange}
+                                    disabled={!isEditable}>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
                                     <option value="Other">Other</option>
