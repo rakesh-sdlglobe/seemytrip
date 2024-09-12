@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+
 export const SET_NAME = 'SET_NAME';
 export const SET_EMAIL = 'SET_EMAIL';
 export const SET_PASSWORD = 'SET_PASSWORD';
@@ -45,7 +46,7 @@ export const clearForm = () => ({
 });
 
 
-export const register = (name, email, password) => async (dispatch) => {
+export const register = (name, email, password, navigate) => async (dispatch) => {
   try {
 
     dispatch(setError(''));
@@ -68,7 +69,7 @@ export const register = (name, email, password) => async (dispatch) => {
     dispatch(setPassword('')); 
     dispatch(setConfirmPassword('')); 
 
-
+    navigate('/');
 
   } catch (error) {
   
@@ -78,7 +79,7 @@ export const register = (name, email, password) => async (dispatch) => {
 };
 
 
-export const Loginn = (email, password) => async (dispatch) => {
+export const Loginn = (email, password, navigate) => async (dispatch) => {
   try {
 
     dispatch(setError(''));
@@ -100,7 +101,7 @@ export const Loginn = (email, password) => async (dispatch) => {
     dispatch(setEmail(''));
     dispatch(setPassword('')); 
 
-
+    navigate('/');
   } catch (error) {
    
     const errorMessage = error.response?.data?.message || 'Login failed. Please check your credentials.';
@@ -113,7 +114,6 @@ export const logout = () => (dispatch) => {
 
   localStorage.removeItem('authToken');
   localStorage.removeItem('user');
-
   dispatch({
     type: LOGOUT,
   });
