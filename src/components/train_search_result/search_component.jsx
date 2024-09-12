@@ -174,17 +174,23 @@
 
 // export default SerchComponent;
 
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { stationsData } from './model/stationsData';
 import { trainsData } from './model/trainsData';
 import { seatsData } from './model/seatsData';
 import { routesData } from './model/routesData';
 
-const SearchComponent = ({ onSearchResults }) => {
-  const [fromStation, setFromStation] = useState('');
-  const [toStation, setToStation] = useState('');
-  const [journeyDate, setJourneyDate] = useState('');
+const SearchComponent = ({ onSearchResults = () => {}, buttonText = 'Search', backgroundColor = 'bg-primary' }) => {
+  const [fromStation, setFromStation] = useState(() => sessionStorage.getItem('fromStation') || '');
+  const [toStation, setToStation] = useState(() => sessionStorage.getItem('toStation') || '');
+  const [journeyDate, setJourneyDate] = useState(() => sessionStorage.getItem('journeyDate') || '');
+
+  // Use effect to store data in session storage when input changes
+  useEffect(() => {
+    sessionStorage.setItem('fromStation', fromStation);
+    sessionStorage.setItem('toStation', toStation);
+    sessionStorage.setItem('journeyDate', journeyDate);
+  }, [fromStation, toStation, journeyDate]);
 
   const handleFromStationChange = (e) => {
     setFromStation(e.target.value);
@@ -217,7 +223,6 @@ const SearchComponent = ({ onSearchResults }) => {
 
     const filteredTrains = trainsData.filter(train => train.startStationId === fromStationId && train.endStationId === toStationId);
 
-
     const resultsWithSeats = filteredTrains.map(train => {
       const seats = seatsData.find(seat => seat.trainId === train.id)?.classes || [];
       const formattedSeats = seats.map(seat => ({
@@ -230,14 +235,14 @@ const SearchComponent = ({ onSearchResults }) => {
       const route = routesData.find(route => route.trainId === train.id);
       const trainRoute = route?.stops || [];
 
-      // Extract departure and arrival times
-      const departureTime = trainRoute.length > 0 ? trainRoute[0].departureTime : null;  // Departure time at the first station
-      const arrivalTime = trainRoute.length > 0 ? trainRoute[trainRoute.length - 1].arrivalTime : null;  // Arrival time at the last station
+      const departureTime = trainRoute.length > 0 ? trainRoute[0].departureTime : null;
+      const arrivalTime = trainRoute.length > 0 ? trainRoute[trainRoute.length - 1].arrivalTime : null;
+
       return {
         ...train,
         fromStation: fromStationName,
-        toStation: toStationName, 
-        classes: formattedSeats, 
+        toStation: toStationName,
+        classes: formattedSeats,
         departureTime,
         arrivalTime
       };
@@ -247,7 +252,7 @@ const SearchComponent = ({ onSearchResults }) => {
   };
 
   return (
-    <div className="py-5 bg-primary position-relative">
+    <div className={`py-5 ${backgroundColor} position-relative`}>
       <div className="container">
         <div className="row justify-content-center align-items-center">
           <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
@@ -255,7 +260,6 @@ const SearchComponent = ({ onSearchResults }) => {
               <div className="row align-items-end gy-3 gx-md-3 gx-sm-2">
                 <div className="col-xl-8 col-lg-7 col-md-12">
                   <div className="row gy-3 gx-md-3 gx-sm-2">
-                    {/* Leaving From */}
                     <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
                       <div className="form-group hdd-arrow mb-0">
                         <label className="text-light text-uppercase opacity-75">Leaving From</label>
@@ -274,7 +278,6 @@ const SearchComponent = ({ onSearchResults }) => {
                         </select>
                       </div>
                     </div>
-                    {/* Going To */}
                     <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
                       <div className="form-group hdd-arrow mb-0">
                         <label className="text-light text-uppercase opacity-75">Going To</label>
@@ -295,7 +298,6 @@ const SearchComponent = ({ onSearchResults }) => {
                     </div>
                   </div>
                 </div>
-                {/* Journey Date */}
                 <div className="col-xl-4 col-lg-5 col-md-12">
                   <div className="row align-items-end gy-3 gx-md-3 gx-sm-2">
                     <div className="col-xl-8 col-lg-8 col-md-8 col-sm-8">
@@ -318,7 +320,8 @@ const SearchComponent = ({ onSearchResults }) => {
                           className="btn btn-whites text-primary full-width fw-medium"
                           onClick={handleSearch}
                         >
-                          <i className="fa-solid fa-magnifying-glass me-2" />Search
+                          <i className="fa-solid fa-magnifying-glass me-2" />
+                          {buttonText}
                         </button>
                       </div>
                     </div>

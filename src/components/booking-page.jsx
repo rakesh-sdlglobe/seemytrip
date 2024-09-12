@@ -11,105 +11,111 @@ import '../assets/css/prism.css';
 import '../assets/css/bootstrap-icons.css';
 import '../assets/css/fontawesome.css';
 import '../assets/css/style.css';
-import { D,trainImage} from '../assets/images';
+import { m } from '../assets/images';
 import { Link } from 'react-router-dom';
 import Header02 from './header02';
-import { useParams } from 'react-router-dom';
-import FooterDark from './footer-dark';
 
-const BookingPage = () => {
-  const { trainName } = useParams();
-  return (
-    <div>
-      <meta charSet="utf-8" />
-      {/* ============================================================== */}
-      {/* Preloader */}
-      {/* ============================================================== */}
-      <div id="preloader">
-        <div className="preloader"><span /><span /></div>
-      </div>
-      {/* ============================================================== */}
-      {/* Main wrapper */}
-      {/* ============================================================== */}
-      <div id="main-wrapper">
-        {/* ============================================================== */}
-        {/* Top header */}
-        {/* ============================================================== */}
-        {/* Start Navigation */}
-        <Header02 />
-        {/* End Navigation */}
-        <div className="clearfix" />
-        {/* ============================================================== */}
-        {/* Booking Page */}
-        {/* ============================================================== */}
-        <section className="pt-4 gray-simple position-relative">
-          <div className="container">
-            <div className="row">
-              <div className="col-xl-12 col-lg-12 col-md-12">
-                <div id="stepper" className="bs-stepper stepper-outline mb-5">
-                  <div className="bs-stepper-header">
-                    {/* Step 1 */}
-                    <div className="step active" data-target="#step-1">
-                      <div className="text-center">
-                        <button type="button" className="step-trigger mb-0" id="steppertrigger1">
-                          <span className="bs-stepper-circle">1</span>
-                        </button>
-                        <h6 className="bs-stepper-label d-none d-md-block">Journey Review</h6>
-                      </div>
-                    </div>
-                    <div className="line" />
-                    {/* Step 2 */}
-                    {/* <div className="step" data-target="#step-2">
-                      <div className="text-center">
-                        <button type="button" className="step-trigger mb-0" id="steppertrigger2">
-                          <span className="bs-stepper-circle">2</span>
-                        </button>
-                        <h6 className="bs-stepper-label d-none d-md-block">Traveler Info</h6>
-                      </div>
-                    </div>
-                    <div className="line" /> */}
-                    {/* Step 3 */}
-                    <div className="step" data-target="#step-2">
-                      <div className="text-center">
-                        <button type="button" className="step-trigger mb-0" id="steppertrigger3">
-                          <span className="bs-stepper-circle">2</span>
-                        </button>
-                        <h6 className="bs-stepper-label d-none d-md-block">Make Payment</h6>
+
+const BookingPage= ()=>{
+      return (
+        <div>
+          <meta charSet="utf-8" />
+          {/* ============================================================== */}
+          {/* Preloader - style you can find in spinners.css */}
+          {/* ============================================================== */}
+          <div id="preloader">
+            <div className="preloader"><span /><span /></div>
+          </div>
+          {/* ============================================================== */}
+          {/* Main wrapper - style you can find in pages.scss */}
+          {/* ============================================================== */}
+          <div id="main-wrapper">
+            {/* ============================================================== */}
+            {/* Top header  */}
+            {/* ============================================================== */}
+            {/* Start Navigation */}
+            <Header02/>
+            {/* End Navigation */}
+            <div className="clearfix" />
+            {/* ============================================================== */}
+            {/* Top header  */}
+            {/* ============================================================== */}
+            {/* ============================ Booking Page ================================== */}
+            <section className="pt-4 gray-simple position-relative">
+              <div className="container">
+                <div className="row">
+                  <div className="col-xl-12 col-lg-12 col-md-12">
+                    <div id="stepper" className="bs-stepper stepper-outline mb-5">
+                      <div className="bs-stepper-header">
+                        {/* Step 1 */}
+                        <div className="step active" data-target="#step-1">
+                          <div className="text-center">
+                            <button type="button" className="step-trigger mb-0" id="steppertrigger1">
+                              <span className="bs-stepper-circle">1</span>
+                            </button>
+                            <h6 className="bs-stepper-label d-none d-md-block">Tour Review</h6>
+                          </div>
+                        </div>
+                        <div className="line" />
+                        {/* Step 2 */}
+                        <div className="step" data-target="#step-2">
+                          <div className="text-center">
+                            <button type="button" className="step-trigger mb-0" id="steppertrigger2">
+                              <span className="bs-stepper-circle">2</span>
+                            </button>
+                            <h6 className="bs-stepper-label d-none d-md-block">Traveler Info</h6>
+                          </div>
+                        </div>
+                        <div className="line" />
+                        {/* Step 3 */}
+                        <div className="step" data-target="#step-3">
+                          <div className="text-center">
+                            <button type="button" className="step-trigger mb-0" id="steppertrigger3">
+                              <span className="bs-stepper-circle">3</span>
+                            </button>
+                            <h6 className="bs-stepper-label d-none d-md-block">Make Payment</h6>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div className="row align-items-start">
-              <div className="col-xl-12 col-lg-12 col-md-12">
                 <div className="row align-items-start">
-                  <div className="col-xl-8 col-lg-8 col-md-12">
-                    <div className="card p-3 mb-xl-0 mb-lg-0 mb-3 " style={{ marginLeft: "10rem" }}>
-                      {/* Booking Info */}
-                      <div className="card-box list-layout-block border br-dashed rounded-3 p-2">
-                        <div className="row">
-                          <div className="col-xl-4 col-lg-3 col-md">
-                            <div className="cardImage__caps rounded-2 overflow-hidden h-100">
-                              <img className="img-fluid h-100 object-fit" src={D} alt="img" />
-                            </div>
-                          </div>
-                          <div className="col-xl col-lg col-md ">
+                  <div className="col-xl-12 col-lg-12 col-md-12">
+                    <div className="row align-items-start">
+                      <div className="col-xl-8 col-lg-8 col-md-12">
+                        <div className="card p-3 mb-xl-0 mb-lg-0 mb-3 " style={{ marginLeft:"10rem" }}>
+                          {/* Booking Info */}
+                          <div className="card-box list-layout-block border br-dashed rounded-3 p-2">
+                            <div className="row">
+                              <div className="col-xl-4 col-lg-3 col-md">
+                                <div className="cardImage__caps rounded-2 overflow-hidden h-100">
+                                  <img className="img-fluid h-100 object-fit" src={m} alt="img" />
+                                </div>
+                              </div>
+                              <div className="col-xl col-lg col-md ">
                                 <div className="listLayout_midCaps mt-md-0 mt-3 mb-md-0 mb-3">
-                                  <h4 className="fs-5 fw-bold mb-1">Duronto Express</h4> {/* Dynamic Train Name */}
-
+                                  <div className="d-flex align-items-center justify-content-start">
+                                    <div className="d-inline-block">
+                                      <i className="fa fa-star text-warning text-xs" />
+                                      <i className="fa fa-star text-warning text-xs" />
+                                      <i className="fa fa-star text-warning text-xs" />
+                                      <i className="fa fa-star text-warning text-xs" />
+                                      <i className="fa fa-star text-warning text-xs" />
+                                    </div>
+                                  </div>
+                                  <h4 className="fs-5 fw-bold mb-1">12976 JP MYSORE EXP</h4>
                                   <ul className="row g-2 p-0">
                                     <li className="col-auto">
-                                      <p className="text-muted-2 text-md">NewDelhi, Bangalore </p> {/* Source and Destination */}
+                                      <p className="text-muted-2 text-md">Bangalore, Hyderbad</p>
+                                    </li>
+                                    <li className="col-auto">
+                                      <p className="text-muted-2 text-md fw-bold">.</p>
                                     </li>
                                     {/* <li className="col-auto">
-                                      <p className="text-muted-2 text-md fw-bold">.</p>
-                                    </li> */}
-                                    {/* <li className="col-auto">
-                                      <p className="text-muted-2 text-md">Approx. 9.8 km to Railway Station</p> 
+                                      <p className="text-muted-2 text-md">9.8 km from  Airport</p>
                                     </li> */}
                                   </ul>
-
                                   {/* <div className="d-flex align-items-center mb-3">
                                     <div className="col-auto">
                                       <div className="square--40 rounded-2 bg-primary text-light fw-semibold">4.8</div> 
@@ -119,8 +125,7 @@ const BookingPage = () => {
                                       <div className="text-md text-muted-2">3,014 reviews</div> 
                                     </div>
                                   </div> */}
-
-                                  <div className="position-relative mt-3">
+                                  {/* <div className="position-relative mt-3">
                                     <div className="d-flex flex-wrap align-items-center">
                                       <div className="d-inline-flex align-items-center border br-dashed rounded-2 p-2 me-2 mb-2">
                                         <div className="export-icon text-muted-2"><i className="fa-solid fa-chair" /></div>
@@ -145,16 +150,15 @@ const BookingPage = () => {
                                         <div className="export ps-2 text-muted-2">
                                           <span className="mb-0 text-muted-2 fw-semibold me-1">Daily</span><span className="mb-0 text-muted-2 text-md">Service</span> 
                                         </div>
-                                      </div> */}
+                                      </div>
                                     </div>
-                                  </div>
+                                  </div> */}
                                 </div>
                               </div>
-
                             </div>
                           </div>
                           {/* Flight info */}
-                          <div className="flight-boxyhc mt-4">
+                          {/* <div className="flight-boxyhc mt-4">
                             <h4 className="fs-5">Flight Detail</h4>
                             <div className="flights-accordion">
                               <div className="flights-list-item bg-white border rounded-3 p-2">
@@ -251,29 +255,29 @@ const BookingPage = () => {
                                           </div>
                                         </div>
                                       </div>
-                                    </div> */}
+                                    </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
+                          </div> */}
                           {/* Good to Know */}
                           <div className="flight-boxyhc mt-4">
-                            <h4 className="fs-5">Train Ticket Cancellation Policy</h4>
+                            <h4 className="fs-5">Good To Know</h4>
                             <div className="effloration-wrap">
                               <p>All Prices are in Indian Rupees and are subject to change without prior notice. In the case FIT
-                                Train inclusive package, the full amount of the Trains will be payable at the time of booking.
+                                flight inclusive package, the full amount of the flight will be payable at the time of booking.
                               </p>
                               <ul className="row align-items-center g-1 mb-0 p-0">
-                                <li className="col-12"><span className="text-success text-md"><i className="fa-solid fa-circle-dot me-2" />Free Cancellation: Till 10 days before the travel date – 100% refund.
-                                </span></li>
-                                <li className="col-12"><span className="text-muted-2 text-md"><i className="fa-solid fa-circle-dot me-2" />10 to 15 Days Before Travel: 75% refund + Non-Refundable Component.</span></li>
-                                <li className="col-12"><span className="text-muted-2 text-md"><i className="fa-solid fa-circle-dot me-2" />15 to 30 Days Before Travel: 30% refund + Non-Refundable Component.
+                                <li className="col-12"><span className="text-success text-md"><i className="fa-solid fa-circle-dot me-2" />Free Cancellation till 10 Aug 2023</span></li>
+                                <li className="col-12"><span className="text-muted-2 text-md"><i className="fa-solid fa-circle-dot me-2" />10 days: 100%</span></li>
+                                <li className="col-12"><span className="text-muted-2 text-md"><i className="fa-solid fa-circle-dot me-2" />10 to 15 days: 75% + Non Refundable
                                     Component</span></li>
-                                <li className="col-12"><span className="text-muted-2 text-md"><i className="fa-solid fa-circle-dot me-2" />Within 10 Days of Travel: No refund.</span></li>
-                                {/* <li className="col-12"><span className="text-success text-md"><i className="fa-solid fa-circle-dot me-2" />10Hotel / Air: 100% in case of non-refundable
+                                <li className="col-12"><span className="text-muted-2 text-md"><i className="fa-solid fa-circle-dot me-2" />15 to 30 days: 30% + Non Refundable
+                                    Component</span></li>
+                                <li className="col-12"><span className="text-success text-md"><i className="fa-solid fa-circle-dot me-2" />10Hotel / Air: 100% in case of non-refundable
                                     ticket / Hotel Room</span></li>
-                                <li className="col-12"><span className="text-muted-2 text-md"><i className="fa-solid fa-circle-dot me-2" />10Cruise / Visa: On Actuals</span></li> */}
+                                <li className="col-12"><span className="text-muted-2 text-md"><i className="fa-solid fa-circle-dot me-2" />10Cruise / Visa: On Actuals</span></li>
                               </ul>
                             </div>
                           </div>
