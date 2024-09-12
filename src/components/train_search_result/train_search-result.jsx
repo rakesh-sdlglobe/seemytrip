@@ -103,32 +103,35 @@ const TrainSearchResultList = ({ trainData, filters }) => {
 
                             {/* Train Class Availability */}
                             <div className="w-100 border-top border-secondary my-1"></div>
-                            <Link to="/booking-page"> <div className="col-xl-12 col-lg-12 col-md-12">
-                                <div className="row text-center gx-2 gy-2">
-                                    {train.classes.map((cls, index) => (
-                                        <div key={index} className="col-auto flex-shrink-0">
-                                            <div
-                                                className={`availability-card ${cls.status === 'AVL' ? 'bg-success-subtle' : 'bg-danger-subtle'} rounded-2 p-2`}
-                                                style={{
-                                                    border: `1px solid ${cls.status === 'AVL' ? 'rgba(40, 167, 69, 0.2)' : 'rgba(220, 53, 69, 0.2)'}`,
-                                                    backgroundColor: cls.status === 'AVL' ? 'rgba(40, 167, 69, 0.05)' : 'rgba(220, 53, 69, 0.05)', // Much lighter
-                                                }}
-                                            >
-                                                <div className="row justify-content-between align-items-center">
-                                                    <div className="col">
-                                                        <h5 className="mb-1">{cls.type}</h5>
-                                                    </div>
-                                                    <div className="col text-end">
-                                                        <div className="price">{cls.price}</div>
-                                                    </div>
-                                                </div>
-                                                <div className="availability-status mt-1">{cls.status}</div>
-                                                <div className="availability-percentage">{cls.availability} available</div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div></Link>
+                            <Link to={`/booking-page/${train.name}`}>
+    <div className="col-xl-12 col-lg-12 col-md-12">
+        <div className="row text-center gx-2 gy-2">
+            {train.classes.map((cls, index) => (
+                <div key={index} className="col-auto flex-shrink-0">
+                    <div
+                        className={`availability-card ${cls.status === 'AVL' ? 'bg-success-subtle' : 'bg-danger-subtle'} rounded-2 p-2`}
+                        style={{
+                            border: `1px solid ${cls.status === 'AVL' ? 'rgba(40, 167, 69, 0.2)' : 'rgba(220, 53, 69, 0.2)'}`,
+                            backgroundColor: cls.status === 'AVL' ? 'rgba(40, 167, 69, 0.05)' : 'rgba(220, 53, 69, 0.05)', // Much lighter
+                        }}
+                    >
+                        <div className="row justify-content-between align-items-center">
+                            <div className="col">
+                                <h5 className="mb-1">{cls.type}</h5>
+                            </div>
+                            <div className="col text-end">
+                                <div className="price">{cls.price}</div>
+                            </div>
+                        </div>
+                        <div className="availability-status mt-1">{cls.status}</div>
+                        <div className="availability-percentage">{cls.availability} available</div>
+                    </div>
+                </div>
+            ))}
+        </div>
+    </div>
+</Link>
+
                             {/* Last Updated */}
                             <div className="col-xl-12 col-lg-12 col-md-12">
                                 <div className="text-muted text-sm text-center mt-3">Updated: {train.lastUpdated}</div>
