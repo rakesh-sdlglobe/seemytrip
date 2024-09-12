@@ -37,8 +37,9 @@ export const editUserProfile = (userData) => {
           Authorization: `Bearer ${authToken}`,
         },
       });
+      
       dispatch({ type: EDIT_USER_PROFILE_SUCCESS, payload: response.data.user });
-    } catch (error) {
+    } catch (error) {    
       dispatch({ type: EDIT_USER_PROFILE_FAILURE, payload: error.response.data.message });
     }
   };
