@@ -174,17 +174,23 @@
 
 // export default SerchComponent;
 
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { stationsData } from './model/stationsData';
 import { trainsData } from './model/trainsData';
 import { seatsData } from './model/seatsData';
 import { routesData } from './model/routesData';
 
 const SearchComponent = ({ onSearchResults = () => {}, buttonText = 'Search', backgroundColor = 'bg-primary' }) => {
-  const [fromStation, setFromStation] = useState('');
-  const [toStation, setToStation] = useState('');
-  const [journeyDate, setJourneyDate] = useState('');
+  const [fromStation, setFromStation] = useState(() => sessionStorage.getItem('fromStation') || '');
+  const [toStation, setToStation] = useState(() => sessionStorage.getItem('toStation') || '');
+  const [journeyDate, setJourneyDate] = useState(() => sessionStorage.getItem('journeyDate') || '');
+
+  // Use effect to store data in session storage when input changes
+  useEffect(() => {
+    sessionStorage.setItem('fromStation', fromStation);
+    sessionStorage.setItem('toStation', toStation);
+    sessionStorage.setItem('journeyDate', journeyDate);
+  }, [fromStation, toStation, journeyDate]);
 
   const handleFromStationChange = (e) => {
     setFromStation(e.target.value);
