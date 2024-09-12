@@ -212,6 +212,9 @@ const SearchComponent = ({ onSearchResults }) => {
   };
 
   const findTrainsBetweenStations = (fromStationId, toStationId) => {
+    const fromStationName = stationsData.find(station => station.id === fromStationId)?.name;
+    const toStationName = stationsData.find(station => station.id === toStationId)?.name;
+
     const filteredTrains = trainsData.filter(train => train.startStationId === fromStationId && train.endStationId === toStationId);
 
 
@@ -231,7 +234,11 @@ const SearchComponent = ({ onSearchResults }) => {
       const departureTime = trainRoute.length > 0 ? trainRoute[0].departureTime : null;  // Departure time at the first station
       const arrivalTime = trainRoute.length > 0 ? trainRoute[trainRoute.length - 1].arrivalTime : null;  // Arrival time at the last station
       return {
-        ...train, classes: formattedSeats, departureTime,
+        ...train,
+        fromStation: fromStationName,
+        toStation: toStationName, 
+        classes: formattedSeats, 
+        departureTime,
         arrivalTime
       };
     });

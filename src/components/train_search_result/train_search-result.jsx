@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const TrainSearchResultList = ({ trainData, filters }) => {
     // Function to check if a train has any valid classes based on the filters
@@ -82,7 +83,7 @@ const TrainSearchResultList = ({ trainData, filters }) => {
                                     <div className="d-flex align-items-center flex-grow-1" style={{ padding: '10px', borderRadius: '8px' }}>
                                         <div className="d-flex flex-column align-items-center me-1" style={{ flex: '1' }}>
                                             <div className="fw-bold fs-6">{train.departureTime}</div>
-                                            <div className="text-muted small">{train.departureStation}</div>
+                                            <div className="text-muted small">{train.fromStation}</div>
                                         </div>
                                         <div className="text-center" style={{ flex: '1', position: 'relative' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', position: 'relative', justifyContent: 'center' }}>
@@ -93,7 +94,7 @@ const TrainSearchResultList = ({ trainData, filters }) => {
                                         </div>
                                         <div className="d-flex flex-column align-items-center ms-1" style={{ flex: '1' }}>
                                             <div className="fw-bold fs-6">{train.arrivalTime}</div>
-                                            <div className="text-muted small">{train.arrivalStation}</div>
+                                            <div className="text-muted small">{train.toStation}</div>
                                         </div>
                                     </div>
                                     <button className="btn btn-primary ms-3">Availability  <span className="arrow-down" /></button>
@@ -102,7 +103,7 @@ const TrainSearchResultList = ({ trainData, filters }) => {
 
                             {/* Train Class Availability */}
                             <div className="w-100 border-top border-secondary my-1"></div>
-                            <div className="col-xl-12 col-lg-12 col-md-12">
+                            <Link to="/booking-page"> <div className="col-xl-12 col-lg-12 col-md-12">
                                 <div className="row text-center gx-2 gy-2">
                                     {train.classes.map((cls, index) => (
                                         <div key={index} className="col-auto flex-shrink-0">
@@ -127,7 +128,7 @@ const TrainSearchResultList = ({ trainData, filters }) => {
                                         </div>
                                     ))}
                                 </div>
-                            </div>
+                            </div></Link>
                             {/* Last Updated */}
                             <div className="col-xl-12 col-lg-12 col-md-12">
                                 <div className="text-muted text-sm text-center mt-3">Updated: {train.lastUpdated}</div>
