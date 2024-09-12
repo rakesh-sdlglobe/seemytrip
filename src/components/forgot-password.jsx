@@ -84,7 +84,7 @@ const ForgotPassword = () => {
                                 </ul>
                               </div>
                               {/* Copyright */}
-                              <div className="text-primary-hover mt-3 text-center"> Copyrights ©2023 GeoTrip.com. Build by <Link to="https://www.themezhub.com/">Themezhub</Link>. </div>
+                              {/* <div className="text-primary-hover mt-3 text-center"> Copyrights ©2023 GeoTrip.com. Build by <Link to="https://www.themezhub.com/">Themezhub</Link>. </div> */}
                             </form>
                             {/* Form END */}
                           </div>
