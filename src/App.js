@@ -110,7 +110,8 @@ function App() {
           <Route path="/join-us" element={<JoinUs />} />
           <Route path="/add-listing" element={<AddListing />} />
           <Route path="/compare-listing" element={<CompareListing />} />
-          <Route path="/booking-page" element={<BookingPage />} />
+          {/* <Route path="/booking-page" element={<BookingPage trainName="12976 JP MYSORE EXP" />} /> */}
+          <Route path="/booking-page/:trainName" element={<BookingPage />} />
           <Route path="/my-profile" element={<MyProfile />} />
           <Route path="/classic-blog" element={<ClassicBlog />} />
           <Route path="/blog-grid" element={<Blog />} />

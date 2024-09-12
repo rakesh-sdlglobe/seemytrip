@@ -29,7 +29,7 @@ Default Style
   /* --bs-primary: #D20000; */
   --bs-primary: #cd2c22;
   --bs-primary-bg-subtle: #e8f1f3;
-  --bs-primary-bg-dark: #12687d;
+  --bs-primary-bg-dark: #cd2c22;
   --bs-secondary: #c3d2de;
   --bs-secondary-bg-subtle: #dae5ee;
   --bs-success: #27a974;
@@ -43,7 +43,7 @@ Default Style
   --bs-warning-bg-dark: #f0b503;
   --bs-danger: #CE3426;
   --bs-danger-bg-subtle: #ffe2e0;
-  --bs-danger-bg-dark: #12687d;
+  --bs-danger-bg-dark: #bb281f;
   --bs-light: #f4f5f7;
   --bs-dark: #0e1e2b;
   --bs-cyan: #04765f;
@@ -5257,7 +5257,7 @@ GeoTrip Elements Styles
 
 .flightLine.departure:before {
   content: "\f0fb";
-  font-family: "Font Awesome 6 Free";
+  /* font-family: "Font Awesome 6 Free"; */
   font-weight: 900;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -5268,7 +5268,7 @@ GeoTrip Elements Styles
 
 .flightLine.return:before {
   content: "\e518";
-  font-family: "Font Awesome 6 Free";
+  /* font-family: "Font Awesome 6 Free"; */
   font-weight: 900;
   left: 50%;
   transform: translate(65%, -50%);

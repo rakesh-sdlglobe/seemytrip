@@ -20,8 +20,9 @@ import login from '../assets/images/Traveling-pana.png'
 import charminar2 from '../assets/images/charminar-2.png'
 import ramoji from '../assets/images/ramoji.png'
 import gloconda from '../assets/images/gloconda_fort.png'
-import m from '../assets/images/m.png'
+import D from '../assets/images/D.png'
+import UPI from '../assets/images/upi-icon.png'
 
 export {
-  trainImage,indian_flag,charminar,benglore, kolkota, mumbai, utterpradesh, kerla, delhi,chennai,youngIndianCouple, team1, indianTrain,team2,team3,team4,team5,login,charminar2,ramoji,gloconda,m
+  trainImage,indian_flag,charminar,benglore, kolkota, mumbai, utterpradesh, kerla, delhi,chennai,youngIndianCouple, team1, indianTrain,team2,team3,team4,team5,login,charminar2,ramoji,gloconda,D,UPI
 };
