@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { indian_flag, trainImage } from '../assets/images';
 import { NavLink, Link, useNavigate  } from 'react-router-dom';
 import { useSelector,useDispatch } from 'react-redux';
@@ -14,8 +14,13 @@ const Header02 = () => {
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate('/register')
   };
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate('/login');
+    }
+  }, [isLoggedIn, navigate]);
 
   return (
     <>
