@@ -3,7 +3,7 @@ import React from 'react';
 const TrainSearchResultList = ({ trainData, filters }) => {
     // Function to check if a train has any valid classes based on the filters
     const hasValidClasses = (classes) => {
-        return classes.some(cls => 
+        return classes.some(cls =>
             (filters['1A'] && cls.type === '1A') ||
             (filters['2A'] && cls.type === '2A') ||
             (filters['3A'] && cls.type === '3A') ||
@@ -34,6 +34,19 @@ const TrainSearchResultList = ({ trainData, filters }) => {
 
     return (
         <div className="row align-items-center g-4 mt-2">
+            <style>
+                {`
+          .arrow-down {
+            margin-left: 8px;
+            border: solid white;
+            border-width: 0 2px 3px 0;
+            display: inline-block;
+            padding: 3px;
+            transform: rotate(45deg);
+            -webkit-transform: rotate(45deg);
+          }
+        `}
+            </style>
             {/* Offer Coupon Box */}
             <div className="col-xl-12 col-lg-12 col-md-12">
                 <div className="d-md-flex bg-success rounded-2 align-items-center justify-content-between px-3 py-3">
@@ -68,7 +81,7 @@ const TrainSearchResultList = ({ trainData, filters }) => {
                                     </div>
                                     <div className="d-flex align-items-center flex-grow-1" style={{ padding: '10px', borderRadius: '8px' }}>
                                         <div className="d-flex flex-column align-items-center me-1" style={{ flex: '1' }}>
-                                            <div className="fw-bold fs-6">{train.departure}</div>
+                                            <div className="fw-bold fs-6">{train.departureTime}</div>
                                             <div className="text-muted small">{train.departureStation}</div>
                                         </div>
                                         <div className="text-center" style={{ flex: '1', position: 'relative' }}>
@@ -79,11 +92,11 @@ const TrainSearchResultList = ({ trainData, filters }) => {
                                             </div>
                                         </div>
                                         <div className="d-flex flex-column align-items-center ms-1" style={{ flex: '1' }}>
-                                            <div className="fw-bold fs-6">{train.arrival}</div>
+                                            <div className="fw-bold fs-6">{train.arrivalTime}</div>
                                             <div className="text-muted small">{train.arrivalStation}</div>
                                         </div>
                                     </div>
-                                    <button className="btn btn-primary ms-3">Availability</button> 
+                                    <button className="btn btn-primary ms-3">Availability  <span className="arrow-down" /></button>
                                 </div>
                             </div>
 

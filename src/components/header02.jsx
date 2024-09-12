@@ -23,7 +23,7 @@ const Header02 = () => {
       <style>
         {`
           .nav-menu .active {
-            color: #14728a;
+            color: #cd2c22;
             font-weight: bold;
             position: relative;
           }
@@ -43,7 +43,7 @@ const Header02 = () => {
             position: absolute;
             width: 0;
             height: 2px;
-            background-color: #14728a;
+            background-color: #cd2c22;
             left: 0;
             bottom: 0;
             transition: width 0.3s ease;
@@ -54,7 +54,7 @@ const Header02 = () => {
           }
           .dropdown-item:focus,
           .dropdown-item:active {
-            background-color: #14728a !important;
+            background-color: #cd2c22 !important;
             color: inherit; /* Ensures the color doesn't change */
             outline: none; /* Removes the outline on focus */
           }

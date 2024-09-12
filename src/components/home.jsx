@@ -61,7 +61,7 @@ const Home = () => {
                         <Link className="nav-link" data-bs-toggle="tab" to="#flights"><i className="fa-solid fa-jet-fighter me-2" />Flights</Link>
                       </li>
                       <li className="nav-item">
-                        <Link className="nav-link" data-bs-toggle="tab" to="#tours"><i className="fa-solid fa-globe me-2" />Tour</Link>
+                        <Link className="nav-link" data-bs-toggle="tab" to="#tours"><i className="fa-solid fa-globe me-2" />Hotel</Link>
                       </li>
                       <li className="nav-item">
                         <Link className="nav-link" data-bs-toggle="tab" to="#cabs"><i className="fa-solid fa-car me-2" />Cab</Link>
@@ -308,7 +308,7 @@ const Home = () => {
                 <div className="col-xl-3 col-lg-3 col-md-6 col-sm-5">
                   <div className="featuresBox-wrap">
                     <div className="featuresBox-icons mb-3">
-                      <i className="fa-solid fa-sack-dollar fs-1 " style={{color: '#147289'}} />
+                      <i className="fa-solid fa-sack-dollar fs-1 text-primary" />
                     </div>
                     <div className="featuresBox-captions">
                       <h4 className="fw-bold fs-5 lh-base mb-0">Easy Booking</h4>
@@ -320,7 +320,7 @@ const Home = () => {
                 <div className="col-xl-3 col-lg-3 col-md-6 col-sm-5">
                   <div className="featuresBox-wrap">
                     <div className="featuresBox-icons mb-3">
-                      <i className="fa-solid fa-umbrella-beach fs-1 " style={{color: '#147289'}} />
+                      <i className="fa-solid fa-umbrella-beach fs-1 text-primary " />
                     </div>
                     <div className="featuresBox-captions">
                       <h4 className="fw-bold fs-5 lh-base mb-0">Best Destinations</h4>
@@ -332,7 +332,7 @@ const Home = () => {
                 <div className="col-xl-3 col-lg-3 col-md-6 col-sm-5">
                   <div className="featuresBox-wrap">
                     <div className="featuresBox-icons mb-3">
-                      <i className="fa-solid fa-person-walking-luggage fs-1 " style={{color: '#147289'}} />
+                      <i className="fa-solid fa-person-walking-luggage fs-1 text-primary" />
                     </div>
                     <div className="featuresBox-captions">
                       <h4 className="fw-bold fs-5 lh-base mb-0">Travel Guides</h4>
@@ -344,7 +344,7 @@ const Home = () => {
                 <div className="col-xl-3 col-lg-3 col-md-6 col-sm-5">
                   <div className="featuresBox-wrap">
                     <div className="featuresBox-icons mb-3">
-                      <i className="fa-solid fa-headset fs-1 " style={{color: '#147289'}} />
+                      <i className="fa-solid fa-headset fs-1 text-primary" />
                     </div>
                     <div className="featuresBox-captions">
                       <h4 className="fw-bold fs-5 lh-base mb-0">Friendly Support</h4>
