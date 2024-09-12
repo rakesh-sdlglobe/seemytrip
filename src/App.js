@@ -7,7 +7,7 @@ import PageNotFound from './components/404';
 import AddListing from './components/add-listing';
 import Blogdetail from './components/blog-detail';
 import Blog from './components/blog';
-import BookingPage from './components/booking-page';
+import BookingPage from './components/booking-page.jsx';
 import CarDetails from './components/car-detail';
 import CarList01 from './components/car-list-01';
 import CarList02 from './components/car-list-02';
@@ -52,8 +52,8 @@ import MyProfile from './components/my-profile';
 import TwofactorAuth from './components/two-factor-auth'
 import Pricing from './components/pricing';
 import PrivacyPolicy from './components/privacy-policy';
-import BookingPage2 from './components/bookingpage-02';
-import BookingPage3 from './components/bookingpage-03';
+import BookingPage2 from './components/bookingpage-02.jsx';
+import BookingPage3 from './components/bookingpage-03.jsx';
 import BookingPageSuccess from './components/bookingpage-success';
 import MyBooking from './components/my-booking.jsx'
 import Travelers from './components/travelers.jsx'

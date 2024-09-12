@@ -130,10 +130,12 @@ import Footer from '../footer'; // Ensure this path is correct
 import SearchComponent from './search_component'; // Ensure this path is correct
 import FilterSearchPage from './filter_search_page'; // Ensure this path is correct
 import TopFilter from './top_filter'; // Ensure this path is correct
-import TrainSearchResultList from './train_search-result'; // Ensure this path is correct
+import TrainSearchResultList from './train_search-result'; // Ensure this path is correctimport { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 const FlightList01 = () => {
-  const [searchResults, setSearchResults] = useState([]);
+  const location = useLocation();
+  const [searchResults, setSearchResults] = useState(location.state?.results || []);
   const [filters, setFilters] = useState({
     ac: false,
     departureEarlyMorning: false,
@@ -151,9 +153,10 @@ const FlightList01 = () => {
   });
 
   const handleSearchResults = (results) => {
-    console.log('Received search results in FlightList01:', results); // Debug log
+    console.log('Received search results in FlightList01:', results);
     setSearchResults(results);
   };
+
 
   const handleFilterChange = (e) => {
     const { id, checked } = e.target;
