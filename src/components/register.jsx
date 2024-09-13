@@ -92,7 +92,7 @@ const Register = () => {
                       <div className="p-4 p-sm-7">
                         {/* Logo */}
                         <Link to="/">
-                          <img className="img-fluid mb-4" src={trainImage} width={150} alt="logo" />
+                          <img className="img-fluid mb-4" src={trainImage} width={200} alt="logo" />
                         </Link>
                         {/* Title */}
                         <h1 className="mb-2 fs-2">Create New Account</h1>

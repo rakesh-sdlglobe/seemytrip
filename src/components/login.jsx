@@ -74,7 +74,7 @@ const Login = () => {
                           <div className="p-3 p-sm-4 p-md-5">
                             {/* Logo */}
                             <Link to="/">
-                              <img className="img-fluid mb-4" src={trainImage} width={150} alt="logo" />
+                              <img className="img-fluid mb-4" src={trainImage} width={200} alt="logo" />
                             </Link>
                             {/* Title */}
                             {/* <h1 className="mb-2 fs-2">Welcome Back Adam!</h1> */}
