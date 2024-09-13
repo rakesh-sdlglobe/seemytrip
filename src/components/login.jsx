@@ -74,7 +74,7 @@ const Login = () => {
                           <div className="p-3 p-sm-4 p-md-5">
                             {/* Logo */}
                             <Link to="/">
-                              <img className="img-fluid mb-4" src={trainImage} width={70} alt="logo" />
+                              <img className="img-fluid mb-4" src={trainImage} width={150} alt="logo" />
                             </Link>
                             {/* Title */}
                             {/* <h1 className="mb-2 fs-2">Welcome Back Adam!</h1> */}
@@ -150,7 +150,7 @@ const Login = () => {
                                   <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-facebook color--facebook fs-2" /></Link></li>
                                   <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-whatsapp color--whatsapp fs-2" /></Link></li>
                                   <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-linkedin color--linkedin fs-2" /></Link></li>
-                                  <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-dribbble color--dribbble fs-2" /></Link></li>
+                                  <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-google color--dribbble fs-2" /></Link></li>
                                   <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-twitter color--twitter fs-2" /></Link></li>
                                 </ul>
                               </div>
