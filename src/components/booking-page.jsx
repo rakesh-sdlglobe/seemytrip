@@ -155,7 +155,7 @@ const BookingPage = () => {
                           </div>
                           {/* Flight info */}
                           <div className="flight-boxyhc mt-4">
-                            <h4 className="fs-5">Flight Detail</h4>
+                            <h4 className="fs-5">Train Detail</h4>
                             <div className="flights-accordion">
                               <div className="flights-list-item bg-white border rounded-3 p-2">
                                 <div className="row gy-4 align-items-center justify-content-between">
