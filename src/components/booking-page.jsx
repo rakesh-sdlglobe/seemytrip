@@ -225,68 +225,7 @@ const BookingPage = () => {
                                     </div>
                                   </div>
                                 </div>
-
-                              </div>
-
-                            </div>
-                          </div>
-                          {/* Flight info */}
-                          <div className="flight-boxyhc mt-4">
-                            <h4 className="fs-5">Train Detail</h4>
-                            <div className="flights-accordion">
-                              <div className="flights-list-item bg-white border rounded-3 p-2">
-                                <div className="row gy-4 align-items-center justify-content-between">
-                                  <div className="col">
-                                    <div className="row">
-                                      <div className="col-xl-12 col-lg-12 col-md-12">
-                                        <div className="d-flex align-items-center mb-2">
-                                          <span className="label bg-light-primary text-primary me-2">Departure</span>
-                                          <span className="text-muted text-sm">26 Jun 2023</span>
-                                        </div>
-                                      </div>
-                                      <div className="col-xl-12 col-lg-12 col-md-12">
-                                        <div className="row gx-lg-5 gx-3 gy-4 align-items-center">
-                                          <div className="col-sm-auto">
-                                            <div className="d-flex align-items-center justify-content-start">
-                                              {/* <div className="d-start fl-pic">
-                                                <img className="img-fluid" src="https://placehold.co/110x110" width={45} alt="img" />
-                                              </div> */}
-                                              <div className="d-end fl-title ps-2">
-                                                <div className="text-dark fw-medium">Duronto Express Train</div>
-                                                <div className="text-sm text-muted">First Class</div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                          <div className="col">
-                                            <div className="row gx-3 align-items-center">
-                                              <div className="col-auto">
-                                                <div className="text-dark fw-bold">07:40</div>
-                                                <div className="text-muted text-sm fw-medium">DEL</div>
-                                              </div>
-                                              <div className="col text-center">
-                                                <div className="flightLine departure">
-                                                  <div />
-                                                  <div />
-                                                </div>
-                                                <div className="text-muted text-sm fw-medium mt-3">Direct</div>
-                                              </div>
-                                              <div className="col-auto">
-                                                <div className="text-dark fw-bold">12:20</div>
-                                                <div className="text-muted text-sm fw-medium">BLR</div>
-                                              </div>
-                                            </div>
-                                          </div>
-                                          <div className="col-md-auto">
-                                            <div className="text-dark fw-medium">4H 40M</div>
-                                            <div className="text-muted text-sm fw-medium">2 Stop</div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    {/* <div className="row mt-4">
-=======
                                 {/* <div className="row mt-4">
->>>>>>> 175b002461d26c15fb2eea741af4478b6c2c7353
                                       <div className="col-xl-12 col-lg-12 col-md-12">
                                         <div className="d-flex align-items-center mb-2">
                                           <span className="label bg-light-success text-success me-2">Return</span>
