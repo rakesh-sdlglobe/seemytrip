@@ -82,7 +82,7 @@ const BookingPage3= ()=>{
                 <div className="row align-items-start">
                   <div className="col-xl-12 col-lg-12 col-md-12">
                     <div className="div-title d-flex align-items-center mb-3">
-                      <h4>Passenger Billing Details</h4>
+                      <h4>Passenger Details</h4>
                     </div>
                     <div className="row align-items-start">
                       <div className="col-xl-8 col-lg-8 col-md-12">

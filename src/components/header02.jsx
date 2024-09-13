@@ -95,7 +95,7 @@ const Header02 = () => {
                 <li><NavLink to="/home-flight" activeClassName="active"><i className="fa-solid fa-jet-fighter fa-lg me-2" />Flights</NavLink></li>
                 <li><NavLink to="/home-hotel" activeClassName="active"><i className="fa-solid fa-spa fa-lg me-2" />Hotels</NavLink></li>
                 <li><NavLink to="/home-car" activeClassName="active"><i className="fa-solid fa-car fa-lg me-2" />Cabs</NavLink></li>
-                <li><NavLink to="/home-car" activeClassName="active"><i className="fa-solid fa-ship fa-lg me-2" />Cruise</NavLink></li>
+                <li><NavLink to="/home-car" activeClassName="active"><i className="fa-solid fa-ship fa-lg me-2" />Cruises</NavLink></li>
               </ul>
               <ul className="nav-menu nav-menu-social align-to-right">
                 <li className="currencyDropdown me-2">

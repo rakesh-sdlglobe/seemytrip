@@ -108,7 +108,7 @@ const Register = () => {
                               <input
                                 type="text"
                                 className="form-control"
-                                placeholder="your name"
+                                placeholder="Your Name"
                                 value={name}
                                 onChange={(e) =>
                                   dispatch(setName(e.target.value))
@@ -118,10 +118,10 @@ const Register = () => {
                             </div>
                             <div className="form-group">
                               <label className="form-label">
-                                Enter email ID
+                                Enter Email ID
                               </label>
                               <input
-                                type="email"
+                                type="Email"
                                 className="form-control"
                                 placeholder="name@example.com"
                                 value={email}
@@ -159,7 +159,7 @@ const Register = () => {
                               <input
                                 type="password"
                                 className="form-control"
-                                placeholder="*********"
+                                placeholder="Confirm Password"
                                 value={confirmPassword}
                                 onChange={(e) =>
                                   dispatch(setConfirmPassword(e.target.value))
@@ -194,10 +194,11 @@ const Register = () => {
                           <div className="social-login py-4 px-md-2">
                             <ul className="row align-items-center justify-content-center g-3 p-0 m-0">
                               <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-facebook color--facebook fs-2" /></Link></li>
-                              <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-whatsapp color--whatsapp fs-2" /></Link></li>
-                              <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-linkedin color--linkedin fs-2" /></Link></li>
-                              <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-google color--dribbble fs-2" /></Link></li>
-                              <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-twitter color--twitter fs-2" /></Link></li>
+                              {/* <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-whatsapp color--whatsapp fs-2" /></Link></li> */}
+                              {/* <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-linkedin color--linkedin fs-2" /></Link></li> */}
+                              <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-google color--google fs-2" /></Link></li>
+                              <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-regular  fa-envelope color--black fs-2" /></Link></li>
+                              {/* <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-twitter color--twitter fs-2" /></Link></li> */}
                             </ul>
                           </div>
                           {/* Copyright */}
