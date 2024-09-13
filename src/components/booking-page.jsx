@@ -1,4 +1,17 @@
-import { m } from '../assets/images';
+import '../assets/css/bootstrap.min.css';
+import '../assets/css/animation.css';
+import '../assets/css/dropzone.min.css';
+import '../assets/css/flatpickr.min.css';
+import '../assets/css/flickity.min.css';
+import '../assets/css/lightbox.min.css';
+import '../assets/css/magnifypopup.css';
+import '../assets/css/select2.min.css';
+import '../assets/css/rangeSlider.min.css';
+import '../assets/css/prism.css';
+import '../assets/css/bootstrap-icons.css';
+import '../assets/css/fontawesome.css';
+import '../assets/css/style.css';
+import { D,trainImage} from '../assets/images';
 import { Link } from 'react-router-dom';
 import Header02 from './header02';
 import { useLocation } from 'react-router-dom';
@@ -24,22 +37,34 @@ const BookingPage = () => {
         return <div>Loading...</div>; // Show loading or fallback if no train data
     }
 
+import { useParams } from 'react-router-dom';
+import FooterDark from './footer-dark';
+
+const BookingPage = () => {
+  const { trainName } = useParams();
   return (
     <div>
       <meta charSet="utf-8" />
-      {/* Preloader - style you can find in spinners.css */}
+      {/* ============================================================== */}
+      {/* Preloader */}
+      {/* ============================================================== */}
       <div id="preloader">
         <div className="preloader"><span /><span /></div>
       </div>
-      {/* Main wrapper - style you can find in pages.scss */}
+      {/* ============================================================== */}
+      {/* Main wrapper */}
+      {/* ============================================================== */}
       <div id="main-wrapper">
-        {/* Top header  */}
+        {/* ============================================================== */}
+        {/* Top header */}
+        {/* ============================================================== */}
         {/* Start Navigation */}
         <Header02 />
         {/* End Navigation */}
         <div className="clearfix" />
-        {/* Top header  */}
-        {/*  Booking Page  */}
+        {/* ============================================================== */}
+        {/* Booking Page */}
+        {/* ============================================================== */}
         <section className="pt-4 gray-simple position-relative">
           <div className="container">
             <div className="row">
@@ -52,12 +77,12 @@ const BookingPage = () => {
                         <button type="button" className="step-trigger mb-0" id="steppertrigger1">
                           <span className="bs-stepper-circle">1</span>
                         </button>
-                        <h6 className="bs-stepper-label d-none d-md-block">Tour Review</h6>
+                        <h6 className="bs-stepper-label d-none d-md-block">Journey Review</h6>
                       </div>
                     </div>
                     <div className="line" />
                     {/* Step 2 */}
-                    <div className="step" data-target="#step-2">
+                    {/* <div className="step" data-target="#step-2">
                       <div className="text-center">
                         <button type="button" className="step-trigger mb-0" id="steppertrigger2">
                           <span className="bs-stepper-circle">2</span>
@@ -65,12 +90,12 @@ const BookingPage = () => {
                         <h6 className="bs-stepper-label d-none d-md-block">Traveler Info</h6>
                       </div>
                     </div>
-                    <div className="line" />
+                    <div className="line" /> */}
                     {/* Step 3 */}
-                    <div className="step" data-target="#step-3">
+                    <div className="step" data-target="#step-2">
                       <div className="text-center">
                         <button type="button" className="step-trigger mb-0" id="steppertrigger3">
-                          <span className="bs-stepper-circle">3</span>
+                          <span className="bs-stepper-circle">2</span>
                         </button>
                         <h6 className="bs-stepper-label d-none d-md-block">Make Payment</h6>
                       </div>
@@ -89,75 +114,70 @@ const BookingPage = () => {
                         <div className="row">
                           <div className="col-xl-4 col-lg-3 col-md">
                             <div className="cardImage__caps rounded-2 overflow-hidden h-100">
-                              <img className="img-fluid h-100 object-fit" src={m} alt="img" />
+                              <img className="img-fluid h-100 object-fit" src={D} alt="img" />
                             </div>
                           </div>
                           <div className="col-xl col-lg col-md ">
-                            <div className="listLayout_midCaps mt-md-0 mt-3 mb-md-0 mb-3">
-                              <div className="d-flex align-items-center justify-content-start">
-                                <div className="d-inline-block">
-                                  <i className="fa fa-star text-warning text-xs" />
-                                  <i className="fa fa-star text-warning text-xs" />
-                                  <i className="fa fa-star text-warning text-xs" />
-                                  <i className="fa fa-star text-warning text-xs" />
-                                  <i className="fa fa-star text-warning text-xs" />
-                                </div>
-                              </div>
-                              <h4 className="fs-5 fw-bold mb-1">{trainData.name}</h4>
-                              <ul className="row g-2 p-0">
-                                <li className="col-auto">
-                                  <p className="text-muted-2 text-md">Bangalore, Hyderbad</p>
-                                </li>
-                                <li className="col-auto">
-                                  <p className="text-muted-2 text-md fw-bold">.</p>
-                                </li>
-                                {/* <li className="col-auto">
-                                      <p className="text-muted-2 text-md">9.8 km from  Airport</p>
+                                <div className="listLayout_midCaps mt-md-0 mt-3 mb-md-0 mb-3">
+                                  <h4 className="fs-5 fw-bold mb-1">Duronto Express</h4> {/* Dynamic Train Name */}
+
+                                  <ul className="row g-2 p-0">
+                                    <li className="col-auto">
+                                      <p className="text-muted-2 text-md">NewDelhi, Bangalore </p> {/* Source and Destination */}
+                                    </li>
+                                    {/* <li className="col-auto">
+                                      <p className="text-muted-2 text-md fw-bold">.</p>
                                     </li> */}
-                              </ul>
-                              {/* <div className="d-flex align-items-center mb-3">
+                                    {/* <li className="col-auto">
+                                      <p className="text-muted-2 text-md">Approx. 9.8 km to Railway Station</p> 
+                                    </li> */}
+                                  </ul>
+
+                                  {/* <div className="d-flex align-items-center mb-3">
                                     <div className="col-auto">
-                                      <div className="square--40 rounded-2 bg-primary text-light fw-semibold">4.8</div>
+                                      <div className="square--40 rounded-2 bg-primary text-light fw-semibold">4.8</div> 
                                     </div>
                                     <div className="col-auto text-start ps-2">
                                       <div className="text-md text-dark fw-medium">Exceptional</div>
-                                      <div className="text-md text-muted-2">3,014 reviews</div>
+                                      <div className="text-md text-muted-2">3,014 reviews</div> 
                                     </div>
                                   </div> */}
-                              {/* <div className="position-relative mt-3">
+
+                                  <div className="position-relative mt-3">
                                     <div className="d-flex flex-wrap align-items-center">
                                       <div className="d-inline-flex align-items-center border br-dashed rounded-2 p-2 me-2 mb-2">
-                                        <div className="export-icon text-muted-2"><i className="fa-solid fa-bed" /></div>
+                                        <div className="export-icon text-muted-2"><i className="fa-solid fa-chair" /></div>
                                         <div className="export ps-2">
-                                          <span className="mb-0 text-muted-2 fw-semibold me-1">03</span><span className="mb-0 text-muted-2 text-md">Beds</span>
+                                          <span className="mb-0 text-muted-2 fw-semibold me-1">AC</span><span className="mb-0 text-muted-2 text-md">Class</span> {/* Train Class */}
                                         </div>
                                       </div>
                                       <div className="d-inline-flex align-items-center border br-dashed rounded-2 p-2 me-2 mb-2">
-                                        <div className="export-icon text-muted-2"><i className="fa-solid fa-bath" /></div>
+                                        <div className="export-icon text-muted-2"><i className="fa-solid fa-ticket-alt" /></div>
                                         <div className="export ps-2">
-                                          <span className="mb-0 text-muted-2 fw-semibold me-1">02</span><span className="mb-0 text-muted-2 text-md">Baths</span>
+                                          <span className="mb-0 text-muted-2 fw-semibold me-1">Lower</span><span className="mb-0 text-muted-2 text-md">Berth</span> 
                                         </div>
                                       </div>
                                       <div className="d-inline-flex align-items-center border br-dashed rounded-2 p-2 me-2 mb-2">
-                                        <div className="export-icon text-muted-2"><i className="fa-solid fa-house-flood-water-circle-arrow-right" /></div>
+                                        <div className="export-icon text-muted-2"><i className="fa-solid fa-clock" /></div>
                                         <div className="export ps-2">
-                                          <span className="mb-0 text-muted-2 fw-semibold me-1">5</span><span className="mb-0 text-muted-2 text-md">Floor</span>
+                                          <span className="mb-0 text-muted-2 fw-semibold me-1">6h</span><span className="mb-0 text-muted-2 text-md">Duration</span> {/* Train Journey Duration */}
                                         </div>
                                       </div>
-                                      <div className="d-inline-flex align-items-center border br-dashed rounded-2 p-2 me-2 mb-2">
-                                        <div className="export-icon text-muted-2"><i className="fa-solid fa-user-group" /></div>
+                                      {/* <div className="d-inline-flex align-items-center border br-dashed rounded-2 p-2 me-2 mb-2">
+                                        <div className="export-icon text-muted-2"><i className="fa-solid fa-calendar-day" /></div>
                                         <div className="export ps-2 text-muted-2">
-                                          <span className="mb-0 text-muted-2 fw-semibold me-1">04</span><span className="mb-0 text-muted-2 text-md">Guests</span>
+                                          <span className="mb-0 text-muted-2 fw-semibold me-1">Daily</span><span className="mb-0 text-muted-2 text-md">Service</span> 
                                         </div>
-                                      </div>
+                                      </div> */}
                                     </div>
-                                  </div> */}
+                                  </div>
+                                </div>
+                              </div>
+
                             </div>
                           </div>
-                        </div>
-                      </div>
-                      {/* Flight info */}
-                      {/* <div className="flight-boxyhc mt-4">
+                          {/* Flight info */}
+                          <div className="flight-boxyhc mt-4">
                             <h4 className="fs-5">Flight Detail</h4>
                             <div className="flights-accordion">
                               <div className="flights-list-item bg-white border rounded-3 p-2">
@@ -174,11 +194,11 @@ const BookingPage = () => {
                                         <div className="row gx-lg-5 gx-3 gy-4 align-items-center">
                                           <div className="col-sm-auto">
                                             <div className="d-flex align-items-center justify-content-start">
-                                              <div className="d-start fl-pic">
+                                              {/* <div className="d-start fl-pic">
                                                 <img className="img-fluid" src="https://placehold.co/110x110" width={45} alt="img" />
-                                              </div>
+                                              </div> */}
                                               <div className="d-end fl-title ps-2">
-                                                <div className="text-dark fw-medium">Qutar Airways</div>
+                                                <div className="text-dark fw-medium">Duronto Express Train</div>
                                                 <div className="text-sm text-muted">First Class</div>
                                               </div>
                                             </div>
@@ -187,7 +207,7 @@ const BookingPage = () => {
                                             <div className="row gx-3 align-items-center">
                                               <div className="col-auto">
                                                 <div className="text-dark fw-bold">07:40</div>
-                                                <div className="text-muted text-sm fw-medium">DOH</div>
+                                                <div className="text-muted text-sm fw-medium">DEL</div>
                                               </div>
                                               <div className="col text-center">
                                                 <div className="flightLine departure">
@@ -198,7 +218,7 @@ const BookingPage = () => {
                                               </div>
                                               <div className="col-auto">
                                                 <div className="text-dark fw-bold">12:20</div>
-                                                <div className="text-muted text-sm fw-medium">DEL</div>
+                                                <div className="text-muted text-sm fw-medium">BLR</div>
                                               </div>
                                             </div>
                                           </div>
@@ -209,7 +229,7 @@ const BookingPage = () => {
                                         </div>
                                       </div>
                                     </div>
-                                    <div className="row mt-4">
+                                    {/* <div className="row mt-4">
                                       <div className="col-xl-12 col-lg-12 col-md-12">
                                         <div className="d-flex align-items-center mb-2">
                                           <span className="label bg-light-success text-success me-2">Return</span>
@@ -254,35 +274,35 @@ const BookingPage = () => {
                                           </div>
                                         </div>
                                       </div>
-                                    </div>
+                                    </div> */}
                                   </div>
                                 </div>
                               </div>
                             </div>
-                          </div> */}
-                      {/* Good to Know */}
-                      <div className="flight-boxyhc mt-4">
-                        <h4 className="fs-5">Good To Know</h4>
-                        <div className="effloration-wrap">
-                          <p>All Prices are in Indian Rupees and are subject to change without prior notice. In the case FIT
-                            flight inclusive package, the full amount of the flight will be payable at the time of booking.
-                          </p>
-                          <ul className="row align-items-center g-1 mb-0 p-0">
-                            <li className="col-12"><span className="text-success text-md"><i className="fa-solid fa-circle-dot me-2" />Free Cancellation till 10 Aug 2023</span></li>
-                            <li className="col-12"><span className="text-muted-2 text-md"><i className="fa-solid fa-circle-dot me-2" />10 days: 100%</span></li>
-                            <li className="col-12"><span className="text-muted-2 text-md"><i className="fa-solid fa-circle-dot me-2" />10 to 15 days: 75% + Non Refundable
-                              Component</span></li>
-                            <li className="col-12"><span className="text-muted-2 text-md"><i className="fa-solid fa-circle-dot me-2" />15 to 30 days: 30% + Non Refundable
-                              Component</span></li>
-                            <li className="col-12"><span className="text-success text-md"><i className="fa-solid fa-circle-dot me-2" />10Hotel / Air: 100% in case of non-refundable
-                              ticket / Hotel Room</span></li>
-                            <li className="col-12"><span className="text-muted-2 text-md"><i className="fa-solid fa-circle-dot me-2" />10Cruise / Visa: On Actuals</span></li>
-                          </ul>
+                          </div>
+                          {/* Good to Know */}
+                          <div className="flight-boxyhc mt-4">
+                            <h4 className="fs-5">Train Ticket Cancellation Policy</h4>
+                            <div className="effloration-wrap">
+                              <p>All Prices are in Indian Rupees and are subject to change without prior notice. In the case FIT
+                                Train inclusive package, the full amount of the Trains will be payable at the time of booking.
+                              </p>
+                              <ul className="row align-items-center g-1 mb-0 p-0">
+                                <li className="col-12"><span className="text-success text-md"><i className="fa-solid fa-circle-dot me-2" />Free Cancellation: Till 10 days before the travel date – 100% refund.
+                                </span></li>
+                                <li className="col-12"><span className="text-muted-2 text-md"><i className="fa-solid fa-circle-dot me-2" />10 to 15 Days Before Travel: 75% refund + Non-Refundable Component.</span></li>
+                                <li className="col-12"><span className="text-muted-2 text-md"><i className="fa-solid fa-circle-dot me-2" />15 to 30 Days Before Travel: 30% refund + Non-Refundable Component.
+                                    Component</span></li>
+                                <li className="col-12"><span className="text-muted-2 text-md"><i className="fa-solid fa-circle-dot me-2" />Within 10 Days of Travel: No refund.</span></li>
+                                {/* <li className="col-12"><span className="text-success text-md"><i className="fa-solid fa-circle-dot me-2" />10Hotel / Air: 100% in case of non-refundable
+                                    ticket / Hotel Room</span></li>
+                                <li className="col-12"><span className="text-muted-2 text-md"><i className="fa-solid fa-circle-dot me-2" />10Cruise / Visa: On Actuals</span></li> */}
+                              </ul>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                  {/* <div className="col-xl-4 col-lg-4 col-md-12">
+                      {/* <div className="col-xl-4 col-lg-4 col-md-12">
                         <div className="side-block card rounded-2 p-3">
                           <h5 className="fw-semibold fs-6">Reservation Summary</h5>
                           <div className="mid-block rounded-2 border br-dashed p-2 mb-3">
@@ -350,7 +370,7 @@ const BookingPage = () => {
                   </div>
                   <div className="col-xl-12 col-lg-12 col-md-12">
                     <div className="text-center d-flex align-items-center justify-content-center mt-4">
-                      <Link to ="/booking-page-2" className="btn btn-md btn-primary fw-semibold">Next<i className="fa-solid fa-arrow-right ms-2" /></Link>
+                      <Link to ="/booking-page-3" className="btn btn-md btn-primary fw-semibold">Next<i className="fa-solid fa-arrow-right ms-2" /></Link>
                     </div>
                   </div>
                 </div>
@@ -358,111 +378,7 @@ const BookingPage = () => {
             </section>
             {/* ============================ Booking Page End ================================== */}
             {/* ============================ Footer Start ================================== */}
-            <footer className="footer skin-dark-footer">
-              <div>
-                <div className="container">
-                  <div className="row">
-                    <div className="col-lg-3 col-md-4">
-                      <div className="footer-widget">
-                        <div className="d-flex align-items-start flex-column mb-3">
-                          <div className="d-inline-block"><img src="assets/img/logo-light.png" className="img-fluid" width={160} alt="Footer Logo" /></div>
-                        </div>
-                        <div className="footer-add pe-xl-3">
-                          <p>We make your dream more beautiful &amp; enjoyful with lots of happiness.</p>
-                        </div>
-                        <div className="foot-socials">
-                          <ul>
-                            <li><Link to="#" onClick={(e)=>{e.preventDefault()}}><i className="fa-brands fa-facebook" /></Link></li>
-                            <li><Link to="#" onClick={(e)=>{e.preventDefault()}}><i className="fa-brands fa-linkedin" /></Link></li>
-                            <li><Link to="#" onClick={(e)=>{e.preventDefault()}}><i className="fa-brands fa-google-plus" /></Link></li>
-                            <li><Link to="#" onClick={(e)=>{e.preventDefault()}}><i className="fa-brands fa-twitter" /></Link></li>
-                            <li><Link to="#" onClick={(e)=>{e.preventDefault()}}><i className="fa-brands fa-dribbble" /></Link></li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-2 col-md-4">
-                      <div className="footer-widget">
-                        <h4 className="widget-title">The Navigation</h4>
-                        <ul className="footer-menu">
-                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Talent Marketplace</Link></li>
-                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Payroll Services</Link></li>
-                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Direct Contracts</Link></li>
-                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Hire Worldwide</Link></li>
-                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Hire in the USA</Link></li>
-                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>How to Hire</Link></li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div className="col-lg-2 col-md-4">
-                      <div className="footer-widget">
-                        <h4 className="widget-title">Our Resources</h4>
-                        <ul className="footer-menu">
-                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Free Business tools</Link></li>
-                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Affiliate Program</Link></li>
-                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Success Stories</Link></li>
-                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Upwork Reviews</Link></li>
-                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Resources</Link></li>
-                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Help &amp; Support</Link></li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div className="col-lg-2 col-md-6">
-                      <div className="footer-widget">
-                        <h4 className="widget-title">The Company</h4>
-                        <ul className="footer-menu">
-                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>About Us</Link></li>
-                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Leadership</Link></li>
-                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Contact Us</Link></li>
-                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Investor Relations</Link></li>
-                          <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Trust, Safety &amp; Security</Link></li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div className="col-lg-3 col-md-6">
-                      <div className="footer-widget">
-                        <h4 className="widget-title">Payment Methods</h4>
-                        <div className="pmt-wrap">
-                          <img src="https://placehold.co/300x50" className="img-fluid" alt="" />
-                        </div>
-                        <div className="our-prtwrap mt-4">
-                          <div className="prtn-title">
-                            <p className="text-light opacity-75 fw-medium">Our Partners</p>
-                          </div>
-                          <div className="prtn-thumbs d-flex align-items-center justify-content-start">
-                            <div className="pmt-wrap pe-4">
-                              <img src="https://placehold.co/300x100" className="img-fluid" alt="" />
-                            </div>
-                            <div className="pmt-wrap pe-4">
-                              <img src="https://placehold.co/300x100" className="img-fluid" alt="" />
-                            </div>
-                            <div className="pmt-wrap pe-4">
-                              <img src="https://placehold.co/300x100" className="img-fluid" alt="" />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="footer-bottom border-top">
-                <div className="container">
-                  <div className="row align-items-center justify-content-between">
-                    <div className="col-xl-6 col-lg-6 col-md-6">
-                      <p className="mb-0">© 2023 GeoTrip Design by Themezhub.</p>
-                    </div>
-                    <div className="col-xl-6 col-lg-6 col-md-6">
-                      <ul className="p-0 d-flex justify-content-start justify-content-md-end text-start text-md-end m-0">
-                        <li><Link to="#">Terms of services</Link></li>
-                        <li className="ms-3"><Link to="#">Privacy Policies</Link></li>
-                        <li className="ms-3"><Link to="#">Cookies</Link></li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </footer>
+           <FooterDark/>
             {/* ============================ Footer End ================================== */}
             {/* Log In Modal */}
             <div className="modal fade" id="login" tabIndex={-1} role="dialog" aria-labelledby="loginmodal" aria-hidden="true">

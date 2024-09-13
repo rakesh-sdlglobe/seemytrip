@@ -13,6 +13,8 @@ import '../assets/css/fontawesome.css';
 import '../assets/css/style.css';
 import { Link } from 'react-router-dom';
 import Header02 from './header02';
+import {trainImage, UPI} from '../assets/images';
+import FooterDark from './footer-dark';
 
 const BookingPage3= ()=>{
       return (
@@ -50,12 +52,12 @@ const BookingPage3= ()=>{
                             <button type="button" className="step-trigger mb-0" id="steppertrigger1">
                               <span className="bs-stepper-circle"><i className="fa-solid fa-check" /></span>
                             </button>
-                            <h6 className="bs-stepper-label d-none d-md-block">Tour Review</h6>
+                            <h6 className="bs-stepper-label d-none d-md-block">Journey Review</h6>
                           </div>
                         </div>
                         <div className="line" />
                         {/* Step 2 */}
-                        <div className="step completed" data-target="#step-2">
+                        {/* <div className="step completed" data-target="#step-2">
                           <div className="text-center">
                             <button type="button" className="step-trigger mb-0" id="steppertrigger2">
                               <span className="bs-stepper-circle">2</span>
@@ -63,12 +65,12 @@ const BookingPage3= ()=>{
                             <h6 className="bs-stepper-label d-none d-md-block">Traveler Info</h6>
                           </div>
                         </div>
-                        <div className="line" />
+                        <div className="line" /> */}
                         {/* Step 3 */}
-                        <div className="step active" data-target="#step-3">
+                        <div className="step active" data-target="#step-2">
                           <div className="text-center">
                             <button type="button" className="step-trigger mb-0" id="steppertrigger3">
-                              <span className="bs-stepper-circle">3</span>
+                              <span className="bs-stepper-circle">2</span>
                             </button>
                             <h6 className="bs-stepper-label d-none d-md-block">Make Payment</h6>
                           </div>
@@ -80,7 +82,7 @@ const BookingPage3= ()=>{
                 <div className="row align-items-start">
                   <div className="col-xl-12 col-lg-12 col-md-12">
                     <div className="div-title d-flex align-items-center mb-3">
-                      <h4>Billing Details</h4>
+                      <h4>Passenger Billing Details</h4>
                     </div>
                     <div className="row align-items-start">
                       <div className="col-xl-8 col-lg-8 col-md-12">
@@ -92,14 +94,20 @@ const BookingPage3= ()=>{
                             <div className="row">
                               <div className="col-xl-6 col-lg-6 col-md-6">
                                 <div className="form-group">
-                                  <label className="form-label">Billing Name</label>
+                                  <label className="form-label">First Name</label>
                                   <input type="text" className="form-control" placeholder="First Name" />
                                 </div>
                               </div>
                               <div className="col-xl-6 col-lg-6 col-md-6">
                                 <div className="form-group">
-                                  <label className="form-label">Email</label>
+                                  <label className="form-label">Last Name</label>
                                   <input type="text" className="form-control" placeholder="Last Name" />
+                                </div>
+                              </div>
+                              <div className="col-xl-6 col-lg-6 col-md-6">
+                                <div className="form-group">
+                                  <label className="form-label">Email</label>
+                                  <input type="text" className="form-control" placeholder="Email" />
                                 </div>
                               </div>
                               <div className="col-xl-6 col-lg-6 col-md-6">
@@ -110,20 +118,20 @@ const BookingPage3= ()=>{
                               </div>
                               <div className="col-xl-6 col-lg-6 col-md-6">
                                 <div className="form-group">
-                                  <label className="form-label">Address 01</label>
-                                  <input type="text" className="form-control" placeholder="Passport Number" />
+                                  <label className="form-label">Address</label>
+                                  <input type="text" className="form-control" placeholder="Address" />
                                 </div>
                               </div>
-                              <div className="col-xl-6 col-lg-6 col-md-6">
+                              {/* <div className="col-xl-6 col-lg-6 col-md-6">
                                 <div className="form-group">
                                   <label className="form-label">Address 02</label>
                                   <input type="text" className="form-control" placeholder="Passport Number" />
                                 </div>
-                              </div>
+                              </div> */}
                               <div className="col-xl-6 col-lg-6 col-md-6">
                                 <div className="form-group">
-                                  <label className="form-label">Country</label>
-                                  <input type="text" className="form-control" placeholder="Passport Number" />
+                                  <label className="form-label">IRCTC username</label>
+                                  <input type="text" className="form-control" placeholder="IRCTC username" />
                                 </div>
                               </div>
                               <div className="col-xl-6 col-lg-6 col-md-6">
@@ -138,12 +146,12 @@ const BookingPage3= ()=>{
                                   <input type="text" className="form-control" placeholder="Passport Number" />
                                 </div>
                               </div>
-                              <div className="col-xl-12 col-lg-12 col-md-12">
+                              {/* <div className="col-xl-12 col-lg-12 col-md-12">
                                 <div className="form-group">
                                   <label className="form-label">Special notes</label>
                                   <textarea className="form-control ht-200" defaultValue={""} />
                                 </div>
-                              </div>
+                              </div> */}
                             </div>
                           </div>
                         </div>
@@ -167,10 +175,10 @@ const BookingPage3= ()=>{
                                   </div>
                                   <div className="paymnt-line-caps d-flex align-items-center justify-content-start">
                                     <div className="paymnt-caps-icons d-inline-flex">
-                                      <i className="fa-brands fa-cc-visa text-seegreen fs-1" />
+                                      <img src={UPI} alt="" style={{width:"50px"}}/>
                                     </div>
                                     <div className="paymnt-caps-details ps-2">
-                                      <span className="text-uppercase d-block fw-semibold text-md text-dark lh-2 mb-0">Visa****7542</span>
+                                      <span className="text-uppercase d-block fw-semibold text-md text-dark lh-2 mb-0">UPI</span>
                                       <span className="text-sm text-muted lh-2">Expired on 10/25</span>
                                     </div>
                                   </div>
@@ -239,15 +247,15 @@ const BookingPage3= ()=>{
                             <ul className="list-group list-group-borderless">
                               <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-1">
                                 <span className="fw-medium text-sm text-muted mb-0">Payment:</span>
-                                <span className="fw-semibold text-md">$772.40</span>
+                                <span className="fw-semibold text-md">₹772.40</span>
                               </li>
                               <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-1">
                                 <span className="fw-medium text-sm text-muted mb-0">Payment Methode fee</span>
-                                <span className="fw-semibold text-md">$0</span>
+                                <span className="fw-semibold text-md">₹0</span>
                               </li>
                               <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-1">
                                 <span className="fw-medium text-sm text-muted mb-0">Total Price</span>
-                                <span className="fw-semibold text-success text-md">$772.40</span>
+                                <span className="fw-semibold text-success text-md">₹772.40</span>
                               </li>
                             </ul>
                           </div>
@@ -259,7 +267,7 @@ const BookingPage3= ()=>{
                                 <span className="d-block text-sm text-muted-2 lh-2">We protect your money</span>
                               </div>
                             </div>
-                            <button className="btn fw-medium btn-primary full-width" type="button">Pay Now $772.40</button>
+                            <button className="btn fw-medium btn-primary full-width" type="button">Pay Now ₹772.40</button>
                           </div>
                           <div className="autopay-block-block">
                             <div className="d-flex align-items-center justify-content-between">
@@ -278,7 +286,7 @@ const BookingPage3= ()=>{
                   </div>
                   <div className="col-xl-12 col-lg-12 col-md-12">
                     <div className="text-center d-flex align-items-center justify-content-center mt-4">
-                      <Link to="/booking-page-2" className="btn btn-md btn-dark fw-semibold mx-2"><i className="fa-solid fa-arrow-left me-2" />Previous</Link>
+                      <Link to="/booking-page" className="btn btn-md btn-dark fw-semibold mx-2"><i className="fa-solid fa-arrow-left me-2" />Previous</Link>
                       <Link to="/booking-page-success" className="btn btn-md btn-primary fw-semibold mx-2">Submit &amp; Confirm<i className="fa-solid fa-arrow-right ms-2" /></Link>
                     </div>
                   </div>
@@ -287,6 +295,9 @@ const BookingPage3= ()=>{
             </section>
             {/* ============================ Booking Page End ================================== */}
             {/* ============================ Footer Start ================================== */}
+
+            <FooterDark/>
+
             <footer className="footer skin-dark-footer">
               <div>
                 <div className="container">

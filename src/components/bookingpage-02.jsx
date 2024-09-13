@@ -81,13 +81,13 @@ const BookingPage2= ()=>{
                 <div className="row align-items-start">
                   <div className="col-xl-12 col-lg-12 col-md-12 " style={{ marginLeft:"12rem" }}>
                     <div className="div-title d-flex align-items-center mb-3">
-                      <h4>Guests Detail</h4>
+                      <h4>Passenger Detail</h4>
                     </div>
                     <div className="row align-items-start">
                       <div className="col-xl-8 col-lg-8 col-md-12">
                         <div className="card mb-3">
                           <div className="card-header">
-                            <h4>Guest 01</h4>
+                            <h4>Passenger</h4>
                           </div>
                           <div className="card-body">
                             <div className="row">
@@ -111,14 +111,14 @@ const BookingPage2= ()=>{
                               </div>
                               <div className="col-xl-6 col-lg-6 col-md-6">
                                 <div className="form-group">
-                                  <label className="form-label">Passport Number</label>
+                                  <label className="form-label">IRCTC User Name</label>
                                   <input type="text" className="form-control" placeholder="Passport Number" />
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                        <div className="card mb-3">
+                        {/* <div className="card mb-3">
                           <div className="card-header">
                             <h4>Guest 02</h4>
                           </div>
@@ -183,7 +183,7 @@ const BookingPage2= ()=>{
                               </div>
                             </div>
                           </div>
-                        </div>
+                        </div> */}
                       </div>
                       {/* <div className="col-xl-4 col-lg-4 col-md-12">
                         <div className="side-block card rounded-2 p-3">
