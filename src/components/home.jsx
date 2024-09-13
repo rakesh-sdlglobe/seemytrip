@@ -76,9 +76,16 @@ const Home = () => {
                   </ul>
                   <div className="tab-content">
                     <div className="tab-pane show active" id="Trains">
-                      <div style={{ backgroundColor: '#f0f0f0', padding: '20px', borderRadius: '8px' }}>
-                        <SearchComponent onSearchResults={onSearchResults} />
-                      </div>
+                    <SearchComponent
+                        backgroundColor="#ffffff"
+                        height="90px"
+                        onSearchResults={onSearchResults}
+                        leavingLabel={null}      // Custom label for 'Leaving From'
+                        goingLabel={null}          // Custom label for 'Going To'
+                        dateLabel={null}      // Custom label for 'Journey Date'
+                        buttonBackgroundColor="#cd2c22"
+                        buttonTextColor="#ffffff"
+                      />
                     </div>
                     <div className="tab-pane" id="flights">
                       <div className="row gx-lg-2 g-3">

@@ -172,20 +172,28 @@
 //   );
 // };
 
-// export default SerchComponent;
-
 import React, { useState, useEffect } from 'react';
 import { stationsData } from './model/stationsData';
 import { trainsData } from './model/trainsData';
 import { seatsData } from './model/seatsData';
 import { routesData } from './model/routesData';
 
-const SearchComponent = ({ onSearchResults = () => {}, buttonText = 'Search', backgroundColor = 'bg-primary' }) => {
+const SearchComponent = ({
+  onSearchResults = () => { },
+  buttonText = 'Search',
+  backgroundColor = '#f0f0f0', // Default background color
+  buttonBackgroundColor = 'auto', // Default button background color
+  buttonTextColor = 'auto', // Default button text color
+  height = 'auto',              // Default height
+  customStyles = {},            // Additional custom styles
+  leavingLabel = 'Leaving From',  // Default label for the 'from' station
+  goingLabel = 'Going To',        // Default label for the 'to' station
+  dateLabel = 'Journey Date'      // Default label for journey date
+}) => {
   const [fromStation, setFromStation] = useState(() => sessionStorage.getItem('fromStation') || '');
   const [toStation, setToStation] = useState(() => sessionStorage.getItem('toStation') || '');
   const [journeyDate, setJourneyDate] = useState(() => sessionStorage.getItem('journeyDate') || '');
-
-  // Use effect to store data in session storage when input changes
+  
   useEffect(() => {
     sessionStorage.setItem('fromStation', fromStation);
     sessionStorage.setItem('toStation', toStation);
@@ -252,77 +260,114 @@ const SearchComponent = ({ onSearchResults = () => {}, buttonText = 'Search', ba
   };
 
   return (
-    <div className={`py-5 ${backgroundColor} position-relative`}>
-      <div className="container">
-        <div className="row justify-content-center align-items-center">
-          <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-            <div className="search-wrap position-relative">
-              <div className="row align-items-end gy-3 gx-md-3 gx-sm-2">
-                <div className="col-xl-8 col-lg-7 col-md-12">
-                  <div className="row gy-3 gx-md-3 gx-sm-2">
-                    <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
-                      <div className="form-group hdd-arrow mb-0">
-                        <label className="text-light text-uppercase opacity-75">Leaving From</label>
-                        <select
-                          id="fromStation"
-                          className="form-control fw-bold"
-                          value={fromStation}
-                          onChange={handleFromStationChange}
-                        >
-                          <option value="">Select</option>
-                          {stationsData.map(station => (
-                            <option key={station.id} value={station.id}>
-                              {station.name}
-                            </option>
-                          ))}
-                        </select>
+    <>
+      <style>
+        {`
+          .search-component {
+            background-color: ${backgroundColor}; 
+            height: ${height};              
+            padding: 20px;              
+            background-size: cover;            
+            background-position: center;       
+          }
+
+          @media (max-width: 768px) {
+            .search-component {
+              height: 340px;
+              padding: 15px;    
+            }
+          }
+
+          @media (max-width: 576px) {
+            .search-component {
+              height: 320px;
+              padding: 10px;     
+            }
+          }
+        `}
+      </style>
+      <div className="search-component">
+        <div className="container">
+          <div className="row justify-content-center align-items-center">
+            <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+              <div className="search-wrap position-relative">
+                <div className="row align-items-end gy-3 gx-md-3 gx-sm-2">
+                  <div className="col-xl-8 col-lg-7 col-md-12">
+                    <div className="row gy-3 gx-md-3 gx-sm-2">
+                      <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
+                        <div className="form-group hdd-arrow mb-0">
+                          {leavingLabel && (
+                            <label className="text-light text-uppercase opacity-75">{leavingLabel}</label>
+                          )}
+                          <select
+                            id="fromStation"
+                            className="form-control fw-bold"
+                            value={fromStation}
+                            onChange={handleFromStationChange}
+                          >
+                            <option value="">Select</option>
+                            {stationsData.map(station => (
+                              <option key={station.id} value={station.id}>
+                                {station.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                       </div>
-                    </div>
-                    <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                      <div className="form-group hdd-arrow mb-0">
-                        <label className="text-light text-uppercase opacity-75">Going To</label>
-                        <select
-                          id="toStation"
-                          className="form-control fw-bold"
-                          value={toStation}
-                          onChange={handleToStationChange}
-                        >
-                          <option value="">Select</option>
-                          {stationsData.map(station => (
-                            <option key={station.id} value={station.id}>
-                              {station.name}
-                            </option>
-                          ))}
-                        </select>
+                      <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                        <div className="form-group hdd-arrow mb-0">
+                          {goingLabel && (
+                            <label className="text-light text-uppercase opacity-75">{goingLabel}</label>
+                          )}
+                          <select
+                            id="toStation"
+                            className="form-control fw-bold"
+                            value={toStation}
+                            onChange={handleToStationChange}
+                          >
+                            <option value="">Select</option>
+                            {stationsData.map(station => (
+                              <option key={station.id} value={station.id}>
+                                {station.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div className="col-xl-4 col-lg-5 col-md-12">
-                  <div className="row align-items-end gy-3 gx-md-3 gx-sm-2">
-                    <div className="col-xl-8 col-lg-8 col-md-8 col-sm-8">
-                      <div className="form-group mb-0">
-                        <label className="text-light text-uppercase opacity-75">Journey Date</label>
-                        <input
-                          type="date"
-                          className="form-control fw-bold"
-                          placeholder="Select Journey Date"
-                          id="journeyDate"
-                          value={journeyDate}
-                          onChange={handleJourneyDateChange}
-                        />
+                  <div className="col-xl-4 col-lg-5 col-md-12">
+                    <div className="row align-items-end gy-3 gx-md-3 gx-sm-2">
+                      <div className="col-xl-8 col-lg-8 col-md-8 col-sm-8">
+                        <div className="form-group mb-0">
+                          {dateLabel && (
+                            <label className="text-light text-uppercase opacity-75">{dateLabel}</label>
+                          )}
+                          <input
+                            type="date"
+                            className="form-control fw-bold"
+                            placeholder="Select Journey Date"
+                            id="journeyDate"
+                            value={journeyDate}
+                            onChange={handleJourneyDateChange}
+                          />
+                        </div>
                       </div>
-                    </div>
-                    <div className="col-xl-4 col-lg-4 col-md-4 col-sm-4">
-                      <div className="form-group mb-0">
-                        <button
-                          type="button"
-                          className="btn btn-whites text-primary full-width fw-medium"
-                          onClick={handleSearch}
-                        >
-                          <i className="fa-solid fa-magnifying-glass me-2" />
-                          {buttonText}
-                        </button>
+                      <div className="col-xl-4 col-lg-4 col-md-4 col-sm-4">
+                        <div className="form-group mb-0">
+                          <button
+                            type="button"
+                            className="btn full-width fw-medium"
+                            style={{ 
+                              backgroundColor: buttonBackgroundColor, // Custom button background color
+                              color: buttonTextColor // Custom button text color
+                            }}
+                            onClick={handleSearch}
+                          >
+                            <i className="fa-solid fa-magnifying-glass me-2" />
+                            {buttonText}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -332,8 +377,9 @@ const SearchComponent = ({ onSearchResults = () => {}, buttonText = 'Search', ba
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
 export default SearchComponent;
+

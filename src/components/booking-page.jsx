@@ -2,10 +2,28 @@ import { m } from '../assets/images';
 import { Link } from 'react-router-dom';
 import Header02 from './header02';
 import { useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+
 const BookingPage = () => {
-   // Retrieve trainData from the navigation state
-   const location = useLocation();
-   const { trainData } = location.state || {}; // Fallback to empty if no state is passed
+  const location = useLocation();
+    const [trainData, setTrainData] = useState(null);
+
+    useEffect(() => {
+        // Retrieve trainData from state or sessionStorage
+        if (location.state && location.state.trainData) {
+            setTrainData(location.state.trainData);
+        } else {
+            const storedTrainData = sessionStorage.getItem('trainData');
+            if (storedTrainData) {
+                setTrainData(JSON.parse(storedTrainData));
+            }
+        }
+    }, [location.state]);
+
+    if (!trainData) {
+        return <div>Loading...</div>; // Show loading or fallback if no train data
+    }
+
   return (
     <div>
       <meta charSet="utf-8" />

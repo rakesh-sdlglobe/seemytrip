@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 const TrainSearchResultList = ({ trainData, filters }) => {
     const navigate = useNavigate();
+    const [filteredTrainData, setFilteredTrainData] = useState([]);
+
     // Function to check if a train has any valid classes based on the filters
     const hasValidClasses = (classes) => {
         return classes.some(cls =>
@@ -26,35 +28,34 @@ const TrainSearchResultList = ({ trainData, filters }) => {
         );
     };
 
-    // Filter trains based on the selected filters
-    const filteredTrainData = trainData
-        .filter(train => hasValidClasses(train.classes))
-        .map(train => ({
-            ...train,
-            classes: filterClasses(train.classes)
-        }));
+    useEffect(() => {
+        // If no new train data is passed in, use data from sessionStorage
+        if (!trainData || trainData.length === 0) {
+            const storedData = sessionStorage.getItem('filteredTrainData');
+            if (storedData) {
+                setFilteredTrainData(JSON.parse(storedData));
+            }
+        } else {
+            // Filter the train data and save it in sessionStorage
+            const filteredData = trainData
+                .filter(train => hasValidClasses(train.classes))
+                .map(train => ({
+                    ...train,
+                    classes: filterClasses(train.classes)
+                }));
+
+            setFilteredTrainData(filteredData);
+            sessionStorage.setItem('filteredTrainData', JSON.stringify(filteredData));
+        }
+    }, [trainData, filters]);
 
     // Function to handle booking
     const handleBooking = (train) => {
         navigate('/booking-page', { state: { trainData: train } });
     };
 
-
     return (
         <div className="row align-items-center g-4 mt-2">
-            <style>
-                {`
-          .arrow-down {
-            margin-left: 8px;
-            border: solid white;
-            border-width: 0 2px 3px 0;
-            display: inline-block;
-            padding: 3px;
-            transform: rotate(45deg);
-            -webkit-transform: rotate(45deg);
-          }
-        `}
-            </style>
             {/* Offer Coupon Box */}
             <div className="col-xl-12 col-lg-12 col-md-12">
                 <div className="d-md-flex bg-success rounded-2 align-items-center justify-content-between px-3 py-3">
@@ -118,7 +119,8 @@ const TrainSearchResultList = ({ trainData, filters }) => {
                                                 className={`availability-card cursor-pointer ${cls.status === 'AVL' ? 'bg-success-subtle' : 'bg-danger-subtle'} rounded-2 p-2`}
                                                 style={{
                                                     border: `1px solid ${cls.status === 'AVL' ? 'rgba(40, 167, 69, 0.2)' : 'rgba(220, 53, 69, 0.2)'}`,
-                                                    backgroundColor: cls.status === 'AVL' ? 'rgba(40, 167, 69, 0.05)' : 'rgba(220, 53, 69, 0.05)', // Much lighter
+                                                    backgroundColor: cls.status === 'AVL' ? 'rgba(40, 167, 69, 0.05)' : 'rgba(220, 53, 69, 0.05)', // Lighter
+                                                    cursor: 'pointer', // Add this line to change the cursor on hover
                                                 }}
                                                 onClick={() => handleBooking(train)}
                                             >
