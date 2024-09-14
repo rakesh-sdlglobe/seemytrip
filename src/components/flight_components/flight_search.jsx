@@ -96,15 +96,12 @@ const FlightSearch = ({
              flight.stops.some(stop => stop.airportId === toAirportId);
     });
 
-    // Map filtered flights to include seat availability, formatted stops, and duration
-    const resultsWithSeats = filteredFlights.map(flight => {
-      const seats = seatData.find(seat => seat.flightId === flight.flightId)?.classes || [];
-      const formattedSeats = seats.map(seat => ({
-        type: seat.classType,
-        price: `₹${seat.price}`,
-        status: seat.status,
-        availability: `${seat.availability}%`
-      }));
+    // Map filtered flights to include Economy class price and other details
+    const resultsWithEconomyPrice = filteredFlights.map(flight => {
+      // Find the seat data for the flight
+      const seatInfo = seatData.find(seat => seat.flightId === flight.flightId);
+      // Extract Economy class price
+      const economyPrice = seatInfo?.classes.find(cls => cls.classType === 'Economy')?.price || 'Not Available';
 
       // Format stops with airport names
       const formattedStops = flight.stops.map(stop => ({
@@ -119,7 +116,7 @@ const FlightSearch = ({
         ...flight,
         fromAirport: fromAirportName,
         toAirport: toAirportName,
-        seats: formattedSeats,
+        economyPrice: `₹${economyPrice}`, // Add Economy class price to results
         stops: formattedStops,
         departureTime: flight.departureTime,
         arrivalTime: flight.arrivalTime,
@@ -127,7 +124,7 @@ const FlightSearch = ({
       };
     });
 
-    return resultsWithSeats;
+    return resultsWithEconomyPrice;
   };
 
   const airportOptions = airportData.map(airport => ({
@@ -251,17 +248,14 @@ const FlightSearch = ({
                         </div>
                       </div>
                       <div className="col-xl-4 col-lg-4 col-md-4 col-sm-4">
-                        <div className="form-group mb-0">
-                          <button
-                            type="button"
-                            className="btn full-width fw-medium"
-                            style={{ backgroundColor: buttonBackgroundColor, color: buttonTextColor }}
-                            onClick={handleSearch}
-                          >
-                            <i className="fa-solid fa-magnifying-glass me-2" />
-                            {buttonText}
-                          </button>
-                        </div>
+                        <button
+                          type="button"
+                          className="btn full-width"
+                          style={{ backgroundColor: buttonBackgroundColor, color: buttonTextColor }}
+                          onClick={handleSearch}
+                        >
+                          {buttonText}
+                        </button>
                       </div>
                     </div>
                   </div>

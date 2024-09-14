@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { indigo } from '../../assets/images';
 
 const FlightSearchResult = ({ flightData, filters }) => {
     const navigate = useNavigate();
@@ -7,13 +8,10 @@ const FlightSearchResult = ({ flightData, filters }) => {
 
     useEffect(() => {
         if (!flightData || flightData.length === 0) {
-            const storedData = sessionStorage.getItem('filteredFlightData');
-            if (storedData) {
-                setFilteredFlightData(JSON.parse(storedData));
-            } else {
-                setFilteredFlightData([]);
-            }
+            // Clear the filteredFlightData if flightData is empty
+            setFilteredFlightData([]);
         } else {
+            // Apply filters to flightData
             const filteredData = flightData.filter(flight => {
                 return (
                     (!filters.direct || flight.direct) &&
@@ -21,20 +19,21 @@ const FlightSearchResult = ({ flightData, filters }) => {
                 );
             });
 
+            // Update state with filtered data
             setFilteredFlightData(filteredData);
             sessionStorage.setItem('filteredFlightData', JSON.stringify(filteredData));
         }
     }, [flightData, filters]);
 
     const handleBooking = (flight) => {
-        navigate('/booking-page', { state: { flightData: flight } });
+        navigate('/flight-Bookingpage', { state: { flightData: flight } });
     };
 
     return (
         <div className="row align-items-center g-4 mt-2">
-             <style>
+            <style>
             {`
-                .no-train-found-wrapper {
+                .no-flight-found-wrapper {
                     display: flex;
                     flex-direction: column;
                     align-items: center;
@@ -45,20 +44,19 @@ const FlightSearchResult = ({ flightData, filters }) => {
                     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
                 }
                 
-                .no-train-found-wrapper i {
+                .no-flight-found-wrapper i {
                     color: #ccc;
                 }
                 
-                .no-train-found-wrapper h3 {
+                .no-flight-found-wrapper h3 {
                     font-size: 24px;
                     margin-bottom: 10px;
                 }
                 
-                .no-train-found-wrapper p {
+                .no-flight-found-wrapper p {
                     font-size: 16px;
                     color: #6c757d;
                 }
-
             `}
             </style>
             {/* Offer Coupon Box */}
@@ -66,7 +64,9 @@ const FlightSearchResult = ({ flightData, filters }) => {
                 <div className="d-md-flex bg-success rounded-2 align-items-center justify-content-between px-3 py-3">
                     <div className="d-md-flex align-items-center justify-content-start">
                         <div className="flx-icon-first mb-md-0 mb-3">
-                            <div className="square--60 circle bg-white"><i className="fa-solid fa-gift fs-3 text-success" /></div>
+                            <div className="square--60 circle bg-white">
+                                <i className="fa-solid fa-gift fs-3 text-success" />
+                            </div>
                         </div>
                         <div className="flx-caps-first ps-2">
                             <h6 className="fs-5 fw-medium text-light mb-0">Start Exploring The World</h6>
@@ -93,7 +93,7 @@ const FlightSearchResult = ({ flightData, filters }) => {
                                     <div className="row gx-lg-5 gx-3 gy-4 align-items-center">
                                         <div className="col-sm-auto">
                                             <div className="d-flex align-items-center justify-content-start">
-                                                <img className="img-fluid" src={flight.airlineLogo} width={45} alt="Airline Logo" /> 
+                                                <img className="img-fluid" src={indigo} width={45} alt="Airline Logo" /> 
                                                 <div className="ps-2">
                                                     <div className="text-dark fw-medium">{flight.airline}</div>
                                                     <div className="text-sm text-muted">{flight.classType}</div>
@@ -111,7 +111,6 @@ const FlightSearchResult = ({ flightData, filters }) => {
                                                         <div />
                                                         <div />
                                                     </div>
-                                                    {/* <div className="text-muted text-sm fw-medium mt-3">{flight.direct ? 'Direct' : `${flight.stopovers} Stop`}</div> */}
                                                 </div>
                                                 <div className="col-auto">
                                                     <div className="text-dark fw-bold">{flight.arrivalTime}</div>
@@ -126,7 +125,7 @@ const FlightSearchResult = ({ flightData, filters }) => {
                                     </div>
                                 </div>
                                 <div className="col-md-auto">
-                                    <div className="text-dark fs-3 fw-bold lh-base">₹{flight.price}</div>
+                                    <div className="text-dark fs-3 fw-bold lh-base">{flight.economyPrice}</div>
                                     <button className="btn btn-primary btn-md fw-medium full-width" onClick={() => handleBooking(flight)}>Select Flight</button>
                                 </div>
                             </div>

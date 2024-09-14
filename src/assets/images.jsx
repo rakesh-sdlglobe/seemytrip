@@ -26,7 +26,8 @@ import Indigo from '../assets/images/6E.png'
 import AirIndia from '../assets/images/AI.png'
 import Vistara from '../assets/images/UK.png'
 import Hyderbad from '../assets/images/Hyderbad.png'
+import indigo from '../assets/images/6E.png';
 
 export {
-  trainImage,indian_flag,charminar,benglore, kolkota, mumbai, utterpradesh, kerla, delhi,chennai,youngIndianCouple, team1, indianTrain,team2,team3,team4,team5,login,charminar2,ramoji,gloconda,D,UPI,Indigo,AirIndia,Vistara,Hyderbad
+  trainImage,indian_flag,charminar,benglore, kolkota, mumbai, utterpradesh, kerla, delhi,chennai,youngIndianCouple, team1, indianTrain,team2,team3,team4,team5,login,charminar2,ramoji,gloconda,D,UPI,Indigo,AirIndia,Vistara,Hyderbad,indigo
 };
