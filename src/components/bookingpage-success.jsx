@@ -19,27 +19,27 @@ import FooterDark from './footer-dark';
 const BookingPageSuccess =() =>{
       return (
         <div>
-          {/* ============================================================== */}
+          
           {/* Preloader - style you can find in spinners.css */}
-          {/* ============================================================== */}
+          
           <div id="preloader">
             <div className="preloader"><span /><span /></div>
           </div>
-          {/* ============================================================== */}
+          
           {/* Main wrapper - style you can find in pages.scss */}
-          {/* ============================================================== */}
+          
           <div id="main-wrapper">
-            {/* ============================================================== */}
+            
             {/* Top header  */}
-            {/* ============================================================== */}
+            
             {/* Start Navigation */}
             <Header02/>
             {/* End Navigation */}
             <div className="clearfix" />
-            {/* ============================================================== */}
+            
             {/* Top header  */}
-            {/* ============================================================== */}
-            {/* ============================ Booking Page ================================== */}
+            
+            {/*  Booking Page  */}
             <section className="py-4 gray-simple position-relative">
               <div className="container">
                 <div className="row align-items-start">
@@ -118,6 +118,7 @@ const BookingPageSuccess =() =>{
                 </div>
               </div>
             </section>
+
             {/* ============================ Booking Page End ================================== */}
             {/* ============================ Footer Start ================================== */}
            <FooterDark/>
@@ -653,17 +654,13 @@ const BookingPageSuccess =() =>{
                 </div>
               </div>
             </div>
+
+            {/*  Booking Page End  */}
+            {/*  Footer Start  */}
+             <FooterDark/>
+            {/*  Footer End  */}
             <Link id="back2Top" className="top-scroll" title="Back to top" to="#"><i className="fa-solid fa-sort-up" /></Link>
           </div>
-          {/* ============================================================== */}
-          {/* End Wrapper */}
-          {/* ============================================================== */}
-          {/* ============================================================== */}
-          {/* All Jquery */}
-          {/* ============================================================== */}
-          {/* ============================================================== */}
-          {/* This page plugins */}
-          {/* ============================================================== */}
         </div>
       );
     }
