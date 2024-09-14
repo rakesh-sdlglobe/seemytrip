@@ -12,6 +12,10 @@ export const ADD_TRAVELER_FAILURE = 'ADD_TRAVELER_FAILURE';
 export const FETCH_TRAVELERS_REQUEST = 'FETCH_TRAVELERS_REQUEST';
 export const FETCH_TRAVELERS_SUCCESS = 'FETCH_TRAVELERS_SUCCESS';
 export const FETCH_TRAVELERS_FAILURE = 'FETCH_TRAVELERS_FAILURE';
+export const REMOVE_TRAVELER_REQUEST = 'REMOVE_TRAVELER_REQUEST';
+export const REMOVE_TRAVELER_SUCCESS = 'REMOVE_TRAVELER_SUCCESS';
+export const REMOVE_TRAVELER_FAILURE = 'REMOVE_TRAVELER_FAILURE';
+
 
 // Fetch user profile
 export const getUserProfile = () => {
@@ -113,4 +117,27 @@ export const fetchTravelers = () => {
       dispatch({ type: FETCH_TRAVELERS_FAILURE, payload: error.message || 'Failed to fetch travelers' });
     }
   };
+};
+
+export const removeTraveler = (id, navigate) => async (dispatch) => {
+  try {
+    dispatch({ type: REMOVE_TRAVELER_REQUEST });
+    const authToken = localStorage.getItem("authToken");
+    await axios.delete(`http://localhost:3002/api/users/traveller/${id}`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+
+    dispatch({
+      type: REMOVE_TRAVELER_SUCCESS,
+      payload: id,
+    });
+    navigate("/");
+  } catch (error) {
+    dispatch({
+      type: REMOVE_TRAVELER_FAILURE,
+      payload: error.message || "Failed to add traveler",
+    });
+  }
 };

@@ -1,7 +1,19 @@
-import { FETCH_USER_PROFILE_SUCCESS, FETCH_USER_PROFILE_FAILURE, EDIT_USER_PROFILE_SUCCESS, EDIT_USER_PROFILE_FAILURE,
-  FETCH_USER_BOOKINGS_SUCCESS, FETCH_USER_BOOKINGS_FAILURE, ADD_TRAVELER_REQUEST, ADD_TRAVELER_SUCCESS, ADD_TRAVELER_FAILURE,
-  FETCH_TRAVELERS_REQUEST,FETCH_TRAVELERS_SUCCESS,FETCH_TRAVELERS_FAILURE
- } from '../Actions/userActions';
+import {
+  FETCH_USER_PROFILE_SUCCESS,
+  FETCH_USER_PROFILE_FAILURE,
+  EDIT_USER_PROFILE_SUCCESS,
+  EDIT_USER_PROFILE_FAILURE,
+  FETCH_USER_BOOKINGS_SUCCESS,
+  FETCH_USER_BOOKINGS_FAILURE,
+  ADD_TRAVELER_REQUEST,
+  ADD_TRAVELER_SUCCESS,
+  ADD_TRAVELER_FAILURE,
+  FETCH_TRAVELERS_REQUEST,
+  FETCH_TRAVELERS_SUCCESS,
+  FETCH_TRAVELERS_FAILURE,
+  REMOVE_TRAVELER_SUCCESS,
+  REMOVE_TRAVELER_FAILURE,
+} from "../Actions/userActions";
 
 const initialState = {
   user: null,
@@ -22,20 +34,39 @@ const userReducer = (state = initialState, action) => {
     case EDIT_USER_PROFILE_FAILURE:
       return { ...state, error: action.payload, loading: false };
     case FETCH_USER_BOOKINGS_SUCCESS:
-      return { ...state, bookings: action.payload, loading: false, error: null };
+      return {
+        ...state,
+        bookings: action.payload,
+        loading: false,
+        error: null,
+      };
     case FETCH_USER_BOOKINGS_FAILURE:
       return { ...state, error: action.payload, loading: false };
     case ADD_TRAVELER_REQUEST:
-      return {...state, loading: true, error: null };
+      return { ...state, loading: true, error: null };
     case ADD_TRAVELER_SUCCESS:
-        return { ...state,loading: false, travelers: [...state.travelers, action.payload]};
-    case ADD_TRAVELER_FAILURE: 
-        return {...state,loading: false, error: action.payload };
+      return {
+        ...state,
+        loading: false,
+        travelers: [...state.travelers, action.payload],
+      };
+    case ADD_TRAVELER_FAILURE:
+      return { ...state, loading: false, error: action.payload };
     case FETCH_TRAVELERS_REQUEST:
       return { ...state, loading: true, error: null };
     case FETCH_TRAVELERS_SUCCESS:
       return { ...state, loading: false, travelers: action.payload };
     case FETCH_TRAVELERS_FAILURE:
+      return { ...state, loading: false, error: action.payload };
+    case REMOVE_TRAVELER_SUCCESS:
+      return {
+        ...state,
+        travelers: state.travelers.filter(
+          (traveler) => traveler.id !== action.payload
+        ),
+        loading: false,
+      };
+    case REMOVE_TRAVELER_FAILURE:
       return { ...state, loading: false, error: action.payload };
     default:
       return state;
