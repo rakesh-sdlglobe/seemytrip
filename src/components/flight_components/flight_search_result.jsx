@@ -6,7 +6,6 @@ const FlightSearchResult = ({ flightData, filters }) => {
     const [filteredFlightData, setFilteredFlightData] = useState([]);
 
     useEffect(() => {
-        // If no new flight data is passed in, use data from sessionStorage
         if (!flightData || flightData.length === 0) {
             const storedData = sessionStorage.getItem('filteredFlightData');
             if (storedData) {
@@ -15,7 +14,6 @@ const FlightSearchResult = ({ flightData, filters }) => {
                 setFilteredFlightData([]);
             }
         } else {
-            // Filter the flight data and save it in sessionStorage
             const filteredData = flightData.filter(flight => {
                 return (
                     (!filters.direct || flight.direct) &&
@@ -95,7 +93,6 @@ const FlightSearchResult = ({ flightData, filters }) => {
                                     <div className="row gx-lg-5 gx-3 gy-4 align-items-center">
                                         <div className="col-sm-auto">
                                             <div className="d-flex align-items-center justify-content-start">
-                                                {/* <img className="img-fluid" src={flight.airlineLogo} width={45} alt="Airline Logo" /> */}
                                                 <img className="img-fluid" src={flight.airlineLogo} width={45} alt="Airline Logo" /> 
                                                 <div className="ps-2">
                                                     <div className="text-dark fw-medium">{flight.airline}</div>
@@ -107,23 +104,23 @@ const FlightSearchResult = ({ flightData, filters }) => {
                                             <div className="row gx-3 align-items-center">
                                                 <div className="col-auto">
                                                     <div className="text-dark fw-bold">{flight.departureTime}</div>
-                                                    <div className="text-muted text-sm">{flight.departureAirport}</div>
+                                                    <div className="text-muted text-sm">{flight.fromAirportShort || flight.fromAirport}</div>
                                                 </div>
                                                 <div className="col text-center">
                                                     <div className="flightLine">
                                                         <div />
                                                         <div />
                                                     </div>
-                                                    <div className="text-muted text-sm fw-medium mt-3">{flight.direct ? 'Direct' : `${flight.stopovers} Stop`}</div>
+                                                    {/* <div className="text-muted text-sm fw-medium mt-3">{flight.direct ? 'Direct' : `${flight.stopovers} Stop`}</div> */}
                                                 </div>
                                                 <div className="col-auto">
                                                     <div className="text-dark fw-bold">{flight.arrivalTime}</div>
-                                                    <div className="text-muted text-sm">{flight.arrivalAirport}</div>
+                                                    <div className="text-muted text-sm">{flight.toAirportShort || flight.toAirport}</div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="col-md-auto">
-                                            <div className="text-dark fw-medium">Duration: {flight.duration}</div>
+                                            <div className="text-dark fw-medium">{flight.duration}</div>
                                             <div className="text-muted text-sm fw-medium">{flight.stopovers} Stop</div>
                                         </div>
                                     </div>
