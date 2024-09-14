@@ -5257,7 +5257,7 @@ GeoTrip Elements Styles
 
 .flightLine.departure:before {
   content: "\f0fb";
-  /* font-family: "Font Awesome 6 Free"; */
+  font-family: "Font Awesome 6 Free";
   font-weight: 900;
   left: 50%;
   transform: translate(-50%, -50%);

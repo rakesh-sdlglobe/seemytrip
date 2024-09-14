@@ -160,7 +160,10 @@ const Home = () => {
                         </div>
                         <div className="col-xl-1 col-lg-1 col-md-12">
                           <div className="form-group mb-0">
+                            <Link to="/flight-list">
                             <button type="button" className="btn btn-primary full-width fw-medium"><i className="fa-solid fa-magnifying-glass fs-5" /></button>
+                            </Link>
+                            
                           </div>
                         </div>
                       </div>

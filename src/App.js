@@ -63,6 +63,7 @@ import Settings from './components/settings.jsx'
 import DeleteAccount from './components/delete-account.jsx'
 import { useDispatch } from 'react-redux';
 import { setUser } from './store/Actions/authActions';
+import FlightList from './components/flight_components/flight_list.jsx';
 
 function App() {
   const dispatch = useDispatch();
@@ -93,6 +94,7 @@ function App() {
           <Route path="/hotel-detail-01" element={<HotelDetail01 />} />
           <Route path="/hotel-detail-02" element={<HotelDetail02 />} />
           <Route path="/flight-list-01" element={<FlightList01 />} />
+          <Route path="/flight-list" element={<FlightList/>} />
           <Route path="/flight-list-02" element={<FlightList02 />} />
           <Route path="/flight-detail" element={<FlightDetail />} />
           <Route path="/rental-list-01" element={<PropertyList />} />
