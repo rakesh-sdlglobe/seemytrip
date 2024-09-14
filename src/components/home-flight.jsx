@@ -16,6 +16,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import Footer from './footer';
 import FlightSearch from './flight_components/flight_search';
 import { useState } from 'react';
+import { AirIndia, Bangalore, Delhi, Hyderbad, Indigo, indigo, Mumbai, Vistara } from '../assets/images';
+import FooterDark from './footer-dark';
 
 const HomeFlight = () => {
   const [flightResults, setFlightResults] = useState([]);
@@ -208,7 +210,7 @@ const HomeFlight = () => {
                     <div className="offers-container d-flex align-items-center justify-content-start p-2">
                       <div className="offers-flex position-relative">
                         <div className="offers-pic bg-light-success p-3 rounded-3 d-flex align-items-center justify-content-center h-100">
-                          <img src="https://placehold.co/110x110" className="img-fluid rounded" width={70} alt="" />
+                          <img src={Indigo} className="img-fluid rounded" width={70} alt="" />
                         </div>
                       </div>
                       <div className="offers-captions ps-3">
@@ -232,7 +234,7 @@ const HomeFlight = () => {
                     <div className="offers-container d-flex align-items-center justify-content-start p-2">
                       <div className="offers-flex position-relative">
                         <div className="offers-pic bg-light-warning p-3 rounded-3 d-flex align-items-center justify-content-center h-100">
-                          <img src="https://placehold.co/110x110" className="img-fluid rounded" width={70} alt="" />
+                          <img src={AirIndia} className="img-fluid rounded" width={70} alt="" />
                         </div>
                       </div>
                       <div className="offers-captions ps-3">
@@ -256,7 +258,7 @@ const HomeFlight = () => {
                     <div className="offers-container d-flex align-items-center justify-content-start p-2">
                       <div className="offers-flex position-relative">
                         <div className="offers-pic bg-light-info p-3 rounded-3 d-flex align-items-center justify-content-center h-100">
-                          <img src="https://placehold.co/110x110" className="img-fluid rounded" width={70} alt="" />
+                          <img src={Vistara} className="img-fluid rounded" width={70} alt="" />
                         </div>
                       </div>
                       <div className="offers-captions ps-3">
@@ -299,20 +301,20 @@ const HomeFlight = () => {
                   <Link to="flight-search.html" className="card rounded-3 border br-dashed h-100 m-0">
                     <div className="flight-thumb-wrapper">
                       <div className="popFlights-item-overHidden">
-                        <img src="https://placehold.co/1200x800" className="img-fluid" alt="" />
+                        <img src={Hyderbad} className="img-fluid" alt="" />
                       </div>
                     </div>
                     <div className="touritem-middle position-relative p-3">
                       <div className="touritem-flexxer">
                         <h4 className="city fs-6 m-0 fw-bold">
-                          <span>New York</span>
+                          <span>Bangalore</span>
                           <span className="svg-icon svg-icon-muted svg-icon-2hx px-1">
                             <svg width={24} height={24} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                               <path d="M17.4 7H4C3.4 7 3 7.4 3 8C3 8.6 3.4 9 4 9H17.4V7ZM6.60001 15H20C20.6 15 21 15.4 21 16C21 16.6 20.6 17 20 17H6.60001V15Z" fill="currentColor" />
                               <path opacity="0.3" d="M17.4 3V13L21.7 8.70001C22.1 8.30001 22.1 7.69999 21.7 7.29999L17.4 3ZM6.6 11V21L2.3 16.7C1.9 16.3 1.9 15.7 2.3 15.3L6.6 11Z" fill="currentColor" />
                             </svg>
                           </span>
-                          <span>Los Angeles</span>
+                          <span>Hyderbad</span>
                         </h4>
                         <p className="detail ellipsis-container">
                           <span className="ellipsis-item__normal">Round-trip</span>
@@ -321,7 +323,7 @@ const HomeFlight = () => {
                         </p>
                       </div>
                       <div className="flight-foots">
-                        <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">US$492</span>
+                        <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">₹5,792</span>
                         </h5>
                       </div>
                     </div>
@@ -333,20 +335,20 @@ const HomeFlight = () => {
                   <Link to="flight-search.html" className="card rounded-3 border br-dashed h-100 m-0">
                     <div className="flight-thumb-wrapper">
                       <div className="popFlights-item-overHidden">
-                        <img src="https://placehold.co/1200x800" className="img-fluid" alt="" />
+                        <img src={Mumbai} className="img-fluid" alt="" />
                       </div>
                     </div>
                     <div className="touritem-middle position-relative p-3">
                       <div className="touritem-flexxer">
                         <h4 className="city fs-6 m-0 fw-bold">
-                          <span>New York</span>
+                          <span>Delhi</span>
                           <span className="svg-icon svg-icon-muted svg-icon-2hx px-1">
                             <svg width={24} height={24} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                               <path d="M17.4 7H4C3.4 7 3 7.4 3 8C3 8.6 3.4 9 4 9H17.4V7ZM6.60001 15H20C20.6 15 21 15.4 21 16C21 16.6 20.6 17 20 17H6.60001V15Z" fill="currentColor" />
                               <path opacity="0.3" d="M17.4 3V13L21.7 8.70001C22.1 8.30001 22.1 7.69999 21.7 7.29999L17.4 3ZM6.6 11V21L2.3 16.7C1.9 16.3 1.9 15.7 2.3 15.3L6.6 11Z" fill="currentColor" />
                             </svg>
                           </span>
-                          <span>Los Angeles</span>
+                          <span>Mumbai</span>
                         </h4>
                         <p className="detail ellipsis-container">
                           <span className="ellipsis-item__normal">Round-trip</span>
@@ -355,7 +357,7 @@ const HomeFlight = () => {
                         </p>
                       </div>
                       <div className="flight-foots">
-                        <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">US$492</span>
+                        <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">₹6,492</span>
                         </h5>
                       </div>
                     </div>
@@ -367,20 +369,20 @@ const HomeFlight = () => {
                   <Link to="flight-search.html" className="card rounded-3 border br-dashed h-100 m-0">
                     <div className="flight-thumb-wrapper">
                       <div className="popFlights-item-overHidden">
-                        <img src="https://placehold.co/1200x800" className="img-fluid" alt="" />
+                        <img src={Bangalore} className="img-fluid" alt="" />
                       </div>
                     </div>
                     <div className="touritem-middle position-relative p-3">
                       <div className="touritem-flexxer">
                         <h4 className="city fs-6 m-0 fw-bold">
-                          <span>New York</span>
+                          <span>Mumbai</span>
                           <span className="svg-icon svg-icon-muted svg-icon-2hx px-1">
                             <svg width={24} height={24} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                               <path d="M17.4 7H4C3.4 7 3 7.4 3 8C3 8.6 3.4 9 4 9H17.4V7ZM6.60001 15H20C20.6 15 21 15.4 21 16C21 16.6 20.6 17 20 17H6.60001V15Z" fill="currentColor" />
                               <path opacity="0.3" d="M17.4 3V13L21.7 8.70001C22.1 8.30001 22.1 7.69999 21.7 7.29999L17.4 3ZM6.6 11V21L2.3 16.7C1.9 16.3 1.9 15.7 2.3 15.3L6.6 11Z" fill="currentColor" />
                             </svg>
                           </span>
-                          <span>Los Angeles</span>
+                          <span>Bangalore</span>
                         </h4>
                         <p className="detail ellipsis-container">
                           <span className="ellipsis-item__normal">Round-trip</span>
@@ -389,7 +391,7 @@ const HomeFlight = () => {
                         </p>
                       </div>
                       <div className="flight-foots">
-                        <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">US$492</span>
+                        <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">₹5,492</span>
                         </h5>
                       </div>
                     </div>
@@ -401,20 +403,20 @@ const HomeFlight = () => {
                   <Link to="flight-search.html" className="card rounded-3 border br-dashed h-100 m-0">
                     <div className="flight-thumb-wrapper">
                       <div className="popFlights-item-overHidden">
-                        <img src="https://placehold.co/1200x800" className="img-fluid" alt="" />
+                        <img src={Delhi} className="img-fluid" alt="" />
                       </div>
                     </div>
                     <div className="touritem-middle position-relative p-3">
                       <div className="touritem-flexxer">
                         <h4 className="city fs-6 m-0 fw-bold">
-                          <span>New York</span>
+                          <span>Hyderbad</span>
                           <span className="svg-icon svg-icon-muted svg-icon-2hx px-1">
                             <svg width={24} height={24} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                               <path d="M17.4 7H4C3.4 7 3 7.4 3 8C3 8.6 3.4 9 4 9H17.4V7ZM6.60001 15H20C20.6 15 21 15.4 21 16C21 16.6 20.6 17 20 17H6.60001V15Z" fill="currentColor" />
                               <path opacity="0.3" d="M17.4 3V13L21.7 8.70001C22.1 8.30001 22.1 7.69999 21.7 7.29999L17.4 3ZM6.6 11V21L2.3 16.7C1.9 16.3 1.9 15.7 2.3 15.3L6.6 11Z" fill="currentColor" />
                             </svg>
                           </span>
-                          <span>Los Angeles</span>
+                          <span>Delhi</span>
                         </h4>
                         <p className="detail ellipsis-container">
                           <span className="ellipsis-item__normal">Round-trip</span>
@@ -423,7 +425,7 @@ const HomeFlight = () => {
                         </p>
                       </div>
                       <div className="flight-foots">
-                        <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">US$492</span>
+                        <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">₹4,492</span>
                         </h5>
                       </div>
                     </div>
@@ -435,7 +437,7 @@ const HomeFlight = () => {
         </section>
         {/* ============================ Popular Domestic Routes End ================================== */}
         {/* ============================ Popular Destination Start ================================== */}
-        <section className="pt-0 pb-5">
+        {/* <section className="pt-0 pb-5">
           <div className="container">
             <div className="row align-items-center justify-content-between mb-3">
               <div className="col-8">
@@ -544,7 +546,7 @@ const HomeFlight = () => {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
         {/* ============================ Popular Destination End ================================== */}
         {/* ============================ Google & IOS App Start ================================== */}
         <section className="pt-0 pb-5">
@@ -558,7 +560,7 @@ const HomeFlight = () => {
                         <div className="appLink-captions">
                           <div className="appLink-captions d-flex align-items-center justify-content-start">
                             <div className="d-inline-block">
-                              <img src="https://placehold.co/450x450" className="img-fluid" width={65} alt="" />
+                              {/* <img src="https://placehold.co/450x450" className="img-fluid" width={65} alt="" /> */}
                             </div>
                             <div className="ps-3 d-block">
                               <h2 className="fw-bold fs-2 mb-1">Download App Now!</h2>
@@ -624,7 +626,7 @@ const HomeFlight = () => {
         </section>
         {/* ============================ Google & IOS App End ================================== */}
         {/* ============================ Featured Rental Property Start ================================== */}
-        <section className="py-0">
+        {/* <section className="py-0">
           <div className="container">
             <div className="row align-items-center justify-content-between mb-3">
               <div className="col-8">
@@ -805,10 +807,10 @@ const HomeFlight = () => {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
         {/* ============================ Featured Rental Property End ================================== */}
         {/* ============================== Popular Destination List Start ========================= */}
-        <section className="py-5">
+        {/* <section className="py-5">
           <div className="container">
             <div className="row align-items-center justify-content-between mb-3">
               <div className="col-8">
@@ -1063,10 +1065,10 @@ const HomeFlight = () => {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
         {/* ============================== Popular Destination List End ========================= */}
         {/* ============================ Call To Action Start ================================== */}
-        <div className="position-relative bg-cover py-5 bg-primary" style={{ background: 'url(https://placehold.co/2200x1200)no-repeat' }} data-overlay={5}>
+        {/* <div className="position-relative bg-cover py-5 bg-primary" style={{ background: 'url(https://placehold.co/2200x1200)no-repeat' }} data-overlay={5}>
           <div className="container">
             <div className="row align-items-center justify-content-between">
               <div className="col-xl-12 col-lg-12 col-md-12">
@@ -1101,10 +1103,10 @@ const HomeFlight = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
         {/* ============================ Call To Action Start ================================== */}
         {/* ============================ Footer Start ================================== */}
-        <Footer />
+        <FooterDark />
         {/* ============================ Footer End ================================== */}
         {/* Log In Modal */}
         <div className="modal fade" id="login" tabIndex={-1} role="dialog" aria-labelledby="loginmodal" aria-hidden="true">
