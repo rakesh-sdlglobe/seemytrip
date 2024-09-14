@@ -69,6 +69,8 @@ export const register = (name, email, password, navigate) => async (dispatch) =>
     dispatch(setPassword('')); 
     dispatch(setConfirmPassword('')); 
 
+    // dispatch(clearForm())
+
     navigate('/');
 
   } catch (error) {

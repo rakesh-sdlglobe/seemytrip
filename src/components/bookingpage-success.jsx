@@ -71,7 +71,7 @@ const BookingPageSuccess =() =>{
                               <li className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6">
                                 <div className="d-block">
                                   <p className="text-dark fw-medium lh-2 mb-0">Total Amount</p>
-                                  <p className="text-muted mb-0 lh-2">$772.40</p>
+                                  <p className="text-muted mb-0 lh-2">₹772.40</p>
                                 </div>
                               </li>
                               <li className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6">
@@ -301,7 +301,7 @@ const BookingPageSuccess =() =>{
                           <div className="inv-fliop01 ps-3">
                             <span className="text-uppercase d-block fw-semibold text-md text-dark lh-2 mb-0">Invoice #3256425</span>
                             <span className="text-sm text-muted lh-2"><i className="fa-regular fa-calendar me-1" />Issued Date 12 Jul
-                              2023</span>
+                              2024</span>
                           </div>
                         </div>
                         <div className="inv-fliop02"><span className="label text-success bg-light-success">Paid</span></div>
@@ -314,15 +314,13 @@ const BookingPageSuccess =() =>{
                             <div className="col-xl-6 col-lg-6 col-md-6">
                               <div className="invoice-desc mb-2">
                                 <h6>From</h6>
-                                <p className="text-md lh-2 mb-0">#782 Baghambari, Poudery Colony<br />Shivpuras Town,
-                                  Canada<br />QBH230542 USA</p>
-                              </div>
+                                <p className="text-md lh-2 mb-0">#782 Baghambari, Poudery Colony<br />Jayanagar, Bengaluru<br />Karnataka, 560041<br />India</p>
+                                </div>
                             </div>
                             <div className="col-xl-5 col-lg-5 col-md-6">
                               <div className="invoice-desc mb-2">
                                 <h6>To</h6>
-                                <p className="text-md lh-2 mb-0">Dhananjay Verma/ Brijendra Mani<br />220 K.V Jail Road Hydel
-                                  Colony<br />271001 Gonda, UP</p>
+                                <p className="text-md lh-2 mb-0">Dhananjay Verma/ Brijendra Mani<br />220 K.V Jail Road, Saket<br />110017 New Delhi, Delhi</p>
                               </div>
                             </div>
                           </div>
@@ -340,7 +338,7 @@ const BookingPageSuccess =() =>{
                             </li>
                             <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-1">
                               <span className="fw-medium text-sm text-muted-2 mb-0">Pay by:</span>
-                              <span className="fw-semibold text-muted-2 text-md">25 Aug 2023</span>
+                              <span className="fw-semibold text-muted-2 text-md">25 Aug 2024</span>
                             </li>
                           </ul>
                         </div>
@@ -359,21 +357,21 @@ const BookingPageSuccess =() =>{
                               <tbody>
                                 <tr>
                                   <th scope="row">king Bed in Royal Resort</th>
-                                  <td>$514</td>
+                                  <td>₹514</td>
                                   <td>03</td>
-                                  <td>$514</td>
+                                  <td>₹514</td>
                                 </tr>
                                 <tr>
                                   <th scope="row">Breakfast for 3</th>
-                                  <td>$214</td>
+                                  <td>₹214</td>
                                   <td>03</td>
-                                  <td>$214</td>
+                                  <td>₹214</td>
                                 </tr>
                                 <tr>
                                   <th scope="row">Tax &amp; VAT</th>
-                                  <td>$78</td>
+                                  <td>₹78</td>
                                   <td>-</td>
-                                  <td>$772.40</td>
+                                  <td>₹772.40</td>
                                 </tr>
                               </tbody>
                             </table>

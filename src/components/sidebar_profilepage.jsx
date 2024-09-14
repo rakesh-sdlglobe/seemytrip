@@ -27,7 +27,7 @@ const SideBarProfilePage = () => {
                             </div>
                             <div className="crdapproval-caps ps-2">
                                 <p className="fw-semibold text-dark lh-2 mb-0">Verified Email</p>
-                                <p className="text-md text-muted lh-1 mb-0">10 Aug 2022</p>
+                                <p className="text-md text-muted lh-1 mb-0">10 Aug 2024</p>
                             </div>
                         </div>
                         <div className="crdapproval-single d-flex align-items-center justify-content-start mb-4">
@@ -36,7 +36,7 @@ const SideBarProfilePage = () => {
                             </div>
                             <div className="crdapproval-caps ps-2">
                                 <p className="fw-semibold text-dark lh-2 mb-0">Verified Mobile Number</p>
-                                <p className="text-md text-muted lh-1 mb-0">12 Aug 2022</p>
+                                <p className="text-md text-muted lh-1 mb-0">12 Aug 2024</p>
                             </div>
                         </div>
                         <div className="crdapproval-single d-flex align-items-center justify-content-start">

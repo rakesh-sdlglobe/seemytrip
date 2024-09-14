@@ -55,7 +55,7 @@ const TrainSearchResultList = ({ trainData, filters }) => {
     };
 
     return (
-        <div className="row align-items-center g-4 mt-2">
+        <div className="row align-items-center g-4 mt-0">
             {/* Offer Coupon Box */}
             <div className="col-xl-12 col-lg-12 col-md-12">
                 <div className="d-md-flex bg-success rounded-2 align-items-center justify-content-between px-3 py-3">

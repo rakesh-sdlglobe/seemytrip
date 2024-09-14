@@ -88,7 +88,7 @@ const Login = () => {
                               <div className="form py-4">
                               <div className="form-group">
                               <label className="form-label">
-                                Enter email ID
+                                Enter Email ID
                               </label>
                               <input
                                 type="email"
@@ -148,10 +148,11 @@ const Login = () => {
                               <div className="social-login py-4 px-md-2">
                                 <ul className="row align-items-center justify-content-center g-3 p-0 m-0">
                                   <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-facebook color--facebook fs-2" /></Link></li>
-                                  <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-whatsapp color--whatsapp fs-2" /></Link></li>
-                                  <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-linkedin color--linkedin fs-2" /></Link></li>
-                                  <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-google color--dribbble fs-2" /></Link></li>
-                                  <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-twitter color--twitter fs-2" /></Link></li>
+                                  {/* <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-whatsapp color--whatsapp fs-2" /></Link></li> */}
+                                  {/* <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-linkedin color--linkedin fs-2" /></Link></li> */}
+                                  <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-google color--google fs-2" /></Link></li>
+                                  {/* <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-twitter color--twitter fs-2" /></Link></li> */}
+                                  <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-regular  fa-envelope color--black fs-2" /></Link></li>
                                 </ul>
                               </div>
                               {/* Copyright */}

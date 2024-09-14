@@ -8,15 +8,12 @@ const PersonalBooking = () => {
   const dispatch = useDispatch();
   const userBooking = useSelector(selectUserBookings) || [];
 
-  console.log(userBooking);
 
   useEffect(() => {
     dispatch(myBookings());
   }, [dispatch]);
 
-  console.log("User Booking Data:", userBooking); // Debugging log
 
-  // Ensure userBooking is an array and has items
   if (!Array.isArray(userBooking) || userBooking.length === 0) {
     return (
       <div className="card">
@@ -152,9 +149,9 @@ const PersonalBooking = () => {
                     {/* Booking Date */}
                     <div className="col-lg-3 col-md-6 mb-3 mb-lg-0">
                       <div className="text-muted">
-                        <span className="text-dark">Booking Date:</span>
+                        <span className="text-dark">Departure Date:</span>
                         <br />
-                        {booking.booking_date || "N/A"}
+                        {booking.departure_date || "N/A"}
                       </div>
                     </div>
                     {/* Departure Time */}
@@ -176,9 +173,9 @@ const PersonalBooking = () => {
                     {/* Departure Date */}
                     <div className="col-lg-3 col-md-6 text-md-end">
                       <div className="text-muted">
-                        <span className="text-dark">Departure Date:</span>
+                        <span className="text-dark">Arrival Date:</span>
                         <br />
-                        {booking.departure_date || "N/A"}
+                        {booking.arrival_date || "N/A"}
                       </div>
                     </div>
                   </div>
