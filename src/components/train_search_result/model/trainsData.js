@@ -9,6 +9,46 @@ export const trainsData = [
         duration: '4h',           // Sample duration
     },
     {
+        id: '1234',
+        name: 'Vijayawada-Hyderabad Superfast',
+        startStationId: 6,  // Vijayawada Junction
+        endStationId: 7,    // Hyderabad Deccan Nampally
+        runsOn: 'Mon, Wed, Fri',
+        duration: '3h 45m',
+    },
+    {
+        id: '2345',
+        name: 'Krishna Express',
+        startStationId: 6,  // Vijayawada Junction
+        endStationId: 7,    // Hyderabad Deccan Nampally
+        runsOn: 'Daily',
+        duration: '5h',
+    },
+    {
+        id: '5678',
+        name: 'Satavahana Express',
+        startStationId: 6,  // Vijayawada Junction
+        endStationId: 7,    // Hyderabad Deccan Nampally
+        runsOn: 'Tue, Thu, Sat',
+        duration: '4h 15m',
+    },
+    {
+        id: '7891',
+        name: 'Vijayawada-Hyderabad Intercity',
+        startStationId: 6,  // Vijayawada Junction
+        endStationId: 7,    // Hyderabad Deccan Nampally
+        runsOn: 'Sun, Mon, Wed',
+        duration: '3h 50m',
+    },
+    {
+        id: '7891',
+        name: 'Vijayawada-Hyderabad Intercity',
+        startStationId: 6,  // Vijayawada Junction
+        endStationId: 5,    // Bengaluru City Junction
+        runsOn: 'Sun, Mon, Wed',
+        duration: '3h 50m',
+    },
+    {
         id: '7890',
         name: 'Bengaluru-Chennai Express',
         startStationId: 5,  // Bengaluru City Junction
@@ -25,6 +65,30 @@ export const trainsData = [
         duration: '22h 30m',      // Sample duration
     },
     {
+        id: '5678',
+        name: 'Karnataka Sampark Kranti Express',
+        startStationId: 5,  // Bengaluru City Junction
+        endStationId: 1,    // New Delhi
+        runsOn: 'Mon, Wed, Fri',  // Sample running schedule
+        duration: '36h 45m',      // Sample duration
+    },
+    {
+        id: '6789',
+        name: 'Yesvantpur-Delhi Sarai Rohilla AC Duronto Express',
+        startStationId: 5,  // Bengaluru City Junction (Yesvantpur)
+        endStationId: 1,    // New Delhi (Sarai Rohilla)
+        runsOn: 'Wed, Sat',  // Sample running schedule
+        duration: '33h 30m',      // Sample duration
+    },
+    {
+        id: '6543',
+        name: 'Bengaluru-Howrah Express',
+        startStationId: 5,  // Bengaluru City Junction
+        endStationId: 3,    // Kolkata Howrah Junction
+        runsOn: 'Mon, Wed, Fri',  // Sample running schedule
+        duration: '23h 30m',      // Sample duration
+    },
+     {
         id: '6543',
         name: 'Bengaluru-Howrah Express',
         startStationId: 5,  // Bengaluru City Junction
