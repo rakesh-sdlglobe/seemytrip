@@ -18,7 +18,7 @@
 //   // Fetch train data based on search parameters
 //   useEffect(() => {
 //     console.log(trainData);
-    
+
 //     const fetchTrains = async () => {
 //       try {
 //         const data = await trainData(searchParams.leavingFrom, searchParams.goingTo);
@@ -31,7 +31,7 @@
 
 //     fetchTrains();
 //   }, [searchParams]); // Dependency array, fetch data when searchParams change
-  
+
 //   // Handle filter change
 //   const handleFilterChange = (e) => {
 //     const { id, checked } = e.target;
@@ -217,7 +217,12 @@ const FlightList01 = () => {
       <div id="main-wrapper">
         <Header02 />
         <div className="clearfix" />
-        <SearchComponent onSearchResults={handleSearchResults} />
+        <SearchComponent onSearchResults={handleSearchResults} backgroundColor="#cd2c22" height="110px" leavingLabel={null}      // Custom label for 'Leaving From'
+          goingLabel={null}          // Custom label for 'Going To'
+          dateLabel={null} 
+          buttonBackgroundColor="#ffffff"
+           buttonTextColor="#cd2c22"
+          />
         <section className="gray-simple">
           <div className="container">
             <div className="row justify-content-between gy-4 gx-xl-4 gx-lg-3 gx-md-3 gx-4">

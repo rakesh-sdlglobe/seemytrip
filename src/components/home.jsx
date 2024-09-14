@@ -68,17 +68,27 @@ const Home = () => {
                       <Link className="nav-link" data-bs-toggle="tab" to="#flights"><i className="fa-solid fa-jet-fighter me-2" />Flights</Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link" data-bs-toggle="tab" to="#tours"><i className="fa-solid fa-globe me-2" />Hotel</Link>
+                      <Link className="nav-link" data-bs-toggle="tab" to="#tours"><i className="fa-solid fa-globe me-2" />Hotels</Link>
                     </li>
                     <li className="nav-item">
                       <Link className="nav-link" data-bs-toggle="tab" to="#cabs"><i className="fa-solid fa-car me-2" />Cab</Link>
                     </li>
+                    <li className="nav-item">
+                      <Link className="nav-link" data-bs-toggle="tab" to="#cabs"><i className="fa-solid fa-ship me-2" />Cruise</Link>
+                    </li>
                   </ul>
                   <div className="tab-content">
                     <div className="tab-pane show active" id="Trains">
-                      <div style={{ backgroundColor: '#f0f0f0', padding: '20px', borderRadius: '8px' }}>
-                        <SearchComponent onSearchResults={onSearchResults} />
-                      </div>
+                    <SearchComponent
+                        backgroundColor="#ffffff"
+                        height="90px"
+                        onSearchResults={onSearchResults}
+                        leavingLabel={null}      // Custom label for 'Leaving From'
+                        goingLabel={null}          // Custom label for 'Going To'
+                        dateLabel={null}      // Custom label for 'Journey Date'
+                        buttonBackgroundColor="#cd2c22"
+                        buttonTextColor="#ffffff"
+                      />
                     </div>
                     <div className="tab-pane" id="flights">
                       <div className="row gx-lg-2 g-3">
@@ -205,6 +215,58 @@ const Home = () => {
                       </div>
                     </div>
                     <div className="tab-pane" id="cabs">
+                      <div className="row gy-3 gx-md-3 gx-sm-2">
+                        <div className="col-xl-8 col-lg-7 col-md-12">
+                          <div className="row gy-3 gx-md-3 gx-sm-2">
+                            <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
+                              <div className="form-group hdd-arrow mb-0">
+                                <select className="pickup form-control fw-bold">
+                                  <option value>Select</option>
+                                  <option value="ny">New York</option>
+                                  <option value="sd">San Diego</option>
+                                  <option value="sj">San Jose</option>
+                                  <option value="ph">Philadelphia</option>
+                                  <option value="nl">Nashville</option>
+                                  <option value="sf">San Francisco</option>
+                                  <option value="hu">Houston</option>
+                                  <option value="sa">San Antonio</option>
+                                </select>
+                              </div>
+                            </div>
+                            <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                              <div className="form-group hdd-arrow mb-0">
+                                <select className="drop form-control fw-bold">
+                                  <option value>Select</option>
+                                  <option value="ny">New York</option>
+                                  <option value="sd">San Diego</option>
+                                  <option value="sj">San Jose</option>
+                                  <option value="ph">Philadelphia</option>
+                                  <option value="nl">Nashville</option>
+                                  <option value="sf">San Francisco</option>
+                                  <option value="hu">Houston</option>
+                                  <option value="sa">San Antonio</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-xl-4 col-lg-5 col-md-12">
+                          <div className="row gy-3 gx-md-3 gx-sm-2">
+                            <div className="col-xl-8 col-lg-8 col-md-8 col-sm-8">
+                              <div className="form-group mb-0">
+                                <input type="text" className="form-control choosedate fw-bold" placeholder="Choose Pickup Date" readOnly="readonly" />
+                              </div>
+                            </div>
+                            <div className="col-xl-4 col-lg-4 col-md-4 col-sm-4">
+                              <div className="form-group mb-0">
+                                <button type="button" className="btn btn-primary full-width fw-medium"><i className="fa-solid fa-magnifying-glass me-2" />Search</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="tab-pane" id="curise">
                       <div className="row gy-3 gx-md-3 gx-sm-2">
                         <div className="col-xl-8 col-lg-7 col-md-12">
                           <div className="row gy-3 gx-md-3 gx-sm-2">
