@@ -18,8 +18,10 @@ import Footer from './footer';
 import SearchComponent from './train_search_result/search_component';
 
 import { useState } from 'react';
+import FlightSearch from './flight_components/flight_search';
 const Home = () => {
   const [results, setResults] = useState([]);
+  const [flightResults, setFlightResults] = useState([]);
   const navigate = useNavigate();
 
 
@@ -30,6 +32,13 @@ const Home = () => {
     // Navigate to flight-list-1 with the results
     navigate('/flight-list-01', { state: { results: data } });
   };
+
+  const handleSearchResults = (data) => {
+    console.log('Search results:', data); // Check if flight results are coming
+    setFlightResults(data);
+    navigate('/flight-list', { state: { flightResults: data } });
+  };
+  
   return (
     <div>
       <div id="preloader">
@@ -91,7 +100,7 @@ const Home = () => {
                       />
                     </div>
                     <div className="tab-pane" id="flights">
-                      <div className="row gx-lg-2 g-3">
+                      {/* <div className="row gx-lg-2 g-3">
                         <div className="col-xl-5 col-lg-5 col-md-12">
                           <div className="row gy-3 gx-lg-2 gx-3">
                             <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
@@ -166,7 +175,17 @@ const Home = () => {
                             
                           </div>
                         </div>
-                      </div>
+                      </div> */}
+                      <FlightSearch
+                        onSearchResults={handleSearchResults}
+                        backgroundColor="#ffffff"
+                        buttonBackgroundColor="#cd2c22"
+                        buttonTextColor="#ffffff"
+                        height="90px"
+                        leavingLabel={null}
+                        goingLabel={null}
+                        dateLabel={null}
+                      />
                     </div>
                     <div className="tab-pane" id="tours">
                       <div className="row gy-3 gx-md-3 gx-sm-2">
