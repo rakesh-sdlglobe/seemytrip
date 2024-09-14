@@ -64,6 +64,8 @@ import DeleteAccount from './components/delete-account.jsx'
 import { useDispatch } from 'react-redux';
 import { setUser } from './store/Actions/authActions';
 import FlightList from './components/flight_components/flight_list.jsx';
+import { FlightBookingpage01 } from './components/flight_components/flight_bookingpage.jsx';
+import FlightBookingPage02 from './components/flight_bookingpage02.jsx';
 
 function App() {
   const dispatch = useDispatch();
@@ -94,7 +96,7 @@ function App() {
           <Route path="/hotel-detail-01" element={<HotelDetail01 />} />
           <Route path="/hotel-detail-02" element={<HotelDetail02 />} />
           <Route path="/flight-list-01" element={<FlightList01 />} />
-          <Route path="/flight-list" element={<FlightList/>} />
+          
           <Route path="/flight-list-02" element={<FlightList02 />} />
           <Route path="/flight-detail" element={<FlightDetail />} />
           <Route path="/rental-list-01" element={<PropertyList />} />
@@ -147,6 +149,11 @@ function App() {
           <Route path= "/my-wishlists" element ={<MyWishlists/>}/>
           <Route path= "/settings" element ={<Settings/>}/>
           <Route path= "/delete-account" element ={<DeleteAccount/>}/>
+
+          {/* Flights Routes */}
+          <Route path="/flight-list" element={<FlightList/>} />
+          <Route path="/flight-Bookingpage" element={<FlightBookingpage01/>} />
+          <Route path="/flight-Bookingpage02" element={<FlightBookingPage02/>} />
         </Routes>
       </Router>
     </div>

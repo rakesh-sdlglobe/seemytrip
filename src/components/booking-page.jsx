@@ -206,7 +206,7 @@ const BookingPage = () => {
                                             <div className="text-muted text-sm fw-medium">DEL</div>
                                           </div>
                                           <div className="col text-center">
-                                            <div className="flightLine departure">
+                                            <div className="flightLine return">
                                               <div />
                                               <div />
                                             </div>
