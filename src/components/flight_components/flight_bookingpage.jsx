@@ -1,139 +1,248 @@
-import React, { useEffect } from 'react';
-import { indian_flag, trainImage } from '../assets/images';
-import { NavLink, Link, useNavigate  } from 'react-router-dom';
-import { useSelector,useDispatch } from 'react-redux';
-import { logout } from '../store/Actions/authActions';
-import { selectName } from '../store/Selectors/authSelectors';
+import React from 'react'
+import Header02 from '../header02';
+import { D, Indigo } from '../../assets/images';
+import { Link } from 'react-router-dom';
+import FooterDark from '../footer-dark';
 
-
-const Header02 = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const user = useSelector(selectName);
-  const isLoggedIn = Boolean(user);
-
-  const handleLogout = () => {
-    dispatch(logout());
-  };
-
-  useEffect(() => {
-    if (!isLoggedIn) {
-      navigate('/login');
-    }
-  }, [isLoggedIn, navigate]);
-
+export const FlightBookingpage01 = () => {
   return (
-    <>
-      {/* Internal CSS */}
-      <style>
-        {`
-          .nav-menu .active {
-            color: #cd2c22;
-            font-weight: bold;
-            position: relative;
-          }
-         .dropdown-item {
-            padding: 10px 20px;
-            position: relative;
-            transition: transform 0.3s ease, color 0.3s ease;
-          }
-
-          .dropdown-item:hover {
-            color: #14728a; /* Text color change on hover */
-            transform: scale(1.05); /* Slight scaling effect */
-          }
-
-          .dropdown-item::after {
-            content: "";
-            position: absolute;
-            width: 0;
-            height: 2px;
-            background-color: #cd2c22;
-            left: 0;
-            bottom: 0;
-            transition: width 0.3s ease;
-          }
-
-          .dropdown-item:hover::after {
-            width: 100%; /* Underline expands fully on hover */
-          }
-          .dropdown-item:focus,
-          .dropdown-item:active {
-            background-color: #cd2c22 !important;
-            color: inherit; /* Ensures the color doesn't change */
-            outline: none; /* Removes the outline on focus */
-          }
-
-
-        `}
-      </style>
-
+    <div>
+    <meta charSet="utf-8" />
+    {/* ============================================================== */}
+    {/* Preloader */}
+    {/* ============================================================== */}
+    <div id="preloader">
+      <div className="preloader"><span /><span /></div>
+    </div>
+    {/* ============================================================== */}
+    {/* Main wrapper */}
+    {/* ============================================================== */}
+    <div id="main-wrapper">
+      {/* ============================================================== */}
+      {/* Top header */}
+      {/* ============================================================== */}
       {/* Start Navigation */}
-      <div className="header header-light">
-        <div className="container">
-          <nav id="navigation" className="navigation navigation-landscape">
-            <div className="nav-header">
-              <NavLink to="/" className="nav-brand"><img src={trainImage} className="logo" alt="" /></NavLink>
-              <div className="nav-toggle" />
-              <div className="mobile_nav">
-                <ul>
-                  <li className="currencyDropdown me-2">
-                    <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#currencyModal"><span className="fw-medium">INR</span></Link>
-                  </li>
-                  <li className="languageDropdown me-2">
-                    <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#countryModal"><img src="https://placehold.co/100x100" className="img-fluid" width={17} alt="Country" /></Link>
-                  </li>
-                  <li>
-                    <Link to="#" className="bg-light-primary text-primary rounded" data-bs-toggle="modal" data-bs-target="#login"><i className="fa-regular fa-circle-user fs-6" /></Link>
-                  </li>
-                </ul>
+      <Header02 />
+      {/* End Navigation */}
+      <div className="clearfix" />
+      {/* ============================================================== */}
+      {/* Booking Page */}
+      {/* ============================================================== */}
+      <section className="pt-4 gray-simple position-relative">
+  <div className="container">
+    <div className="row">
+      <div className="col-xl-12 col-lg-12 col-md-12">
+        <div id="stepper" className="bs-stepper stepper-outline mb-5">
+          <div className="bs-stepper-header">
+            {/* Step 1 */}
+            <div className="step active" data-target="#step-1">
+              <div className="text-center">
+                <button type="button" className="step-trigger mb-0" id="steppertrigger1">
+                  <span className="bs-stepper-circle">1</span>
+                </button>
+                <h6 className="bs-stepper-label d-none d-md-block">Flight Review</h6> {/* Changed from Journey Review */}
               </div>
             </div>
-            <div className="nav-menus-wrapper" style={{ transitionProperty: 'none' }}>
-              <ul className="nav-menu">
-                <li><NavLink exact to="/" activeClassName="active"><i className="fa-solid fa-train fa-lg me-2" />Train</NavLink></li>
-                <li><NavLink to="/home-flight" activeClassName="active"><i className="fa-solid fa-jet-fighter fa-lg me-2" />Flights</NavLink></li>
-                <li><NavLink to="/home-hotel" activeClassName="active"><i className="fa-solid fa-spa fa-lg me-2" />Hotels</NavLink></li>
-                <li><NavLink to="/home-car" activeClassName="active"><i className="fa-solid fa-car fa-lg me-2" />Cabs</NavLink></li>
-                <li><NavLink to="/home-car" activeClassName="active"><i className="fa-solid fa-ship fa-lg me-2" />Cruises</NavLink></li>
-              </ul>
-              <ul className="nav-menu nav-menu-social align-to-right">
-                <li className="currencyDropdown me-2">
-                  <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#currencyModal"><span className="fw-medium">INR</span></Link>
-                </li>
-                <li className="languageDropdown me-2">
-                  <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#countryModal"><img src={indian_flag} className="img-fluid" width={17} alt="Country" /></Link>
-                </li>
-                {/* <li className="list-buttons">
-                  <NavLink to="/login" activeClassName="active"><i className="fa-regular fa-circle-user fs-6 me-2" />Sign In / Register</NavLink>
-                </li> */}
-                {
-                  isLoggedIn ? (
-                    <li className="nav-item dropdown">
-                    <Link className="nav-link dropdown-toggle d-flex align-items-center" to="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      <i className="fa-regular fa-circle-user fs-5 me-2" />
-                      <span>{user}</span>
-                    </Link>
-                    <ul className="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
-                      <li><Link className="dropdown-item" to="/my-profile">Profile</Link></li>
-                      <li><Link className="dropdown-item" to="#">Settings</Link></li>
-                      <li><hr className="dropdown-divider" /></li>
-                      <li><Link className="dropdown-item" to="#"  onClick={handleLogout}>Logout</Link></li>
-                    </ul>
-                  </li>
-                  ) : (
-                    <li className="list-buttons">
-                    <Link to="/login"><i className="fa-regular fa-circle-user fs-6 me-2" />Sign In / Register</Link>
-                    </li>
-                  )
-                }
-              </ul>
+            <div className="line" />
+            {/* Step 2 */}
+            {/* <div className="step" data-target="#step-2">
+              <div className="text-center">
+                <button type="button" className="step-trigger mb-0" id="steppertrigger2">
+                  <span className="bs-stepper-circle">2</span>
+                </button>
+                <h6 className="bs-stepper-label d-none d-md-block">Traveler Info</h6>
+              </div>
             </div>
-          </nav>
+            <div className="line" /> */}
+            {/* Step 3 */}
+            <div className="step" data-target="#step-3">
+              <div className="text-center">
+                <button type="button" className="step-trigger mb-0" id="steppertrigger3">
+                  <span className="bs-stepper-circle">2</span>
+                </button>
+                <h6 className="bs-stepper-label d-none d-md-block">Make Payment</h6>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      {/* End Navigation */}
+    </div>
 
+    <div className="row align-items-start">
+      <div className="col-xl-12 col-lg-12 col-md-12">
+        <div className="row align-items-start">
+          <div className="col-xl-8 col-lg-8 col-md-12">
+            <div className="card p-3 mb-xl-0 mb-lg-0 mb-3 " >
+              {/* Booking Info */}
+              <div className="card-box list-layout-block border br-dashed rounded-3 p-2">
+                <div className="row">
+                  <div className="col-xl-4 col-lg-3 col-md">
+                    <div className="cardImage__caps rounded-2 overflow-hidden h-100">
+                      <img className="img-fluid h-100 object-fit" src={Indigo} alt="img" />
+                    </div>
+                  </div>
+                  <div className="col-xl col-lg col-md ">
+                    <div className="listLayout_midCaps mt-md-0 mt-3 mb-md-0 mb-3">
+                      <h4 className="fs-5 fw-bold mb-1">Indigo Airlines</h4> {/* Dynamic Flight Name */}
+                      <ul className="row g-2 p-0">
+                        <li className="col-auto">
+                          <p className="text-muted-2 text-md">DEL, BLR </p> {/* Source and Destination */}
+                        </li>
+                      </ul>
+                      <div className="position-relative mt-3">
+                        <div className="d-flex flex-wrap align-items-center">
+                          <div className="d-inline-flex align-items-center border br-dashed rounded-2 p-2 me-2 mb-2">
+                            <div className="export-icon text-muted-2"><i className="fa-solid fa-plane" /></div>
+                            <div className="export ps-2">
+                              <span className="mb-0 text-muted-2 fw-semibold me-1">First</span><span className="mb-0 text-muted-2 text-md">Class</span> {/* Flight Class */}
+                            </div>
+                          </div>
+                          <div className="d-inline-flex align-items-center border br-dashed rounded-2 p-2 me-2 mb-2">
+                            <div className="export-icon text-muted-2"><i className="fa-solid fa-clock" /></div>
+                            <div className="export ps-2">
+                              <span className="mb-0 text-muted-2 fw-semibold me-1">4h 40m</span><span className="mb-0 text-muted-2 text-md">Duration</span> {/* Flight Duration */}
+                            </div>
+                          </div>
+                          <div className="d-inline-flex align-items-center border br-dashed rounded-2 p-2 me-2 mb-2">
+                            <div className="export-icon text-muted-2"><i className="fa-solid fa-route" /></div>
+                            <div className="export ps-2">
+                              <span className="mb-0 text-muted-2 fw-semibold me-1">2 Stops</span> {/* Flight Stops */}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Flight Details */}
+              <div className="flight-boxyhc mt-4">
+                <h4 className="fs-5">Flight Details</h4>
+                <div className="flights-accordion">
+                  <div className="flights-list-item bg-white border rounded-3 p-2">
+                    <div className="row gy-4 align-items-center justify-content-between">
+                      <div className="col">
+                        <div className="row">
+                          <div className="col-xl-12 col-lg-12 col-md-12">
+                            <div className="d-flex align-items-center mb-2">
+                              <span className="label bg-light-primary text-primary me-2">Departure</span>
+                              <span className="text-muted text-sm">26 Jun 2023</span>
+                            </div>
+                          </div>
+                          <div className="col-xl-12 col-lg-12 col-md-12">
+                            <div className="row gx-lg-5 gx-3 gy-4 align-items-center">
+                              <div className="col-sm-auto">
+                                <div className="d-flex align-items-center justify-content-start">
+                                  <div className="d-start fl-pic">
+                                    <img className="img-fluid" src={Indigo} width={45} alt="img" />
+                                  </div>
+                                  <div className="d-end fl-title ps-2">
+                                    <div className="text-dark fw-medium">Indigo</div>
+                                    <div className="text-sm text-muted">First Class</div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="col">
+                                <div className="row gx-3 align-items-center">
+                                  <div className="col-auto">
+                                    <div className="text-dark fw-bold">07:40</div>
+                                    <div className="text-muted text-sm fw-medium">DEL</div> {/* Flight Source */}
+                                  </div>
+                                  <div className="col text-center">
+                                    <div className="flightLine departure">
+                                      <div />
+                                      <div />
+                                    </div>
+                                    <div className="text-muted text-sm fw-medium mt-3">Direct</div> {/* Flight Type */}
+                                  </div>
+                                  <div className="col-auto">
+                                    <div className="text-dark fw-bold">12:20</div>
+                                    <div className="text-muted text-sm fw-medium">BLR</div> {/* Flight Destination */}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="col-md-auto">
+                                <div className="text-dark fw-medium">4H 40M</div> {/* Flight Duration */}
+                                <div className="text-muted text-sm fw-medium">2 Stops</div> {/* Stops */}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Cancellation Policy */}
+              <div className="flight-boxyhc mt-4">
+                <h4 className="fs-5">Flight Ticket Cancellation Policy</h4>
+                <div className="effloration-wrap">
+                  <p>All Prices are in Indian Rupees and are subject to change without prior notice. For flight bookings, the full amount will be payable at the time of booking.</p>
+                  <ul className="row align-items-center g-1 mb-0 p-0">
+                    <li className="col-12"><span className="text-success text-md"><i className="fa-solid fa-circle-dot me-2" />Free Cancellation: Till 10 days before the travel date – 100% refund.</span></li>
+                    <li className="col-12"><span className="text-muted-2 text-md"><i className="fa-solid fa-circle-dot me-2" />10 to 15 Days Before Travel: 75% refund + Non-Refundable Component.</span></li>
+                    <li className="col-12"><span className="text-muted-2 text-md"><i className="fa-solid fa-circle-dot me-2" />Within 10 Days of Travel: 50% refund + Non-Refundable Component.</span></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Price Summary */}
+          <div className="col-xl-4 col-lg-4 col-md-12">
+            <div className="card rounded-3 mb-3 p-3 position-sticky top-0" style={{ top: "6rem" }}>
+              <div className="row">
+                <div className="col">
+                  <div className="card-header mb-2">
+                    <h5 className="card-title mb-0">Price Summary</h5>
+                  </div>
+                </div>
+                <div className="col-auto align-self-end">
+                  {/* <a className="text-muted fs-sm" href="#">
+                    <i className="feather feather-edit me-1" />
+                    Edit
+                  </a> */}
+                </div>
+              </div>
+              <ul className="list-group list-group-borderless mb-4">
+                <li className="list-group-item d-flex justify-content-between align-items-start text-dark">
+                  <span className="fw-medium">Base Fare</span>
+                  <span className="mb-0">₹5,000.00</span> {/* Base Fare */}
+                </li>
+                <li className="list-group-item d-flex justify-content-between align-items-start text-dark">
+                  <span className="fw-medium">GST</span>
+                  <span className="mb-0">₹500.00</span> {/* GST */}
+                </li>
+                <li className="list-group-item d-flex justify-content-between align-items-start text-dark">
+                  <span className="fw-medium">Other Charges</span>
+                  <span className="mb-0">₹200.00</span> {/* Other Charges */}
+                </li>
+                <li className="list-group-item d-flex justify-content-between align-items-start fw-bold text-dark fs-md">
+                  <span className="fw-bold">Grand Total</span>
+                  <span className="mb-0">₹5,700.00</span> {/* Grand Total */}
+                </li>
+              </ul>
+              <Link to="/flight-Bookingpage02" className="btn btn-lg btn-block btn-outline-danger mb-1">Proceed to Payment</Link>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="col-xl-12 col-lg-12 col-md-12">
+              <div className="text-center d-flex align-items-center justify-content-center mt-4">
+                <Link to="/flight-Bookingpage02" className="btn btn-md btn-primary fw-semibold">Next<i className="fa-solid fa-arrow-right ms-2" /></Link>
+              </div>
+    </div>
+    </div>
+  </div>
+</section>
+
+      
+      {/* ============================ Booking Page End ================================== */}
+      {/* ============================ Footer Start ================================== */}
+      <FooterDark />
+      {/* ============================ Footer End ================================== */}
       {/* Log In Modal */}
       <div className="modal fade" id="login" tabIndex={-1} role="dialog" aria-labelledby="loginmodal" aria-hidden="true">
         <div className="modal-dialog modal-dialog-centered login-pop-form" role="document">
@@ -558,8 +667,16 @@ const Header02 = () => {
         </div>
       </div>
       <Link id="back2Top" className="top-scroll" title="Back to top" to="#"><i className="fa-solid fa-sort-up" /></Link>
-    </>
-  );
-};
-
-export default Header02;
+    </div>
+    {/* ============================================================== */}
+    {/* End Wrapper */}
+    {/* ============================================================== */}
+    {/* ============================================================== */}
+    {/* All Jquery */}
+    {/* ============================================================== */}
+    {/* ============================================================== */}
+    {/* This page plugins */}
+    {/* ============================================================== */}
+  </div>
+          );
+        }

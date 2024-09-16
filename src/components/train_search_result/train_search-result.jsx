@@ -31,10 +31,8 @@ const TrainSearchResultList = ({ trainData, filters }) => {
     useEffect(() => {
         // If no new train data is passed in, use data from sessionStorage
         if (!trainData || trainData.length === 0) {
-            const storedData = sessionStorage.getItem('filteredTrainData');
-            if (storedData) {
-                setFilteredTrainData(JSON.parse(storedData));
-            }
+            sessionStorage.removeItem('filteredTrainData'); // Clear session storage
+            setFilteredTrainData([]);
         } else {
             // Filter the train data and save it in sessionStorage
             const filteredData = trainData
@@ -55,7 +53,45 @@ const TrainSearchResultList = ({ trainData, filters }) => {
     };
 
     return (
-        <div className="row align-items-center g-4 mt-2">
+        <div className="row align-items-center g-4 mt-0">
+            <style>
+            {`
+                .arrow-down {
+                   margin-left: 8px;
+                   border: solid white;
+                   border-width: 0 2px 2px 0;
+                   display: inline-block;
+                   padding: 3px;
+                   transform: rotate(45deg);
+                   -webkit-transform: rotate(45deg);
+                  }
+                .no-train-found-wrapper {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 40px;
+                    background-color: #f8f9fa;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                }
+                
+                .no-train-found-wrapper i {
+                    color: #ccc;
+                }
+                
+                .no-train-found-wrapper h3 {
+                    font-size: 24px;
+                    margin-bottom: 10px;
+                }
+                
+                .no-train-found-wrapper p {
+                    font-size: 16px;
+                    color: #6c757d;
+                }
+
+            `}
+            </style>
             {/* Offer Coupon Box */}
             <div className="col-xl-12 col-lg-12 col-md-12">
                 <div className="d-md-flex bg-success rounded-2 align-items-center justify-content-between px-3 py-3">
@@ -77,76 +113,86 @@ const TrainSearchResultList = ({ trainData, filters }) => {
             </div>
 
             {/* Train list */}
-            {filteredTrainData.map(train => (
-                <div key={train.id} className="col-xl-12 col-lg-12 col-md-12">
-                    <div className="train-availability-card bg-white rounded-3 p-3">
-                        <div className="row gy-4 align-items-center justify-content-between">
-                            {/* Train Info Header */}
-                            <div className="col-xl-12 col-lg-12 col-md-12">
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <div className="train-name me-4">
-                                        <h5 className="mb-1">{train.name}</h5>
-                                        <div className="text-muted small">Runs on: {train.runsOn}</div>
-                                    </div>
-                                    <div className="d-flex align-items-center flex-grow-1" style={{ padding: '10px', borderRadius: '8px' }}>
-                                        <div className="d-flex flex-column align-items-center me-1" style={{ flex: '1' }}>
-                                            <div className="fw-bold fs-6">{train.departureTime}</div>
-                                            <div className="text-muted small">{train.fromStation}</div>
+            {filteredTrainData.length > 0 ? (
+                filteredTrainData.map(train => (
+                    <div key={train.id} className="col-xl-12 col-lg-12 col-md-12">
+                        <div className="train-availability-card bg-white rounded-3 p-3">
+                            <div className="row gy-4 align-items-center justify-content-between">
+                                {/* Train Info Header */}
+                                <div className="col-xl-12 col-lg-12 col-md-12">
+                                    <div className="d-flex align-items-center justify-content-between">
+                                        <div className="train-name me-4">
+                                            <h5 className="mb-1">{train.name}</h5>
+                                            <div className="text-muted small">Runs on: {train.runsOn}</div>
                                         </div>
-                                        <div className="text-center" style={{ flex: '1', position: 'relative' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', position: 'relative', justifyContent: 'center' }}>
-                                                <div style={{ flex: 1, height: '1px', backgroundColor: '#ddd' }}></div>
-                                                <div style={{ margin: '0 10px', fontWeight: 'bold', fontSize: '16px', zIndex: 1 }}>{train.duration}</div>
-                                                <div style={{ flex: 1, height: '1px', backgroundColor: '#ddd' }}></div>
+                                        <div className="d-flex align-items-center flex-grow-1" style={{ padding: '10px', borderRadius: '8px' }}>
+                                            <div className="d-flex flex-column align-items-center me-1" style={{ flex: '1' }}>
+                                                <div className="fw-bold fs-6">{train.departureTime}</div>
+                                                <div className="text-muted small">{train.fromStation}</div>
                                             </div>
-                                        </div>
-                                        <div className="d-flex flex-column align-items-center ms-1" style={{ flex: '1' }}>
-                                            <div className="fw-bold fs-6">{train.arrivalTime}</div>
-                                            <div className="text-muted small">{train.toStation}</div>
-                                        </div>
-                                    </div>
-                                    <button className="btn btn-primary ms-3">Availability  <span className="arrow-down" /></button>
-                                </div>
-                            </div>
-                            {/* Train Class Availability */}
-                            <div className="w-100 border-top border-secondary my-1"></div>
-                            <div className="col-xl-12 col-lg-12 col-md-12">
-                                <div className="row text-center gx-2 gy-2">
-                                    {train.classes.map((cls, index) => (
-                                        <div key={index} className="col-auto flex-shrink-0">
-                                            <div
-                                                className={`availability-card cursor-pointer ${cls.status === 'AVL' ? 'bg-success-subtle' : 'bg-danger-subtle'} rounded-2 p-2`}
-                                                style={{
-                                                    border: `1px solid ${cls.status === 'AVL' ? 'rgba(40, 167, 69, 0.2)' : 'rgba(220, 53, 69, 0.2)'}`,
-                                                    backgroundColor: cls.status === 'AVL' ? 'rgba(40, 167, 69, 0.05)' : 'rgba(220, 53, 69, 0.05)', // Lighter
-                                                    cursor: 'pointer', // Add this line to change the cursor on hover
-                                                }}
-                                                onClick={() => handleBooking(train)}
-                                            >
-                                                <div className="row justify-content-between align-items-center">
-                                                    <div className="col">
-                                                        <h5 className="mb-1">{cls.type}</h5>
-                                                    </div>
-                                                    <div className="col text-end">
-                                                        <div className="price">{cls.price}</div>
-                                                    </div>
+                                            <div className="text-center" style={{ flex: '1', position: 'relative' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', position: 'relative', justifyContent: 'center' }}>
+                                                    <div style={{ flex: 1, height: '1px', backgroundColor: '#ddd' }}></div>
+                                                    <div style={{ margin: '0 10px', fontWeight: 'bold', fontSize: '16px', zIndex: 1 }}>{train.duration}</div>
+                                                    <div style={{ flex: 1, height: '1px', backgroundColor: '#ddd' }}></div>
                                                 </div>
-                                                <div className="availability-status mt-1">{cls.status}</div>
-                                                <div className="availability-percentage">{cls.availability} available</div>
+                                            </div>
+                                            <div className="d-flex flex-column align-items-center ms-1" style={{ flex: '1' }}>
+                                                <div className="fw-bold fs-6">{train.arrivalTime}</div>
+                                                <div className="text-muted small">{train.toStation}</div>
                                             </div>
                                         </div>
-                                    ))}
+                                        <button className="btn btn-primary ms-3">Availability  <span className="arrow-down" /></button>
+                                    </div>
                                 </div>
-                            </div>
+                                {/* Train Class Availability */}
+                                <div className="w-100 border-top border-secondary my-1"></div>
+                                <div className="col-xl-12 col-lg-12 col-md-12">
+                                    <div className="row text-center gx-2 gy-2">
+                                        {train.classes.map((cls, index) => (
+                                            <div key={index} className="col-auto flex-shrink-0">
+                                                <div
+                                                    className={`availability-card cursor-pointer ${cls.status === 'AVL' ? 'bg-success-subtle' : 'bg-danger-subtle'} rounded-2 p-2`}
+                                                    style={{
+                                                        border: `1px solid ${cls.status === 'AVL' ? 'rgba(40, 167, 69, 0.2)' : 'rgba(220, 53, 69, 0.2)'}`,
+                                                        backgroundColor: cls.status === 'AVL' ? 'rgba(40, 167, 69, 0.05)' : 'rgba(220, 53, 69, 0.05)', // Lighter
+                                                        cursor: 'pointer', // Add this line to change the cursor on hover
+                                                    }}
+                                                    onClick={() => handleBooking(train)}
+                                                >
+                                                    <div className="row justify-content-between align-items-center">
+                                                        <div className="col">
+                                                            <h5 className="mb-1">{cls.type}</h5>
+                                                        </div>
+                                                        <div className="col text-end">
+                                                            <div className="price">{cls.price}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="availability-status mt-1">{cls.status}</div>
+                                                    <div className="availability-percentage">{cls.availability} available</div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
 
-                            {/* Last Updated */}
-                            <div className="col-xl-12 col-lg-12 col-md-12">
-                                <div className="text-muted text-sm text-center mt-3">Updated: {train.lastUpdated}</div>
+                                {/* Last Updated */}
+                                {/* <div className="col-xl-12 col-lg-12 col-md-12">
+                                    <div className="text-muted text-sm text-center mt-3">Updated: {train.lastUpdated}</div>
+                                </div> */}
                             </div>
                         </div>
                     </div>
+                ))
+            ) : (
+                <div className="col-12 text-center mt-5">
+                    <div className="no-train-found-wrapper">
+                        <i className="fas fa-train fa-5x text-muted mb-3"></i>
+                        <h3 className="text-muted">No Trains Found Between These Stations</h3>
+                        <p className="text-muted">Please try adjusting your search filters or check back later for updated results.</p>
+                    </div>
                 </div>
-            ))}
+            )}
         </div>
     );
 }
