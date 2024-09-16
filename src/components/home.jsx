@@ -19,6 +19,7 @@ import SearchComponent from './train_search_result/search_component';
 
 import { useState } from 'react';
 import FlightSearch from './flight_components/flight_search';
+import HorizontalContainer from './train_search_result/HorizontalContainer';
 const Home = () => {
   const [results, setResults] = useState([]);
   const [flightResults, setFlightResults] = useState([]);
@@ -348,6 +349,11 @@ const Home = () => {
           </div>
         </div>
         {/*  Hero Banner End  */}
+
+        {/* Train Status start */}
+        <HorizontalContainer/>
+        {/* Train Status End  */}
+
         {/*  Features Start  */}
         <section className="border-bottom">
           <div className="container">

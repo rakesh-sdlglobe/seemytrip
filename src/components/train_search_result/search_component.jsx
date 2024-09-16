@@ -213,6 +213,11 @@ const SearchComponent = ({
     return storedDate ? parse(storedDate, 'dd/MM/yyyy', new Date()) : null;
   });
 
+  const [disabilityConcession, setDisabilityConcession] = useState(false);
+  const [flexibleDate, setFlexibleDate] = useState(false);
+  const [availableBerth, setAvailableBerth] = useState(false);
+  const [railwayPassConcession, setRailwayPassConcession] = useState(false);
+
   useEffect(() => {
     // Save to session storage whenever state changes
     if (fromStation) {
@@ -344,6 +349,18 @@ const SearchComponent = ({
             width: 100%;
             font-weight: 500;
           }
+
+          .checkbox-group {
+          margin-top: 10px;
+            margin-bottom: 20px;
+          }
+
+          .checkbox-group label {
+            margin-right: 30px;
+          }
+          .checkbox{
+            margin-right: 10px; 
+          }
         `}
       </style>
       <div className="search-component">
@@ -417,6 +434,44 @@ const SearchComponent = ({
                       </div>
                     </div>
                   </div>
+                </div>
+                <div className="checkbox-group">
+                  <label>
+                    <input
+                    className='checkbox'
+                      type="checkbox"
+                      checked={disabilityConcession}
+                      onChange={() => setDisabilityConcession(!disabilityConcession)}
+                    />
+                    Person with Disability Concession
+                  </label>
+                  <label>
+                    <input
+                    className='checkbox'
+                      type="checkbox"
+                      checked={flexibleDate}
+                      onChange={() => setFlexibleDate(!flexibleDate)}
+                    />
+                    Flexible with Date
+                  </label>
+                  <label>
+                    <input
+                    className='checkbox'
+                      type="checkbox"
+                      checked={availableBerth}
+                      onChange={() => setAvailableBerth(!availableBerth)}
+                    />
+                    Train with Available Berth
+                  </label>
+                  <label>
+                    <input
+                    className='checkbox'
+                      type="checkbox"
+                      checked={railwayPassConcession}
+                      onChange={() => setRailwayPassConcession(!railwayPassConcession)}
+                    />
+                    Railway Pass Concession
+                  </label>
                 </div>
               </div>
             </div>

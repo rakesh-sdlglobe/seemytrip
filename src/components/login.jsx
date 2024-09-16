@@ -47,18 +47,26 @@ const Login = () => {
 
   const fetchUserInfo = async (accessToken) => {
     try {
-      const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      const response = await fetch('http://localhost:3002/api/auth/google', {
+        method: 'POST',
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ token: accessToken }),
       });
-      const userInfo = await response.json();
-      console.log(userInfo);
-      dispatch(handleGoogleLogin(userInfo, navigate));
+  
+      const data = await response.json();
+      if (response.ok) {
+        // Assuming `data.user` is the validated user info from the backend
+        dispatch(handleGoogleLogin(data.user, navigate));
+      } else {
+        console.error('Failed to validate Google token:', data.message);
+      }
     } catch (error) {
-      console.error('Failed to fetch user info:', error);
+      console.error('Error fetching user info:', error);
     }
   };
+  
 
   const loginWithGoogle = useGoogleLogin({
     onSuccess: (credentialResponse) => {
@@ -158,6 +166,7 @@ const Login = () => {
                           </div>
                           <div className="social-login py-4 px-md-2">
                             <ul className="row align-items-center justify-content-center g-3 p-0 m-0">
+                            <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-facebook color--google fs-2" /></Link></li>
                               <li className="col">
                                 <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto" onClick={() => loginWithGoogle()}>
                                   <i className="fa-brands fa-google color--google fs-2" />
