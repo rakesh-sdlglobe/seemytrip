@@ -40,16 +40,16 @@ export const HotelSearchbar = () => {
                 <div className="form-group hdd-arrow border rounded-1 mb-0">
                   <label>Where</label>
                   <select className="goingto form-control border-0">
-                    <option value>Select</option>
-                    <option value="ny">New York</option>
-                    <option value="sd">San Diego</option>
-                    <option value="sj">San Jose</option>
-                    <option value="ph">Philadelphia</option>
-                    <option value="nl">Nashville</option>
-                    <option value="sf">San Francisco</option>
-                    <option value="hu">Houston</option>
-                    <option value="sa">San Antonio</option>
-                  </select>
+  <option value>Select</option>
+  <option value="mum">Mumbai</option>
+  <option value="dl">Delhi</option>
+  <option value="blr">Bangalore</option>
+  <option value="goa">Goa</option>
+  <option value="hyd">Hyderabad</option>
+  <option value="kol">Kolkata</option>
+  <option value="jaipur">Jaipur</option>
+  <option value="udaipur">Udaipur</option>
+</select>
                 </div>
               </div>
               <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">

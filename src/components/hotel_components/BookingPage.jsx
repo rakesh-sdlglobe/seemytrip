@@ -360,7 +360,7 @@ export const HotelBookingPage = () => {
                       </div>
                       <div className="col-xl-12 col-lg-12 col-md-12">
                         <div className="text-center d-flex align-items-center justify-content-center mt-4">
-                          <a href="bookingpage-02.html" className="btn btn-md btn-primary fw-semibold">Next<i className="fa-solid fa-arrow-right ms-2" /></a>
+                          <a href="/hotel-bookingpage02" className="btn btn-md btn-primary fw-semibold">Next<i className="fa-solid fa-arrow-right ms-2" /></a>
                         </div>
                       </div>
                     </div>

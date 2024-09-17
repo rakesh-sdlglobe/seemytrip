@@ -76,7 +76,7 @@ const HomeHotel = () => {
                       </div>
                       <div className="position-relative py-4 my-1">
                         <span className="mb-1 text-dark fw-medium">Flat</span>
-                        <h4 className="mb-1 text-success">$899 off</h4>
+                        <h4 className="mb-1 text-success">₹899 off</h4>
                         <h6 className="fw-normal fw-medium">On Domestic Flights</h6>
                       </div>
                       <div className="d-flex justify-content-between align-items-center">
@@ -99,7 +99,7 @@ const HomeHotel = () => {
                       </div>
                       <div className="position-relative py-4 my-1">
                         <span className="mb-1 text-dark fw-medium">Flat</span>
-                        <h4 className="mb-1 text-purple">$899 off</h4>
+                        <h4 className="mb-1 text-purple">₹899 off</h4>
                         <h6 className="fw-normal fw-medium">On Domestic Flights</h6>
                       </div>
                       <div className="d-flex justify-content-between align-items-center">
@@ -121,7 +121,7 @@ const HomeHotel = () => {
                       </div>
                       <div className="position-relative py-4 my-1">
                         <span className="mb-1 text-dark fw-medium">Flat</span>
-                        <h4 className="mb-1 text-danger">$899 off</h4>
+                        <h4 className="mb-1 text-danger">₹899 off</h4>
                         <h6 className="fw-normal fw-medium">On Domestic Flights</h6>
                       </div>
                       <div className="d-flex justify-content-between align-items-center">
@@ -143,7 +143,7 @@ const HomeHotel = () => {
                       </div>
                       <div className="position-relative py-4 my-1">
                         <span className="mb-1 text-dark fw-medium">Flat</span>
-                        <h4 className="mb-1 text-warning">$899 off</h4>
+                        <h4 className="mb-1 text-warning">₹899 off</h4>
                         <h6 className="fw-normal fw-medium">On Domestic Flights</h6>
                       </div>
                       <div className="d-flex justify-content-between align-items-center">
@@ -216,8 +216,8 @@ const HomeHotel = () => {
                               <span className="label bg-seegreen text-light">15% Off</span>
                             </div>
                             <div className="d-flex align-items-center">
-                              <div className="text-dark fw-bold fs-4">US$59</div>
-                              <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">US$79</div>
+                              <div className="text-dark fw-bold fs-4">US₹59</div>
+                              <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">US₹79</div>
                             </div>
                             <div className="d-flex align-items-start flex-column">
                               <div className="text-muted-2 text-sm">Per Night</div>
@@ -281,8 +281,8 @@ const HomeHotel = () => {
                               <span className="label bg-seegreen text-light">15% Off</span>
                             </div>
                             <div className="d-flex align-items-center">
-                              <div className="text-dark fw-bold fs-4">US$59</div>
-                              <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">US$79</div>
+                              <div className="text-dark fw-bold fs-4">US₹59</div>
+                              <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">US₹79</div>
                             </div>
                             <div className="d-flex align-items-start flex-column">
                               <div className="text-muted-2 text-sm">Per Night</div>
@@ -346,8 +346,8 @@ const HomeHotel = () => {
                               <span className="label bg-seegreen text-light">15% Off</span>
                             </div>
                             <div className="d-flex align-items-center">
-                              <div className="text-dark fw-bold fs-4">US$59</div>
-                              <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">US$79</div>
+                              <div className="text-dark fw-bold fs-4">US₹59</div>
+                              <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">US₹79</div>
                             </div>
                             <div className="d-flex align-items-start flex-column">
                               <div className="text-muted-2 text-sm">Per Night</div>
@@ -411,8 +411,8 @@ const HomeHotel = () => {
                               <span className="label bg-seegreen text-light">15% Off</span>
                             </div>
                             <div className="d-flex align-items-center">
-                              <div className="text-dark fw-bold fs-4">US$59</div>
-                              <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">US$79</div>
+                              <div className="text-dark fw-bold fs-4">US₹59</div>
+                              <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">US₹79</div>
                             </div>
                             <div className="d-flex align-items-start flex-column">
                               <div className="text-muted-2 text-sm">Per Night</div>
@@ -581,7 +581,7 @@ const HomeHotel = () => {
                         </p>
                       </div>
                       <div className="flight-foots">
-                        <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">US$492</span></h5>
+                        <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">US₹492</span></h5>
                       </div>
                     </div>
                   </Link>
@@ -615,7 +615,7 @@ const HomeHotel = () => {
                         </p>
                       </div>
                       <div className="flight-foots">
-                        <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">US$492</span></h5>
+                        <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">US₹492</span></h5>
                       </div>
                     </div>
                   </Link>
@@ -649,7 +649,7 @@ const HomeHotel = () => {
                         </p>
                       </div>
                       <div className="flight-foots">
-                        <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">US$492</span></h5>
+                        <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">US₹492</span></h5>
                       </div>
                     </div>
                   </Link>
@@ -683,7 +683,7 @@ const HomeHotel = () => {
                         </p>
                       </div>
                       <div className="flight-foots">
-                        <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">US$492</span></h5>
+                        <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">US₹492</span></h5>
                       </div>
                     </div>
                   </Link>
@@ -820,7 +820,7 @@ const HomeHotel = () => {
                       <div className="flight-footer">
                         <div className="epocsic">
                           <span className="label d-inline-flex bg-light-danger text-danger mb-1">15% Off</span>
-                          <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">$492</span>
+                          <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">₹492</span>
                           </h5>
                         </div>
                         <div className="rates">
@@ -861,7 +861,7 @@ const HomeHotel = () => {
                       <div className="flight-footer">
                         <div className="epocsic">
                           <span className="label d-inline-flex bg-light-danger text-danger mb-1">15% Off</span>
-                          <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">$492</span>
+                          <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">₹492</span>
                           </h5>
                         </div>
                         <div className="rates">
@@ -902,7 +902,7 @@ const HomeHotel = () => {
                       <div className="flight-footer">
                         <div className="epocsic">
                           <span className="label d-inline-flex bg-light-danger text-danger mb-1">15% Off</span>
-                          <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">$492</span>
+                          <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">₹492</span>
                           </h5>
                         </div>
                         <div className="rates">
