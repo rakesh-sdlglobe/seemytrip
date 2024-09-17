@@ -66,6 +66,9 @@ import { setUser } from './store/Actions/authActions';
 import FlightList from './components/flight_components/flight_list.jsx';
 import { FlightBookingpage01 } from './components/flight_components/flight_bookingpage.jsx';
 import FlightBookingPage02 from './components/flight_bookingpage02.jsx';
+import { HotelBookingPage } from './components/hotel_components/BookingPage.jsx';
+import HotelBookingpage02 from './components/HotelBookingpage02.jsx';
+import HomeCruise from './components/home-cruise.jsx';
 
 function App() {
   const dispatch = useDispatch();
@@ -154,6 +157,15 @@ function App() {
           <Route path="/flight-list" element={<FlightList/>} />
           <Route path="/flight-Bookingpage" element={<FlightBookingpage01/>} />
           <Route path="/flight-Bookingpage02" element={<FlightBookingPage02/>} />
+
+          {/* Hotel Routes */}
+          
+          <Route path="/hotel-bookingpage" element={<HotelBookingPage/>} />
+          <Route path="/hotel-bookingpage02" element={<HotelBookingpage02/>} />
+          {/* Cruise Routes */}
+          
+          <Route path="/home-cruise" element={<HomeCruise/> }/>
+          <Route path="/hotel-bookingpage02" element={<HotelBookingpage02/>} />
         </Routes>
       </Router>
     </div>

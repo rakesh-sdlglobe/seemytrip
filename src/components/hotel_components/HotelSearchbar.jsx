@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-// import 'font-awesome/css/font-awesome.min.css'; // FontAwesome for the icons
-import './Hotel.css'
+import './Hotel.css';
+import { Link } from 'react-router-dom';
 
 export const HotelSearchbar = () => {
   const [startDate, setStartDate] = useState(null);
@@ -10,19 +10,17 @@ export const HotelSearchbar = () => {
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
-  const [showGuestsOptions, setShowGuestsOptions] = useState(false); // State for toggling guests dropdown
-  const guestsDropdownRef = useRef(null); // Reference to handle outside click
+  const [showGuestsOptions, setShowGuestsOptions] = useState(false);
+  const guestsDropdownRef = useRef(null);
 
-  // Function to toggle guests dropdown visibility
   const toggleGuestsOptions = () => {
-    setShowGuestsOptions(!showGuestsOptions);
+    setShowGuestsOptions((prevState) => !prevState); // Correct toggle logic
   };
 
-  // Function to handle outside clicks
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (guestsDropdownRef.current && !guestsDropdownRef.current.contains(event.target)) {
-        setShowGuestsOptions(false); // Close the dropdown if clicked outside
+        setShowGuestsOptions(false); // Close dropdown when clicking outside
       }
     };
 
@@ -30,7 +28,7 @@ export const HotelSearchbar = () => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [guestsDropdownRef]);
+  }, []);
 
   return (
     <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
@@ -97,7 +95,7 @@ export const HotelSearchbar = () => {
                       {adults} Adult{adults > 1 ? 's' : ''}, {children} Child{children !== 1 ? 'ren' : ''}, {rooms} Room{rooms > 1 ? 's' : ''}
                     </button>
                     {showGuestsOptions && (
-                      <div className="guests-input__options bg-white shadow rounded-3 p-2 position-absolute">
+                      <div className="guests-input__options bg-white shadow rounded-3 p-2 position-absolute" style={{ zIndex: 1000 }}>
                         <div className="d-flex justify-content-between align-items-center mb-2">
                           <span className="guests-input__ctrl minus" onClick={() => setAdults(adults > 1 ? adults - 1 : 1)}>
                             <i className="fa fa-minus" />
@@ -132,9 +130,11 @@ export const HotelSearchbar = () => {
               </div>
               <div className="col-xl-4 col-lg-4 col-md-4 col-sm-4">
                 <div className="form-group mb-0">
-                  <button type="button" className="btn btn-primary full-width rounded-1 fw-medium">
-                    <i className="fa fa-search me-2" />Search
-                  </button>
+                  <Link to="/hotel-list-01">
+                    <button type="button" className="btn btn-primary full-width rounded-1 fw-medium">
+                      <i className="fa fa-search me-2" />Search
+                    </button>
+                  </Link>
                 </div>
               </div>
             </div>

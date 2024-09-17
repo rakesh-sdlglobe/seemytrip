@@ -1,4 +1,4 @@
-/* General styles */
+/* General styles
 .search-wrap {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
@@ -27,8 +27,8 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 10px;
-  top: auto; /* Remove any previous top setting */
-  bottom: 100%; /* Ensures the dropdown appears above the button */
+  top: auto; 
+  bottom: 100%; 
   left: 0;
   z-index: 10;
 }
@@ -48,7 +48,7 @@
   border-radius: 4px;
 }
 
-/* Positioning the economy dropdown similarly */
+
 .economy-dropdown {
   position: relative;
   display: inline-block;
@@ -70,12 +70,12 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 10px;
-  top: 100%; /* Ensure it appears below the button */
+  top: 100%; 
   left: 0;
-  z-index: 100; /* Ensure it's on top of other elements */
+  z-index: 100; 
   min-width: 200px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add shadow for visibility */
-  display: block; /* Make sure it's visible */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  display: block; 
 }
 
 .dropdown-menu li {
@@ -86,4 +86,4 @@
 
 .dropdown-menu li:hover {
   background-color: #f0f0f0;
-}
+} */

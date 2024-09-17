@@ -27,6 +27,7 @@ const modalOverlayStyle = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    zIndex: 1000, // Ensure the overlay is above other elements
 };
 
 const modalContentStyle = {
@@ -36,7 +37,9 @@ const modalContentStyle = {
     width: '80%',
     maxWidth: '600px',
     position: 'relative',
+    zIndex: 1001, // Ensure the content is above the overlay
 };
+
 
 const closeButtonStyle = {
     position: 'absolute',
