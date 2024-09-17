@@ -17,9 +17,9 @@ import Footer from './footer';
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Bangalore, Carnival, Delhi, Ertiga, Hyderbad, Jazz, Nexon, Tiago, Toyota } from '../assets/images';
+import { ship1, ship2, ship3, ship4, ship5, ship6 } from '../assets/images';
 
-const HomeCar = () => {
+const HomeCruise = () => {
   const [selectedDate, setSelectedDate] = useState(null);
       return (
         <div>
@@ -64,7 +64,7 @@ const HomeCar = () => {
             {/* Top header  */}
             {/* ============================================================== */}
             {/* ============================ Hero Banner  Start================================== */}
-            <div className="image-cover hero-header bg-white" style={{background: 'url(../images/taxis.png)no-repeat'}} data-overlay={5}>
+            <div className="image-cover hero-header bg-white" style={{background: 'url(../images/Cruise.jpeg)no-repeat'}} data-overlay={5}>
               <div className="container">
                 {/* Search Form */}
                 <div className="row justify-content-center align-items-center">
@@ -148,112 +148,99 @@ const HomeCar = () => {
             </div>
             {/* ============================ Hero Banner End ================================== */}
             {/* =========================== Tours Offers Start ====================================== */}
-            <section className="pt-5 pb-0">
-  <div className="container">
-    <div className="row align-items-center justify-content-center g-xl-4 g-lg-4 g-md-3 g-4">
-      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
-        <div className="cab-offer-item">
-          <Link to="#" className="card rounded-3 border br-dashed border-2 m-0">
-            <div className="offer-container d-flex align-items-center justify-content-start p-2">
-              <div className="offer-flex position-relative">
-                <div className="offer-tags position-absolute start-0 top-0 mt-2 ms-2">
-                  <span className="label text-light bg-danger fw-medium">20% Off</span>
-                </div>
-                <div className="offer-pic">
-                  <img src={Hyderbad} className="img-fluid rounded" width={110} alt="Cab Offer" />
-                </div>
-              </div>
-              <div className="offer-captions ps-3">
-                <h4 className="destination fs-6 m-0 fw-bold">
-                  <span>Hyderbad</span>
-                </h4>
-                <p className="details ellipsis-container">
-                  <span className="ellipsis-item__normal">Round-trip</span>
-                  <span className="separate ellipsis-item__normal" />
-                  <span className="ellipsis-item">3 Days</span>
-                  <span className="separate ellipsis-item__normal" />
-                  <span className="ellipsis-item">3 People</span>
-                </p>
-                <div className="booking-wrapper d-flex align-items-center justify-content-between">
-                  <h5 className="fs-5 low-price m-0">
-                    <span className="tag-span">From</span> <span className="price">$849 - $999</span>
-                  </h5>
-                </div>
-              </div>
-            </div>
-          </Link>
-        </div>
-      </div>
-      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
-        <div className="cab-offer-item">
-          <Link to="#" className="card rounded-3 border br-dashed border-2 m-0">
-            <div className="offer-container d-flex align-items-center justify-content-start p-2">
-              <div className="offer-flex position-relative">
-                <div className="offer-tags position-absolute start-0 top-0 mt-2 ms-2">
-                  <span className="label text-light bg-danger fw-medium">15% Off</span>
-                </div>
-                <div className="offer-pic">
-                  <img src={Delhi} className="img-fluid rounded" width={110} alt="Cab Offer" />
-                </div>
-              </div>
-              <div className="offer-captions ps-3">
-                <h4 className="destination fs-6 m-0 fw-bold">
-                  <span>Delhi</span>
-                </h4>
-                <p className="details ellipsis-container">
-                  <span className="ellipsis-item__normal">Round-trip</span>
-                  <span className="separate ellipsis-item__normal" />
-                  <span className="ellipsis-item">3 Days</span>
-                  <span className="separate ellipsis-item__normal" />
-                  <span className="ellipsis-item">2 People</span>
-                </p>
-                <div className="booking-wrapper d-flex align-items-center justify-content-between">
-                  <h5 className="fs-5 low-price m-0">
-                    <span className="tag-span">From</span> <span className="price">$399 - $599</span>
-                  </h5>
-                </div>
-              </div>
-            </div>
-          </Link>
-        </div>
-      </div>
-      <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
-        <div className="cab-offer-item">
-          <Link to="#" className="card rounded-3 border br-dashed border-2 m-0">
-            <div className="offer-container d-flex align-items-center justify-content-start p-2">
-              <div className="offer-flex position-relative">
-                <div className="offer-tags position-absolute start-0 top-0 mt-2 ms-2">
-                  <span className="label text-light bg-danger fw-medium">30% Off</span>
-                </div>
-                <div className="offer-pic">
-                  <img src={Bangalore} className="img-fluid rounded" width={110} alt="Cab Offer" />
-                </div>
-              </div>
-              <div className="offer-captions ps-3">
-                <h4 className="destination fs-6 m-0 fw-bold">
-                  <span>Bangalore</span>
-                </h4>
-                <p className="details ellipsis-container">
-                  <span className="ellipsis-item__normal">Round-trip</span>
-                  <span className="separate ellipsis-item__normal" />
-                  <span className="ellipsis-item">3 Days</span>
-                  <span className="separate ellipsis-item__normal" />
-                  <span className="ellipsis-item">3 People</span>
-                </p>
-                <div className="booking-wrapper d-flex align-items-center justify-content-between">
-                  <h5 className="fs-5 low-price m-0">
-                    <span className="tag-span">From</span> <span className="price">$569 - $799</span>
-                  </h5>
+            {/* <section className="pt-5 pb-0">
+              <div className="container">
+                <div className="row align-items-center justify-content-center g-xl-4 g-lg-4 g-md-3 g-4">
+                  <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                    <div className="pop-touritems">
+                      <Link to="#" className="card rounded-3 border br-dashed border-2 m-0">
+                        <div className="offers-container d-flex align-items-center justify-content-start p-2">
+                          <div className="offers-flex position-relative">
+                            <div className="offer-tags position-absolute start-0 top-0 mt-2 ms-2"><span className="label text-light bg-danger fw-medium">20% Off</span></div>
+                            <div className="offers-pic"><img src="https://placehold.co/800x800" className="img-fluid rounded" width={110} alt="" />
+                            </div>
+                          </div>
+                          <div className="offers-captions ps-3">
+                            <h4 className="city fs-6 m-0 fw-bold">
+                              <span>Los Angeles</span>
+                            </h4>
+                            <p className="detail ellipsis-container">
+                              <span className="ellipsis-item__normal">Round-trip</span>
+                              <span className="separate ellipsis-item__normal" />
+                              <span className="ellipsis-item">3D/4N</span>
+                              <span className="separate ellipsis-item__normal" />
+                              <span className="ellipsis-item">3 Person</span>
+                            </p>
+                            <div className="booking-wrapes d-flex align-items-center justify-content-between">
+                              <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">$849 -
+                                  $999</span></h5>
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    </div>
+                  </div>
+                  <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                    <div className="pop-touritems">
+                      <Link to="#" className="card rounded-3 border br-dashed border-2 m-0">
+                        <div className="offers-container d-flex align-items-center justify-content-start p-2">
+                          <div className="offers-flex position-relative">
+                            <div className="offer-tags position-absolute start-0 top-0 mt-2 ms-2"><span className="label text-light bg-danger fw-medium">15% Off</span></div>
+                            <div className="offers-pic"><img src="https://placehold.co/800x800" className="img-fluid rounded" width={110} alt="" />
+                            </div>
+                          </div>
+                          <div className="offers-captions ps-3">
+                            <h4 className="city fs-6 m-0 fw-bold">
+                              <span>United Kingdom</span>
+                            </h4>
+                            <p className="detail ellipsis-container">
+                              <span className="ellipsis-item__normal">Round-trip</span>
+                              <span className="separate ellipsis-item__normal" />
+                              <span className="ellipsis-item">3D/4N</span>
+                              <span className="separate ellipsis-item__normal" />
+                              <span className="ellipsis-item">2 Person</span>
+                            </p>
+                            <div className="booking-wrapes d-flex align-items-center justify-content-between">
+                              <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">$399 -
+                                  $599</span></h5>
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    </div>
+                  </div>
+                  <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                    <div className="pop-touritems">
+                      <Link to="#" className="card rounded-3 border br-dashed border-2 m-0">
+                        <div className="offers-container d-flex align-items-center justify-content-start p-2">
+                          <div className="offers-flex position-relative">
+                            <div className="offer-tags position-absolute start-0 top-0 mt-2 ms-2"><span className="label text-light bg-danger fw-medium">30% Off</span></div>
+                            <div className="offers-pic"><img src="https://placehold.co/800x800" className="img-fluid rounded" width={110} alt="" />
+                            </div>
+                          </div>
+                          <div className="offers-captions ps-3">
+                            <h4 className="city fs-6 m-0 fw-bold">
+                              <span>France</span>
+                            </h4>
+                            <p className="detail ellipsis-container">
+                              <span className="ellipsis-item__normal">Round-trip</span>
+                              <span className="separate ellipsis-item__normal" />
+                              <span className="ellipsis-item">3D/4N</span>
+                              <span className="separate ellipsis-item__normal" />
+                              <span className="ellipsis-item">3 Person</span>
+                            </p>
+                            <div className="booking-wrapes d-flex align-items-center justify-content-between">
+                              <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">$569 -
+                                  $799</span></h5>
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Link>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
+            </section> */}
             {/* =========================== Tours Offers End ====================================== */}
             {/* ============================ All car List Start ================================== */}
             <section>
@@ -261,7 +248,7 @@ const HomeCar = () => {
                 <div className="row align-items-center justify-content-center">
                   <div className="col-xl-8 col-lg-9 col-md-11 col-sm-12">
                     <div className="secHeading-wrap text-center mb-5">
-                      <h2>Our Awesome Vehicles</h2>
+                      <h2>Top Cruises</h2>
                       <p>Cicero famously orated against his political opponent Lucius Sergius Catilina.</p>
                     </div>
                   </div>
@@ -283,13 +270,13 @@ const HomeCar = () => {
                             </div>
                           </div>
                           <div className="popFlights-item-overHidden">
-                            <img src={Nexon} className="img-fluid" alt="" />
+                            <img src={ship1} className="img-fluid" alt="" />
                           </div>
                         </div>
                         <div className="touritem-middle position-relative p-3">
                           <div className="touritem-flexxer">
                             <h4 className="city fs-4 m-0 fw-bold">
-                              <span>Tata Nexon</span>
+                              <span>Carmy Accord</span>
                             </h4>
                             <p className="detail ellipsis-container">
                               <span className="ellipsis-item__normal">SEDAN</span>
@@ -355,13 +342,13 @@ const HomeCar = () => {
                             </div>
                           </div>
                           <div className="popFlights-item-overHidden">
-                            <img src={Jazz} className="img-fluid" alt="" />
+                            <img src={ship2} className="img-fluid" alt="" />
                           </div>
                         </div>
                         <div className="touritem-middle position-relative p-3">
                           <div className="touritem-flexxer">
                             <h4 className="city fs-4 m-0 fw-bold">
-                              <span>Honda Jazz</span>
+                              <span>Audi, BMW</span>
                             </h4>
                             <p className="detail ellipsis-container">
                               <span className="ellipsis-item__normal">Hatchback</span>
@@ -427,13 +414,13 @@ const HomeCar = () => {
                             </div>
                           </div>
                           <div className="popFlights-item-overHidden">
-                            <img src={Ertiga} className="img-fluid" alt="" />
+                            <img src={ship3} className="img-fluid" alt="" />
                           </div>
                         </div>
                         <div className="touritem-middle position-relative p-3">
                           <div className="touritem-flexxer">
                             <h4 className="city fs-4 m-0 fw-bold">
-                              <span>Ertiga</span>
+                              <span>Ertiga, Xylo</span>
                             </h4>
                             <p className="detail ellipsis-container">
                               <span className="ellipsis-item__normal">LUX</span>
@@ -499,13 +486,13 @@ const HomeCar = () => {
                             </div>
                           </div>
                           <div className="popFlights-item-overHidden">
-                            <img src={Carnival} className="img-fluid" alt="" />
+                            <img src={ship4} className="img-fluid" alt="" />
                           </div>
                         </div>
                         <div className="touritem-middle position-relative p-3">
                           <div className="touritem-flexxer">
                             <h4 className="city fs-4 m-0 fw-bold">
-                              <span>Kia Carnival</span>
+                              <span>Suv, Innova Crysta</span>
                             </h4>
                             <p className="detail ellipsis-container">
                               <span className="ellipsis-item__normal">SUV</span>
@@ -571,13 +558,13 @@ const HomeCar = () => {
                             </div>
                           </div>
                           <div className="popFlights-item-overHidden">
-                            <img src={Toyota} className="img-fluid" alt="" />
+                            <img src={ship5} className="img-fluid" alt="" />
                           </div>
                         </div>
                         <div className="touritem-middle position-relative p-3">
                           <div className="touritem-flexxer">
                             <h4 className="city fs-4 m-0 fw-bold">
-                              <span>Toyota </span>
+                              <span>Toyota Aygo</span>
                             </h4>
                             <p className="detail ellipsis-container">
                               <span className="ellipsis-item__normal">SEDAN</span>
@@ -643,13 +630,13 @@ const HomeCar = () => {
                             </div>
                           </div>
                           <div className="popFlights-item-overHidden">
-                            <img src={Tiago} className="img-fluid" alt="" />
+                            <img src={ship6} className="img-fluid" alt="" />
                           </div>
                         </div>
                         <div className="touritem-middle position-relative p-3">
                           <div className="touritem-flexxer">
                             <h4 className="city fs-4 m-0 fw-bold">
-                              <span>Tata Tiago</span>
+                              <span>Ford Focus</span>
                             </h4>
                             <p className="detail ellipsis-container">
                               <span className="ellipsis-item__normal">LUX</span>
@@ -1040,10 +1027,10 @@ const HomeCar = () => {
                       <img src="https://placehold.co/1000x1100" className="img-fluid rounded-3 position-relative z-1" alt="" />
                       <div className="position-absolute bottom-0 start-0 z-index-1 mb-4 ms-2">
                         <div className="bg-body d-flex d-inline-block rounded-3 position-relative p-3 z-2 shadow-wrap">
-                          
+                        
                           <div className="me-4">
                             <h6 className="fw-normal">Client</h6>
-                            
+                        
                             <ul className="avatar-group mb-0">
                               <li className="avatar avatar-md">
                                 <img className="avatar-img circle" src="https://placehold.co/500x500" alt="avatar" />
@@ -1064,7 +1051,7 @@ const HomeCar = () => {
                               </li>
                             </ul>
                           </div>
-                          
+                        
                           <div>
                             <h6 className="fw-normal mb-3">Rating</h6>
                             <h6 className="m-0">4.5<i className="fa-solid fa-star text-warning ms-1" /></h6>
@@ -1642,4 +1629,4 @@ const HomeCar = () => {
       );
     }
   
-    export default HomeCar;
+    export default HomeCruise;
