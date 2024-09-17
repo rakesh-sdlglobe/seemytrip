@@ -14,6 +14,8 @@ import '../assets/css/style.css';
 import Header02 from './header02';
 import { Link } from 'react-router-dom';
 import Footer from './footer';
+import { HotelSearchbar } from './hotel_components/HotelSearchbar';
+import { Bangalore, Delhi, Hyderbad, Mumbai } from '../assets/images';
 
 const HomeHotel = () => {
   return (
@@ -55,79 +57,14 @@ const HomeHotel = () => {
                     explore beautiful destinations.</p>
                 </div>
               </div>
-              <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                <div className="search-wrap with-label bg-white rounded-3 p-3 pt-4">
-                  <div className="row gy-3 gx-md-3 gx-sm-2">
-                    <div className="col-xl-8 col-lg-7 col-md-12">
-                      <div className="row gy-3 gx-md-3 gx-sm-2">
-                        <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
-                          <div className="form-group hdd-arrow border rounded-1 mb-0">
-                            <label>Where</label>
-                            <select className="goingto form-control border-0">
-                              <option value>Select</option>
-                              <option value="ny">New York</option>
-                              <option value="sd">San Diego</option>
-                              <option value="sj">San Jose</option>
-                              <option value="ph">Philadelphia</option>
-                              <option value="nl">Nashville</option>
-                              <option value="sf">San Francisco</option>
-                              <option value="hu">Houston</option>
-                              <option value="sa">San Antonio</option>
-                            </select>
-                          </div>
-                        </div>
-                        <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                          <div className="form-group mb-0">
-                            <label>Choose Date</label>
-                            <input type="text" className="form-control fw-bold" placeholder="Check-In & Check-Out" id="checkinout" readOnly="readonly" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-xl-4 col-lg-5 col-md-12">
-                      <div className="row gy-3 gx-md-3 gx-sm-2">
-                        <div className="col-xl-8 col-lg-8 col-md-8 col-sm-8">
-                          <div className="form-group mb-0">
-                            <label>Members</label>
-                            <div className="booking-form__input guests-input mixer-auto">
-                              <button name="guests-btn" id="guests-input-btn">1 Guest</button>
-                              <div className="guests-input__options" id="guests-input-options">
-                                <div>
-                                  <span className="guests-input__ctrl minus" id="adults-subs-btn"><i className="fa-solid fa-minus" /></span>
-                                  <span className="guests-input__value"><span id="guests-count-adults">1</span>Adults</span>
-                                  <span className="guests-input__ctrl plus" id="adults-add-btn"><i className="fa-solid fa-plus" /></span>
-                                </div>
-                                <div>
-                                  <span className="guests-input__ctrl minus" id="children-subs-btn"><i className="fa-solid fa-minus" /></span>
-                                  <span className="guests-input__value"><span id="guests-count-children">0</span>Children</span>
-                                  <span className="guests-input__ctrl plus" id="children-add-btn"><i className="fa-solid fa-plus" /></span>
-                                </div>
-                                <div>
-                                  <span className="guests-input__ctrl minus" id="room-subs-btn"><i className="fa-solid fa-minus" /></span>
-                                  <span className="guests-input__value"><span id="guests-count-room">0</span>Rooms</span>
-                                  <span className="guests-input__ctrl plus" id="room-add-btn"><i className="fa-solid fa-plus" /></span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-xl-4 col-lg-4 col-md-4 col-sm-4">
-                          <div className="form-group mb-0">
-                            <button type="button" className="btn btn-primary full-width rounded-1 fw-medium"><i className="fa-solid fa-magnifying-glass me-2" />Search</button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+             <HotelSearchbar/>
             </div>
             {/* </row> */}
           </div>
         </div>
         {/* ============================ Hero Banner End ================================== */}
         {/* ============================ Offers Start ================================== */}
-        <section className="py-5">
+        {/* <section className="py-5">
           <div className="container">
             <div className="row justify-content-between gy-4 gx-xl-4 gx-lg-3 gx-md-3 gx-4">
               <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6">
@@ -221,7 +158,7 @@ const HomeHotel = () => {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
         {/* ============================ Offers End ================================== */}
         {/* ============================ Popular Hotels Start ================================== */}
         <section className="py-5">
@@ -244,13 +181,13 @@ const HomeHotel = () => {
                   <Link to="#" className="card rounded-3 border br-dashed m-0">
                     <div className="flight-thumb-wrapper">
                       <div className="popFlights-item-overHidden">
-                        <img src="https://placehold.co/1200x800" className="img-fluid" alt="" />
+                        <img src={Hyderbad} className="img-fluid" alt="" />
                       </div>
                     </div>
                     <div className="touritem-middle position-relative p-3">
                       <div className="touritem-flexxer">
                         <h4 className="city fs-6 m-0 fw-bold">
-                          <span>Value Hotel Balestier</span>
+                          <span>Hydebad</span>
                         </h4>
                         <p className="detail ellipsis-container">
                           <span className="ellipsis-item__normal">Delhi</span>
@@ -309,13 +246,13 @@ const HomeHotel = () => {
                   <Link to="#" className="card rounded-3 border br-dashed m-0">
                     <div className="flight-thumb-wrapper">
                       <div className="popFlights-item-overHidden">
-                        <img src="https://placehold.co/1200x800" className="img-fluid" alt="" />
+                        <img src={Mumbai} className="img-fluid" alt="" />
                       </div>
                     </div>
                     <div className="touritem-middle position-relative p-3">
                       <div className="touritem-flexxer">
                         <h4 className="city fs-6 m-0 fw-bold">
-                          <span>Value Hotel Balestier</span>
+                          <span>Mumbai</span>
                         </h4>
                         <p className="detail ellipsis-container">
                           <span className="ellipsis-item__normal">Delhi</span>
@@ -374,13 +311,13 @@ const HomeHotel = () => {
                   <Link to="#" className="card rounded-3 border br-dashed m-0">
                     <div className="flight-thumb-wrapper">
                       <div className="popFlights-item-overHidden">
-                        <img src="https://placehold.co/1200x800" className="img-fluid" alt="" />
+                        <img src={Bangalore} className="img-fluid" alt="" />
                       </div>
                     </div>
                     <div className="touritem-middle position-relative p-3">
                       <div className="touritem-flexxer">
                         <h4 className="city fs-6 m-0 fw-bold">
-                          <span>Value Hotel Balestier</span>
+                          <span>Bangalore</span>
                         </h4>
                         <p className="detail ellipsis-container">
                           <span className="ellipsis-item__normal">Delhi</span>
@@ -439,7 +376,7 @@ const HomeHotel = () => {
                   <Link to="#" className="card rounded-3 border br-dashed m-0">
                     <div className="flight-thumb-wrapper">
                       <div className="popFlights-item-overHidden">
-                        <img src="https://placehold.co/1200x800" className="img-fluid" alt="" />
+                        <img src={Delhi} className="img-fluid" alt="" />
                       </div>
                     </div>
                     <div className="touritem-middle position-relative p-3">
@@ -503,7 +440,7 @@ const HomeHotel = () => {
         </section>
         {/* ============================ Popular Hotels End ================================== */}
         {/* ============================ Popular Location Start ================================== */}
-        <section className="py-5">
+        {/* <section className="py-5">
           <div className="container">
             <div className="row align-items-center mb-3">
               <div className="col-8">
@@ -516,7 +453,7 @@ const HomeHotel = () => {
                   <Link to="#" className="btn btn-light-primary btn-md fw-medium">More<i className="fa-solid fa-arrow-trend-up ms-2" /></Link>
                 </div>
               </div>
-              {/* single card */}
+              
               <div className='mt-3'></div>
               <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6">
                 <div className="destination-blocks bg-white p-2 rounded border br-dashed">
@@ -537,7 +474,7 @@ const HomeHotel = () => {
                   </div>
                 </div>
               </div>
-              {/* single card */}
+              
               <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6">
                 <div className="destination-blocks bg-white p-2 rounded border br-dashed">
                   <div className="destination-blocks-pics p-1">
@@ -557,7 +494,7 @@ const HomeHotel = () => {
                   </div>
                 </div>
               </div>
-              {/* single card */}
+              
               <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6">
                 <div className="destination-blocks bg-white p-2 rounded border br-dashed">
                   <div className="destination-blocks-pics p-1">
@@ -577,7 +514,7 @@ const HomeHotel = () => {
                   </div>
                 </div>
               </div>
-              {/* single card */}
+              
               <div className="col-xl-3 col-lg-3 col-md-6 col-sm-6">
                 <div className="destination-blocks bg-white p-2 rounded border br-dashed">
                   <div className="destination-blocks-pics p-1">
@@ -599,7 +536,7 @@ const HomeHotel = () => {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
         {/* ============================ Popular Location End ================================== */}
         {/* ============================ Popular Routes Start ================================== */}
         <section className="py-5">

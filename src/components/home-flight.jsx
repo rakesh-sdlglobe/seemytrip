@@ -18,6 +18,8 @@ import FlightSearch from './flight_components/flight_search';
 import { useState } from 'react';
 import { AirIndia, Bangalore, Delhi, Hyderbad, Indigo, indigo, Mumbai, Vistara } from '../assets/images';
 import FooterDark from './footer-dark';
+import HorizontalContainer2 from './flight_components/HorizontalContainer';
+import FlightSearchBar from './flight_components/flight_search_bar';
 
 const HomeFlight = () => {
   const [flightResults, setFlightResults] = useState([]);
@@ -68,7 +70,7 @@ const HomeFlight = () => {
                     explore beautiful destinations.</p>
                 </div>
               </div>
-              <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+              {/* <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                 <div className="search-wrap bg-white rounded-3 p-3">
                   <div className="search-upper">
                     <div className="d-flex align-items-center justify-content-between flex-wrap">
@@ -124,7 +126,7 @@ const HomeFlight = () => {
                       </div>
                     </div>
                   </div>
-                  {/* <div className="row gx-lg-2 g-3">
+                  <div className="row gx-lg-2 g-3">
                         <div className="col-xl-6 col-lg-6 col-md-12">
                           <div className="row gy-3 gx-lg-2 gx-3">
                             <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
@@ -181,7 +183,7 @@ const HomeFlight = () => {
                             <button type="button" className="btn btn-primary full-width fw-medium"><i className="fa-solid fa-magnifying-glass me-2" />Search</button>
                           </div>
                         </div>
-                      </div> */}
+                      </div>
                   <FlightSearch
                     onSearchResults={handleSearchResults}
                     backgroundColor="#ffffff"
@@ -193,13 +195,24 @@ const HomeFlight = () => {
                     dateLabel={null}
                   />
                 </div>
-              </div>
+              </div> */}
+              <FlightSearchBar />
+              <FlightSearch
+                    onSearchResults={handleSearchResults}
+                    backgroundColor="#ffffff"
+                    buttonBackgroundColor="#cd2c22"
+                    buttonTextColor="#ffffff"
+                    height="90px"
+                    leavingLabel={null}
+                    goingLabel={null}
+                    dateLabel={null}
+                  />
             </div>
 
             {/* </row> */}
           </div>
         </div>
-        
+        <HorizontalContainer2/>
         {/* ============================ Hero Banner End ================================== */}
         {/* ============================ Offers Start ================================== */}
         <section className="pt-4 pb-0">
