@@ -23,6 +23,16 @@ export const flightData = [
         ],
     },
     {
+        flightId: 'DL200',
+        departureTime: '15:00',
+        arrivalTime: '17:45',
+        duration: calculateDuration('08:00', '10:30'),
+        stops: [
+            { airportId: 1, arrivalTime: '08:00', departureTime: '08:30' },  // Mumbai
+            { airportId: 2, arrivalTime: '10:30', departureTime: null },     // Delhi
+        ],
+    },
+    {
         flightId: 'BA101',
         departureTime: '15:00',
         arrivalTime: '17:45',

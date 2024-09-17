@@ -217,7 +217,7 @@ const FlightList01 = () => {
       <div id="main-wrapper">
         <Header02 />
         <div className="clearfix" />
-        <SearchComponent onSearchResults={handleSearchResults} backgroundColor="#cd2c22" height="110px" leavingLabel={null}      // Custom label for 'Leaving From'
+        <SearchComponent onSearchResults={handleSearchResults} backgroundColor="#cd2c22" height="160px" leavingLabel={null}      // Custom label for 'Leaving From'
           goingLabel={null}          // Custom label for 'Going To'
           dateLabel={null} 
           buttonBackgroundColor="#ffffff"
