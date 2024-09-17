@@ -69,6 +69,8 @@ import FlightBookingPage02 from './components/flight_bookingpage02.jsx';
 import { HotelBookingPage } from './components/hotel_components/BookingPage.jsx';
 import HotelBookingpage02 from './components/HotelBookingpage02.jsx';
 import HomeCruise from './components/home-cruise.jsx';
+import BusinessTrourism from './components/BusinessTrourism.jsx';
+import HomeBus from './components/homebus.jsx';
 
 function App() {
   const dispatch = useDispatch();
@@ -163,9 +165,13 @@ function App() {
           <Route path="/hotel-bookingpage" element={<HotelBookingPage/>} />
           <Route path="/hotel-bookingpage02" element={<HotelBookingpage02/>} />
           {/* Cruise Routes */}
-          
           <Route path="/home-cruise" element={<HomeCruise/> }/>
           <Route path="/hotel-bookingpage02" element={<HotelBookingpage02/>} />
+
+          {/* business trourism routes */}
+          <Route path="/home-businesstourism" element={<BusinessTrourism/> }/>
+          {/* business trourism routes */}
+          <Route path="/home-bus" element={<HomeBus/> }/>
         </Routes>
       </Router>
     </div>

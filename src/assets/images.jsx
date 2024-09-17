@@ -46,8 +46,20 @@ import ship3 from '../assets/images/ship-3.png';
 import ship4 from '../assets/images/ship-4.png';
 import ship5 from '../assets/images/ship-5.png';
 import ship6 from '../assets/images/ship-6.png';
+import bus1 from '../assets/images/bus-1.png';
+import bus2 from '../assets/images/bus-2.png';
+import bus3 from '../assets/images/bus-3.png';
+import bus4 from '../assets/images/bus-4.png';
+import bus5 from '../assets/images/bus-5.png';
+import bus6 from '../assets/images/bus-6.png';
+import bus7 from '../assets/images/bus7.png';
+import bus8 from '../assets/images/bus8.png';
+import bus9 from '../assets/images/bus9.png';
+import bus10 from '../assets/images/bus10.png';
+import bus11 from '../assets/images/bus11.png';
+import bus12 from '../assets/images/Bus12.jpg';
 
 
 export {
-  trainImage,indian_flag,charminar,benglore, kolkota, mumbai, utterpradesh, kerla, delhi,chennai,youngIndianCouple, team1, indianTrain,team2,team3,team4,team5,login,charminar2,ramoji,gloconda,D,UPI,Indigo,AirIndia,Vistara,Hyderbad,indigo,Mumbai,Bangalore,Delhi,Hotel01,Hotel02,Hotel03,Hotel04,Nexon,Carnival,Jazz,Ertiga,Toyota,Tiago,ship1,ship2,ship3,ship4,ship5,ship6
+  trainImage,indian_flag,charminar,benglore, kolkota, mumbai, utterpradesh, kerla, delhi,chennai,youngIndianCouple, team1, indianTrain,team2,team3,team4,team5,login,charminar2,ramoji,gloconda,D,UPI,Indigo,AirIndia,Vistara,Hyderbad,indigo,Mumbai,Bangalore,Delhi,Hotel01,Hotel02,Hotel03,Hotel04,Nexon,Carnival,Jazz,Ertiga,Toyota,Tiago,ship1,ship2,ship3,ship4,ship5,ship6,bus1,bus2,bus3,bus4,bus5,bus6,bus7,bus8,bus9,bus10,bus11,bus12
 };
