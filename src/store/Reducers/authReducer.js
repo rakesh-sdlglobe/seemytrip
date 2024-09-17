@@ -18,7 +18,7 @@ const initialState = {
   password: '',
   confirmPassword: '',
   error: '',
-  googleUser: null,
+  // googleUser: null,
   user: localStorage.getItem('authToken') ? JSON.parse(localStorage.getItem('user')) : null,
 };
 
@@ -57,12 +57,21 @@ const authReducer = (state = initialState, action) => {
           name: name,
       };
     case GOOGLE_LOGIN_SUCCESS:
+      // Store the user and token in local storage
+      const {
+        token, user
+      } = action.payload;
+      localStorage.setItem('authToken', token);
+      localStorage.setItem('user', JSON.stringify(user));
       return {
-        ...state, googleUser: action.payload, error: null
+        ...state,
+        googleUser: user,
+          error: null,
       };
     case GOOGLE_LOGIN_FAILURE:
       return {
-        ...state, error: action.payload
+        ...state,
+        error: action.payload,
       };
     case LOGOUT:
       localStorage.removeItem('authToken');

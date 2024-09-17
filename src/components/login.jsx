@@ -45,37 +45,37 @@ const Login = () => {
     dispatch(Loginn(email, password, navigate));
   };
 
-  const fetchUserInfo = async (accessToken) => {
-    try {
-      const response = await fetch('http://localhost:3002/api/auth/google', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token: accessToken }),
-      });
+  // const fetchUserInfo = async (accessToken) => {
+  //   try {
+  //     const response = await fetch('http://localhost:3002/api/auth/google', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ token: accessToken }),
+  //     });
   
-      const data = await response.json();
-      if (response.ok) {
-        // Assuming `data.user` is the validated user info from the backend
-        dispatch(handleGoogleLogin(data.user, navigate));
-      } else {
-        console.error('Failed to validate Google token:', data.message);
-      }
-    } catch (error) {
-      console.error('Error fetching user info:', error);
-    }
-  };
+  //     const data = await response.json();
+  //     if (response.ok) {
+  //       // Assuming `data.user` is the validated user info from the backend
+  //       dispatch(handleGoogleLogin(data.user, navigate));
+  //     } else {
+  //       console.error('Failed to validate Google token:', data.message);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching user info:', error);
+  //   }
+  // };
   
 
-  const loginWithGoogle = useGoogleLogin({
-    onSuccess: (credentialResponse) => {
-      fetchUserInfo(credentialResponse.access_token);
-    },
-    onError: () => {
-      console.error('Google Login Failed');
-    },
-  });
+  // const loginWithGoogle = useGoogleLogin({
+  //   onSuccess: (credentialResponse) => {
+  //     fetchUserInfo(credentialResponse.access_token);
+  //   },
+  //   onError: () => {
+  //     console.error('Google Login Failed');
+  //   },
+  // });
 
 
   return (
@@ -168,9 +168,12 @@ const Login = () => {
                             <ul className="row align-items-center justify-content-center g-3 p-0 m-0">
                             <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-facebook color--google fs-2" /></Link></li>
                               <li className="col">
-                                <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto" onClick={() => loginWithGoogle()}>
+                              <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto">
                                   <i className="fa-brands fa-google color--google fs-2" />
                                 </Link>
+                                {/* <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto" onClick={() => loginWithGoogle()}>
+                                  <i className="fa-brands fa-google color--google fs-2" />
+                                </Link> */}
                               </li>
                               <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-regular  fa-envelope color--black fs-2" /></Link></li>
                             </ul>

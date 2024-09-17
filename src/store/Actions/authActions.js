@@ -134,12 +134,18 @@ export const logout = () => (dispatch) => {
 };
 
 // Handle Google login success
-export const handleGoogleLogin = (userInfo, navigate) => (dispatch) => {
-  try {
-    const { name, email, picture } = userInfo;
-    dispatch(googleLoginSuccess({ name, email, picture }));
-    navigate('/');
-  } catch (error) {
-    dispatch(googleLoginFailure(error.message));
-  }
-};
+// export const handleGoogleLogin = (token, navigate) => async (dispatch) => {
+//   try {
+//       const response = await axios.post('http://localhost:3002/api/auth/google', { token });
+
+//       const { token: jwtToken, user } = response.data;
+
+//       localStorage.setItem('authToken', jwtToken);
+//       localStorage.setItem('user', JSON.stringify(user));
+
+//       dispatch(googleLoginSuccess(user));
+//       navigate('/');
+//   } catch (error) {
+//       dispatch(googleLoginFailure(error.message));
+//   }
+// };
