@@ -136,10 +136,12 @@ const Home = () => {
                             backgroundColor="#ffffff"
                             buttonBackgroundColor="#cd2c22"
                             buttonTextColor="#ffffff"
-                            height="90px" // Ensure consistency
+                            height="160px"
                             leavingLabel={null}
                             goingLabel={null}
                             dateLabel={null}
+                            ReturnLable={null}
+                            dropdownHindden="flex"
                           />
                         </div>
                       )}

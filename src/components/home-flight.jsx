@@ -18,6 +18,7 @@ import FlightSearch from './flight_components/flight_search';
 import { useState } from 'react';
 import { AirIndia, Bangalore, Delhi, Hyderbad, Indigo, indigo, Mumbai, Vistara } from '../assets/images';
 import FooterDark from './footer-dark';
+import HorizontalContainer from './flight_components/HorizontalContainer';
 
 const HomeFlight = () => {
   const [flightResults, setFlightResults] = useState([]);
@@ -70,7 +71,7 @@ const HomeFlight = () => {
               </div>
               <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                 <div className="search-wrap bg-white rounded-3 p-3">
-                  <div className="search-upper">
+                  {/* <div className="search-upper">
                     <div className="d-flex align-items-center justify-content-between flex-wrap">
                       <div className="flx-start mb-sm-0 mb-2">
                         <div className="form-check form-check-inline">
@@ -124,7 +125,7 @@ const HomeFlight = () => {
                       </div>
                     </div>
                   </div>
-                  {/* <div className="row gx-lg-2 g-3">
+                  <div className="row gx-lg-2 g-3">
                         <div className="col-xl-6 col-lg-6 col-md-12">
                           <div className="row gy-3 gx-lg-2 gx-3">
                             <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
@@ -187,10 +188,12 @@ const HomeFlight = () => {
                     backgroundColor="#ffffff"
                     buttonBackgroundColor="#cd2c22"
                     buttonTextColor="#ffffff"
-                    height="90px"
+                    height="160px"
                     leavingLabel={null}
                     goingLabel={null}
                     dateLabel={null}
+                    ReturnLable={null}
+                    dropdownHindden="flex"
                   />
                 </div>
               </div>
@@ -200,6 +203,10 @@ const HomeFlight = () => {
           </div>
         </div>
         {/* ============================ Hero Banner End ================================== */}
+
+        {/* Train Status start */}
+        <HorizontalContainer />
+        {/* Train Status End  */}
         {/* ============================ Offers Start ================================== */}
         <section className="pt-4 pb-0">
           <div className="container">

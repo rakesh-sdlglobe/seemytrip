@@ -117,12 +117,15 @@ const FlightList = () => {
         <FlightSearch
           onSearchResults={handleSearchResults}
           backgroundColor="#cd2c22"
-          height="110px"
+          height="130px"
           leavingLabel={null}
           goingLabel={null}
           dateLabel={null}
           buttonBackgroundColor="#ffffff"
           buttonTextColor="#cd2c22"
+          dropdownHindden= "none"
+          radioHindden = "none"
+          ReturnLable = {null}
         />
 
         {/* Flight Filter and Results */}
