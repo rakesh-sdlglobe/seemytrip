@@ -190,8 +190,42 @@ const SearchComponent = ({
   height = 'auto',
   leavingLabel = 'Leaving From',
   goingLabel = 'Going To',
-  dateLabel = 'Journey Date'
+  dateLabel = 'Journey Date',
+  checklabelColor = 'auto',
+  dropdownHindden = 'auto',
 }) => {
+
+  const [generalSelection, setGeneralSelection] = useState(null);
+  const [classSelection, setClassSelection] = useState(null);
+
+  // Other existing state and handlers...
+
+  const generalOptions = [
+    { value: 'general', label: 'GENERAL' },
+    { value: 'ladies', label: 'LADIES' },
+    { value: 'lower_berth_sr_citizen', label: 'LOWER BERTH/SR.CITIZEN' },
+    { value: 'person_with_disability', label: 'PERSON WITH DISABILITY' },
+    { value: 'duty_pass', label: 'DUTY PASS' },
+    { value: 'tatkal', label: 'TATKAL' },
+    { value: 'premium_tatkal', label: 'PREMIUM TATKAL' },
+    // Add more options as needed
+  ];
+
+
+  const classOptions = [
+    { value: 'all', label: 'All Classes' },
+    { value: 'anubhuti', label: 'Anubhuti Class (EA)' },
+    { value: 'ac_first_class', label: 'AC First Class (1A)' },
+    { value: 'vistadome_ac', label: 'Vistadome AC (EV)' },
+    { value: 'exec_chair_car', label: 'Exec. Chair Car (EC)' },
+    { value: 'ac_2_tier', label: 'AC 2 Tier (2A)' },
+    { value: 'ac_3_economy', label: 'AC 3 Economy' },
+    { value: 'vistadome_chair_car', label: 'Vistadome Chair Car (VC)' },
+    { value: 'ac_chair', label: 'AC Chair (CC)' },
+    { value: 'sleeper', label: 'Sleeper (SL)' },
+    // Add more options as needed
+  ];
+
   // Helper function to find station by name
   const findStationByName = (name) => {
     return stationsData.find(station => station.name === name);
@@ -326,17 +360,24 @@ const SearchComponent = ({
             background-size: cover;
             background-position: center;
           }
+           
+          @media (max-width: 1024px) {
+            .search-component {
+              height: 300px;
+              padding: 15px;
+            }
+          }
 
           @media (max-width: 768px) {
             .search-component {
-              height: 340px;
+              height: 370px;
               padding: 15px;
             }
           }
 
           @media (max-width: 576px) {
             .search-component {
-              height: 320px;
+              height: 515px;
               padding: 10px;
             }
           }
@@ -356,17 +397,49 @@ const SearchComponent = ({
           }
 
           .checkbox-group label {
+            color: ${checklabelColor};
             margin-right: 30px;
           }
           .checkbox{
             margin-right: 10px; 
+            accent-color: #cd2c22;
+          }
+            
+          .dropdown-container  {
+            display:  ${dropdownHindden}; 
+            align-items: center;
+            margin-bottom: 20px;
+          }
+
+          .dropdown-container > div {
+            margin-right: 15px;
           }
         `}
       </style>
       <div className="search-component">
         <div className="container">
-          <div className="row justify-content-center align-items-center">
-            <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+          <div className="row">
+            <div className="col-12">
+              <div className="dropdown-container">
+                <div className="general-dropdown">
+                  <Select
+                    options={generalOptions}
+                    value={generalSelection}
+                    onChange={setGeneralSelection}
+                    placeholder="Select General"
+                    styles={customSelectStyles}
+                  />
+                </div>
+                <div className="class-dropdown">
+                  <Select
+                    options={classOptions}
+                    value={classSelection}
+                    onChange={setClassSelection}
+                    placeholder="Select Class"
+                    styles={customSelectStyles}
+                  />
+                </div>
+              </div>
               <div className="search-wrap position-relative">
                 <div className="row align-items-end gy-3 gx-md-3 gx-sm-2">
                   <div className="col-xl-8 col-lg-7 col-md-12">
@@ -438,7 +511,7 @@ const SearchComponent = ({
                 <div className="checkbox-group">
                   <label>
                     <input
-                    className='checkbox'
+                      className='checkbox'
                       type="checkbox"
                       checked={disabilityConcession}
                       onChange={() => setDisabilityConcession(!disabilityConcession)}
@@ -447,7 +520,7 @@ const SearchComponent = ({
                   </label>
                   <label>
                     <input
-                    className='checkbox'
+                      className='checkbox'
                       type="checkbox"
                       checked={flexibleDate}
                       onChange={() => setFlexibleDate(!flexibleDate)}
@@ -456,7 +529,7 @@ const SearchComponent = ({
                   </label>
                   <label>
                     <input
-                    className='checkbox'
+                      className='checkbox'
                       type="checkbox"
                       checked={availableBerth}
                       onChange={() => setAvailableBerth(!availableBerth)}
@@ -465,7 +538,7 @@ const SearchComponent = ({
                   </label>
                   <label>
                     <input
-                    className='checkbox'
+                      className='checkbox'
                       type="checkbox"
                       checked={railwayPassConcession}
                       onChange={() => setRailwayPassConcession(!railwayPassConcession)}

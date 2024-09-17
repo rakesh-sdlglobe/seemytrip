@@ -23,8 +23,8 @@ import HorizontalContainer from './train_search_result/HorizontalContainer';
 const Home = () => {
   const [results, setResults] = useState([]);
   const [flightResults, setFlightResults] = useState([]);
+  const [activeTab, setActiveTab] = useState('Trains')
   const navigate = useNavigate();
-
 
   // Define the onSearchResults function
   const onSearchResults = (data) => {
@@ -39,7 +39,7 @@ const Home = () => {
     setFlightResults(data);
     navigate('/flight-list', { state: { flightResults: data } });
   };
-  
+
   return (
     <div>
       <div id="preloader">
@@ -72,274 +72,236 @@ const Home = () => {
                 <div className="search-wrap bg-white rounded-3 p-3">
                   <ul className="nav nav-pills primary-soft medium justify-content-center mb-3" id="tour-pills-tab" role="tablist">
                     <li className="nav-item">
-                      <Link className="nav-link active" data-bs-toggle="tab" to="#Trains"><i className="fa-solid fa-train me-2" />Trains</Link>
+                      <Link
+                        className={`nav-link ${activeTab === 'Trains' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('Trains')}
+                      >
+                        <i className="fa-solid fa-train me-2" />Trains
+                      </Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link" data-bs-toggle="tab" to="#flights"><i className="fa-solid fa-jet-fighter me-2" />Flights</Link>
+                      <Link
+                        className={`nav-link ${activeTab === 'Flights' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('Flights')}
+                      >
+                        <i className="fa-solid fa-jet-fighter me-2" />Flights
+                      </Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link" data-bs-toggle="tab" to="#tours"><i className="fa-solid fa-globe me-2" />Hotels</Link>
+                      <Link
+                        className={`nav-link ${activeTab === 'tours' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('tours')}
+                      >
+                        <i className="fa-solid fa-globe me-2" />Hotels
+                      </Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link" data-bs-toggle="tab" to="#cabs"><i className="fa-solid fa-car me-2" />Cabs</Link>
+                      <Link
+                        className={`nav-link ${activeTab === 'cabs' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('cabs')}
+                      >
+                        <i className="fa-solid fa-car me-2" />Cabs
+                      </Link>
                     </li>
                     <li className="nav-item">
-                      <Link className="nav-link" data-bs-toggle="tab" to="#cabs"><i className="fa-solid fa-ship me-2" />Cruises</Link>
+                      <Link
+                        className={`nav-link ${activeTab === 'Cruises' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('Cruises')}
+                      >
+                        <i className="fa-solid fa-ship me-2" />Cruises
+                      </Link>
                     </li>
                   </ul>
                   <div className="tab-content">
                     <div className="tab-pane show active" id="Trains">
-                      <SearchComponent
-                        backgroundColor="#ffffff"
-                        height="90px"
-                        onSearchResults={onSearchResults}
-                        leavingLabel={null}
-                        goingLabel={null}
-                        dateLabel={null}
-                        buttonBackgroundColor="#cd2c22"
-                        buttonTextColor="#ffffff"
-                      />
-                    </div>
-                    <div className="tab-pane" id="flights">
-                      {/* <div className="row gx-lg-2 g-3">
-                        <div className="col-xl-5 col-lg-5 col-md-12">
-                          <div className="row gy-3 gx-lg-2 gx-3">
-                            <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
-                              <div className="form-group hdd-arrow mb-0">
-                                <select className="leaving form-control fw-bold">
-                                  <option value>Select</option>
-                                  <option value="ny">New York</option>
-                                  <option value="sd">San Diego</option>
-                                  <option value="sj">San Jose</option>
-                                  <option value="ph">Philadelphia</option>
-                                  <option value="nl">Nashville</option>
-                                  <option value="sf">San Francisco</option>
-                                  <option value="hu">Houston</option>
-                                  <option value="sa">San Antonio</option>
-                                </select>
-                              </div>
-                              <div className="btn-flip-icon mt-md-0">
-                                <button className="p-0 m-0 text-primary"><i className="fa-solid fa-right-left" /></button>
-                              </div>
-                            </div>
-                            <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                              <div className="form-groupp hdd-arrow mb-0">
-                                <select className="goingto form-control fw-bold">
-                                  <option value>Select</option>
-                                  <option value="lv">Las Vegas</option>
-                                  <option value="la">Los Angeles</option>
-                                  <option value="kc">Kansas City</option>
-                                  <option value="no">New Orleans</option>
-                                  <option value="kc">Jacksonville</option>
-                                  <option value="lb">Long Beach</option>
-                                  <option value="cl">Columbus</option>
-                                  <option value="cn">Canada</option>
-                                </select>
-                              </div>
-                            </div>
-                          </div>
+                      {activeTab === 'Trains' && (
+                        <div className="tab-pane show active" id="Trains">
+                          <SearchComponent
+                            backgroundColor="#ffffff"
+                            height="210px" // Ensure this height is consistent across components
+                            onSearchResults={onSearchResults}
+                            leavingLabel={null}
+                            goingLabel={null}
+                            dateLabel={null}
+                            buttonBackgroundColor="#cd2c22"
+                            buttonTextColor="#ffffff"
+                            dropdownHindden="flex"
+                          />
                         </div>
-                        <div className="col-xl-4 col-lg-4 col-md-12">
-                          <div className="row gy-3 gx-lg-2 gx-3">
-                            <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                              <div className="form-group mb-0">
-                                <input className="form-control fw-bold choosedate" type="text" placeholder="Departure.." readOnly="readonly" />
-                              </div>
-                            </div>
-                            <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                              <div className="form-group mb-0">
-                                <input className="form-control fw-bold choosedate" type="text" placeholder="Return.." readOnly="readonly" />
-                              </div>
-                            </div>
-                          </div>
+                      )}
+                      {activeTab === 'Flights' && (
+                        <div className="tab-pane" id="Flights">
+                          <FlightSearch
+                            onSearchResults={handleSearchResults}
+                            backgroundColor="#ffffff"
+                            buttonBackgroundColor="#cd2c22"
+                            buttonTextColor="#ffffff"
+                            height="90px" // Ensure consistency
+                            leavingLabel={null}
+                            goingLabel={null}
+                            dateLabel={null}
+                          />
                         </div>
-                        <div className="col-xl-2 col-lg-2 col-md-12">
-                          <div className="form-groupp hdd-arrow mb-0">
-                            <select className="occupant form-control fw-bold">
-                              <option value>Select</option>
-                              <option value="lv">01 Adult</option>
-                              <option value="la">02 Adult</option>
-                              <option value="kc">03 Adult</option>
-                              <option value="no">04 Adult</option>
-                              <option value="kc">05 Adult</option>
-                              <option value="lb">06 Adult</option>
-                              <option value="cl">07 Adult</option>
-                              <option value="cn">08 Adult</option>
-                            </select>
-                          </div>
-                        </div>
-                        <div className="col-xl-1 col-lg-1 col-md-12">
-                          <div className="form-group mb-0">
-                            <Link to="/flight-list">
-                            <button type="button" className="btn btn-primary full-width fw-medium"><i className="fa-solid fa-magnifying-glass fs-5" /></button>
-                            </Link>
-                            
-                          </div>
-                        </div>
-                      </div> */}
-                      <FlightSearch
-                        onSearchResults={handleSearchResults}
-                        backgroundColor="#ffffff"
-                        buttonBackgroundColor="#cd2c22"
-                        buttonTextColor="#ffffff"
-                        height="90px"
-                        leavingLabel={null}
-                        goingLabel={null}
-                        dateLabel={null}
-                      />
-                    </div>
-                    <div className="tab-pane" id="tours">
-                      <div className="row gy-3 gx-md-3 gx-sm-2">
-                        <div className="col-xl-8 col-lg-7 col-md-12">
+                      )}
+                      {activeTab === 'tours' && (
+                        <div className="tab-pane" id="tours">
                           <div className="row gy-3 gx-md-3 gx-sm-2">
-                            <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
-                              <div className="form-group hdd-arrow mb-0">
-                                <select className="goingto form-control fw-bold">
-                                  <option value>Select</option>
-                                  <option value="ny">New York</option>
-                                  <option value="sd">San Diego</option>
-                                  <option value="sj">San Jose</option>
-                                  <option value="ph">Philadelphia</option>
-                                  <option value="nl">Nashville</option>
-                                  <option value="sf">San Francisco</option>
-                                  <option value="hu">Houston</option>
-                                  <option value="sa">San Antonio</option>
-                                </select>
+                            <div className="col-xl-8 col-lg-7 col-md-12">
+                              <div className="row gy-3 gx-md-3 gx-sm-2">
+                                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
+                                  <div className="form-group hdd-arrow mb-0">
+                                    <select className="goingto form-control fw-bold">
+                                      <option value>Select</option>
+                                      <option value="ny">New York</option>
+                                      <option value="sd">San Diego</option>
+                                      <option value="sj">San Jose</option>
+                                      <option value="ph">Philadelphia</option>
+                                      <option value="nl">Nashville</option>
+                                      <option value="sf">San Francisco</option>
+                                      <option value="hu">Houston</option>
+                                      <option value="sa">San Antonio</option>
+                                    </select>
+                                  </div>
+                                </div>
+                                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                  <div className="form-group mb-0">
+                                    <input type="text" className="form-control choosedate fw-bold" placeholder="Choose Date" readOnly="readonly" />
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                            <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                              <div className="form-group mb-0">
-                                <input type="text" className="form-control choosedate fw-bold" placeholder="Choose Date" readOnly="readonly" />
+                            <div className="col-xl-4 col-lg-5 col-md-12">
+                              <div className="row gy-3 gx-md-3 gx-sm-2">
+                                <div className="col-xl-8 col-lg-8 col-md-8 col-sm-8">
+                                  <div className="form-group hdd-arrow mb-0">
+                                    <select className="tour form-control fw-bold">
+                                      <option value>Select</option>
+                                      <option value="ny">Family Package</option>
+                                      <option value="sd">Honymoon Package</option>
+                                      <option value="sj">Group Package</option>
+                                      <option value="ph">Desert</option>
+                                      <option value="nl">History</option>
+                                    </select>
+                                  </div>
+                                </div>
+                                <div className="col-xl-4 col-lg-4 col-md-4 col-sm-4">
+                                  <div className="form-group mb-0">
+                                    <button type="button" className="btn btn-primary full-width fw-medium"><i className="fa-solid fa-magnifying-glass me-2" />Search</button>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                        <div className="col-xl-4 col-lg-5 col-md-12">
+                      )}
+                      {activeTab === 'cabs' && (
+                        <div className="tab-pane" id="cabs">
                           <div className="row gy-3 gx-md-3 gx-sm-2">
-                            <div className="col-xl-8 col-lg-8 col-md-8 col-sm-8">
-                              <div className="form-group hdd-arrow mb-0">
-                                <select className="tour form-control fw-bold">
-                                  <option value>Select</option>
-                                  <option value="ny">Family Package</option>
-                                  <option value="sd">Honymoon Package</option>
-                                  <option value="sj">Group Package</option>
-                                  <option value="ph">Desert</option>
-                                  <option value="nl">History</option>
-                                </select>
+                            <div className="col-xl-8 col-lg-7 col-md-12">
+                              <div className="row gy-3 gx-md-3 gx-sm-2">
+                                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
+                                  <div className="form-group hdd-arrow mb-0">
+                                    <select className="pickup form-control fw-bold">
+                                      <option value>Select</option>
+                                      <option value="ny">New York</option>
+                                      <option value="sd">San Diego</option>
+                                      <option value="sj">San Jose</option>
+                                      <option value="ph">Philadelphia</option>
+                                      <option value="nl">Nashville</option>
+                                      <option value="sf">San Francisco</option>
+                                      <option value="hu">Houston</option>
+                                      <option value="sa">San Antonio</option>
+                                    </select>
+                                  </div>
+                                </div>
+                                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                  <div className="form-group hdd-arrow mb-0">
+                                    <select className="drop form-control fw-bold">
+                                      <option value>Select</option>
+                                      <option value="ny">New York</option>
+                                      <option value="sd">San Diego</option>
+                                      <option value="sj">San Jose</option>
+                                      <option value="ph">Philadelphia</option>
+                                      <option value="nl">Nashville</option>
+                                      <option value="sf">San Francisco</option>
+                                      <option value="hu">Houston</option>
+                                      <option value="sa">San Antonio</option>
+                                    </select>
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                            <div className="col-xl-4 col-lg-4 col-md-4 col-sm-4">
-                              <div className="form-group mb-0">
-                                <button type="button" className="btn btn-primary full-width fw-medium"><i className="fa-solid fa-magnifying-glass me-2" />Search</button>
+                            <div className="col-xl-4 col-lg-5 col-md-12">
+                              <div className="row gy-3 gx-md-3 gx-sm-2">
+                                <div className="col-xl-8 col-lg-8 col-md-8 col-sm-8">
+                                  <div className="form-group mb-0">
+                                    <input type="text" className="form-control choosedate fw-bold" placeholder="Choose Pickup Date" readOnly="readonly" />
+                                  </div>
+                                </div>
+                                <div className="col-xl-4 col-lg-4 col-md-4 col-sm-4">
+                                  <div className="form-group mb-0">
+                                    <button type="button" className="btn btn-primary full-width fw-medium"><i className="fa-solid fa-magnifying-glass me-2" />Search</button>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                    <div className="tab-pane" id="cabs">
-                      <div className="row gy-3 gx-md-3 gx-sm-2">
-                        <div className="col-xl-8 col-lg-7 col-md-12">
+                      )}
+                      {activeTab === 'Cruises' && (
+                        <div className="tab-pane" id="Cruises">
                           <div className="row gy-3 gx-md-3 gx-sm-2">
-                            <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
-                              <div className="form-group hdd-arrow mb-0">
-                                <select className="pickup form-control fw-bold">
-                                  <option value>Select</option>
-                                  <option value="ny">New York</option>
-                                  <option value="sd">San Diego</option>
-                                  <option value="sj">San Jose</option>
-                                  <option value="ph">Philadelphia</option>
-                                  <option value="nl">Nashville</option>
-                                  <option value="sf">San Francisco</option>
-                                  <option value="hu">Houston</option>
-                                  <option value="sa">San Antonio</option>
-                                </select>
+                            <div className="col-xl-8 col-lg-7 col-md-12">
+                              <div className="row gy-3 gx-md-3 gx-sm-2">
+                                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
+                                  <div className="form-group hdd-arrow mb-0">
+                                    <select className="pickup form-control fw-bold">
+                                      <option value>Select</option>
+                                      <option value="ny">New York</option>
+                                      <option value="sd">San Diego</option>
+                                      <option value="sj">San Jose</option>
+                                      <option value="ph">Philadelphia</option>
+                                      <option value="nl">Nashville</option>
+                                      <option value="sf">San Francisco</option>
+                                      <option value="hu">Houston</option>
+                                      <option value="sa">San Antonio</option>
+                                    </select>
+                                  </div>
+                                </div>
+                                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                                  <div className="form-group hdd-arrow mb-0">
+                                    <select className="drop form-control fw-bold">
+                                      <option value>Select</option>
+                                      <option value="ny">New York</option>
+                                      <option value="sd">San Diego</option>
+                                      <option value="sj">San Jose</option>
+                                      <option value="ph">Philadelphia</option>
+                                      <option value="nl">Nashville</option>
+                                      <option value="sf">San Francisco</option>
+                                      <option value="hu">Houston</option>
+                                      <option value="sa">San Antonio</option>
+                                    </select>
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                            <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                              <div className="form-group hdd-arrow mb-0">
-                                <select className="drop form-control fw-bold">
-                                  <option value>Select</option>
-                                  <option value="ny">New York</option>
-                                  <option value="sd">San Diego</option>
-                                  <option value="sj">San Jose</option>
-                                  <option value="ph">Philadelphia</option>
-                                  <option value="nl">Nashville</option>
-                                  <option value="sf">San Francisco</option>
-                                  <option value="hu">Houston</option>
-                                  <option value="sa">San Antonio</option>
-                                </select>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-xl-4 col-lg-5 col-md-12">
-                          <div className="row gy-3 gx-md-3 gx-sm-2">
-                            <div className="col-xl-8 col-lg-8 col-md-8 col-sm-8">
-                              <div className="form-group mb-0">
-                                <input type="text" className="form-control choosedate fw-bold" placeholder="Choose Pickup Date" readOnly="readonly" />
-                              </div>
-                            </div>
-                            <div className="col-xl-4 col-lg-4 col-md-4 col-sm-4">
-                              <div className="form-group mb-0">
-                                <button type="button" className="btn btn-primary full-width fw-medium"><i className="fa-solid fa-magnifying-glass me-2" />Search</button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="tab-pane" id="curise">
-                      <div className="row gy-3 gx-md-3 gx-sm-2">
-                        <div className="col-xl-8 col-lg-7 col-md-12">
-                          <div className="row gy-3 gx-md-3 gx-sm-2">
-                            <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
-                              <div className="form-group hdd-arrow mb-0">
-                                <select className="pickup form-control fw-bold">
-                                  <option value>Select</option>
-                                  <option value="ny">New York</option>
-                                  <option value="sd">San Diego</option>
-                                  <option value="sj">San Jose</option>
-                                  <option value="ph">Philadelphia</option>
-                                  <option value="nl">Nashville</option>
-                                  <option value="sf">San Francisco</option>
-                                  <option value="hu">Houston</option>
-                                  <option value="sa">San Antonio</option>
-                                </select>
-                              </div>
-                            </div>
-                            <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                              <div className="form-group hdd-arrow mb-0">
-                                <select className="drop form-control fw-bold">
-                                  <option value>Select</option>
-                                  <option value="ny">New York</option>
-                                  <option value="sd">San Diego</option>
-                                  <option value="sj">San Jose</option>
-                                  <option value="ph">Philadelphia</option>
-                                  <option value="nl">Nashville</option>
-                                  <option value="sf">San Francisco</option>
-                                  <option value="hu">Houston</option>
-                                  <option value="sa">San Antonio</option>
-                                </select>
+                            <div className="col-xl-4 col-lg-5 col-md-12">
+                              <div className="row gy-3 gx-md-3 gx-sm-2">
+                                <div className="col-xl-8 col-lg-8 col-md-8 col-sm-8">
+                                  <div className="form-group mb-0">
+                                    <input type="text" className="form-control choosedate fw-bold" placeholder="Choose Pickup Date" readOnly="readonly" />
+                                  </div>
+                                </div>
+                                <div className="col-xl-4 col-lg-4 col-md-4 col-sm-4">
+                                  <div className="form-group mb-0">
+                                    <button type="button" className="btn btn-primary full-width fw-medium"><i className="fa-solid fa-magnifying-glass me-2" />Search</button>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                        <div className="col-xl-4 col-lg-5 col-md-12">
-                          <div className="row gy-3 gx-md-3 gx-sm-2">
-                            <div className="col-xl-8 col-lg-8 col-md-8 col-sm-8">
-                              <div className="form-group mb-0">
-                                <input type="text" className="form-control choosedate fw-bold" placeholder="Choose Pickup Date" readOnly="readonly" />
-                              </div>
-                            </div>
-                            <div className="col-xl-4 col-lg-4 col-md-4 col-sm-4">
-                              <div className="form-group mb-0">
-                                <button type="button" className="btn btn-primary full-width fw-medium"><i className="fa-solid fa-magnifying-glass me-2" />Search</button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -351,7 +313,7 @@ const Home = () => {
         {/*  Hero Banner End  */}
 
         {/* Train Status start */}
-        <HorizontalContainer/>
+        <HorizontalContainer />
         {/* Train Status End  */}
 
         {/*  Features Start  */}
