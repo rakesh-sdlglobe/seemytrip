@@ -1,8 +1,61 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import './Hotel.css';
+import { Modal, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import './Hotel.css';
+
+const CustomModalHeader = ({ onClose }) => (
+  <Modal.Header closeButton className="border-0">
+    <Modal.Title className="fw-bold">Choose Members</Modal.Title>
+  </Modal.Header>
+);
+
+const CustomModalBody = ({ adults, children, rooms, setAdults, setChildren, setRooms }) => (
+  <Modal.Body className="p-4">
+    {[
+      { label: 'Adults', value: adults, setValue: setAdults },
+      { label: 'Children', value: children, setValue: setChildren },
+      { label: 'Rooms', value: rooms, setValue: setRooms },
+    ].map(({ label, value, setValue }, index) => (
+      <div key={index} className="mb-3">
+        <div className="d-flex justify-content-between align-items-center mb-2">
+          <span className="fw-medium">{label}</span>
+          <div className="d-flex align-items-center">
+            <Button
+              variant="outline-secondary"
+              className="rounded-circle shadow-sm"
+              onClick={() => setValue(value > (label === 'Children' ? 0 : 1) ? value - 1 : (label === 'Children' ? 0 : 1))}
+            >
+              <i className="fa fa-minus" />
+            </Button>
+            <span className="mx-3">{value}</span>
+            <Button
+              variant="outline-secondary"
+              className="rounded-circle shadow-sm"
+              onClick={() => setValue(value + 1)}
+            >
+              <i className="fa fa-plus" />
+            </Button>
+          </div>
+        </div>
+        {index < 2 && <hr />}
+      </div>
+    ))}
+  </Modal.Body>
+);
+
+const CustomModalFooter = ({ onConfirm }) => (
+  <Modal.Footer className="border-0">
+    <Button
+      variant="primary"
+      className="w-100 rounded-pill fw-medium"
+      onClick={onConfirm}
+    >
+      Confirm
+    </Button>
+  </Modal.Footer>
+);
 
 export const HotelSearchbar = () => {
   const [startDate, setStartDate] = useState(null);
@@ -10,25 +63,13 @@ export const HotelSearchbar = () => {
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
-  const [showGuestsOptions, setShowGuestsOptions] = useState(false);
-  const guestsDropdownRef = useRef(null);
+  const [showGuestsModal, setShowGuestsModal] = useState(false);
 
-  const toggleGuestsOptions = () => {
-    setShowGuestsOptions((prevState) => !prevState); // Correct toggle logic
+  const handleShowGuestsModal = () => setShowGuestsModal(true);
+  const handleCloseGuestsModal = () => setShowGuestsModal(false);
+  const handleConfirmGuests = () => {
+    setShowGuestsModal(false);
   };
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (guestsDropdownRef.current && !guestsDropdownRef.current.contains(event.target)) {
-        setShowGuestsOptions(false); // Close dropdown when clicking outside
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
 
   return (
     <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
@@ -40,16 +81,16 @@ export const HotelSearchbar = () => {
                 <div className="form-group hdd-arrow border rounded-1 mb-0">
                   <label>Where</label>
                   <select className="goingto form-control border-0">
-  <option value>Select</option>
-  <option value="mum">Mumbai</option>
-  <option value="dl">Delhi</option>
-  <option value="blr">Bangalore</option>
-  <option value="goa">Goa</option>
-  <option value="hyd">Hyderabad</option>
-  <option value="kol">Kolkata</option>
-  <option value="jaipur">Jaipur</option>
-  <option value="udaipur">Udaipur</option>
-</select>
+                    <option value>Select</option>
+                    <option value="mum">Mumbai</option>
+                    <option value="dl">Delhi</option>
+                    <option value="blr">Bangalore</option>
+                    <option value="goa">Goa</option>
+                    <option value="hyd">Hyderabad</option>
+                    <option value="kol">Kolkata</option>
+                    <option value="jaipur">Jaipur</option>
+                    <option value="udaipur">Udaipur</option>
+                  </select>
                 </div>
               </div>
               <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
@@ -85,46 +126,13 @@ export const HotelSearchbar = () => {
               <div className="col-xl-8 col-lg-8 col-md-8 col-sm-8">
                 <div className="form-group mb-0">
                   <label>Members</label>
-                  <div className="booking-form__input guests-input" ref={guestsDropdownRef}>
+                  <div className="booking-form__input">
                     <button
-                      name="guests-btn"
-                      id="guests-input-btn"
-                      onClick={toggleGuestsOptions}
+                      onClick={handleShowGuestsModal}
                       className="form-control text-start"
                     >
                       {adults} Adult{adults > 1 ? 's' : ''}, {children} Child{children !== 1 ? 'ren' : ''}, {rooms} Room{rooms > 1 ? 's' : ''}
                     </button>
-                    {showGuestsOptions && (
-                      <div className="guests-input__options bg-white shadow rounded-3 p-2 position-absolute" style={{ zIndex: 1000 }}>
-                        <div className="d-flex justify-content-between align-items-center mb-2">
-                          <span className="guests-input__ctrl minus" onClick={() => setAdults(adults > 1 ? adults - 1 : 1)}>
-                            <i className="fa fa-minus" />
-                          </span>
-                          <span className="guests-input__value">{adults} Adult{adults > 1 ? 's' : ''}</span>
-                          <span className="guests-input__ctrl plus" onClick={() => setAdults(adults + 1)}>
-                            <i className="fa fa-plus" />
-                          </span>
-                        </div>
-                        <div className="d-flex justify-content-between align-items-center mb-2">
-                          <span className="guests-input__ctrl minus" onClick={() => setChildren(children > 0 ? children - 1 : 0)}>
-                            <i className="fa fa-minus" />
-                          </span>
-                          <span className="guests-input__value">{children} Child{children !== 1 ? 'ren' : ''}</span>
-                          <span className="guests-input__ctrl plus" onClick={() => setChildren(children + 1)}>
-                            <i className="fa fa-plus" />
-                          </span>
-                        </div>
-                        <div className="d-flex justify-content-between align-items-center">
-                          <span className="guests-input__ctrl minus" onClick={() => setRooms(rooms > 1 ? rooms - 1 : 1)}>
-                            <i className="fa fa-minus" />
-                          </span>
-                          <span className="guests-input__value">{rooms} Room{rooms > 1 ? 's' : ''}</span>
-                          <span className="guests-input__ctrl plus" onClick={() => setRooms(rooms + 1)}>
-                            <i className="fa fa-plus" />
-                          </span>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
@@ -141,6 +149,19 @@ export const HotelSearchbar = () => {
           </div>
         </div>
       </div>
+      {/* Guests Modal */}
+      <Modal show={showGuestsModal} onHide={handleCloseGuestsModal} centered>
+        <CustomModalHeader onClose={handleCloseGuestsModal} />
+        <CustomModalBody
+          adults={adults}
+          children={children}
+          rooms={rooms}
+          setAdults={setAdults}
+          setChildren={setChildren}
+          setRooms={setRooms}
+        />
+        <CustomModalFooter onConfirm={handleConfirmGuests} />
+      </Modal>
     </div>
   );
 };
