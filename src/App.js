@@ -77,6 +77,10 @@ import Bookingpayment from './components/cab_components/booking_payment-page.jsx
 import { BusBookingPage } from './components/bus_components/bus_booking_page.jsx';
 import BusList from './components/bus_components/bus_list_page.jsx';
 import BusBookingPayment from './components/bus_components/bus_booking_payment.jsx';
+import CruiseList from './components/cruise_components/Cruise_list_page.jsx';
+import CruiseResultpage from './components/cruise_components/Cruise_result_page.jsx';
+import CruiseBookingPage from './components/cruise_components/Cruise_booking_page.jsx';
+import CruiseBookingPayment from './components/bus_components/bus_booking_payment.jsx';
 
 function App() {
   const dispatch = useDispatch();
@@ -182,7 +186,9 @@ function App() {
 
           {/* Cruise Routes */}
           <Route path="/home-cruise" element={<HomeCruise/> }/>
-          <Route path="/hotel-bookingpage02" element={<HotelBookingpage02/>} />
+          <Route path="/cruisebookingpage" element={<CruiseBookingPage/>} />
+          <Route path="/cruise-list" element={<CruiseList/> }/>
+          <Route path="/cruiseBookingPayment" element={<CruiseBookingPayment/> }/>
 
           {/* business trourism routes */}
           <Route path="/home-businesstourism" element={<BusinessTrourism/> }/>
