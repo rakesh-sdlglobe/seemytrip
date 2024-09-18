@@ -22,6 +22,7 @@ import FlightSearch from './flight_components/flight_search';
 import HorizontalContainer from './train_search_result/HorizontalContainer';
 import { HotelSearchbar } from './hotel_components/HotelSearchbar';
 import CabSearch from './cab_components/cab_search_componets';
+import BusSearch from './bus_components/bus_search_page';
 const Home = () => {
   const [results, setResults] = useState([]);
   const [flightResults, setFlightResults] = useState([]);
@@ -107,6 +108,14 @@ const Home = () => {
                     </li>
                     <li className="nav-item">
                       <Link
+                        className={`nav-link ${activeTab === 'bus' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('bus')}
+                      >
+                        <i className="fa-solid fa-bus me-2" />Buses
+                      </Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link
                         className={`nav-link ${activeTab === 'Cruises' ? 'active' : ''}`}
                         onClick={() => setActiveTab('Cruises')}
                       >
@@ -155,6 +164,11 @@ const Home = () => {
                       {activeTab === 'cabs' && (
                         <div className="tab-pane" id="cabs">
                            <CabSearch/>
+                        </div>
+                      )}
+                       {activeTab === 'bus' && (
+                        <div className="tab-pane" id="bus">
+                          <BusSearch/>
                         </div>
                       )}
                       {activeTab === 'Cruises' && (
