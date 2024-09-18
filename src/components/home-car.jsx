@@ -165,7 +165,7 @@ const HomeCar = () => {
               </div>
               <div className="offer-captions ps-3">
                 <h4 className="destination fs-6 m-0 fw-bold">
-                  <span>Hyderbad</span>
+                  <span>Hyderabad</span>
                 </h4>
                 <p className="details ellipsis-container">
                   <span className="ellipsis-item__normal">Round-trip</span>

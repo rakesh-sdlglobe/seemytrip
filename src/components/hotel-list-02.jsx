@@ -247,7 +247,7 @@ const HotelList02 = () => {
                         {/* Pricing */}
                         <div className="searchBar-single px-3 py-3 border-bottom">
                           <div className="searchBar-single-title d-flex mb-3">
-                            <h6 className="sidebar-subTitle fs-6 fw-medium m-0">Pricing Range in US$</h6>
+                            <h6 className="sidebar-subTitle fs-6 fw-medium m-0">Pricing Range in INR₹</h6>
                           </div>
                           <div className="searchBar-single-wrap">
                             <input type="text" className="js-range-slider" name="my_range" defaultValue data-skin="round" data-type="double" data-min={0} data-max={1000} data-grid="false" />
@@ -581,7 +581,7 @@ const HotelList02 = () => {
                                   <div className="d-block position-relative"><span className="label bg-light-success text-success">Free
                                       Cancellation, till 1 hour of Pick up</span></div>
                                   <div className="text-md">
-                                    <p className="m-0"><Link to="#" className="text-primary">Login</Link> &amp; get additional $15 Off Using
+                                    <p className="m-0"><Link to="#" className="text-primary">Login</Link> &amp; get additional ₹15 Off Using
                                       <span className="text-primary">Visa card</span>
                                     </p>
                                   </div>
@@ -603,11 +603,11 @@ const HotelList02 = () => {
                                   <span className="label bg-success text-light">15% Off</span>
                                 </div>
                                 <div className="d-flex align-items-center justify-content-start justify-content-md-end">
-                                  <div className="text-muted-2 fw-medium text-decoration-line-through me-2">US$79</div>
-                                  <div className="text-dark fw-bold fs-3">$59</div>
+                                  <div className="text-muted-2 fw-medium text-decoration-line-through me-2">INR ₹79</div>
+                                  <div className="text-dark fw-bold fs-3">₹59</div>
                                 </div>
                                 <div className="d-flex align-items-start align-items-md-end justify-content-start justify-content-md-end flex-column mb-2">
-                                  <div className="text-muted-2 text-sm">+$22 taxes &amp; Fees</div>
+                                  <div className="text-muted-2 text-sm">+₹22 taxes &amp; Fees</div>
                                   <div className="text-muted-2 text-sm">For 2 Nights</div>
                                 </div>
                                 <div className="d-flex align-items-start align-items-md-end text-start text-md-end flex-column">
@@ -678,7 +678,7 @@ const HotelList02 = () => {
                                   <div className="d-block position-relative"><span className="label bg-light-success text-success">Free
                                       Cancellation, till 1 hour of Pick up</span></div>
                                   <div className="text-md">
-                                    <p className="m-0"><Link to="#" className="text-primary">Login</Link> &amp; get additional $15 Off Using
+                                    <p className="m-0"><Link to="#" className="text-primary">Login</Link> &amp; get additional ₹15 Off Using
                                       <span className="text-primary">Visa card</span>
                                     </p>
                                   </div>
@@ -700,11 +700,11 @@ const HotelList02 = () => {
                                   <span className="label bg-success text-light">15% Off</span>
                                 </div>
                                 <div className="d-flex align-items-center justify-content-start justify-content-md-end">
-                                  <div className="text-muted-2 fw-medium text-decoration-line-through me-2">US$79</div>
-                                  <div className="text-dark fw-bold fs-3">$59</div>
+                                  <div className="text-muted-2 fw-medium text-decoration-line-through me-2">INR ₹79</div>
+                                  <div className="text-dark fw-bold fs-3">₹59</div>
                                 </div>
                                 <div className="d-flex align-items-start align-items-md-end justify-content-start justify-content-md-end flex-column mb-2">
-                                  <div className="text-muted-2 text-sm">+$22 taxes &amp; Fees</div>
+                                  <div className="text-muted-2 text-sm">+₹22 taxes &amp; Fees</div>
                                   <div className="text-muted-2 text-sm">For 2 Nights</div>
                                 </div>
                                 <div className="d-flex align-items-start align-items-md-end text-start text-md-end flex-column">
@@ -725,7 +725,7 @@ const HotelList02 = () => {
                             </div>
                             <div className="flx-caps-first ps-2">
                               <h6 className="fs-5 fw-medium text-light mb-0">Start Exploring The World</h6>
-                              <p className="text-light mb-0">Book FlightsEffortless and Earn $50+ for each booking with Booking.com
+                              <p className="text-light mb-0">Book FlightsEffortless and Earn ₹50+ for each booking with Booking.com
                               </p>
                             </div>
                           </div>
@@ -785,7 +785,7 @@ const HotelList02 = () => {
                                   <div className="d-block position-relative"><span className="label bg-light-success text-success">Free
                                       Cancellation, till 1 hour of Pick up</span></div>
                                   <div className="text-md">
-                                    <p className="m-0"><Link to="#" className="text-primary">Login</Link> &amp; get additional $15 Off Using
+                                    <p className="m-0"><Link to="#" className="text-primary">Login</Link> &amp; get additional ₹15 Off Using
                                       <span className="text-primary">Visa card</span>
                                     </p>
                                   </div>
@@ -807,11 +807,11 @@ const HotelList02 = () => {
                                   <span className="label bg-success text-light">15% Off</span>
                                 </div>
                                 <div className="d-flex align-items-center justify-content-start justify-content-md-end">
-                                  <div className="text-muted-2 fw-medium text-decoration-line-through me-2">US$79</div>
-                                  <div className="text-dark fw-bold fs-3">$59</div>
+                                  <div className="text-muted-2 fw-medium text-decoration-line-through me-2">INR ₹79</div>
+                                  <div className="text-dark fw-bold fs-3">₹59</div>
                                 </div>
                                 <div className="d-flex align-items-start align-items-md-end justify-content-start justify-content-md-end flex-column mb-2">
-                                  <div className="text-muted-2 text-sm">+$22 taxes &amp; Fees</div>
+                                  <div className="text-muted-2 text-sm">+₹22 taxes &amp; Fees</div>
                                   <div className="text-muted-2 text-sm">For 2 Nights</div>
                                 </div>
                                 <div className="d-flex align-items-start align-items-md-end text-start text-md-end flex-column">
@@ -876,7 +876,7 @@ const HotelList02 = () => {
                                   <div className="d-block position-relative"><span className="label bg-light-success text-success">Free
                                       Cancellation, till 1 hour of Pick up</span></div>
                                   <div className="text-md">
-                                    <p className="m-0"><Link to="#" className="text-primary">Login</Link> &amp; get additional $15 Off Using
+                                    <p className="m-0"><Link to="#" className="text-primary">Login</Link> &amp; get additional ₹15 Off Using
                                       <span className="text-primary">Visa card</span>
                                     </p>
                                   </div>
@@ -898,11 +898,11 @@ const HotelList02 = () => {
                                   <span className="label bg-success text-light">15% Off</span>
                                 </div>
                                 <div className="d-flex align-items-center justify-content-start justify-content-md-end">
-                                  <div className="text-muted-2 fw-medium text-decoration-line-through me-2">US$79</div>
-                                  <div className="text-dark fw-bold fs-3">$59</div>
+                                  <div className="text-muted-2 fw-medium text-decoration-line-through me-2">INR ₹79</div>
+                                  <div className="text-dark fw-bold fs-3">₹59</div>
                                 </div>
                                 <div className="d-flex align-items-start align-items-md-end justify-content-start justify-content-md-end flex-column mb-2">
-                                  <div className="text-muted-2 text-sm">+$22 taxes &amp; Fees</div>
+                                  <div className="text-muted-2 text-sm">+₹22 taxes &amp; Fees</div>
                                   <div className="text-muted-2 text-sm">For 2 Nights</div>
                                 </div>
                                 <div className="d-flex align-items-start align-items-md-end text-start text-md-end flex-column">
@@ -967,7 +967,7 @@ const HotelList02 = () => {
                                   <div className="d-block position-relative"><span className="label bg-light-success text-success">Free
                                       Cancellation, till 1 hour of Pick up</span></div>
                                   <div className="text-md">
-                                    <p className="m-0"><Link to="#" className="text-primary">Login</Link> &amp; get additional $15 Off Using
+                                    <p className="m-0"><Link to="#" className="text-primary">Login</Link> &amp; get additional ₹15 Off Using
                                       <span className="text-primary">Visa card</span>
                                     </p>
                                   </div>
@@ -989,11 +989,11 @@ const HotelList02 = () => {
                                   <span className="label bg-success text-light">15% Off</span>
                                 </div>
                                 <div className="d-flex align-items-center justify-content-start justify-content-md-end">
-                                  <div className="text-muted-2 fw-medium text-decoration-line-through me-2">US$79</div>
-                                  <div className="text-dark fw-bold fs-3">$59</div>
+                                  <div className="text-muted-2 fw-medium text-decoration-line-through me-2">INR ₹79</div>
+                                  <div className="text-dark fw-bold fs-3">₹59</div>
                                 </div>
                                 <div className="d-flex align-items-start align-items-md-end justify-content-start justify-content-md-end flex-column mb-2">
-                                  <div className="text-muted-2 text-sm">+$22 taxes &amp; Fees</div>
+                                  <div className="text-muted-2 text-sm">+₹22 taxes &amp; Fees</div>
                                   <div className="text-muted-2 text-sm">For 2 Nights</div>
                                 </div>
                                 <div className="d-flex align-items-start align-items-md-end text-start text-md-end flex-column">
@@ -1058,7 +1058,7 @@ const HotelList02 = () => {
                                   <div className="d-block position-relative"><span className="label bg-light-success text-success">Free
                                       Cancellation, till 1 hour of Pick up</span></div>
                                   <div className="text-md">
-                                    <p className="m-0"><Link to="#" className="text-primary">Login</Link> &amp; get additional $15 Off Using
+                                    <p className="m-0"><Link to="#" className="text-primary">Login</Link> &amp; get additional ₹15 Off Using
                                       <span className="text-primary">Visa card</span>
                                     </p>
                                   </div>
@@ -1080,11 +1080,11 @@ const HotelList02 = () => {
                                   <span className="label bg-success text-light">15% Off</span>
                                 </div>
                                 <div className="d-flex align-items-center justify-content-start justify-content-md-end">
-                                  <div className="text-muted-2 fw-medium text-decoration-line-through me-2">US$79</div>
-                                  <div className="text-dark fw-bold fs-3">$59</div>
+                                  <div className="text-muted-2 fw-medium text-decoration-line-through me-2">INR ₹79</div>
+                                  <div className="text-dark fw-bold fs-3">₹59</div>
                                 </div>
                                 <div className="d-flex align-items-start align-items-md-end justify-content-start justify-content-md-end flex-column mb-2">
-                                  <div className="text-muted-2 text-sm">+$22 taxes &amp; Fees</div>
+                                  <div className="text-muted-2 text-sm">+₹22 taxes &amp; Fees</div>
                                   <div className="text-muted-2 text-sm">For 2 Nights</div>
                                 </div>
                                 <div className="d-flex align-items-start align-items-md-end text-start text-md-end flex-column">
@@ -1149,7 +1149,7 @@ const HotelList02 = () => {
                                   <div className="d-block position-relative"><span className="label bg-light-success text-success">Free
                                       Cancellation, till 1 hour of Pick up</span></div>
                                   <div className="text-md">
-                                    <p className="m-0"><Link to="#" className="text-primary">Login</Link> &amp; get additional $15 Off Using
+                                    <p className="m-0"><Link to="#" className="text-primary">Login</Link> &amp; get additional ₹15 Off Using
                                       <span className="text-primary">Visa card</span>
                                     </p>
                                   </div>
@@ -1171,11 +1171,11 @@ const HotelList02 = () => {
                                   <span className="label bg-success text-light">15% Off</span>
                                 </div>
                                 <div className="d-flex align-items-center justify-content-start justify-content-md-end">
-                                  <div className="text-muted-2 fw-medium text-decoration-line-through me-2">US$79</div>
-                                  <div className="text-dark fw-bold fs-3">$59</div>
+                                  <div className="text-muted-2 fw-medium text-decoration-line-through me-2">INR ₹79</div>
+                                  <div className="text-dark fw-bold fs-3">₹59</div>
                                 </div>
                                 <div className="d-flex align-items-start align-items-md-end justify-content-start justify-content-md-end flex-column mb-2">
-                                  <div className="text-muted-2 text-sm">+$22 taxes &amp; Fees</div>
+                                  <div className="text-muted-2 text-sm">+₹22 taxes &amp; Fees</div>
                                   <div className="text-muted-2 text-sm">For 2 Nights</div>
                                 </div>
                                 <div className="d-flex align-items-start align-items-md-end text-start text-md-end flex-column">
