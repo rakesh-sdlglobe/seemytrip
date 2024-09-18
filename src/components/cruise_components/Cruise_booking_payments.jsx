@@ -3,7 +3,7 @@ import Header02 from '../header02';
 import {trainImage, UPI} from '../../assets/images';
 import FooterDark from '../footer-dark';
 
-const CruiseBookingPayment= ()=>{
+const BusBookingPayment= ()=>{
       return (
         <div>
           {/* ============================================================== */}
@@ -292,4 +292,4 @@ const CruiseBookingPayment= ()=>{
     }
 
 
-    export default CruiseBookingPayment;
+    export default BusBookingPayment;
