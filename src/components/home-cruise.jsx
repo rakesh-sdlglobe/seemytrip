@@ -305,8 +305,8 @@ const HomeCruise = () => {
                                   <span className="label bg-light-danger text-danger">15% Off</span>
                                 </div>
                                 <div className="d-flex align-items-center">
-                                  <div className="text-dark fw-bold fs-4">US₹59</div>
-                                  <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">US₹79</div>
+                                  <div className="text-dark fw-bold fs-4">₹5,999</div>
+                                  <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">₹5,999</div>
                                 </div>
                               </div>
                               <div className="flts-flex-end">
@@ -377,8 +377,8 @@ const HomeCruise = () => {
                                   <span className="label bg-light-danger text-danger">15% Off</span>
                                 </div>
                                 <div className="d-flex align-items-center">
-                                  <div className="text-dark fw-bold fs-4">US₹59</div>
-                                  <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">US₹79</div>
+                                  <div className="text-dark fw-bold fs-4">₹5,999</div>
+                                  <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">₹5,999</div>
                                 </div>
                               </div>
                               <div className="flts-flex-end">
@@ -449,8 +449,8 @@ const HomeCruise = () => {
                                   <span className="label bg-light-danger text-danger">15% Off</span>
                                 </div>
                                 <div className="d-flex align-items-center">
-                                  <div className="text-dark fw-bold fs-4">US₹59</div>
-                                  <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">US₹79</div>
+                                  <div className="text-dark fw-bold fs-4">₹5,999</div>
+                                  <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">₹5,999</div>
                                 </div>
                               </div>
                               <div className="flts-flex-end">
@@ -521,8 +521,8 @@ const HomeCruise = () => {
                                   <span className="label bg-light-danger text-danger">15% Off</span>
                                 </div>
                                 <div className="d-flex align-items-center">
-                                  <div className="text-dark fw-bold fs-4">US₹59</div>
-                                  <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">US₹79</div>
+                                  <div className="text-dark fw-bold fs-4">₹5,999</div>
+                                  <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">₹5,999</div>
                                 </div>
                               </div>
                               <div className="flts-flex-end">
@@ -593,8 +593,8 @@ const HomeCruise = () => {
                                   <span className="label bg-light-danger text-danger">15% Off</span>
                                 </div>
                                 <div className="d-flex align-items-center">
-                                  <div className="text-dark fw-bold fs-4">US₹59</div>
-                                  <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">US₹79</div>
+                                  <div className="text-dark fw-bold fs-4">₹5,999</div>
+                                  <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">₹5,999</div>
                                 </div>
                               </div>
                               <div className="flts-flex-end">
@@ -665,8 +665,8 @@ const HomeCruise = () => {
                                   <span className="label bg-light-danger text-danger">15% Off</span>
                                 </div>
                                 <div className="d-flex align-items-center">
-                                  <div className="text-dark fw-bold fs-4">US₹59</div>
-                                  <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">US₹79</div>
+                                  <div className="text-dark fw-bold fs-4">₹5,999</div>
+                                  <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">₹5,999</div>
                                 </div>
                               </div>
                               <div className="flts-flex-end">

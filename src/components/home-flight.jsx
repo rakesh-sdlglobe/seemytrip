@@ -305,7 +305,7 @@ const HomeFlight = () => {
             <div className="row justify-content-center gy-4 gx-3">
               <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                 <div className="pop-touritem">
-                  <Link to="flight-search.html" className="card rounded-3 border br-dashed h-100 m-0">
+                  <Link to="#" className="card rounded-3 border br-dashed h-100 m-0">
                     <div className="flight-thumb-wrapper">
                       <div className="popFlights-item-overHidden">
                         <img src={Hyderbad} className="img-fluid" alt="" />
@@ -339,7 +339,7 @@ const HomeFlight = () => {
               </div>
               <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                 <div className="pop-touritem">
-                  <Link to="flight-search.html" className="card rounded-3 border br-dashed h-100 m-0">
+                  <Link to="#" className="card rounded-3 border br-dashed h-100 m-0">
                     <div className="flight-thumb-wrapper">
                       <div className="popFlights-item-overHidden">
                         <img src={Mumbai} className="img-fluid" alt="" />
@@ -373,7 +373,7 @@ const HomeFlight = () => {
               </div>
               <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                 <div className="pop-touritem">
-                  <Link to="flight-search.html" className="card rounded-3 border br-dashed h-100 m-0">
+                  <Link to="#" className="card rounded-3 border br-dashed h-100 m-0">
                     <div className="flight-thumb-wrapper">
                       <div className="popFlights-item-overHidden">
                         <img src={Bangalore} className="img-fluid" alt="" />
@@ -407,7 +407,7 @@ const HomeFlight = () => {
               </div>
               <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                 <div className="pop-touritem">
-                  <Link to="flight-search.html" className="card rounded-3 border br-dashed h-100 m-0">
+                  <Link to="#" className="card rounded-3 border br-dashed h-100 m-0">
                     <div className="flight-thumb-wrapper">
                       <div className="popFlights-item-overHidden">
                         <img src={Delhi} className="img-fluid" alt="" />
