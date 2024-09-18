@@ -107,6 +107,14 @@ const Home = () => {
                         <i className="fa-solid fa-car me-2" />Cabs
                       </Link>
                     </li>
+                     <li className="nav-item">
+                      <Link
+                        className={`nav-link ${activeTab === 'Cruises' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('Cruises')}
+                      >
+                        <i className="fa-solid fa-ship me-2" />Cruises
+                      </Link>
+                    </li>
                     <li className="nav-item">
                       <Link
                         className={`nav-link ${activeTab === 'bus' ? 'active' : ''}`}
@@ -117,18 +125,10 @@ const Home = () => {
                     </li>
                     <li className="nav-item">
                       <Link
-                        className={`nav-link ${activeTab === 'Cruises' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('Cruises')}
-                      >
-                        <i className="fa-solid fa-ship me-2" />Cruises
-                      </Link>
-                    </li>
-                    <li className="nav-item">
-                      <Link
                         className={`nav-link ${activeTab === 'Businesstourism' ? 'active' : ''}`}
                         onClick={() => setActiveTab('Businesstourism')}
                       >
-                        <i className="fa-solid fa-briefcase me-2" />Businesstourism
+                        <i className="fa-solid fa-briefcase me-2" />Business Tourism
                       </Link>
                     </li>
                   </ul>
@@ -175,16 +175,17 @@ const Home = () => {
                            <CabSearch/>
                         </div>
                       )}
-                       {activeTab === 'bus' && (
-                        <div className="tab-pane" id="bus">
-                          <BusSearch/>
-                        </div>
-                      )}
                       {activeTab === 'Cruises' && (
                         <div className="tab-pane" id="Cruises">
                          <CruiseSearch/>
                         </div>
                       )}
+                       {activeTab === 'bus' && (
+                        <div className="tab-pane" id="bus">
+                          <BusSearch/>
+                        </div>
+                      )}
+                      
                       {activeTab === 'Businesstourism' && (
                         <div className="tab-pane" id="Businesstourism">
                          <FlightSearch
