@@ -111,7 +111,7 @@ export const HotelBookingPage = () => {
                                           <i className="fa fa-star text-warning text-xs" />
                                         </div>
                                       </div>
-                                      <h4 className="fs-5 fw-bold mb-1">Hyderbad</h4>
+                                      <h4 className="fs-5 fw-bold mb-1">Hyderabad</h4>
                                       <ul className="row g-2 p-0">
                                         <li className="col-auto">
                                           <p className="text-muted-2 text-md">Waterloo and Southwark</p>
@@ -333,19 +333,19 @@ export const HotelBookingPage = () => {
                                 <ul className="list-group list-group-borderless">
                                   <li className="list-group-item d-flex justify-content-between align-items-center">
                                     <span className="fw-medium mb-0">Rooms &amp; Offers</span>
-                                    <span className="fw-semibold">$750.52</span>
+                                    <span className="fw-semibold">₹750.52</span>
                                   </li>
                                   <li className="list-group-item d-flex justify-content-between align-items-center">
                                     <span className="fw-medium mb-0">Total Discount<span className="badge rounded-1 text-bg-danger smaller mb-0 ms-2">10% off</span></span>
-                                    <span className="fw-semibold">-$7.50</span>
+                                    <span className="fw-semibold">-₹7.50</span>
                                   </li>
                                   <li className="list-group-item d-flex justify-content-between align-items-center">
                                     <span className="fw-medium mb-0">8% Taxes % Fees</span>
-                                    <span className="fw-semibold">$10.10</span>
+                                    <span className="fw-semibold">₹10.10</span>
                                   </li>
                                   <li className="list-group-item d-flex justify-content-between align-items-center">
                                     <span className="fw-medium text-success mb-0">Total Price</span>
-                                    <span className="fw-semibold text-success">$772.40</span>
+                                    <span className="fw-semibold text-success">₹772.40</span>
                                   </li>
                                 </ul>
                               </div>
