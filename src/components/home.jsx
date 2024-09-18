@@ -412,7 +412,7 @@ const Home = () => {
                   <div className="destination-blocks-captions">
                     <div className="touritem-flexxer text-center p-3">
                       <h4 className="city fs-5 m-0 fw-bold">
-                        <span>kolkata</span>
+                        <span>Kolkata</span>
                       </h4>
                       <p className="detail ellipsis-container m-0">
                         <span className="ellipsis-item__normal">09 Destinations</span>
@@ -464,7 +464,7 @@ const Home = () => {
                   <div className="destination-blocks-captions">
                     <div className="touritem-flexxer text-center p-3">
                       <h4 className="city fs-5 m-0 fw-bold">
-                        <span>Uttrapradesh</span>
+                        <span>Uttar Pradesh</span>
                       </h4>
                       <p className="detail ellipsis-container m-0">
                         <span className="ellipsis-item__normal">4 Destinations</span>

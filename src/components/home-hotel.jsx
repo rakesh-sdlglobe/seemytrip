@@ -216,8 +216,8 @@ const HomeHotel = () => {
                               <span className="label bg-seegreen text-light">15% Off</span>
                             </div>
                             <div className="d-flex align-items-center">
-                              <div className="text-dark fw-bold fs-4">US₹59</div>
-                              <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">US₹79</div>
+                              <div className="text-dark fw-bold fs-4">₹5,999</div>
+                              <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">₹4,879</div>
                             </div>
                             <div className="d-flex align-items-start flex-column">
                               <div className="text-muted-2 text-sm">Per Night</div>
@@ -281,8 +281,8 @@ const HomeHotel = () => {
                               <span className="label bg-seegreen text-light">15% Off</span>
                             </div>
                             <div className="d-flex align-items-center">
-                              <div className="text-dark fw-bold fs-4">US₹59</div>
-                              <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">US₹79</div>
+                              <div className="text-dark fw-bold fs-4">₹5,999</div>
+                              <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">₹5,999</div>
                             </div>
                             <div className="d-flex align-items-start flex-column">
                               <div className="text-muted-2 text-sm">Per Night</div>
@@ -346,8 +346,8 @@ const HomeHotel = () => {
                               <span className="label bg-seegreen text-light">15% Off</span>
                             </div>
                             <div className="d-flex align-items-center">
-                              <div className="text-dark fw-bold fs-4">US₹59</div>
-                              <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">US₹79</div>
+                              <div className="text-dark fw-bold fs-4">₹5,999</div>
+                              <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">₹5,999</div>
                             </div>
                             <div className="d-flex align-items-start flex-column">
                               <div className="text-muted-2 text-sm">Per Night</div>
@@ -411,8 +411,8 @@ const HomeHotel = () => {
                               <span className="label bg-seegreen text-light">15% Off</span>
                             </div>
                             <div className="d-flex align-items-center">
-                              <div className="text-dark fw-bold fs-4">US₹59</div>
-                              <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">US₹79</div>
+                              <div className="text-dark fw-bold fs-4">₹5,999</div>
+                              <div className="text-muted-2 fw-medium text-decoration-line-through ms-2">₹5,999</div>
                             </div>
                             <div className="d-flex align-items-start flex-column">
                               <div className="text-muted-2 text-sm">Per Night</div>

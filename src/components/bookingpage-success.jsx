@@ -51,7 +51,7 @@ const BookingPageSuccess =() =>{
                           </div>
                         </div>
                         <div className="d-flex align-items-center justify-content-center flex-column text-center mb-5">
-                          <h3 className="mb-0">Your train booking is completed!</h3>
+                          <h3 className="mb-0">Your booking is completed!</h3>
                           <p className="text-md mb-0">Booking detail send to: <span className="text-primary">paythemezhub@gmail.com</span></p>
                         </div>
                         <div className="d-flex align-items-center justify-content-center flex-column mb-4">
