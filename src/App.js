@@ -74,6 +74,9 @@ import HomeBus from './components/homebus.jsx';
 import { CabBookingPage } from './components/cab_components/cab_booking_page.jsx';
 import CabList from './components/cab_components/cab_list_page.jsx';
 import Bookingpayment from './components/cab_components/booking_payment-page.jsx';
+import { BusBookingPage } from './components/bus_components/bus_booking_page.jsx';
+import BusList from './components/bus_components/bus_list_page.jsx';
+import BusBookingPayment from './components/bus_components/bus_booking_payment.jsx';
 
 function App() {
   const dispatch = useDispatch();
@@ -171,6 +174,12 @@ function App() {
           <Route path="/cabbookingpage" element={<CabBookingPage/>} />
           <Route path="/cab-list" element={<CabList/>} />
           <Route path="/cabBookingpayment" element={<Bookingpayment/>} />
+
+           {/* Bus Routes */}
+           <Route path="/busbookingpage" element={<BusBookingPage/>} />
+          <Route path="/bus-list" element={<BusList/>} />
+          <Route path="/busBookingpayment" element={<BusBookingPayment/>} />
+
           {/* Cruise Routes */}
           <Route path="/home-cruise" element={<HomeCruise/> }/>
           <Route path="/hotel-bookingpage02" element={<HotelBookingpage02/>} />

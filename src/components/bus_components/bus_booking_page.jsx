@@ -1,10 +1,9 @@
 import React from 'react';
-// import { CabImage, CabLocation } from '../../assets/images/'; // Use appropriate cab images
 import { Link } from 'react-router-dom';
 import Header02 from '../header02';
 import FooterDark from '../footer-dark';
 
-export const CabBookingPage = () => {
+export const BusBookingPage = () => {
   return (
     <div>
       {/* Preloader - style you can find in spinners.css */}
@@ -14,11 +13,8 @@ export const CabBookingPage = () => {
       {/* Main wrapper - style you can find in pages.scss */}
       <div id="main-wrapper">
         {/* Top header */}
-        {/* Start Navigation */}
         <Header02 />
-        {/* End Navigation */}
         <div className="clearfix" />
-        {/* Top header */}
         {/* Booking Page */}
         <section className="pt-4 gray-simple position-relative">
           <div className="container">
@@ -69,7 +65,7 @@ export const CabBookingPage = () => {
                         <div className="row">
                           <div className="col-xl-4 col-lg-3 col-md">
                             <div className="cardImage__caps rounded-2 overflow-hidden h-100">
-                              <img className="img-fluid h-100 object-fit"  alt="Cab" />
+                              <img className="img-fluid h-100 object-fit" alt="Bus" />
                             </div>
                           </div>
                           <div className="col-xl col-lg col-md">
@@ -83,7 +79,7 @@ export const CabBookingPage = () => {
                                   <i className="fa fa-star text-warning text-xs" />
                                 </div>
                               </div>
-                              <h4 className="fs-5 fw-bold mb-1">Cab Booking</h4>
+                              <h4 className="fs-5 fw-bold mb-1">Bus Booking</h4>
                               <ul className="row g-2 p-0">
                                 <li className="col-auto">
                                   <p className="text-muted-2 text-md">Pickup Location: </p>
@@ -107,21 +103,21 @@ export const CabBookingPage = () => {
                               <div className="position-relative mt-3">
                                 <div className="d-flex flex-wrap align-items-center">
                                   <div className="d-inline-flex align-items-center border br-dashed rounded-2 p-2 me-2 mb-2">
-                                    <div className="export-icon text-muted-2"><i className="fa-solid fa-car" /></div>
+                                    <div className="export-icon text-muted-2"><i className="fa-solid fa-bus" /></div>
                                     <div className="export ps-2">
-                                      <span className="mb-0 text-muted-2 fw-semibold me-1">Sedan</span><span className="mb-0 text-muted-2 text-md">Car Type</span>
+                                      <span className="mb-0 text-muted-2 fw-semibold me-1">Luxury</span><span className="mb-0 text-muted-2 text-md">Bus Type</span>
                                     </div>
                                   </div>
                                   <div className="d-inline-flex align-items-center border br-dashed rounded-2 p-2 me-2 mb-2">
-                                    <div className="export-icon text-muted-2"><i className="fa-solid fa-user" /></div>
+                                    <div className="export-icon text-muted-2"><i className="fa-solid fa-users" /></div>
                                     <div className="export ps-2">
-                                      <span className="mb-0 text-muted-2 fw-semibold me-1">4</span><span className="mb-0 text-muted-2 text-md">Seats</span>
+                                      <span className="mb-0 text-muted-2 fw-semibold me-1">50</span><span className="mb-0 text-muted-2 text-md">Seats</span>
                                     </div>
                                   </div>
                                   <div className="d-inline-flex align-items-center border br-dashed rounded-2 p-2 me-2 mb-2">
-                                    <div className="export-icon text-muted-2"><i className="fa-solid fa-tachometer-alt" /></div>
+                                    <div className="export-icon text-muted-2"><i className="fa-solid fa-road" /></div>
                                     <div className="export ps-2">
-                                      <span className="mb-0 text-muted-2 fw-semibold me-1">2000</span><span className="mb-0 text-muted-2 text-md">Km Range</span>
+                                      <span className="mb-0 text-muted-2 fw-semibold me-1">5000</span><span className="mb-0 text-muted-2 text-md">Km Range</span>
                                     </div>
                                   </div>
                                 </div>
@@ -134,7 +130,7 @@ export const CabBookingPage = () => {
                       <div className="flight-boxyhc mt-4">
                         <h4 className="fs-5">Good To Know</h4>
                         <div className="effloration-wrap">
-                          <p>All Prices are in Indian Rupees and are subject to change without prior notice. The full amount of the cab ride will be payable at the time of booking.</p>
+                          <p>All Prices are in Indian Rupees and are subject to change without prior notice. The full amount of the bus ride will be payable at the time of booking.</p>
                           <ul className="row align-items-center g-1 mb-0 p-0">
                             <li className="col-12"><span className="text-success text-md"><i className="fa-solid fa-circle-dot me-2" />Free Cancellation till 24 hours before pickup</span></li>
                             <li className="col-12"><span className="text-muted-2 text-md"><i className="fa-solid fa-circle-dot me-2" />After 24 hours: 50% cancellation fee</span></li>
@@ -149,25 +145,29 @@ export const CabBookingPage = () => {
                       <h5 className="fw-semibold fs-6">Reservation Summary</h5>
                       <div className="mid-block rounded-2 border br-dashed p-2 mb-3">
                         <div className="d-flex align-items-center justify-content-between">
-                          <div className="d-inline-block text-muted-2 text-md">Pickup Location</div>
-                          <div className="d-inline-block fw-semibold text-dark text-md">  </div>
+                          <div className="d-inline-block text-muted-2 text-md">Total Cost:</div>
+                          <div className="d-inline-block fw-bold text-end fs-5 text-dark">₹ 4,500</div>
                         </div>
-                        <div className="d-flex align-items-center justify-content-between mt-2">
-                          <div className="d-inline-block text-muted-2 text-md">Drop Location</div>
-                          <div className="d-inline-block fw-semibold text-dark text-md">  </div>
-                        </div>
-                        <div className="d-flex align-items-center justify-content-between mt-2">
-                          <div className="d-inline-block text-muted-2 text-md">Car Type</div>
-                          <div className="d-inline-block fw-semibold text-dark text-md">Sedan</div>
-                        </div>
-                      </div>
-                      <div className="mid-block rounded-2 border br-dashed p-2 mb-3">
                         <div className="d-flex align-items-center justify-content-between">
-                          <div className="d-inline-block text-muted-2 text-md">Total Price</div>
-                          <div className="d-inline-block fw-semibold text-dark text-md"> ₹2000 </div>
+                          <div className="d-inline-block text-muted-2 text-md">Seats:</div>
+                          <div className="d-inline-block fw-bold text-end fs-5 text-dark">4</div>
+                        </div>
+                        <div className="d-flex align-items-center justify-content-between">
+                          <div className="d-inline-block text-muted-2 text-md">Bus Type:</div>
+                          <div className="d-inline-block fw-bold text-end fs-5 text-dark">Luxury</div>
+                        </div>
+                        <div className="d-flex align-items-center justify-content-between">
+                          <div className="d-inline-block text-muted-2 text-md">Pickup Location:</div>
+                          <div className="d-inline-block fw-bold text-end fs-5 text-dark">Delhi</div>
+                        </div>
+                        <div className="d-flex align-items-center justify-content-between">
+                          <div className="d-inline-block text-muted-2 text-md">Drop Location:</div>
+                          <div className="d-inline-block fw-bold text-end fs-5 text-dark">Agra</div>
                         </div>
                       </div>
-                      <Link to="/cabBookingpayment" className="btn btn-primary btn-lg w-100 mt-2">Proceed to Payment</Link>
+                      <div className="d-grid gap-2">
+                        <Link to="/busBookingpayment" className="btn btn-primary rounded-2 py-2">Proceed to Payment</Link>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -175,8 +175,11 @@ export const CabBookingPage = () => {
             </div>
           </div>
         </section>
+        {/* Footer */}
         <FooterDark />
       </div>
     </div>
   );
-}
+};
+
+export default BusBookingPage;
