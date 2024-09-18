@@ -177,11 +177,6 @@ const Home = () => {
                          <CruiseSearch/>
                         </div>
                       )}
-                      {activeTab === 'Cruises' && (
-                        <div className="tab-pane" id="Cruises">
-                         <CruiseSearch/>
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>
