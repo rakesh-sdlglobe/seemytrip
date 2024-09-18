@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Carnival, Toyota } from '../../assets/images';
 
 
 const CabResultPage = () => {
@@ -41,7 +42,7 @@ const CabResultPage = () => {
                         <div className="row">
                             <div className="col-xl-4 col-lg-3 col-md">
                                 <div className="cardImage__caps rounded-2 overflow-hidden h-100">
-                                    <img className="img-fluid h-100 object-fit" src="cab_image.jpg" alt="cab" />
+                                    <img className="img-fluid h-100 object-fit" src={Toyota} alt="cab" />
                                 </div>
                             </div>
                             <div className="col-xl col-lg col-md">
@@ -127,12 +128,12 @@ const CabResultPage = () => {
                         <div className="row">
                             <div className="col-xl-4 col-lg-3 col-md">
                                 <div className="cardImage__caps rounded-2 overflow-hidden h-100">
-                                    <img className="img-fluid h-100 object-fit" src="cab_image.jpg" alt="cab" />
+                                    <img className="img-fluid h-100 object-fit" src={Carnival} alt="cab" />
                                 </div>
                             </div>
                             <div className="col-xl col-lg col-md">
                                 <div className="listLayout_midCaps mt-md-0 mt-3 mb-md-0 mb-3">
-                                    <h4 className="fs-5 fw-bold mb-1">Sedan - Toyota Prius</h4>
+                                    <h4 className="fs-5 fw-bold mb-1">Kia - Carnival</h4>
                                     <ul className="row gx-2 p-0 excortio">
                                         <li className="col-auto">
                                             <p className="text-muted-2 text-md">Delhi to Agra</p>
