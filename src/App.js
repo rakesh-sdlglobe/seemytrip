@@ -7,7 +7,7 @@ import PageNotFound from './components/404';
 import AddListing from './components/add-listing';
 import Blogdetail from './components/blog-detail';
 import Blog from './components/blog';
-import BookingPage from './components/booking-page.jsx';
+import BookingPage from './components/train_search_result/booking-page.jsx';
 import CarDetails from './components/car-detail';
 import CarList01 from './components/car-list-01';
 import CarList02 from './components/car-list-02';
@@ -71,6 +71,9 @@ import HotelBookingpage02 from './components/HotelBookingpage02.jsx';
 import HomeCruise from './components/home-cruise.jsx';
 import BusinessTrourism from './components/BusinessTrourism.jsx';
 import HomeBus from './components/homebus.jsx';
+import { CabBookingPage } from './components/cab_components/cab_booking_page.jsx';
+import CabList from './components/cab_components/cab_list_page.jsx';
+import Bookingpayment from './components/cab_components/booking_payment-page.jsx';
 
 function App() {
   const dispatch = useDispatch();
@@ -164,6 +167,10 @@ function App() {
           
           <Route path="/hotel-bookingpage" element={<HotelBookingPage/>} />
           <Route path="/hotel-bookingpage02" element={<HotelBookingpage02/>} />
+          {/* Cab Routes */}
+          <Route path="/cabbookingpage" element={<CabBookingPage/>} />
+          <Route path="/cab-list" element={<CabList/>} />
+          <Route path="/cabBookingpayment" element={<Bookingpayment/>} />
           {/* Cruise Routes */}
           <Route path="/home-cruise" element={<HomeCruise/> }/>
           <Route path="/hotel-bookingpage02" element={<HotelBookingpage02/>} />
