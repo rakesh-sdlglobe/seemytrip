@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-// import { HospitalImage, DoctorImage } from '../../assets/images';
+import { MedicalTourismImage, DoctorImage } from '../../assets/images';
 
 const MtResultPage = () => {
     return (
@@ -41,7 +41,7 @@ const MtResultPage = () => {
                         <div className="row">
                             <div className="col-xl-4 col-lg-3 col-md">
                                 <div className="cardImage__caps rounded-2 overflow-hidden h-100">
-                                    <img className="img-fluid h-100 object-fit"  alt="Apollo Hospital" />
+                                    <img className="img-fluid h-100 object-fit" src={MedicalTourismImage}  alt="Apollo Hospital" />
                                 </div>
                             </div>
                             <div className="col-xl col-lg col-md">
@@ -128,7 +128,7 @@ const MtResultPage = () => {
                         <div className="row">
                             <div className="col-xl-4 col-lg-3 col-md">
                                 <div className="cardImage__caps rounded-2 overflow-hidden h-100">
-                                    <img className="img-fluid h-100 object-fit"  alt="Expert Surgeon" />
+                                    <img className="img-fluid h-100 object-fit" src={DoctorImage} alt="Expert Surgeon" />
                                 </div>
                             </div>
                             <div className="col-xl col-lg col-md">

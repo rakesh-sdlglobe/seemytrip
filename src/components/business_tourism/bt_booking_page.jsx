@@ -35,15 +35,7 @@ export const BtBookingPage = () => {
                     </div>
                     <div className="line" />
                     {/* Step 2 */}
-                    <div className="step" data-target="#step-2">
-                      <div className="text-center">
-                        <button type="button" className="step-trigger mb-0" id="steppertrigger2">
-                          <span className="bs-stepper-circle">2</span>
-                        </button>
-                        <h6 className="bs-stepper-label d-none d-md-block">Enter Details</h6>
-                      </div>
-                    </div>
-                    <div className="line" />
+                    
                     {/* Step 3 */}
                     <div className="step" data-target="#step-3">
                       <div className="text-center">

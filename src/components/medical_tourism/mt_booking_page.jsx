@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Header02 from '../header02';
 import FooterDark from '../footer-dark';
-// import { MedicalTourismImage } from '../../assets/images';  // Assuming you have a relevant medical tourism image
+import { MedicalTourismImage } from '../../assets/images';  // Assuming you have a relevant medical tourism image
 
 export const MtBookingPage = () => {
   return (
@@ -34,16 +34,7 @@ export const MtBookingPage = () => {
                       </div>
                     </div>
                     <div className="line" />
-                    {/* Step 2 */}
-                    <div className="step" data-target="#step-2">
-                      <div className="text-center">
-                        <button type="button" className="step-trigger mb-0" id="steppertrigger2">
-                          <span className="bs-stepper-circle">2</span>
-                        </button>
-                        <h6 className="bs-stepper-label d-none d-md-block">Enter Patient Details</h6>
-                      </div>
-                    </div>
-                    <div className="line" />
+                   
                     {/* Step 3 */}
                     <div className="step" data-target="#step-3">
                       <div className="text-center">
@@ -67,7 +58,7 @@ export const MtBookingPage = () => {
                         <div className="row">
                           <div className="col-xl-4 col-lg-3 col-md">
                             <div className="cardImage__caps rounded-2 overflow-hidden h-100">
-                              <img className="img-fluid h-100 object-fit"  alt="Medical Tourism Package" />
+                              <img className="img-fluid h-100 object-fit" src={MedicalTourismImage} alt="Medical Tourism Package" />
                             </div>
                           </div>
                           <div className="col-xl col-lg col-md">

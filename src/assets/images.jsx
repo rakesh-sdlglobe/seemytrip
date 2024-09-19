@@ -59,8 +59,10 @@ import bus10 from '../assets/images/bus10.png';
 import bus11 from '../assets/images/bus11.png';
 import bus12 from '../assets/images/Bus12.jpg';
 import Logowhite from '../assets/images/logo-white.png';
+import DoctorImage from '../assets/images/DoctorImage.jpg';
+import MedicalTourismImage from '../assets/images/MedicalTourismImage.jpg'
 
 
 export {
-  trainImage,indian_flag,charminar,benglore, kolkota, mumbai, utterpradesh, kerla, delhi,chennai,youngIndianCouple, team1, indianTrain,team2,team3,team4,team5,login,charminar2,ramoji,gloconda,D,UPI,Indigo,AirIndia,Vistara,Hyderbad,indigo,Mumbai,Bangalore,Delhi,Hotel01,Hotel02,Hotel03,Hotel04,Nexon,Carnival,Jazz,Ertiga,Toyota,Tiago,ship1,ship2,ship3,ship4,ship5,ship6,bus1,bus2,bus3,bus4,bus5,bus6,bus7,bus8,bus9,bus10,bus11,bus12,Logowhite
+  trainImage,indian_flag,charminar,benglore, kolkota, mumbai, utterpradesh, kerla, delhi,chennai,youngIndianCouple, team1, indianTrain,team2,team3,team4,team5,login,charminar2,ramoji,gloconda,D,UPI,Indigo,AirIndia,Vistara,Hyderbad,indigo,Mumbai,Bangalore,Delhi,Hotel01,Hotel02,Hotel03,Hotel04,Nexon,Carnival,Jazz,Ertiga,Toyota,Tiago,ship1,ship2,ship3,ship4,ship5,ship6,bus1,bus2,bus3,bus4,bus5,bus6,bus7,bus8,bus9,bus10,bus11,bus12,Logowhite, DoctorImage, MedicalTourismImage,
 };
