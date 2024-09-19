@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
-import CabSearch from './bt_search_componets';
+import CabSearch from './mt_search_componets';
 import Header02 from '../header02';
 import FooterDark from '../footer-dark';
-import BtResultPage from './bt_result_page';
-import BtFilterPage from './bt_filter_page';
+import MtFilterPage from './mt_filter_page';
+import MtResultPage from './mt_result_page';
 
-const BtList = () => {
+
+const MtList = () => {
     return (
         <div>
             
@@ -42,10 +43,10 @@ const BtList = () => {
                     <div className="container">
                         <div className="row justify-content-between gy-4 gx-xl-4 gx-lg-3 gx-md-3 gx-4">
                             {/* Sidebar */}
-                            <BtFilterPage />
+                            <MtFilterPage />
 
                             {/* All List */}
-                            <BtResultPage />
+                            <MtResultPage />
                         </div>
                     </div>
                 </section>
@@ -59,4 +60,4 @@ const BtList = () => {
     );
 }
 
-export default BtList
+export default MtList

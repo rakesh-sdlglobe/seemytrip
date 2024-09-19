@@ -19,6 +19,7 @@ import { useState } from 'react';
 import { AirIndia, Bangalore, Delhi, Hyderbad, Indigo, indigo, Mumbai, Vistara } from '../assets/images';
 import FooterDark from './footer-dark';
 import HorizontalContainer from './flight_components/HorizontalContainer';
+import MtSearch from './medical_tourism/mt_search_componets';
 
 const MedicalTrourism = () => {
   const [flightResults, setFlightResults] = useState([]);
@@ -183,18 +184,7 @@ const MedicalTrourism = () => {
                           </div>
                         </div>
                       </div> */}
-                  <FlightSearch
-                    onSearchResults={handleSearchResults}
-                    backgroundColor="#ffffff"
-                    buttonBackgroundColor="#cd2c22"
-                    buttonTextColor="#ffffff"
-                    height="160px"
-                    leavingLabel={null}
-                    goingLabel={null}
-                    dateLabel={null}
-                    ReturnLable={null}
-                    dropdownHindden="flex"
-                  />
+                  <MtSearch/>
                 </div>
               </div>
             </div>

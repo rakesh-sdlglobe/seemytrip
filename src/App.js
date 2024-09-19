@@ -85,6 +85,9 @@ import MedicalTrourism from './components/Home-Medicaltourism.jsx';
 import BtList from './components/business_tourism/bt_list_page.jsx';
 import { BtBookingPage } from './components/business_tourism/bt_booking_page.jsx';
 import BtBookingPayment from './components/business_tourism/booking_payment-page.jsx';
+import MtBookingPage from './components/medical_tourism/mt_booking_page.jsx';
+import MtList from './components/medical_tourism/mt_list_page.jsx';
+import MtBookingPayment from './components/medical_tourism/booking_payment-page.jsx';
 
 function App() {
   const dispatch = useDispatch();
@@ -203,6 +206,9 @@ function App() {
           
           {/* business trourism routes */}
           <Route path="/home-medicaltourism" element={<MedicalTrourism/> }/>
+          <Route path="/mtbookingpage" element={<MtBookingPage/>} />
+          <Route path="/mt-list" element={<MtList/> }/>
+          <Route path="/mtBookingPayment" element={<MtBookingPayment/> }/>
           {/* business trourism routes */}
           <Route path="/home-bus" element={<HomeBus/> }/>
 
