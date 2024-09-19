@@ -69,12 +69,14 @@ const TrainList01 = () => {
         <div className="clearfix" />
         <SearchComponent
           backgroundColor="#cd2c22"
-          height="110px"
+          height="130px"
           leavingLabel={null}
           goingLabel={null}
           dateLabel={null}
           buttonBackgroundColor="#ffffff"
           buttonTextColor="#cd2c22"
+          dropdownHindden='none'
+          checklabelColor ='#ffffff'
         />
         <section className="gray-simple">
           <div className="container">
@@ -145,283 +147,283 @@ const TrainList01 = () => {
                     {/* Departure Time Filters */}
                     <div className="searchBar-single px-3 py-3 border-bottom">
 
-                    <div className="searchBar-single-title d-flex mb-1 mt-3">
-                      <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
-                        Departure Time
-                      </h6>
-                    </div>
-                    <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2">
-                      <li className="col-12">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id="departureEarlyMorning"
-                            checked={filters.departureEarlyMorning}
-                            onChange={onFilterChange}
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="departureEarlyMorning"
-                          >
-                            Early Morning (00:00 - 06:00)
-                          </label>
-                        </div>
-                      </li>
-                      <li className="col-12">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id="departureMorning"
-                            checked={filters.departureMorning}
-                            onChange={onFilterChange}
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="departureMorning"
-                          >
-                            Morning (06:00 - 12:00)
-                          </label>
-                        </div>
-                      </li>
-                      <li className="col-12">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id="departureMidDay"
-                            checked={filters.departureMidDay}
-                            onChange={onFilterChange}
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="departureMidDay"
-                          >
-                            Mid Day (12:00 - 18:00)
-                          </label>
-                        </div>
-                      </li>
-                      <li className="col-12">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id="departureNight"
-                            checked={filters.departureNight}
-                            onChange={onFilterChange}
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="departureNight"
-                          >
-                            Night (18:00 - 24:00)
-                          </label>
-                        </div>
-                      </li>
-                    </ul>
+                      <div className="searchBar-single-title d-flex mb-1 mt-3">
+                        <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
+                          Departure Time
+                        </h6>
+                      </div>
+                      <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2">
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="departureEarlyMorning"
+                              checked={filters.departureEarlyMorning}
+                              onChange={onFilterChange}
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor="departureEarlyMorning"
+                            >
+                              Early Morning (00:00 - 06:00)
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="departureMorning"
+                              checked={filters.departureMorning}
+                              onChange={onFilterChange}
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor="departureMorning"
+                            >
+                              Morning (06:00 - 12:00)
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="departureMidDay"
+                              checked={filters.departureMidDay}
+                              onChange={onFilterChange}
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor="departureMidDay"
+                            >
+                              Mid Day (12:00 - 18:00)
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="departureNight"
+                              checked={filters.departureNight}
+                              onChange={onFilterChange}
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor="departureNight"
+                            >
+                              Night (18:00 - 24:00)
+                            </label>
+                          </div>
+                        </li>
+                      </ul>
 
-                    {/* Arrival Time Filters */}
-                    <div className="searchBar-single-title d-flex mb-1 mt-3">
-                      <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
-                        Arrival Time
-                      </h6>
-                    </div>
-                    <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2">
-                      <li className="col-12">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id="arrivalEarlyMorning"
-                            checked={filters.arrivalEarlyMorning}
-                            onChange={onFilterChange}
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="arrivalEarlyMorning"
-                          >
-                            Early Morning (00:00 - 06:00)
-                          </label>
-                        </div>
-                      </li>
-                      <li className="col-12">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id="arrivalMorning"
-                            checked={filters.arrivalMorning}
-                            onChange={onFilterChange}
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="arrivalMorning"
-                          >
-                            Morning (06:00 - 12:00)
-                          </label>
-                        </div>
-                      </li>
-                      <li className="col-12">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id="arrivalMidDay"
-                            checked={filters.arrivalMidDay}
-                            onChange={onFilterChange}
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="arrivalMidDay"
-                          >
-                            Mid Day (12:00 - 18:00)
-                          </label>
-                        </div>
-                      </li>
-                      <li className="col-12">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id="arrivalNight"
-                            checked={filters.arrivalNight}
-                            onChange={onFilterChange}
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="arrivalNight"
-                          >
-                            Night (18:00 - 24:00)
-                          </label>
-                        </div>
-                      </li>
-                    </ul>
+                      {/* Arrival Time Filters */}
+                      <div className="searchBar-single-title d-flex mb-1 mt-3">
+                        <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
+                          Arrival Time
+                        </h6>
+                      </div>
+                      <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2">
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="arrivalEarlyMorning"
+                              checked={filters.arrivalEarlyMorning}
+                              onChange={onFilterChange}
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor="arrivalEarlyMorning"
+                            >
+                              Early Morning (00:00 - 06:00)
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="arrivalMorning"
+                              checked={filters.arrivalMorning}
+                              onChange={onFilterChange}
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor="arrivalMorning"
+                            >
+                              Morning (06:00 - 12:00)
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="arrivalMidDay"
+                              checked={filters.arrivalMidDay}
+                              onChange={onFilterChange}
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor="arrivalMidDay"
+                            >
+                              Mid Day (12:00 - 18:00)
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="arrivalNight"
+                              checked={filters.arrivalNight}
+                              onChange={onFilterChange}
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor="arrivalNight"
+                            >
+                              Night (18:00 - 24:00)
+                            </label>
+                          </div>
+                        </li>
+                      </ul>
 
-                    {/* Journey Class */}
-                    <div className="searchBar-single-title d-flex mb-1 mt-3">
-                      <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
-                        Journey Class
-                      </h6>
-                    </div>
-                    <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2">
-                      <li className="col-12">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id="1A"
-                            checked={filters["1A"]}
-                            onChange={onFilterChange}
-                          />
-                          <label className="form-check-label" htmlFor="1A">
-                            1A (First Class AC)
-                          </label>
-                        </div>
-                      </li>
-                      <li className="col-12">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id="2A"
-                            checked={filters["2A"]}
-                            onChange={onFilterChange}
-                          />
-                          <label className="form-check-label" htmlFor="2A">
-                            2A (Second Class AC)
-                          </label>
-                        </div>
-                      </li>
-                      <li className="col-12">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id="3A"
-                            checked={filters["3A"]}
-                            onChange={onFilterChange}
-                          />
-                          <label className="form-check-label" htmlFor="3A">
-                            3A (Third Class AC)
-                          </label>
-                        </div>
-                      </li>
-                      <li className="col-12">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id="SL"
-                            checked={filters.SL}
-                            onChange={onFilterChange}
-                          />
-                          <label className="form-check-label" htmlFor="SL">
-                            SL (Sleeper Class)
-                          </label>
-                        </div>
-                      </li>
-                      <li className="col-12">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id="GN"
-                            checked={filters.GN}
-                            onChange={onFilterChange}
-                          />
-                          <label className="form-check-label" htmlFor="GN">
-                            GN (General Class)
-                          </label>
-                        </div>
-                      </li>
-                    </ul>
+                      {/* Journey Class */}
+                      <div className="searchBar-single-title d-flex mb-1 mt-3">
+                        <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
+                          Journey Class
+                        </h6>
+                      </div>
+                      <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2">
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="1A"
+                              checked={filters["1A"]}
+                              onChange={onFilterChange}
+                            />
+                            <label className="form-check-label" htmlFor="1A">
+                              1A (First Class AC)
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="2A"
+                              checked={filters["2A"]}
+                              onChange={onFilterChange}
+                            />
+                            <label className="form-check-label" htmlFor="2A">
+                              2A (Second Class AC)
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="3A"
+                              checked={filters["3A"]}
+                              onChange={onFilterChange}
+                            />
+                            <label className="form-check-label" htmlFor="3A">
+                              3A (Third Class AC)
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="SL"
+                              checked={filters.SL}
+                              onChange={onFilterChange}
+                            />
+                            <label className="form-check-label" htmlFor="SL">
+                              SL (Sleeper Class)
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="GN"
+                              checked={filters.GN}
+                              onChange={onFilterChange}
+                            />
+                            <label className="form-check-label" htmlFor="GN">
+                              GN (General Class)
+                            </label>
+                          </div>
+                        </li>
+                      </ul>
 
-                    {/* Other Filters */}
-                    <div className="searchBar-single-title d-flex mb-1 mt-3">
-                      <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
-                        Other Filters
-                      </h6>
+                      {/* Other Filters */}
+                      <div className="searchBar-single-title d-flex mb-1 mt-3">
+                        <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
+                          Other Filters
+                        </h6>
+                      </div>
+                      <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2">
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="freeCancellation"
+                              checked={filters.freeCancellation}
+                              onChange={onFilterChange}
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor="freeCancellation"
+                            >
+                              Free Cancellation
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="tripGuarantee"
+                              checked={filters.tripGuarantee}
+                              onChange={onFilterChange}
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor="tripGuarantee"
+                            >
+                              Trip Guarantee
+                            </label>
+                          </div>
+                        </li>
+                      </ul>
                     </div>
-                    <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2">
-                      <li className="col-12">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id="freeCancellation"
-                            checked={filters.freeCancellation}
-                            onChange={onFilterChange}
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="freeCancellation"
-                          >
-                            Free Cancellation
-                          </label>
-                        </div>
-                      </li>
-                      <li className="col-12">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id="tripGuarantee"
-                            checked={filters.tripGuarantee}
-                            onChange={onFilterChange}
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="tripGuarantee"
-                          >
-                            Trip Guarantee
-                          </label>
-                        </div>
-                      </li>
-                    </ul>
                   </div>
                 </div>
-              </div>
               </div>
               <div className="col-xl-9 col-lg-8 col-md-12">
                 <TrainSearchResultList filters={filters} />
