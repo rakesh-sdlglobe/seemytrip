@@ -1,37 +1,56 @@
 // reducers/filterReducer.js
-import { SET_FILTER, CLEAR_FILTERS } from '../Actions/filterActions';
+import {
+  FETCH_STATIONS_REQUEST,
+  FETCH_STATIONS_SUCCESS,
+  FETCH_STATIONS_FAILURE,
+  FETCH_TRAINS_REQUEST,
+  FETCH_TRAINS_SUCCESS,
+  FETCH_TRAINS_FAILURE,
+} from '../Actions/filterActions.js';
 
 const initialState = {
-  ac: false,
-  available: false,
-  departureEarlyMorning: false,
-  departureMorning: false,
-  departureMidDay: false,
-  departureNight: false,
-  arrivalEarlyMorning: false,
-  arrivalMorning: false,
-  arrivalMidDay: false,
-  arrivalNight: false,
-  freeCancellation: false,
-  tripGuarantee: false,
-  '1A': false,
-  '2A': false,
-  '3A': false,
-  'SL': false,
-  'CC': false,
-  baggage: false,
-  wifi: false,
+  loading: false,
+  stations: [],
+  trains: [],
+  error: null,
 };
 
 export const filterReducer = (state = initialState, action) => {
   switch (action.type) {
-    case SET_FILTER:
+    case FETCH_STATIONS_REQUEST:
       return {
         ...state,
-        [action.payload.filterId]: action.payload.value,
+        loading: true,
       };
-    case CLEAR_FILTERS:
-      return initialState;
+    case FETCH_STATIONS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        stations: action.payload,
+      };
+    case FETCH_STATIONS_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+      case FETCH_TRAINS_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+    case FETCH_TRAINS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        trains: action.payload,
+      };
+    case FETCH_TRAINS_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
     default:
       return state;
   }

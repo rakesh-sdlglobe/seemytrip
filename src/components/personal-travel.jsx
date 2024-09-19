@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addTraveler, fetchTravelers } from "../store/Actions/userActions";
+import {
+  addTraveler,
+  fetchTravelers,
+  removeTraveler,
+} from "../store/Actions/userActions";
 import {
   selectTravelers,
   selectTravelerLoading,
@@ -8,7 +12,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 
 const PersonalTravel = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [firstname, setFirstName] = useState("");
   const [lastname, setLastName] = useState("");
   const [mobile, setMobile] = useState("");
@@ -30,13 +34,20 @@ const PersonalTravel = () => {
       dob,
     };
 
-    dispatch(addTraveler(travelerData,navigate));
+    dispatch(addTraveler(travelerData, navigate));
+  };
+
+  const handleRemoveTraveler = (id) => {
+    dispatch(removeTraveler(id, navigate));
   };
 
   return (
     <div className="card">
       <div className="card-header">
-        <h4><i className="fa-solid fa-user-group me-2" />Travelers Details</h4>
+        <h4>
+          <i className="fa-solid fa-user-group me-2" />
+          Travelers Details
+        </h4>
       </div>
       <div className="card-body gap-4">
         {/* Traveler Details Section */}
@@ -45,12 +56,23 @@ const PersonalTravel = () => {
             <div className="card-header px-0 border-0">
               <div className="d-flex align-items-center justify-content-start">
                 <div className="avatar avatar-md me-2">
-                  <img src="https://placehold.co/500x500" className="img-fluid circle" alt="" />
+                  <img
+                    src="https://placehold.co/500x500"
+                    className="img-fluid circle"
+                    alt=""
+                  />
                 </div>
-                <h6 className="mb-0">{traveler.firstname} {traveler.lastname}</h6>
+                <h6 className="mb-0">
+                  {traveler.firstname} {traveler.lastname}
+                </h6>
               </div>
               <div className="crd-remove">
-                <Link to="#" className="nav-link fw-medium text-primary text-sm">Remove</Link>
+                <button
+                  className="nav-link fw-medium text-primary text-sm"
+                  onClick={() => handleRemoveTraveler(traveler.id)}
+                >
+                  Remove
+                </button>
               </div>
             </div>
             <div className="card-body px-0">
@@ -58,25 +80,45 @@ const PersonalTravel = () => {
                 <div className="col-xl-6 col-lg-6 col-md-6">
                   <div className="form-group">
                     <label className="form-label">First Name</label>
-                    <input type="text" className="form-control" value={traveler.firstname} readOnly />
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={traveler.firstname}
+                      readOnly
+                    />
                   </div>
                 </div>
                 <div className="col-xl-6 col-lg-6 col-md-6">
                   <div className="form-group">
                     <label className="form-label">Last Name</label>
-                    <input type="text" className="form-control" value={traveler.lastname} readOnly />
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={traveler.lastname}
+                      readOnly
+                    />
                   </div>
                 </div>
                 <div className="col-xl-6 col-lg-6 col-md-6">
                   <div className="form-group">
                     <label className="form-label">Mobile No.</label>
-                    <input type="text" className="form-control" value={traveler.mobile} readOnly />
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={traveler.mobile}
+                      readOnly
+                    />
                   </div>
                 </div>
                 <div className="col-xl-6 col-lg-6 col-md-6">
                   <div className="form-group">
                     <label className="form-label">Date of Birth</label>
-                    <input type="text" className="form-control" value={traveler.dob} readOnly />
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={traveler.dob}
+                      readOnly
+                    />
                   </div>
                 </div>
               </div>
