@@ -81,6 +81,7 @@ import CruiseList from './components/cruise_components/Cruise_list_page.jsx';
 import CruiseResultpage from './components/cruise_components/Cruise_result_page.jsx';
 import CruiseBookingPage from './components/cruise_components/Cruise_booking_page.jsx';
 import CruiseBookingPayment from './components/bus_components/bus_booking_payment.jsx';
+import MedicalTrourism from './components/Home-Medicaltourism.jsx';
 
 function App() {
   const dispatch = useDispatch();
@@ -193,7 +194,10 @@ function App() {
           {/* business trourism routes */}
           <Route path="/home-businesstourism" element={<BusinessTrourism/> }/>
           {/* business trourism routes */}
+          <Route path="/home-medicaltourism" element={<MedicalTrourism/> }/>
+          {/* business trourism routes */}
           <Route path="/home-bus" element={<HomeBus/> }/>
+
         </Routes>
       </Router>
     </div>
