@@ -19,6 +19,7 @@ import { useState } from 'react';
 import { AirIndia, Bangalore, Delhi, Hyderbad, Indigo, indigo, Mumbai, Vistara } from '../assets/images';
 import FooterDark from './footer-dark';
 import HorizontalContainer from './flight_components/HorizontalContainer';
+import BtSearch from './business_tourism/bt_search_componets';
 
 const BusinessTrourism = () => {
   const [flightResults, setFlightResults] = useState([]);
@@ -183,18 +184,7 @@ const BusinessTrourism = () => {
                           </div>
                         </div>
                       </div> */}
-                  <FlightSearch
-                    onSearchResults={handleSearchResults}
-                    backgroundColor="#ffffff"
-                    buttonBackgroundColor="#cd2c22"
-                    buttonTextColor="#ffffff"
-                    height="160px"
-                    leavingLabel={null}
-                    goingLabel={null}
-                    dateLabel={null}
-                    ReturnLable={null}
-                    dropdownHindden="flex"
-                  />
+                 <BtSearch/>
                 </div>
               </div>
             </div>
