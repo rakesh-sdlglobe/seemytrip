@@ -88,6 +88,7 @@ import BtBookingPayment from './components/business_tourism/booking_payment-page
 import MtBookingPage from './components/medical_tourism/mt_booking_page.jsx';
 import MtList from './components/medical_tourism/mt_list_page.jsx';
 import MtBookingPayment from './components/medical_tourism/booking_payment-page.jsx';
+import TrainSearchResultList from './components/train_search_result/train_search-result.jsx';
 
 function App() {
   const dispatch = useDispatch();
@@ -138,6 +139,7 @@ function App() {
           <Route path="/compare-listing" element={<CompareListing />} />
           {/* <Route path="/booking-page" element={<BookingPage trainName="12976 JP MYSORE EXP" />} /> */}
           <Route path="/booking-page/:trainName" element={<BookingPage />} />
+          <Route path="/train-result" element={<TrainSearchResultList/>}/>
           <Route path="/my-profile" element={<MyProfile />} />
           <Route path="/classic-blog" element={<ClassicBlog />} />
           <Route path="/blog-grid" element={<Blog />} />

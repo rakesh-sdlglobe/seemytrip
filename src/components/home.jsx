@@ -33,13 +33,7 @@ const Home = () => {
   const [activeTab, setActiveTab] = useState('Trains')
   const navigate = useNavigate();
 
-  // Define the onSearchResults function
-  const onSearchResults = (data) => {
-    console.log("Search results received:", data);
-    setResults(data); // Assuming the data contains the search results
-    // Navigate to flight-list-1 with the results
-    navigate('/flight-list-01', { state: { results: data } });
-  };
+
 
   const handleSearchResults = (data) => {
     console.log('Search results:', data); // Check if flight results are coming
@@ -149,8 +143,7 @@ const Home = () => {
                         <div className="tab-pane show active" id="Trains">
                           <SearchComponent
                             backgroundColor="#ffffff"
-                            height="210px" // Ensure this height is consistent across components
-                            onSearchResults={onSearchResults}
+                            height="210px"                 
                             leavingLabel={null}
                             goingLabel={null}
                             dateLabel={null}
