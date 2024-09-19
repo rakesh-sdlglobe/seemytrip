@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
-import { trainImage, UPI} from '../assets/images'; // Correctly import the image
+import { Logowhite, trainImage, UPI} from '../assets/images'; // Correctly import the image
 
 const FooterDark = () => {
   return (
@@ -14,7 +14,7 @@ const FooterDark = () => {
                 <div className="d-flex align-items-start flex-column mb-3">
                   <div className="d-inline-block">
                     <img
-                      src={trainImage}
+                      src={Logowhite}
                       className="img-fluid"
                       width={160}
                       alt="Footer Logo"
