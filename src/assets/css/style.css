@@ -6453,3 +6453,54 @@ Responsiveness Start
     font-size: 1.1rem;
   }
 }/*# sourceMappingURL=style.css.map */
+
+
+
+
+.guests-input {
+  position: relative;
+}
+
+.guests-input button {
+  background-color: transparent;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.guests-input__options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  width: 200px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.guests-input__options div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+}
+
+.guests-input__ctrl {
+  cursor: pointer;
+  color: #007bff;
+}
+
+.guests-input__value {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.fa-user-clock {
+  margin-right: 5px;
+}
+
+.guests-input button:focus {
+  outline: none;
+}

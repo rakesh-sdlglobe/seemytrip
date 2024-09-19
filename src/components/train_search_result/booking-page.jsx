@@ -1,23 +1,10 @@
-import '../assets/css/bootstrap.min.css';
-import '../assets/css/animation.css';
-import '../assets/css/dropzone.min.css';
-import '../assets/css/flatpickr.min.css';
-import '../assets/css/flickity.min.css';
-import '../assets/css/lightbox.min.css';
-import '../assets/css/magnifypopup.css';
-import '../assets/css/select2.min.css';
-import '../assets/css/rangeSlider.min.css';
-import '../assets/css/prism.css';
-import '../assets/css/bootstrap-icons.css';
-import '../assets/css/fontawesome.css';
-import '../assets/css/style.css';
-import { D, trainImage } from '../assets/images';
+import { D, trainImage } from '../../assets/images';
 import { Link } from 'react-router-dom';
-import Header02 from './header02';
+import Header02 from '../header02';
 import { useLocation } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import FooterDark from './footer-dark';
+import FooterDark from '../footer-dark';
 
 const BookingPage = () => {
   // const location = useLocation();
@@ -174,7 +161,7 @@ const BookingPage = () => {
                       </div>
                       {/* Flight info */}
                       <div className="flight-boxyhc mt-4">
-                        <h4 className="fs-5">Flight Detail</h4>
+                        <h4 className="fs-5">Train Detail</h4>
                         <div className="flights-accordion">
                           <div className="flights-list-item bg-white border rounded-3 p-2">
                             <div className="row gy-4 align-items-center justify-content-between">

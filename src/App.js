@@ -7,7 +7,7 @@ import PageNotFound from './components/404';
 import AddListing from './components/add-listing';
 import Blogdetail from './components/blog-detail';
 import Blog from './components/blog';
-import BookingPage from './components/booking-page.jsx';
+import BookingPage from './components/train_search_result/booking-page.jsx';
 import CarDetails from './components/car-detail';
 import CarList01 from './components/car-list-01';
 import CarList02 from './components/car-list-02';
@@ -66,6 +66,28 @@ import { setUser } from './store/Actions/authActions';
 import FlightList from './components/flight_components/flight_list.jsx';
 import { FlightBookingpage01 } from './components/flight_components/flight_bookingpage.jsx';
 import FlightBookingPage02 from './components/flight_bookingpage02.jsx';
+import { HotelBookingPage } from './components/hotel_components/BookingPage.jsx';
+import HotelBookingpage02 from './components/HotelBookingpage02.jsx';
+import HomeCruise from './components/home-cruise.jsx';
+import BusinessTrourism from './components/BusinessTrourism.jsx';
+import HomeBus from './components/homebus.jsx';
+import { CabBookingPage } from './components/cab_components/cab_booking_page.jsx';
+import CabList from './components/cab_components/cab_list_page.jsx';
+import Bookingpayment from './components/cab_components/booking_payment-page.jsx';
+import { BusBookingPage } from './components/bus_components/bus_booking_page.jsx';
+import BusList from './components/bus_components/bus_list_page.jsx';
+import BusBookingPayment from './components/bus_components/bus_booking_payment.jsx';
+import CruiseList from './components/cruise_components/Cruise_list_page.jsx';
+import CruiseResultpage from './components/cruise_components/Cruise_result_page.jsx';
+import CruiseBookingPage from './components/cruise_components/Cruise_booking_page.jsx';
+import CruiseBookingPayment from './components/bus_components/bus_booking_payment.jsx';
+import MedicalTrourism from './components/Home-Medicaltourism.jsx';
+import BtList from './components/business_tourism/bt_list_page.jsx';
+import { BtBookingPage } from './components/business_tourism/bt_booking_page.jsx';
+import BtBookingPayment from './components/business_tourism/booking_payment-page.jsx';
+import MtBookingPage from './components/medical_tourism/mt_booking_page.jsx';
+import MtList from './components/medical_tourism/mt_list_page.jsx';
+import MtBookingPayment from './components/medical_tourism/booking_payment-page.jsx';
 
 function App() {
   const dispatch = useDispatch();
@@ -154,6 +176,42 @@ function App() {
           <Route path="/flight-list" element={<FlightList/>} />
           <Route path="/flight-Bookingpage" element={<FlightBookingpage01/>} />
           <Route path="/flight-Bookingpage02" element={<FlightBookingPage02/>} />
+
+          {/* Hotel Routes */}
+          
+          <Route path="/hotel-bookingpage" element={<HotelBookingPage/>} />
+          <Route path="/hotel-bookingpage02" element={<HotelBookingpage02/>} />
+          {/* Cab Routes */}
+          <Route path="/cabbookingpage" element={<CabBookingPage/>} />
+          <Route path="/cab-list" element={<CabList/>} />
+          <Route path="/cabBookingpayment" element={<Bookingpayment/>} />
+
+           {/* Bus Routes */}
+           <Route path="/busbookingpage" element={<BusBookingPage/>} />
+          <Route path="/bus-list" element={<BusList/>} />
+          <Route path="/busBookingpayment" element={<BusBookingPayment/>} />
+
+          {/* Cruise Routes */}
+          <Route path="/home-cruise" element={<HomeCruise/> }/>
+          <Route path="/cruisebookingpage" element={<CruiseBookingPage/>} />
+          <Route path="/cruise-list" element={<CruiseList/> }/>
+          <Route path="/cruiseBookingPayment" element={<CruiseBookingPayment/> }/>
+
+           {/* business trourism routes */}
+           <Route path="/home-businesstourism" element={<BusinessTrourism/> }/>
+          <Route path="/btbookingpage" element={<BtBookingPage/>} />
+          <Route path="/bt-list" element={<BtList/> }/>
+          <Route path="/btBookingPayment" element={<BtBookingPayment/> }/>
+
+          
+          {/* business trourism routes */}
+          <Route path="/home-medicaltourism" element={<MedicalTrourism/> }/>
+          <Route path="/mtbookingpage" element={<MtBookingPage/>} />
+          <Route path="/mt-list" element={<MtList/> }/>
+          <Route path="/mtBookingPayment" element={<MtBookingPayment/> }/>
+          {/* business trourism routes */}
+          <Route path="/home-bus" element={<HomeBus/> }/>
+
         </Routes>
       </Router>
     </div>

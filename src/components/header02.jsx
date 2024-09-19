@@ -3,15 +3,17 @@ import { indian_flag, trainImage } from '../assets/images';
 import { NavLink, Link, useNavigate  } from 'react-router-dom';
 import { useSelector,useDispatch } from 'react-redux';
 import { logout } from '../store/Actions/authActions';
-import { selectName } from '../store/Selectors/authSelectors';
+import { selectName,selectGoogleUser  } from '../store/Selectors/authSelectors';
 
 
 const Header02 = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector(selectName);
-  const isLoggedIn = Boolean(user);
+  const googleUser = useSelector(selectGoogleUser);
+  const isLoggedIn = Boolean(user || googleUser);
 
+ 
   const handleLogout = () => {
     dispatch(logout());
   };
@@ -95,7 +97,10 @@ const Header02 = () => {
                 <li><NavLink to="/home-flight" activeClassName="active"><i className="fa-solid fa-jet-fighter fa-lg me-2" />Flights</NavLink></li>
                 <li><NavLink to="/home-hotel" activeClassName="active"><i className="fa-solid fa-spa fa-lg me-2" />Hotels</NavLink></li>
                 <li><NavLink to="/home-car" activeClassName="active"><i className="fa-solid fa-car fa-lg me-2" />Cabs</NavLink></li>
-                <li><NavLink to="/home-car" activeClassName="active"><i className="fa-solid fa-ship fa-lg me-2" />Cruises</NavLink></li>
+                <li><NavLink to="/home-cruise" activeClassName="active"><i className="fa-solid fa-ship fa-lg me-2" />Cruises</NavLink></li>
+                <li><NavLink to="/home-bus" activeClassName="active"><i className="fa-solid fa-bus fa-lg me-2" />Buses</NavLink></li>
+                <li><NavLink to="/home-businesstourism" activeClassName="active"><i className="fa-solid fa-briefcase fa-lg me-2" />Business Tourism</NavLink></li>
+                <li><NavLink to="/home-medicaltourism" activeClassName="active"><i className="fa-solid fa-heartbeat fa-lg me-2" />Medical Tourism</NavLink></li>
               </ul>
               <ul className="nav-menu nav-menu-social align-to-right">
                 <li className="currencyDropdown me-2">
@@ -107,26 +112,34 @@ const Header02 = () => {
                 {/* <li className="list-buttons">
                   <NavLink to="/login" activeClassName="active"><i className="fa-regular fa-circle-user fs-6 me-2" />Sign In / Register</NavLink>
                 </li> */}
-                {
-                  isLoggedIn ? (
-                    <li className="nav-item dropdown">
+                    {isLoggedIn ? (
+                  <li className="nav-item dropdown">
                     <Link className="nav-link dropdown-toggle d-flex align-items-center" to="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                       <i className="fa-regular fa-circle-user fs-5 me-2" />
-                      <span>{user}</span>
+                      <span>{googleUser?.name || user}</span>
                     </Link>
                     <ul className="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
-                      <li><Link className="dropdown-item" to="/my-profile">Profile</Link></li>
-                      <li><Link className="dropdown-item" to="#">Settings</Link></li>
-                      <li><hr className="dropdown-divider" /></li>
-                      <li><Link className="dropdown-item" to="#"  onClick={handleLogout}>Logout</Link></li>
+                      <li>
+                        <Link className="dropdown-item" to="/my-profile">Profile</Link>
+                      </li>
+                      <li>
+                        <Link className="dropdown-item" to="#">Settings</Link>
+                      </li>
+                      <li>
+                        <hr className="dropdown-divider" />
+                      </li>
+                      <li>
+                        <Link className="dropdown-item" to="#" onClick={handleLogout}>Logout</Link>
+                      </li>
                     </ul>
                   </li>
-                  ) : (
-                    <li className="list-buttons">
-                    <Link to="/login"><i className="fa-regular fa-circle-user fs-6 me-2" />Sign In / Register</Link>
-                    </li>
-                  )
-                }
+                ) : (
+                  <li className="list-buttons">
+                    <Link to="/login">
+                      <i className="fa-regular fa-circle-user fs-6 me-2" />Sign In / Register
+                    </Link>
+                  </li>
+                )}
               </ul>
             </div>
           </nav>

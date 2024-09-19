@@ -117,49 +117,49 @@ const PersonalPaymentDetails = () => {
                                 <td>BK32154</td>
                                 <td>10 Sep 2023</td>
                                 <td><span className="badge bg-light-success text-success fw-medium text-uppercase">Paid</span></td>
-                                <td><span className="text-md fw-medium text-dark">$240</span></td>
+                                <td><span className="text-md fw-medium text-dark">₹240</span></td>
                             </tr>
                             <tr>
                                 <th>02</th>
                                 <td>BK32155</td>
                                 <td>08 Aug 2023</td>
                                 <td><span className="badge bg-light-warning text-warning fw-medium text-uppercase">Unpaid</span></td>
-                                <td><span className="text-md fw-medium text-dark">$240</span></td>
+                                <td><span className="text-md fw-medium text-dark">₹240</span></td>
                             </tr>
                             <tr>
                                 <th>03</th>
                                 <td>BK32156</td>
                                 <td>10 Aug 2023</td>
                                 <td><span className="badge bg-light-info text-info fw-medium text-uppercase">Hold</span></td>
-                                <td><span className="text-md fw-medium text-dark">$240</span></td>
+                                <td><span className="text-md fw-medium text-dark">₹240</span></td>
                             </tr>
                             <tr>
                                 <th>04</th>
                                 <td>BK32157</td>
                                 <td>22 Jul 2023</td>
                                 <td><span className="badge bg-light-success text-success fw-medium text-uppercase">Completed</span></td>
-                                <td><span className="text-md fw-medium text-dark">$240</span></td>
+                                <td><span className="text-md fw-medium text-dark">₹240</span></td>
                             </tr>
                             <tr>
                                 <th>05</th>
                                 <td>BK32158</td>
                                 <td>16 Jun 2023</td>
                                 <td><span className="badge bg-light-danger text-danger fw-medium text-uppercase">Cancelled</span></td>
-                                <td><span className="text-md fw-medium text-dark">$240</span></td>
+                                <td><span className="text-md fw-medium text-dark">₹240</span></td>
                             </tr>
                             <tr>
                                 <th>06</th>
                                 <td>BK32159</td>
                                 <td>20 May 2023</td>
                                 <td><span className="badge bg-light-info text-info fw-medium text-uppercase">Hold</span></td>
-                                <td><span className="text-md fw-medium text-dark">$240</span></td>
+                                <td><span className="text-md fw-medium text-dark">₹240</span></td>
                             </tr>
                             <tr>
                                 <th>07</th>
                                 <td>BK32160</td>
                                 <td>18 Apr 2023</td>
                                 <td><span className="badge bg-light-success text-success fw-medium text-uppercase">Completed</span></td>
-                                <td><span className="text-md fw-medium text-dark">$240</span></td>
+                                <td><span className="text-md fw-medium text-dark">₹240</span></td>
                             </tr>
                         </tbody>
                     </table>

@@ -98,7 +98,7 @@ const TrainList01 = () => {
                     </div>
                   </div>
                   <div className="filter-searchBar-body">
-                    {/* Quick Filters */}
+                    {/ Quick Filters /}
                     <div className="searchBar-single px-3 py-3 border-bottom">
                       <div className="searchBar-single-title d-flex mb-3">
                         <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
@@ -142,7 +142,7 @@ const TrainList01 = () => {
                       </div>
                     </div>
 
-                    {/* Departure Time Filters */}
+                    {/ Departure Time Filters /}
                     <div className="searchBar-single px-3 py-3 border-bottom">
 
                     <div className="searchBar-single-title d-flex mb-1 mt-3">
@@ -221,7 +221,7 @@ const TrainList01 = () => {
                       </li>
                     </ul>
 
-                    {/* Arrival Time Filters */}
+                    {/ Arrival Time Filters /}
                     <div className="searchBar-single-title d-flex mb-1 mt-3">
                       <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
                         Arrival Time
@@ -298,7 +298,7 @@ const TrainList01 = () => {
                       </li>
                     </ul>
 
-                    {/* Journey Class */}
+                    {/ Journey Class /}
                     <div className="searchBar-single-title d-flex mb-1 mt-3">
                       <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
                         Journey Class
@@ -377,7 +377,7 @@ const TrainList01 = () => {
                       </li>
                     </ul>
 
-                    {/* Other Filters */}
+                    {/ Other Filters /}
                     <div className="searchBar-single-title d-flex mb-1 mt-3">
                       <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
                         Other Filters

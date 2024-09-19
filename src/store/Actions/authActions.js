@@ -9,6 +9,8 @@ export const SET_ERROR = 'SET_ERROR';
 export const CLEAR_FORM = 'CLEAR_FORM';
 export const SET_USER = 'SET_USER';
 export const LOGOUT = 'LOGOUT';
+export const GOOGLE_LOGIN_SUCCESS = 'GOOGLE_LOGIN_SUCCESS';
+export const GOOGLE_LOGIN_FAILURE = 'GOOGLE_LOGIN_FAILURE';
 
 
 export const setName = (name) => ({
@@ -45,6 +47,15 @@ export const clearForm = () => ({
   type: CLEAR_FORM,
 });
 
+export const googleLoginSuccess = (user) => ({
+  type: GOOGLE_LOGIN_SUCCESS,
+  payload: user,
+});
+
+export const googleLoginFailure = (error) => ({
+  type: GOOGLE_LOGIN_FAILURE,
+  payload: error,
+});
 
 export const register = (name, email, password, navigate) => async (dispatch) => {
   try {
@@ -121,3 +132,20 @@ export const logout = () => (dispatch) => {
   });
 
 };
+
+// Handle Google login success
+// export const handleGoogleLogin = (token, navigate) => async (dispatch) => {
+//   try {
+//       const response = await axios.post('http://localhost:3002/api/auth/google', { token });
+
+//       const { token: jwtToken, user } = response.data;
+
+//       localStorage.setItem('authToken', jwtToken);
+//       localStorage.setItem('user', JSON.stringify(user));
+
+//       dispatch(googleLoginSuccess(user));
+//       navigate('/');
+//   } catch (error) {
+//       dispatch(googleLoginFailure(error.message));
+//   }
+// };
