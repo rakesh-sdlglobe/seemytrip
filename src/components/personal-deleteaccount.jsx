@@ -15,11 +15,11 @@ const PersonalDeleteAccount = () => {
 
     try {
       const token = localStorage.getItem("authToken");
-      const response = await axios.delete(
+       await axios.delete(
         "http://localhost:3002/api/deleteAccount",
         {
           headers: {
-            authToken: token,
+            Authorization: `Bearer ${token}`,
           },
           data: {
             password: password,
