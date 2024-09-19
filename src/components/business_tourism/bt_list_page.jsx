@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
-import CabSearch from './cab_search_componets';
+import CabSearch from './bt_search_componets';
 import Header02 from '../header02';
-import CabFilterPage from './cab_filter_page';
 import FooterDark from '../footer-dark';
-import CabResultPage from './cab_result_page';
+import BtFilterPage from '../cab_components/cab_filter_page';
+import BtResultPage from './bt_result_page';
 
-const CabList = () => {
+const BtList = () => {
     return (
         <div>
             
@@ -42,10 +42,10 @@ const CabList = () => {
                     <div className="container">
                         <div className="row justify-content-between gy-4 gx-xl-4 gx-lg-3 gx-md-3 gx-4">
                             {/* Sidebar */}
-                            <CabFilterPage />
+                            <BtFilterPage />
 
                             {/* All List */}
-                            <CabResultPage />
+                            <BtResultPage />
                         </div>
                     </div>
                 </section>
@@ -59,4 +59,4 @@ const CabList = () => {
     );
 }
 
-export default CabList
+export default BtList

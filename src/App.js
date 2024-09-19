@@ -81,6 +81,9 @@ import CruiseList from './components/cruise_components/Cruise_list_page.jsx';
 import CruiseResultpage from './components/cruise_components/Cruise_result_page.jsx';
 import CruiseBookingPage from './components/cruise_components/Cruise_booking_page.jsx';
 import CruiseBookingPayment from './components/bus_components/bus_booking_payment.jsx';
+import BtList from './components/business_tourism/bt_list_page.jsx';
+import { BtBookingPage } from './components/business_tourism/bt_booking_page.jsx';
+import BtBookingPayment from './components/business_tourism/booking_payment-page.jsx';
 
 function App() {
   const dispatch = useDispatch();
@@ -190,8 +193,12 @@ function App() {
           <Route path="/cruise-list" element={<CruiseList/> }/>
           <Route path="/cruiseBookingPayment" element={<CruiseBookingPayment/> }/>
 
-          {/* business trourism routes */}
-          <Route path="/home-businesstourism" element={<BusinessTrourism/> }/>
+           {/* business trourism routes */}
+          <Route path="/btbookingpage" element={<BtBookingPage/>} />
+          <Route path="/bt-list" element={<BtList/> }/>
+          <Route path="/btBookingPayment" element={<BtBookingPayment/> }/>
+
+          
           {/* business trourism routes */}
           <Route path="/home-bus" element={<HomeBus/> }/>
         </Routes>

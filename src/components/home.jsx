@@ -24,6 +24,7 @@ import { HotelSearchbar } from './hotel_components/HotelSearchbar';
 import CabSearch from './cab_components/cab_search_componets';
 import BusSearch from './bus_components/bus_search_page';
 import CruiseSearch from './cruise_components/Cruise_search_page';
+import BtSearch from './business_tourism/bt_search_componets';
 const Home = () => {
   const [results, setResults] = useState([]);
   const [flightResults, setFlightResults] = useState([]);
@@ -188,18 +189,7 @@ const Home = () => {
                       
                       {activeTab === 'Businesstourism' && (
                         <div className="tab-pane" id="Businesstourism">
-                         <FlightSearch
-                            onSearchResults={handleSearchResults}
-                            backgroundColor="#ffffff"
-                            buttonBackgroundColor="#cd2c22"
-                            buttonTextColor="#ffffff"
-                            height="160px"
-                            leavingLabel={null}
-                            goingLabel={null}
-                            dateLabel={null}
-                            ReturnLable={null}
-                            dropdownHindden="flex"
-                          />
+                         <BtSearch/>
                         </div>
                       )}
                     </div>

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Carnival, Toyota } from '../../assets/images';
 
-const CabResultPage = () => {
+const BtResultPage = () => {
     return (
         <div className="col-xl-9 col-lg-8 col-md-12">
             <div className="row align-items-center justify-content-between">
@@ -97,7 +97,7 @@ const CabResultPage = () => {
                                         <div className="text-dark fw-bold fs-3">₹4500</div>
                                     </div>
                                     <div className="d-flex align-items-start align-items-md-end text-start text-md-end flex-column">
-                                        <Link to="/cabbookingpage" className="btn btn-md btn-primary full-width fw-medium px-lg-4">Check Availability<i className="fa-solid fa-arrow-trend-up ms-2" /></Link>
+                                        <Link to="/btbookingpage" className="btn btn-md btn-primary full-width fw-medium px-lg-4">Check Availability<i className="fa-solid fa-arrow-trend-up ms-2" /></Link>
                                     </div>
                                 </div>
                             </div>
@@ -106,7 +106,7 @@ const CabResultPage = () => {
                 </div>
                 {/* /Single List */}
                 {/* Offer Coupon Box */}
-                <div className="col-xl-12 col-lg12 col-md-12">
+                <div className="col-xl-12 col-lg-12 col-md-12">
                     <div className="d-md-flex bg-success rounded-2 align-items-center justify-content-between px-3 py-3">
                         <div className="d-md-flex align-items-center justify-content-start">
                             <div className="flx-icon-first mb-md-0 mb-3">
@@ -118,7 +118,7 @@ const CabResultPage = () => {
                             </div>
                         </div>
                         <div className="flx-last text-md-end mt-md-0 mt-4">
-                            <button type="button" className="btn btn-whites fw-medium full-width text-dark px-xl-4">Get Started</button>
+                            <Link to="#" className="btn btn-whites fw-medium full-width text-dark px-xl-4">Get Started</Link>
                         </div>
                     </div>
                 </div>
@@ -153,14 +153,14 @@ const CabResultPage = () => {
                                     </ul>
                                     <div className="position-relative mt-3">
                                         <div className="fw-medium text-dark">Available Now</div>
-                                        <div className="text-md text-muted">Last booked 15 minutes ago</div>
+                                        <div className="text-md text-muted">Last booked 10 minutes ago</div>
                                     </div>
                                     <div className="position-relative mt-4">
                                         <div className="d-block position-relative">
-                                            <span className="label bg-light-success text-success">Free Cancellation up to 1 hour before pickup</span>
+                                            <span className="label bg-light-success text-success">Free Cancellation up to 30 minutes before pickup</span>
                                         </div>
                                         <div className="text-md mt-2">
-                                            <p className="m-0"><Link to="#" className="text-primary">Login</Link> &amp; receive ₹20 off with <span className="text-primary">PayPal</span></p>
+                                            <p className="m-0"><Link to="#" className="text-primary">Login</Link> &amp; receive ₹10 off with <span className="text-primary">PayPal</span></p>
                                         </div>
                                     </div>
                                 </div>
@@ -169,19 +169,19 @@ const CabResultPage = () => {
                                 <div className="row align-items-center justify-content-start justify-content-md-end gx-2 mb-3">
                                     <div className="col-auto text-start text-md-end">
                                         <div className="text-md text-dark fw-medium">Excellent</div>
-                                        <div className="text-md text-muted-2">1,456 reviews</div>
+                                        <div className="text-md text-muted-2">1,234 reviews</div>
                                     </div>
                                     <div className="col-auto">
-                                        <div className="square--40 rounded-2 bg-primary text-light">4.7</div>
+                                        <div className="square--40 rounded-2 bg-primary text-light">4.5</div>
                                     </div>
                                 </div>
                                 <div className="position-relative mt-auto full-width">
                                     <div className="d-flex align-items-center justify-content-start justify-content-md-end mb-1">
-                                        <span className="label bg-success text-light">15% Off</span>
+                                        <span className="label bg-success text-light">10% Off</span>
                                     </div>
                                     <div className="d-flex align-items-center justify-content-start justify-content-md-end">
-                                        <div className="text-muted-2 fw-medium text-decoration-line-through me-2">₹7000</div>
-                                        <div className="text-dark fw-bold fs-3">₹5950</div>
+                                        <div className="text-muted-2 fw-medium text-decoration-line-through me-2">₹5000</div>
+                                        <div className="text-dark fw-bold fs-3">₹4500</div>
                                     </div>
                                     <div className="d-flex align-items-start align-items-md-end text-start text-md-end flex-column">
                                         <Link to="/cabbookingpage" className="btn btn-md btn-primary full-width fw-medium px-lg-4">Check Availability<i className="fa-solid fa-arrow-trend-up ms-2" /></Link>
@@ -195,6 +195,6 @@ const CabResultPage = () => {
             </div>
         </div>
     );
-};
+}
 
-export default CabResultPage;
+export default BtResultPage;
