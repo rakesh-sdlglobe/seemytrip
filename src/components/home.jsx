@@ -132,6 +132,14 @@ const Home = () => {
                         <i className="fa-solid fa-briefcase me-2" />Business Tourism
                       </Link>
                     </li>
+                    <li className="nav-item">
+                      <Link
+                        className={`nav-link ${activeTab === 'Medicaltourism' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('Medicaltourism')}
+                      >
+                        <i className="fa-solid fa-heartbeat me-2" />Medicaltourism
+                      </Link>
+                    </li>
                   </ul>
                   <div className="tab-content">
                     <div className="tab-pane show active" id="Trains">
@@ -190,6 +198,22 @@ const Home = () => {
                       {activeTab === 'Businesstourism' && (
                         <div className="tab-pane" id="Businesstourism">
                          <BtSearch/>
+                        </div>
+                      )}
+                      {activeTab === 'Medicaltourism' && (
+                        <div className="tab-pane" id="Medicaltourism">
+                         <FlightSearch
+                            onSearchResults={handleSearchResults}
+                            backgroundColor="#ffffff"
+                            buttonBackgroundColor="#cd2c22"
+                            buttonTextColor="#ffffff"
+                            height="160px"
+                            leavingLabel={null}
+                            goingLabel={null}
+                            dateLabel={null}
+                            ReturnLable={null}
+                            dropdownHindden="flex"
+                          />
                         </div>
                       )}
                     </div>
