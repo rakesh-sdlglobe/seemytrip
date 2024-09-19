@@ -195,6 +195,7 @@ function App() {
           <Route path="/cruiseBookingPayment" element={<CruiseBookingPayment/> }/>
 
            {/* business trourism routes */}
+           <Route path="/home-businesstourism" element={<BusinessTrourism/> }/>
           <Route path="/btbookingpage" element={<BtBookingPage/>} />
           <Route path="/bt-list" element={<BtList/> }/>
           <Route path="/btBookingPayment" element={<BtBookingPayment/> }/>

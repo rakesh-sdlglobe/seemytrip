@@ -184,7 +184,7 @@ const BtResultPage = () => {
                                         <div className="text-dark fw-bold fs-3">₹4500</div>
                                     </div>
                                     <div className="d-flex align-items-start align-items-md-end text-start text-md-end flex-column">
-                                        <Link to="/cabbookingpage" className="btn btn-md btn-primary full-width fw-medium px-lg-4">Check Availability<i className="fa-solid fa-arrow-trend-up ms-2" /></Link>
+                                        <Link to="/btbookingpage" className="btn btn-md btn-primary full-width fw-medium px-lg-4">Check Availability<i className="fa-solid fa-arrow-trend-up ms-2" /></Link>
                                     </div>
                                 </div>
                             </div>
