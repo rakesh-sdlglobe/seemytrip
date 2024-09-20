@@ -93,7 +93,7 @@ const Home = () => {
                         className={`nav-link ${activeTab === 'tours' ? 'active' : ''}`}
                         onClick={() => setActiveTab('tours')}
                       >
-                        <i className="fa-solid fa-globe me-2" />Hotels
+                        <i className="fa-solid fa-spa me-2" />Hotels
                       </Link>
                     </li>
                     <li className="nav-item">
