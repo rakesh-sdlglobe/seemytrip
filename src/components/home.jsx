@@ -133,7 +133,7 @@ const Home = () => {
                         className={`nav-link ${activeTab === 'Medicaltourism' ? 'active' : ''}`}
                         onClick={() => setActiveTab('Medicaltourism')}
                       >
-                        <i className="fa-solid fa-heartbeat me-2" />Medicaltourism
+                        <i className="fa-solid fa-heartbeat me-2" />Medical Tourism
                       </Link>
                     </li>
                   </ul>
