@@ -1,4 +1,3 @@
-// src/redux/reducers/authReducer.js
 import {
   SET_NAME,
   SET_EMAIL,
@@ -18,9 +17,18 @@ const initialState = {
   password: '',
   confirmPassword: '',
   error: '',
-  // googleUser: null,
+  googleUser: null,
   user: localStorage.getItem('authToken') ? JSON.parse(localStorage.getItem('user')) : null,
 };
+
+// On initialization, check localStorage
+// const userFromStorage = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+// const tokenFromStorage = localStorage.getItem('authToken');
+
+// if (userFromStorage && tokenFromStorage) {
+//   initialState.user = userFromStorage; // Set the user if found in localStorage
+// }
+
 
 const authReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -28,63 +36,74 @@ const authReducer = (state = initialState, action) => {
       return {
         ...state, name: action.payload
       };
+
     case SET_EMAIL:
       return {
         ...state, email: action.payload
       };
+
     case SET_PASSWORD:
       return {
         ...state, password: action.payload
       };
+
     case SET_CONFIRM_PASSWORD:
       return {
         ...state, confirmPassword: action.payload
       };
+
     case SET_ERROR:
       return {
         ...state, error: action.payload
       };
+
     case CLEAR_FORM:
       return initialState;
+
     case SET_USER:
       const {
         name
       } = action.payload;
       localStorage.setItem('user', JSON.stringify(action.payload));
       return {
-        ...state,
-        user: action.payload,
-          name: name,
+        ...state, user: action.payload, name: name
       };
-    case GOOGLE_LOGIN_SUCCESS:
-      // Store the user and token in local storage
+
+    case GOOGLE_LOGIN_SUCCESS: {
       const {
-        token, user
-      } = action.payload;
+        token,
+        user
+      } = action.payload; // Destructure the payload
+      console.log('Reducer - Google Login Success:', {
+        token,
+        user
+      });
+
       localStorage.setItem('authToken', token);
       localStorage.setItem('user', JSON.stringify(user));
+
       return {
         ...state,
         googleUser: user,
-          error: null,
+        error: null,
       };
+    }
+
     case GOOGLE_LOGIN_FAILURE:
       return {
-        ...state,
-        error: action.payload,
+        ...state, error: action.payload
       };
+
     case LOGOUT:
       localStorage.removeItem('authToken');
       localStorage.removeItem('user');
       return {
-        ...initialState,
-        name: '',
-          user: null,
+        ...initialState, name: '', user: null
       };
+
     default:
       return state;
   }
-
 };
 
 export default authReducer;
