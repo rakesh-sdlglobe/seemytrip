@@ -47,10 +47,11 @@ export const clearForm = () => ({
   type: CLEAR_FORM,
 });
 
-export const googleLoginSuccess = (user) => ({
+export const googleLoginSuccess = ({ token, user }) => ({
   type: GOOGLE_LOGIN_SUCCESS,
-  payload: user,
+  payload: { token, user }, // Make sure to pass an object with both token and user
 });
+
 
 export const googleLoginFailure = (error) => ({
   type: GOOGLE_LOGIN_FAILURE,
@@ -134,18 +135,40 @@ export const logout = () => (dispatch) => {
 };
 
 // Handle Google login success
-// export const handleGoogleLogin = (token, navigate) => async (dispatch) => {
-//   try {
-//       const response = await axios.post('http://localhost:3002/api/auth/google', { token });
 
-//       const { token: jwtToken, user } = response.data;
+export const handleGoogleLogin = (accessToken, navigate) => async (dispatch) => {
+  try {
+    // Fetch user info from Google
+    const response = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
 
-//       localStorage.setItem('authToken', jwtToken);
-//       localStorage.setItem('user', JSON.stringify(user));
+    const user = response.data; // This should contain user data
+    const token = accessToken; // This is the token
 
-//       dispatch(googleLoginSuccess(user));
-//       navigate('/');
-//   } catch (error) {
-//       dispatch(googleLoginFailure(error.message));
-//   }
-// };
+    // Check if user data is valid
+    if (!user || typeof user !== 'object') {
+      console.error('Invalid user data:', user);
+      return;
+    }
+
+    // Store in localStorage
+    localStorage.setItem('authToken', token);
+    localStorage.setItem('user', JSON.stringify(user));
+
+    // Debugging: Log the values before dispatching
+    console.log('Google Login Success:', { token, user });
+
+    // Dispatch success action
+    dispatch(googleLoginSuccess({ token, user })); // Ensure you pass both values
+
+    // Navigate to home page
+    navigate('/');
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || 'Google login failed.';
+    console.error('Error fetching user info:', errorMessage);
+    dispatch(googleLoginFailure(errorMessage));
+  }
+};
+
+

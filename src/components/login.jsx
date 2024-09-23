@@ -54,7 +54,7 @@ const Login = () => {
   //       },
   //       body: JSON.stringify({ token: accessToken }),
   //     });
-  
+
   //     const data = await response.json();
   //     if (response.ok) {
   //       // Assuming `data.user` is the validated user info from the backend
@@ -66,7 +66,7 @@ const Login = () => {
   //     console.error('Error fetching user info:', error);
   //   }
   // };
-  
+
 
   // const loginWithGoogle = useGoogleLogin({
   //   onSuccess: (credentialResponse) => {
@@ -76,6 +76,19 @@ const Login = () => {
   //     console.error('Google Login Failed');
   //   },
   // });
+
+  const loginWithGoogle = useGoogleLogin({
+    onSuccess: (credentialResponse) => {
+      // Log the credential response and access token
+      console.log('Credential Response:', credentialResponse);
+      console.log('Access Token:', credentialResponse.access_token);
+
+      // Dispatch action with access token
+      dispatch(handleGoogleLogin(credentialResponse.access_token, navigate));
+    },
+    onError: () => console.error('Google Login Failed'),
+  });
+
 
 
   return (
@@ -166,16 +179,21 @@ const Login = () => {
                           </div>
                           <div className="social-login py-4 px-md-2">
                             <ul className="row align-items-center justify-content-center g-3 p-0 m-0">
-                            <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-facebook color--google fs-2" /></Link></li>
+                              <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-facebook color--google fs-2" /></Link></li>
                               <li className="col">
-                              <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto">
+                                {/*<Link to="#" className="square--60 border br-dashed rounded-2 mx-auto">
+                                  <i className="fa-brands fa-google color--google fs-2" />
+                                </Link>*/}
+                                <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto" onClick={() => loginWithGoogle()}>
                                   <i className="fa-brands fa-google color--google fs-2" />
                                 </Link>
-                                {/* <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto" onClick={() => loginWithGoogle()}>
-                                  <i className="fa-brands fa-google color--google fs-2" />
-                                </Link> */}
                               </li>
                               <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-regular  fa-envelope color--black fs-2" /></Link></li>
+                              <li className="col">
+                                <Link to="/otp-modal" className="square--60 border br-dashed rounded-2 mx-auto">
+                                <i class="fa fa-phone" aria-hidden="true"></i>
+                                </Link>
+                              </li>
                             </ul>
                           </div>
                         </form>

@@ -13,6 +13,10 @@ const Header02 = () => {
   const googleUser = useSelector(selectGoogleUser);
   const isLoggedIn = Boolean(user || googleUser);
 
+  console.log(googleUser);
+  console.log(isLoggedIn);
+  
+  
  
   const handleLogout = () => {
     dispatch(logout());
@@ -125,9 +129,7 @@ const Header02 = () => {
                       <li>
                         <Link className="dropdown-item" to="#">Settings</Link>
                       </li>
-                      <li>
-                        <hr className="dropdown-divider" />
-                      </li>
+                      <li><hr className="dropdown-divider" /></li>
                       <li>
                         <Link className="dropdown-item" to="#" onClick={handleLogout}>Logout</Link>
                       </li>
