@@ -93,7 +93,7 @@ const Home = () => {
                         className={`nav-link ${activeTab === 'tours' ? 'active' : ''}`}
                         onClick={() => setActiveTab('tours')}
                       >
-                        <i className="fa-solid fa-globe me-2" />Hotels
+                        <i className="fa-solid fa-spa me-2" />Hotels
                       </Link>
                     </li>
                     <li className="nav-item">
@@ -133,7 +133,7 @@ const Home = () => {
                         className={`nav-link ${activeTab === 'Medicaltourism' ? 'active' : ''}`}
                         onClick={() => setActiveTab('Medicaltourism')}
                       >
-                        <i className="fa-solid fa-heartbeat me-2" />Medicaltourism
+                        <i className="fa-solid fa-heartbeat me-2" />Medical Tourism
                       </Link>
                     </li>
                   </ul>
