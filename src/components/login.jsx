@@ -27,6 +27,8 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
 import { useState } from 'react';
+import OTPModal from './otp-modal'; // Make sure this is correctly implemented
+import EmailOtpModal from './email-otpmodal'; // This should be the email OTP modal
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -35,6 +37,8 @@ const Login = () => {
   const password = useSelector(selectPassword);
   const error = useSelector(selectError);
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false); // For phone OTP modal
+  const [showEmailOtpModal, setShowEmailOtpModal] = useState(false); // For email OTP modal
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -45,51 +49,14 @@ const Login = () => {
     dispatch(Loginn(email, password, navigate));
   };
 
-  // const fetchUserInfo = async (accessToken) => {
-  //   try {
-  //     const response = await fetch('http://localhost:3002/api/auth/google', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify({ token: accessToken }),
-  //     });
-
-  //     const data = await response.json();
-  //     if (response.ok) {
-  //       // Assuming `data.user` is the validated user info from the backend
-  //       dispatch(handleGoogleLogin(data.user, navigate));
-  //     } else {
-  //       console.error('Failed to validate Google token:', data.message);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching user info:', error);
-  //   }
-  // };
-
-
-  // const loginWithGoogle = useGoogleLogin({
-  //   onSuccess: (credentialResponse) => {
-  //     fetchUserInfo(credentialResponse.access_token);
-  //   },
-  //   onError: () => {
-  //     console.error('Google Login Failed');
-  //   },
-  // });
-
   const loginWithGoogle = useGoogleLogin({
     onSuccess: (credentialResponse) => {
-      // Log the credential response and access token
       console.log('Credential Response:', credentialResponse);
       console.log('Access Token:', credentialResponse.access_token);
-
-      // Dispatch action with access token
       dispatch(handleGoogleLogin(credentialResponse.access_token, navigate));
     },
     onError: () => console.error('Google Login Failed'),
   });
-
-
 
   return (
     <div>
@@ -121,24 +88,18 @@ const Login = () => {
                           )}
                           <div className="form py-4">
                             <div className="form-group">
-                              <label className="form-label">
-                                Enter Email ID
-                              </label>
+                              <label className="form-label">Enter Email ID</label>
                               <input
                                 type="email"
                                 className="form-control"
                                 placeholder="name@example.com"
                                 value={email}
-                                onChange={(e) =>
-                                  dispatch(setEmail(e.target.value))
-                                }
+                                onChange={(e) => dispatch(setEmail(e.target.value))}
                                 required
                               />
                             </div>
                             <div className="form-group">
-                              <label className="form-label">
-                                Enter Password
-                              </label>
+                              <label className="form-label">Enter Password</label>
                               <div className="position-relative">
                                 <input
                                   type={passwordVisible ? "text" : "password"}
@@ -146,9 +107,7 @@ const Login = () => {
                                   name="password"
                                   placeholder="Password"
                                   value={password}
-                                  onChange={(e) =>
-                                    dispatch(setPassword(e.target.value))
-                                  }
+                                  onChange={(e) => dispatch(setPassword(e.target.value))}
                                   required
                                 />
                                 <span
@@ -168,7 +127,7 @@ const Login = () => {
                                 </div>
                               </div>
                               <div className="modal-flex-last">
-                                <Link to="#" onClick={(e) => { e.preventDefault() }} className="text-primary fw-medium">Forget Password?</Link>
+                                <Link to="#" onClick={(e) => { e.preventDefault(); }} className="text-primary fw-medium">Forget Password?</Link>
                               </div>
                             </div>
                           </div>
@@ -181,17 +140,18 @@ const Login = () => {
                             <ul className="row align-items-center justify-content-center g-3 p-0 m-0">
                               <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-facebook color--google fs-2" /></Link></li>
                               <li className="col">
-                                {/*<Link to="#" className="square--60 border br-dashed rounded-2 mx-auto">
-                                  <i className="fa-brands fa-google color--google fs-2" />
-                                </Link>*/}
                                 <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto" onClick={() => loginWithGoogle()}>
                                   <i className="fa-brands fa-google color--google fs-2" />
                                 </Link>
                               </li>
-                              <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-regular  fa-envelope color--black fs-2" /></Link></li>
                               <li className="col">
-                                <Link to="/otp-modal" className="square--60 border br-dashed rounded-2 mx-auto">
-                                <i class="fa fa-phone" aria-hidden="true"></i>
+                                <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto" onClick={() => setShowEmailOtpModal(true)}>
+                                  <i className="fa-regular fa-envelope color--black fs-2" />
+                                </Link>
+                              </li>
+                              <li className="col">
+                                <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto" onClick={() => setShowOtpModal(true)}>
+                                  <i className="fa fa-phone" aria-hidden="true"></i>
                                 </Link>
                               </li>
                             </ul>
@@ -206,6 +166,12 @@ const Login = () => {
           </div>
         </section>
       </div>
+      
+      {/* Email OTP Modal */}
+      <EmailOtpModal show={showEmailOtpModal} handleClose={() => setShowEmailOtpModal(false)} navigate={navigate} />
+
+      {/* Phone OTP Modal */}
+      <OTPModal show={showOtpModal} handleClose={() => setShowOtpModal(false)} navigate={navigate} />
     </div>
   );
 };

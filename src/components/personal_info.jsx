@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfile, editUserProfile } from '../store/Actions/userActions';
+import { selectGoogleUser } from '../store/Selectors/authSelectors';
 import { selectUserProfile} from '../store/Selectors/userSelector';
-
 
 const PersonalInfo = () => {
     const dispatch = useDispatch();
     const userProfile = useSelector(selectUserProfile);  
-  
+    const googleUser = useSelector(selectGoogleUser); // Google profile
     const [isEditable, setIsEditable] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [formData, setFormData] = useState({
@@ -36,6 +36,18 @@ const PersonalInfo = () => {
         });
       }
     }, [userProfile]);
+
+    useEffect(() => {
+        if (googleUser) {
+          setFormData((prevData) => ({
+            ...prevData,
+            name: googleUser.name || prevData.name,
+            lastname: googleUser.lastname || prevData.lastname,
+            email: googleUser.email || prevData.email,
+          }));
+        }
+      }, [googleUser]);
+  
   
     const toggleEdit = () => {
       setIsEditable(!isEditable);
@@ -119,7 +131,7 @@ const handleSave = () => {
                                 name="name" 
                                 value={formData.name} 
                                 onChange={handleChange}
-                                disabled={!isEditable} />
+                                disabled={!isEditable || googleUser} />
                             </div>
                         </div>
                         <div className="col-xl-6 col-lg-6 col-md-6">
@@ -139,7 +151,7 @@ const handleSave = () => {
                                  name="email" 
                                  value={formData.email} 
                                  onChange={handleChange}
-                                 disabled={!isEditable} />
+                                 disabled={!isEditable || googleUser} />
                                 {isEditable && (
                                     <button className="btn btn-text-secondary btn-sm verify-button" onClick={handleVerifyClick}>Verify</button>
                                 )}

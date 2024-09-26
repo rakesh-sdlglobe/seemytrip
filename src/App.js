@@ -90,6 +90,8 @@ import MtList from './components/medical_tourism/mt_list_page.jsx';
 import MtBookingPayment from './components/medical_tourism/booking_payment-page.jsx';
 import TrainSearchResultList from './components/train_search_result/train_search-result.jsx';
 
+import OTPModal from './components/otp-modal.jsx';
+
 function App() {
   const dispatch = useDispatch();
 
@@ -213,6 +215,9 @@ function App() {
           <Route path="/mtBookingPayment" element={<MtBookingPayment/> }/>
           {/* business trourism routes */}
           <Route path="/home-bus" element={<HomeBus/> }/>
+          
+          {/* phone auth routes */}
+          <Route path='/otp-modal' element = {<OTPModal/>}/>
 
         </Routes>
       </Router>

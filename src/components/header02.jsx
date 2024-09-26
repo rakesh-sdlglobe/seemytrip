@@ -4,6 +4,9 @@ import { NavLink, Link, useNavigate  } from 'react-router-dom';
 import { useSelector,useDispatch } from 'react-redux';
 import { logout } from '../store/Actions/authActions';
 import { selectName,selectGoogleUser  } from '../store/Selectors/authSelectors';
+import { selectPhoneNumber } from '../store/Selectors/mobileSelector'; 
+import { selectEmail } from '../store/Selectors/emailSelector'; 
+import { logoutMobileUser } from '../store/Actions/mobileOtpAction';
 
 
 const Header02 = () => {
@@ -11,15 +14,20 @@ const Header02 = () => {
   const navigate = useNavigate();
   const user = useSelector(selectName);
   const googleUser = useSelector(selectGoogleUser);
-  const isLoggedIn = Boolean(user || googleUser);
+  const phoneNumber = useSelector(selectPhoneNumber);
+  const emailuser = useSelector(selectEmail);
+  const isLoggedIn = Boolean(user || googleUser || phoneNumber|| emailuser);
 
   console.log(googleUser);
   console.log(isLoggedIn);
+  console.log(phoneNumber);
+  
   
   
  
   const handleLogout = () => {
     dispatch(logout());
+    dispatch(logoutMobileUser(navigate));
   };
 
   useEffect(() => {
@@ -120,7 +128,7 @@ const Header02 = () => {
                   <li className="nav-item dropdown">
                     <Link className="nav-link dropdown-toggle d-flex align-items-center" to="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                       <i className="fa-regular fa-circle-user fs-5 me-2" />
-                      <span>{googleUser?.name || user}</span>
+                      <span>{googleUser?.name || user || (phoneNumber && "Hi, Traveller") || (emailuser && "Hii, EmailTraveller")}</span>
                     </Link>
                     <ul className="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
                       <li>
