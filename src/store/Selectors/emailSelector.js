@@ -1,6 +1,5 @@
 // Selectors
-export const selectEmail = (state) => state.emailOtp.email;
-export const selectOtp = (state) => state.emailOtp.otp;
-export const selectOtpSent = (state) => state.emailOtp.otpSent;
-export const selectOtpError = (state) => state.emailOtp.error;
-export const selectEmailUser = (state) => state.emailOtp.user;
+export const selectEmail = (state) => state.emailAuth.email;
+export const selectOTPSent = (state) => state.emailAuth.otpSent;
+export const selectOTPError = (state) => state.emailAuth.error;
+export const selectEmailUser = (state) => state.emailAuth.user;

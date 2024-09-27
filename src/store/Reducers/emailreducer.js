@@ -1,24 +1,20 @@
 import {
-  SET_OTP,
   SET_OTP_SENT,
   SET_OTP_ERROR,
   SET_EMAIL_USER,
   LOGOUT_EMAIL_USER,
 } from '../Actions/emailAction';
 
+// Get initial state from localStorage, if available
 const initialState = {
-  email: '',
-  otp: '',
+  email: localStorage.getItem('user') || '',
   otpSent: false,
   error: '',
-  user: null,
+  user: JSON.parse(localStorage.getItem('user')) || null, // Parse the user from localStorage
 };
 
 const emailAuthReducer = (state = initialState, action) => {
   switch (action.type) {
-    case SET_OTP:
-      return { ...state, otp: action.payload };
-
     case SET_OTP_SENT:
       return { ...state, otpSent: action.payload };
 
@@ -27,24 +23,25 @@ const emailAuthReducer = (state = initialState, action) => {
 
     case SET_EMAIL_USER: {
       const { user, token } = action.payload;
-      
+
+      // Save user and token to localStorage
       localStorage.setItem('authToken', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('user', JSON.stringify(user)); // Convert user to string before storing
 
       return {
         ...state,
         user,
-        email: user.email || '',
+        email: user || '',
         error: '',
         otpSent: false,
-        otp: '',
       };
     }
 
     case LOGOUT_EMAIL_USER:
+      // Remove data from localStorage on logout
       localStorage.removeItem('authToken');
       localStorage.removeItem('user');
-      return { ...initialState, name: '', user: null  };
+      return { ...initialState, email: '', user: null };
 
     default:
       return state;

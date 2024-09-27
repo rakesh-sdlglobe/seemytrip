@@ -2,69 +2,63 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  sendOtp, // Updated action import for sending OTP
-  verifyOtp, // Updated action import for verifying OTP
-} from '../store/Actions/emailAction'; // Updated action imports
+  sendVerificationOTP,
+  verifyEmailOTP,
+} from '../store/Actions/emailAction';
 import {
-  selectOtpSent, // Updated selector to check if OTP was sent
-  selectOtpError, // Updated selector to get OTP error
-} from '../store/Selectors/emailSelector'; // Updated selector imports
+  selectOTPSent,
+  selectOTPError,
+} from '../store/Selectors/emailSelector';
 
-const EmailOtpModal = ({ show, handleClose, navigate }) => { // Changed the name here
+const EmailVerificationModal = ({ show, handleClose, navigate }) => {
   const dispatch = useDispatch();
-
-  const otpSent = useSelector(selectOtpSent);
-  const otpError = useSelector(selectOtpError);
-
-  // Local state for email and OTP
+  const otpSent = useSelector(selectOTPSent);
+  const errorMessage = useSelector(selectOTPError);
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
 
-  // Effect to reset local state when modal is closed
   useEffect(() => {
     if (!show) {
       resetForm();
     }
   }, [show]);
 
-  // Function to reset the form
   const resetForm = () => {
     setEmail('');
     setOtp('');
   };
 
-  // Handler to send OTP
-  const handleSendOtp = () => {
+  const handleSendOTP = () => {
     if (email) {
-      dispatch(sendOtp(email)); // Send email OTP
+      dispatch(sendVerificationOTP(email));
     }
   };
 
-  // Handler to verify OTP
-  const handleValidateOtp = () => {
-    if (otp) {
-      dispatch(verifyOtp(otp, navigate)); // Call the updated verifyOtp function
+  const handleVerifyOTP = () => {
+    if (email && otp) {
+      dispatch(verifyEmailOTP(email, otp, navigate));
     }
   };
-  
 
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>{otpSent ? 'Verify OTP' : 'Send OTP'}</Modal.Title>
+        <Modal.Title>{otpSent ? 'Verify Your OTP' : 'Send OTP'}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {!otpSent ? (
-          <SendOtpForm 
-            email={email} 
-            setEmail={setEmail} 
-            errorMessage={otpError}
+          <SendOTPForm
+            email={email}
+            setEmail={setEmail}
+            errorMessage={errorMessage}
           />
         ) : (
-          <VerifyOtpForm 
-            otp={otp} 
-            setOtp={setOtp} 
-            errorMessage={otpError}
+          <VerifyOTPForm
+            email={email}
+            otp={otp}
+            setOtp={setOtp}
+            errorMessage={errorMessage}
+            handleVerifyOTP={handleVerifyOTP}
           />
         )}
       </Modal.Body>
@@ -74,7 +68,7 @@ const EmailOtpModal = ({ show, handleClose, navigate }) => { // Changed the name
         </Button>
         <Button 
           variant="primary" 
-          onClick={!otpSent ? handleSendOtp : handleValidateOtp}
+          onClick={!otpSent ? handleSendOTP : handleVerifyOTP}
         >
           {!otpSent ? 'Send OTP' : 'Verify OTP'}
         </Button>
@@ -83,8 +77,7 @@ const EmailOtpModal = ({ show, handleClose, navigate }) => { // Changed the name
   );
 };
 
-// Separate component for sending OTP
-const SendOtpForm = ({ email, setEmail, errorMessage }) => (
+const SendOTPForm = ({ email, setEmail, errorMessage }) => (
   <>
     <Form.Group controlId="formEmail">
       <Form.Label>Email Address</Form.Label>
@@ -99,20 +92,20 @@ const SendOtpForm = ({ email, setEmail, errorMessage }) => (
   </>
 );
 
-// Separate component for verifying OTP
-const VerifyOtpForm = ({ otp, setOtp, errorMessage }) => (
+const VerifyOTPForm = ({ email, otp, setOtp, errorMessage, handleVerifyOTP }) => (
   <>
+    <p>An OTP has been sent to {email}. Please enter it below:</p>
     <Form.Group controlId="formOtp">
-      <Form.Label>Enter OTP</Form.Label>
+      <Form.Label>OTP</Form.Label>
       <Form.Control
         type="text"
         value={otp}
         onChange={(e) => setOtp(e.target.value)}
-        placeholder="Enter the OTP you received"
+        placeholder="Enter your OTP"
       />
     </Form.Group>
     {errorMessage && <p className="text-danger">{errorMessage}</p>}
   </>
 );
 
-export default EmailOtpModal;
+export default EmailVerificationModal;
