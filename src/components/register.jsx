@@ -22,7 +22,8 @@ import {
   setPassword,
   setConfirmPassword,
   setError,
-  register 
+  register,
+  handleGoogleLogin,
 } from "../store/Actions/authActions";
 import {
   selectName,
@@ -32,6 +33,9 @@ import {
   selectError,
 } from "../store/Selectors/authSelectors";
 import { useState } from 'react';
+import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
+import OTPModal from './otp-modal'; // Make sure this is correctly implemented
+import EmailOtpModal from './email-otpmodal'; // This should be the email OTP modal
 
 
 
@@ -44,6 +48,9 @@ const Register = () => {
   const confirmPassword = useSelector(selectConfirmPassword);
   const error = useSelector(selectError);
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false); // For phone OTP modal
+  const [showEmailOtpModal, setShowEmailOtpModal] = useState(false); // For email OTP modal
+
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -59,6 +66,15 @@ const Register = () => {
 
     dispatch(register(name, email, password, navigate));
   };
+
+  const loginWithGoogle = useGoogleLogin({
+    onSuccess: (credentialResponse) => {
+      console.log('Credential Response:', credentialResponse);
+      console.log('Access Token:', credentialResponse.access_token);
+      dispatch(handleGoogleLogin(credentialResponse.access_token, navigate));
+    },
+    onError: () => console.error('Google Login Failed'),
+  });
   return (
     <div>
 
@@ -192,13 +208,23 @@ const Register = () => {
                           </div>
                           {/* Google and facebook button */}
                           <div className="social-login py-4 px-md-2">
-                            <ul className="row align-items-center justify-content-center g-3 p-0 m-0">
-                              <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-facebook color--facebook fs-2" /></Link></li>
-                              {/* <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-whatsapp color--whatsapp fs-2" /></Link></li> */}
-                              {/* <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-linkedin color--linkedin fs-2" /></Link></li> */}
-                              <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-google color--google fs-2" /></Link></li>
-                              <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-regular  fa-envelope color--black fs-2" /></Link></li>
-                              {/* <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-twitter color--twitter fs-2" /></Link></li> */}
+                          <ul className="row align-items-center justify-content-center g-3 p-0 m-0">
+                              <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-facebook color--google fs-2" /></Link></li>
+                              <li className="col">
+                                <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto" onClick={() => loginWithGoogle()}>
+                                  <i className="fa-brands fa-google color--google fs-2" />
+                                </Link>
+                              </li>
+                              <li className="col">
+                                <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto" onClick={() => setShowEmailOtpModal(true)}>
+                                  <i className="fa-regular fa-envelope color--black fs-2" />
+                                </Link>
+                              </li>
+                              <li className="col">
+                                <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto" onClick={() => setShowOtpModal(true)}>
+                                  <i className="fa fa-phone" aria-hidden="true"></i>
+                                </Link>
+                              </li>
                             </ul>
                           </div>
                           {/* Copyright */}
@@ -213,17 +239,12 @@ const Register = () => {
             </div>
           </div>
         </section>
-        {/* ============================== Login Section End ================== */}
       </div>
-      {/* ============================================================== */}
-      {/* End Wrapper */}
-      {/* ============================================================== */}
-      {/* ============================================================== */}
-      {/* All Jquery */}
-      {/* ============================================================== */}
-      {/* ============================================================== */}
-      {/* This page plugins */}
-      {/* ============================================================== */}
+        {/* Email OTP Modal */}
+        <EmailOtpModal show={showEmailOtpModal} handleClose={() => setShowEmailOtpModal(false)} navigate={navigate} />
+
+{/* Phone OTP Modal */}
+<OTPModal show={showOtpModal} handleClose={() => setShowOtpModal(false)} navigate={navigate} />
     </div>
   );
 }

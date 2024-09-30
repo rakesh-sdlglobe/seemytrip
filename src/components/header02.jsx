@@ -7,7 +7,7 @@ import { selectName,selectGoogleUser  } from '../store/Selectors/authSelectors';
 import { selectPhoneNumber } from '../store/Selectors/mobileSelector'; 
 import { selectEmail } from '../store/Selectors/emailSelector'; 
 import { logoutMobileUser } from '../store/Actions/mobileOtpAction';
-
+import { logoutEmailUser } from '../store/Actions/emailAction';
 
 const Header02 = () => {
   const dispatch = useDispatch();
@@ -21,6 +21,7 @@ const Header02 = () => {
   console.log(googleUser);
   console.log(isLoggedIn);
   console.log(phoneNumber);
+  console.log(emailuser);
   
   
   
@@ -28,6 +29,7 @@ const Header02 = () => {
   const handleLogout = () => {
     dispatch(logout());
     dispatch(logoutMobileUser(navigate));
+    dispatch(logoutEmailUser(navigate));
   };
 
   useEffect(() => {
@@ -128,7 +130,7 @@ const Header02 = () => {
                   <li className="nav-item dropdown">
                     <Link className="nav-link dropdown-toggle d-flex align-items-center" to="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                       <i className="fa-regular fa-circle-user fs-5 me-2" />
-                      <span>{googleUser?.name || user || (phoneNumber && "Hi, Traveller") || (emailuser && "Hii, EmailTraveller")}</span>
+                      <span>{googleUser?.name || user || (phoneNumber && "Hi, Traveller") || (emailuser && "Hii, Traveller")}</span>
                     </Link>
                     <ul className="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
                       <li>
