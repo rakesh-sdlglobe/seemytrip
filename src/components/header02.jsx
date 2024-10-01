@@ -119,10 +119,10 @@ const Header02 = () => {
               <ul className="nav-menu nav-menu-social align-to-right">
                {/* <li className="currencyDropdown me-2">
                   <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#currencyModal"><span className="fw-medium">INR</span></Link>
-                </li>
+                </li> */}
                 <li className="languageDropdown me-2">
                   <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#countryModal"><img src={indian_flag} className="img-fluid" width={17} alt="Country" /></Link>
-                </li> */}
+                </li> 
                 {/* <li className="list-buttons">
                   <NavLink to="/login" activeClassName="active"><i className="fa-regular fa-circle-user fs-6 me-2" />Sign In / Register</NavLink>
                 </li> */}
