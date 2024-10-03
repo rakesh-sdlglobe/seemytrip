@@ -64,7 +64,7 @@ export const register = (name, email, password, navigate) => async (dispatch) =>
     dispatch(setError(''));
 
 
-    const response = await axios.post('http://localhost:3002/api/signup', {
+    const response = await axios.post('https://tripadmin.onrender.com/api/signup', {
       name,
       email,
       password,
@@ -99,7 +99,7 @@ export const Loginn = (email, password, navigate) => async (dispatch) => {
     dispatch(setError(''));
 
 
-    const response = await axios.post('http://localhost:3002/api/login', {
+    const response = await axios.post('https://tripadmin.onrender.com/api/login', {
       email,
       password,
     });
