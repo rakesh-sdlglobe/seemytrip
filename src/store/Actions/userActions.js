@@ -23,7 +23,7 @@ export const getUserProfile = () => {
     const authToken = localStorage.authToken; 
 
     try {
-      const response = await axios.get('http://localhost:3002/api/users/userProfile', {
+      const response = await axios.get('https://tripadmin.onrender.com/api/users/userProfile', {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -41,7 +41,7 @@ export const editUserProfile = (userData) => {
     const authToken = localStorage.authToken; 
 
     try {
-      const response = await axios.post('http://localhost:3002/api/users/editProfile', userData, {
+      const response = await axios.post('https://tripadmin.onrender.com/api/users/editProfile', userData, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -59,7 +59,7 @@ export const myBookings = () => {
     const authToken = localStorage.getItem('authToken'); 
     
     try {
-      const response = await axios.get('http://localhost:3002/api/users/myBookings', {
+      const response = await axios.get('https://tripadmin.onrender.com/api/users/myBookings', {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -79,7 +79,7 @@ export const addTraveler = (travelerData,navigate) => async (dispatch) => {
     
     dispatch({ type: ADD_TRAVELER_REQUEST });
       const authToken = localStorage.getItem('authToken'); 
-      const response = await axios.post('http://localhost:3002/api/users/addTraveler', travelerData,{
+      const response = await axios.post('https://tripadmin.onrender.com/api/users/addTraveler', travelerData,{
         
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -107,7 +107,7 @@ export const fetchTravelers = () => {
     const authToken = localStorage.getItem('authToken'); 
     
     try {
-      const response = await axios.get('http://localhost:3002/api/users/getTravelers', {
+      const response = await axios.get('https://tripadmin.onrender.com/api/users/getTravelers', {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -123,7 +123,7 @@ export const removeTraveler = (id, navigate) => async (dispatch) => {
   try {
     dispatch({ type: REMOVE_TRAVELER_REQUEST });
     const authToken = localStorage.getItem("authToken");
-    await axios.delete(`http://localhost:3002/api/users/traveller/${id}`, {
+    await axios.delete(`https://tripadmin.onrender.com/api/users/traveller/${id}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },

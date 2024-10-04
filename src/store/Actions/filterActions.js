@@ -27,8 +27,10 @@ export const fetchStationsFailure = (error) => ({
 export const fetchStations = () => async (dispatch) => {
   dispatch(fetchStationsRequest());
   try {
-    const response = await fetch('http://localhost:3002/api/trains/getStation');
+    const response = await fetch('https://tripadmin.onrender.com/api/trains/getStation');
     const data = await response.json();
+    console.log(data);
+    console.log(`Station Data: ${data}`);
     dispatch(fetchStationsSuccess(data.stations));
   } catch (error) {
     dispatch(fetchStationsFailure(error.toString()));
@@ -54,7 +56,7 @@ export const fetchTrainsFailure = (error) => ({
 export const fetchTrains = (stationId, journeyDate) => async (dispatch) => {
   dispatch(fetchTrainsRequest());
   try {
-    const response = await fetch('http://localhost:3002/api/trains/getTrains', {
+    const response = await fetch('https://tripadmin.onrender.com/api/trains/getTrains', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

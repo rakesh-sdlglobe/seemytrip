@@ -8,7 +8,7 @@ export const SET_EMAIL_USER = 'SET_EMAIL_USER';
 export const LOGOUT_EMAIL_USER = 'LOGOUT_EMAIL_USER';
 
 // Base API URL
-const API_BASE_URL = 'http://localhost:3002/email'; // Adjust if needed
+const API_BASE_URL = 'https://tripadmin.onrender.com/email'; // Adjust if needed
 
 // Action to set OTP sent status
 export const setOTPSent = (status) => ({
