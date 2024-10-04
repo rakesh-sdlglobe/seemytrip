@@ -32,11 +32,11 @@ const Header02 = () => {
     dispatch(logoutEmailUser(navigate));
   };
 
-  // useEffect(() => {
-  //   if (!isLoggedIn) {
-  //     navigate('/login');
-  //   }
-  // }, [isLoggedIn, navigate]);
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate('/login');
+    }
+  }, [isLoggedIn, navigate]);
 
   return (
     <>
