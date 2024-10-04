@@ -228,7 +228,7 @@ const CabSearch = () => {
                           selected={startDate}
                           onChange={date => setStartDate(date)}
                           dateFormat="dd/MM/yyyy"
-                          placeholderText="Select Journey Date"
+                          placeholderText="Departure"
                           className="form-control fw-bold"
                         />
                       </div>
@@ -238,15 +238,15 @@ const CabSearch = () => {
                     <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6">
                       <div className="form-group mb-0">
                         <input
-                          type="text"
+                          type="time"
                           className="form-control"
                           style={{ border: '1px solid #ccc' }} // Add border
-                          placeholder="Enter mobile number"
                           value={mobileNumber}
                           onChange={e => setMobileNumber(e.target.value)}
                         />
                       </div>
                     </div>
+
 
                     {/* Search Button */}
                     <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6">

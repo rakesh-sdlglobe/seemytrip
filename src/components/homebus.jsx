@@ -17,7 +17,7 @@ import Footer from './footer';
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Bangalore, bus1, bus10, bus11, bus12, bus2, bus3, bus4, bus5, bus6, bus7, bus8, bus9, Carnival, Delhi, Ertiga, Hyderbad, Jazz, Nexon, Tiago, Toyota } from '../assets/images';
+import { Bangalore, bus1, bus10, bus11, bus12, bus2, bus3, bus4, bus5, bus6, bus7, bus8, bus9, Carnival, Delhi, Ertiga, Hyderbad, Jazz, Mumbai, Nexon, Tiago, Toyota } from '../assets/images';
 import BusSearch from './bus_components/bus_search_page';
 
 const HomeBus = () => {
@@ -299,7 +299,172 @@ const HomeBus = () => {
 
         {/* =========================== Tours Offers End ====================================== */}
         {/* ============================ All car List Start ================================== */}
-        <section>
+        <section className="gray-simple">
+        <div className="container">
+          <div className="row align-items-center justify-content-center">
+            <div className="col-xl-8 col-lg-9 col-md-11 col-sm-12">
+              <div className="secHeading-wrap text-center mb-5">
+                <h2>Explore Popular Routes</h2>
+                <p>Cicero famously orated against his political opponent Lucius Sergius Catilina.</p>
+              </div>
+            </div>
+          </div>
+          <div className="row justify-content-center gy-4 gx-3">
+          <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+            <div className="pop-touritem">
+              <a href="#" className="card rounded-3 shadow-wrap h-100 m-0">
+                <div className="flight-thumb-wrapper">
+                  <div className=" position-absolute top-0 left-0 ms-3 mt-3 z-1">
+                    <div className="label bg-success text-light d-inline-flex align-items-center justify-content-center">
+                      <span className="svg-icon text-light svg-icon-2hx me-1">
+                        <svg width={14} height={14} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path opacity="0.3" d="M20.5543 4.37824L12.1798 2.02473C12.0626 1.99176 11.9376 1.99176 11.8203 2.02473L3.44572 4.37824C3.18118 4.45258 3 4.6807 3 4.93945V13.569C3 14.6914 3.48509 15.8404 4.4417 16.984C5.17231 17.8575 6.18314 18.7345 7.446 19.5909C9.56752 21.0295 11.6566 21.912 11.7445 21.9488C11.8258 21.9829 11.9129 22 12.0001 22C12.0872 22 12.1744 21.983 12.2557 21.9488C12.3435 21.912 14.4326 21.0295 16.5541 19.5909C17.8169 18.7345 18.8277 17.8575 19.5584 16.984C20.515 15.8404 21 14.6914 21 13.569V4.93945C21 4.6807 20.8189 4.45258 20.5543 4.37824Z" fill="currentColor" />
+                          <path d="M14.854 11.321C14.7568 11.2282 14.6388 11.1818 14.4998 11.1818H14.3333V10.2272C14.3333 9.61741 14.1041 9.09378 13.6458 8.65628C13.1875 8.21876 12.639 8 12 8C11.361 8 10.8124 8.21876 10.3541 8.65626C9.89574 9.09378 9.66663 9.61739 9.66663 10.2272V11.1818H9.49999C9.36115 11.1818 9.24306 11.2282 9.14583 11.321C9.0486 11.4138 9 11.5265 9 11.6591V14.5227C9 14.6553 9.04862 14.768 9.14583 14.8609C9.24306 14.9536 9.36115 15 9.49999 15H14.5C14.6389 15 14.7569 14.9536 14.8542 14.8609C14.9513 14.768 15 14.6553 15 14.5227V11.6591C15.0001 11.5265 14.9513 11.4138 14.854 11.321ZM13.3333 11.1818H10.6666V10.2272C10.6666 9.87594 10.7969 9.57597 11.0573 9.32743C11.3177 9.07886 11.6319 8.9546 12 8.9546C12.3681 8.9546 12.6823 9.07884 12.9427 9.32743C13.2031 9.57595 13.3333 9.87594 13.3333 10.2272V11.1818Z" fill="currentColor" />
+                        </svg>
+                      </span>Featured
+                    </div>
+                  </div>
+                  <div className="popFlights-item-overHidden">
+                    <img src={Delhi} className="img-fluid" alt="Delhi to Agra" />
+                  </div>
+                </div>
+                <div className="touritem-middle position-relative p-3">
+                  <div className="touritem-flexxer">
+                    <h4 className="city fs-6 m-0 fw-bold">
+                      <span>Delhi</span>
+                      <span className="svg-icon svg-icon-muted svg-icon-2hx px-1">
+                        <svg width={24} height={24} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M17.4 7H4C3.4 7 3 7.4 3 8C3 8.6 3.4 9 4 9H17.4V7ZM6.60001 15H20C20.6 15 21 15.4 21 16C21 16.6 20.6 17 20 17H6.60001V15Z" fill="currentColor" />
+                          <path opacity="0.3" d="M17.4 3V13L21.7 8.70001C22.1 8.30001 22.1 7.69999 21.7 7.29999L17.4 3ZM6.6 11V21L2.3 16.7C1.9 16.3 1.9 15.7 2.3 15.3L6.6 11Z" fill="currentColor" />
+                        </svg>
+                      </span>
+                      <span>Agra</span>
+                    </h4>
+                    <p className="detail ellipsis-container">
+                      <span className="ellipsis-item__normal">Round-trip</span>
+                      <span className="separate ellipsis-item__normal" />
+                      <span className="ellipsis-item">3 days</span>
+                    </p>
+                  </div>
+                  <div className="flight-foots">
+                    <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">₹2,500</span></h5>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </div>
+            <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+  <div className="pop-touritem">
+    <a href="#" className="card rounded-3 shadow-wrap h-100 m-0">
+      <div className="flight-thumb-wrapper">
+        <div className="popFlights-item-overHidden">
+          <img src={Bangalore} className="img-fluid" alt="Bangalore to Mysore" />
+        </div>
+      </div>
+      <div className="touritem-middle position-relative p-3">
+        <div className="touritem-flexxer">
+          <h4 className="city fs-6 m-0 fw-bold">
+            <span>Bangalore</span>
+            <span className="svg-icon svg-icon-muted svg-icon-2hx px-1">
+              <svg width={24} height={24} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17.4 7H4C3.4 7 3 7.4 3 8C3 8.6 3.4 9 4 9H17.4V7ZM6.60001 15H20C20.6 15 21 15.4 21 16C21 16.6 20.6 17 20 17H6.60001V15Z" fill="currentColor" />
+                <path opacity="0.3" d="M17.4 3V13L21.7 8.70001C22.1 8.30001 22.1 7.69999 21.7 7.29999L17.4 3ZM6.6 11V21L2.3 16.7C1.9 16.3 1.9 15.7 2.3 15.3L6.6 11Z" fill="currentColor" />
+              </svg>
+            </span>
+            <span>Mysore</span>
+          </h4>
+          <p className="detail ellipsis-container">
+            <span className="ellipsis-item__normal">One-way</span>
+            <span className="separate ellipsis-item__normal" />
+            <span className="ellipsis-item">2 days</span>
+          </p>
+        </div>
+        <div className="flight-foots">
+          <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">₹1,800</span></h5>
+        </div>
+      </div>
+    </a>
+  </div>
+            </div>
+            <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+              <div className="pop-touritem">
+                <a href="#" className="card rounded-3 shadow-wrap h-100 m-0">
+                  <div className="flight-thumb-wrapper">
+                    <div className="popFlights-item-overHidden">
+                      <img src={Hyderbad} className="img-fluid" alt="Hyderabad to Vijayawada" />
+                    </div>
+                  </div>
+                  <div className="touritem-middle position-relative p-3">
+                    <div className="touritem-flexxer">
+                      <h4 className="city fs-6 m-0 fw-bold">
+                        <span>Hyderabad</span>
+                        <span className="svg-icon svg-icon-muted svg-icon-2hx px-1">
+                          <svg width={24} height={24} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17.4 7H4C3.4 7 3 7.4 3 8C3 8.6 3.4 9 4 9H17.4V7ZM6.60001 15H20C20.6 15 21 15.4 21 16C21 16.6 20.6 17 20 17H6.60001V15Z" fill="currentColor" />
+                            <path opacity="0.3" d="M17.4 3V13L21.7 8.70001C22.1 8.30001 22.1 7.69999 21.7 7.29999L17.4 3ZM6.6 11V21L2.3 16.7C1.9 16.3 1.9 15.7 2.3 15.3L6.6 11Z" fill="currentColor" />
+                          </svg>
+                        </span>
+                        <span>Vijayawada</span>
+                      </h4>
+                      <p className="detail ellipsis-container">
+                        <span className="ellipsis-item__normal">One-way</span>
+                        <span className="separate ellipsis-item__normal" />
+                        <span className="ellipsis-item">1 day</span>
+                      </p>
+                    </div>
+                    <div className="flight-foots">
+                      <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">₹1,500</span></h5>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            </div>
+            <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+              <div className="pop-touritem">
+                <a href="#" className="card rounded-3 shadow-wrap h-100 m-0">
+                  <div className="flight-thumb-wrapper">
+                    <div className="popFlights-item-overHidden">
+                      <img src={Mumbai} className="img-fluid" alt="Mumbai to Pune" />
+                    </div>
+                  </div>
+                  <div className="touritem-middle position-relative p-3">
+                    <div className="touritem-flexxer">
+                      <h4 className="city fs-6 m-0 fw-bold">
+                        <span>Mumbai</span>
+                        <span className="svg-icon svg-icon-muted svg-icon-2hx px-1">
+                          <svg width={24} height={24} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17.4 7H4C3.4 7 3 7.4 3 8C3 8.6 3.4 9 4 9H17.4V7ZM6.60001 15H20C20.6 15 21 15.4 21 16C21 16.6 20.6 17 20 17H6.60001V15Z" fill="currentColor" />
+                            <path opacity="0.3" d="M17.4 3V13L21.7 8.70001C22.1 8.30001 22.1 7.69999 21.7 7.29999L17.4 3ZM6.6 11V21L2.3 16.7C1.9 16.3 1.9 15.7 2.3 15.3L6.6 11Z" fill="currentColor" />
+                          </svg>
+                        </span>
+                        <span>Pune</span>
+                      </h4>
+                      <p className="detail ellipsis-container">
+                        <span className="ellipsis-item__normal">One-way</span>
+                        <span className="separate ellipsis-item__normal" />
+                        <span className="ellipsis-item">1 day</span>
+                      </p>
+                    </div>
+                    <div className="flight-foots">
+                      <h5 className="fs-5 low-price m-0"><span className="tag-span">From</span> <span className="price">₹900</span></h5>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            </div>
+            
+            
+          </div>
+          <div className="row align-items-center justify-content-center">
+            <div className="col-xl-12 col-lg-12 col-md-12">
+              <div className="text-center position-relative mt-5">
+                <button type="button" className="btn btn-light-primary fw-medium px-5">Explore More<i className="fa-solid fa-arrow-trend-up ms-2" /></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+        {/* <section>
           <div className="container">
             <div className="row align-items-center justify-content-center">
               <div className="col-xl-8 col-lg-9 col-md-11 col-sm-12">
@@ -310,7 +475,7 @@ const HomeBus = () => {
               </div>
             </div>
             <div className="row justify-content-center gy-4 gx-xl-3 gx-lg-4 gx-4">
-              {/* Single */}
+           
               <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                 <div className="pop-touritem">
                   <Link to="#" className="card rounded-3 shadow-wrap m-0">
@@ -382,7 +547,7 @@ const HomeBus = () => {
                   </Link>
                 </div>
               </div>
-              {/* Single */}
+              
               <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                 <div className="pop-touritem">
                   <Link to="#" className="card rounded-3 shadow-wrap m-0">
@@ -454,7 +619,7 @@ const HomeBus = () => {
                   </Link>
                 </div>
               </div>
-              {/* Single */}
+              
               <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                 <div className="pop-touritem">
                   <Link to="#" className="card rounded-3 shadow-wrap m-0">
@@ -526,7 +691,7 @@ const HomeBus = () => {
                   </Link>
                 </div>
               </div>
-              {/* Single */}
+              
               <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                 <div className="pop-touritem">
                   <Link to="#" className="card rounded-3 shadow-wrap m-0">
@@ -598,7 +763,7 @@ const HomeBus = () => {
                   </Link>
                 </div>
               </div>
-              {/* Single */}
+              
               <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                 <div className="pop-touritem">
                   <Link to="#" className="card rounded-3 shadow-wrap m-0">
@@ -670,7 +835,7 @@ const HomeBus = () => {
                   </Link>
                 </div>
               </div>
-              {/* Single */}
+              
               <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                 <div className="pop-touritem">
                   <Link to="#" className="card rounded-3 shadow-wrap m-0">
@@ -751,7 +916,7 @@ const HomeBus = () => {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
         {/* ============================ All car List Start ================================== */}
         {/* ============================ Best Locations Design Start ================================== */}
         {/* <section className="gray-simple">

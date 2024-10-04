@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Carnival, Toyota } from '../../assets/images';
+import { cab, Carnival, Toyota } from '../../assets/images';
 
 const CabResultPage = () => {
     return (
@@ -41,7 +41,7 @@ const CabResultPage = () => {
                         <div className="row">
                             <div className="col-xl-4 col-lg-3 col-md">
                                 <div className="cardImage__caps rounded-2 overflow-hidden h-100">
-                                    <img className="img-fluid h-100 object-fit" src={Toyota} alt="Toyota Prius" />
+                                    <img className="img-fluid h-100 object-fit" src={cab} alt="Toyota Prius" />
                                 </div>
                             </div>
                             <div className="col-xl col-lg col-md">
@@ -128,7 +128,9 @@ const CabResultPage = () => {
                         <div className="row">
                             <div className="col-xl-4 col-lg-3 col-md">
                                 <div className="cardImage__caps rounded-2 overflow-hidden h-100">
-                                    <img className="img-fluid h-100 object-fit" src={Carnival} alt="Kia Carnival" />
+
+                                    <img className="img-fluid h-100 object-fit" src={cab} alt="cab" />
+
                                 </div>
                             </div>
                             <div className="col-xl col-lg col-md">

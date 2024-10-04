@@ -14,7 +14,7 @@ const FooterDark = () => {
                 <div className="d-flex align-items-start flex-column mb-3">
                   <div className="d-inline-block">
                     <img
-                      src={Logowhite}
+                      src={trainImage}
                       className="img-fluid"
                       width={160}
                       alt="Footer Logo"
