@@ -93,12 +93,12 @@ const Header02 = () => {
               <div className="nav-toggle" />
               <div className="mobile_nav">
                 <ul>
-                  {/* <li className="currencyDropdown me-2">
+               <li className="currencyDropdown me-2">
                     <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#currencyModal"><span className="fw-medium">INR</span></Link>
                   </li>
                   <li className="languageDropdown me-2">
                     <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#countryModal"><img src="https://placehold.co/100x100" className="img-fluid" width={17} alt="Country" /></Link>
-                  </li> */}
+                  </li> 
                   <li>
                     <Link to="#" className="bg-light-primary text-primary rounded" data-bs-toggle="modal" data-bs-target="#login"><i className="fa-regular fa-circle-user fs-6" /></Link>
                   </li>
@@ -117,12 +117,12 @@ const Header02 = () => {
                 <li><NavLink to="/home-medicaltourism" activeClassName="active"><i className="fa-solid fa-heartbeat fa-lg me-2" />Medical Tourism</NavLink></li>
               </ul>
               <ul className="nav-menu nav-menu-social align-to-right">
-                {/* <li className="currencyDropdown me-2">
+               {/* <li className="currencyDropdown me-2">
                   <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#currencyModal"><span className="fw-medium">INR</span></Link>
-                </li>
+                </li> */}
                 <li className="languageDropdown me-2">
                   <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#countryModal"><img src={indian_flag} className="img-fluid" width={17} alt="Country" /></Link>
-                </li> */}
+                </li> 
                 {/* <li className="list-buttons">
                   <NavLink to="/login" activeClassName="active"><i className="fa-regular fa-circle-user fs-6 me-2" />Sign In / Register</NavLink>
                 </li> */}
