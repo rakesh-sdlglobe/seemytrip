@@ -107,22 +107,30 @@ const Header02 = () => {
             </div>
             <div className="nav-menus-wrapper" style={{ transitionProperty: 'none' }}>
               <ul className="nav-menu">
-                <li><NavLink exact to="/" activeClassName="active"><i className="fa-solid fa-train fa-lg me-2" />Train</NavLink></li>
-                <li><NavLink to="/home-flight" activeClassName="active"><i className="fa-solid fa-jet-fighter fa-lg me-2" />Flights</NavLink></li>
-                <li><NavLink to="/home-hotel" activeClassName="active"><i className="fa-solid fa-spa fa-lg me-2" />Hotels</NavLink></li>
-                <li><NavLink to="/home-car" activeClassName="active"><i className="fa-solid fa-car fa-lg me-2" />Cabs</NavLink></li>
-                <li><NavLink to="/home-cruise" activeClassName="active"><i className="fa-solid fa-ship fa-lg me-2" />Cruises</NavLink></li>
-                <li><NavLink to="/home-bus" activeClassName="active"><i className="fa-solid fa-bus fa-lg me-2" />Buses</NavLink></li>
-                <li><NavLink to="/home-businesstourism" activeClassName="active"><i className="fa-solid fa-briefcase fa-lg me-2" />Business Tourism</NavLink></li>
-                <li><NavLink to="/home-medicaltourism" activeClassName="active"><i className="fa-solid fa-heartbeat fa-lg me-2" />Medical Tourism</NavLink></li>
+                <li><NavLink exact to="/" activeClassName="active"><i className="fa-solid fa-train fa-lg me-2 mt-3" />Train</NavLink></li>
+                <li><NavLink to="/home-flight" activeClassName="active"><i className="fa-solid fa-jet-fighter fa-lg me-2 mt-3" />Flights</NavLink></li>
+                <li><NavLink to="/home-hotel" activeClassName="active"><i className="fa-solid fa-spa fa-lg me-2 mt-3" />Hotels</NavLink></li>
+                <li><NavLink to="/home-car" activeClassName="active"><i className="fa-solid fa-car fa-lg me-2 mt-3" />Cabs</NavLink></li>
+                <li><NavLink to="/home-cruise" activeClassName="active"><i className="fa-solid fa-ship fa-lg me-2 mt-3" />Cruises</NavLink></li>
+                <li><NavLink to="/home-bus" activeClassName="active"><i className="fa-solid fa-bus fa-lg me-2 mt-3" />Buses</NavLink></li>
+                <li><NavLink to="/home-businesstourism" activeClassName="active"><i className="fa-solid fa-briefcase fa-lg me-2 mt-3" />Business Tourism</NavLink></li>
+                <li><NavLink to="/home-medicaltourism" activeClassName="active"><i className="fa-solid fa-heartbeat fa-lg me-2 mt-3" />Medical Tourism</NavLink></li>
               </ul>
               <ul className="nav-menu nav-menu-social align-to-right">
+
                {/* <li className="currencyDropdown me-2">
+
+                 <li className="currencyDropdown me-2">
+
                   <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#currencyModal"><span className="fw-medium">INR</span></Link>
-                </li> */}
+                </li> 
                 <li className="languageDropdown me-2">
                   <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#countryModal"><img src={indian_flag} className="img-fluid" width={17} alt="Country" /></Link>
+
                 </li> 
+
+                </li> */}
+
                 {/* <li className="list-buttons">
                   <NavLink to="/login" activeClassName="active"><i className="fa-regular fa-circle-user fs-6 me-2" />Sign In / Register</NavLink>
                 </li> */}

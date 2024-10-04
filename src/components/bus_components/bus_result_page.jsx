@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { bus7, bus8 } from '../../assets/images';
+import { bus, bus7, bus8 } from '../../assets/images';
 
 const BusResultPage = () => {
     return (
@@ -41,7 +41,7 @@ const BusResultPage = () => {
                         <div className="row">
                             <div className="col-xl-4 col-lg-3 col-md">
                                 <div className="cardImage__caps rounded-2 overflow-hidden h-100">
-                                    <img className="img-fluid h-100 object-fit" src={bus7} alt="bus" />
+                                    <img className="img-fluid h-100 object-fit" src={bus} alt="bus" />
                                 </div>
                             </div>
                             <div className="col-xl col-lg col-md">
@@ -126,7 +126,7 @@ const BusResultPage = () => {
                         <div className="row">
                             <div className="col-xl-4 col-lg-3 col-md">
                                 <div className="cardImage__caps rounded-2 overflow-hidden h-100">
-                                    <img className="img-fluid h-100 object-fit" src={bus8} alt="bus" />
+                                    <img className="img-fluid h-100 object-fit" src={bus} alt="bus" />
                                 </div>
                             </div>
                             <div className="col-xl col-lg col-md">

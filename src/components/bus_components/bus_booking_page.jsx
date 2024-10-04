@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Header02 from '../header02';
 import FooterDark from '../footer-dark';
-import { bus7 } from '../../assets/images';
+import { bus7 ,bus} from '../../assets/images';
 
 export const BusBookingPage = () => {
   return (
@@ -66,7 +66,7 @@ export const BusBookingPage = () => {
                         <div className="row">
                           <div className="col-xl-4 col-lg-3 col-md">
                             <div className="cardImage__caps rounded-2 overflow-hidden h-100">
-                              <img className="img-fluid h-100 object-fit" src={bus7} alt="Bus" />
+                              <img className="img-fluid h-100 object-fit" src={bus} alt="Bus" />
                             </div>
                           </div>
                           <div className="col-xl col-lg col-md">
