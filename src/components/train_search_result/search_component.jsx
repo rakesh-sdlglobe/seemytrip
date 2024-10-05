@@ -187,7 +187,7 @@ const SearchComponent = ({
                     options={generalOptions}
                     value={generalSelection}
                     onChange={setGeneralSelection}
-                    placeholder="Select General"
+                    placeholder="Select Quota"
                     styles={customSelectStyles}
                   />
                 </div>
