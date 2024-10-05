@@ -65,7 +65,7 @@ const HomeBus = () => {
         {/* Top header  */}
         {/* ============================================================== */}
         {/* ============================ Hero Banner  Start================================== */}
-        <div className="image-cover hero-header bg-white" style={{ background: 'url(../images/buses.png)no-repeat' }} data-overlay={5}>
+        <div className="image-cover hero-header bg-white" style={{ background: 'url(../images/Buses.png)no-repeat' }} data-overlay={5}>
           <div className="container">
             {/* Search Form */}
             <div className="row justify-content-center align-items-center">
