@@ -9,7 +9,7 @@ export const SET_MOBILE_USER = 'SET_MOBILE_USER';
 export const LOGOUT_MOBILE_USER = 'LOGOUT_MOBILE_USER';
 
 // Base API URL
-const API_BASE_URL = 'http://localhost:3002/twilio-sms';
+const API_BASE_URL = 'https://tripadmin.onrender.com/twilio-sms';
 
 // Action to set the OTP
 export const setOtp = (otp) => ({
