@@ -53,8 +53,7 @@ const Home04 = () => {
                               </path>
                             </svg>
                           </span></span></h1>
-                      <p className="fs-5 fw-light">Take a little break from the work strss of everyday. Discover plan trip and
-                        explore beautiful destinations.</p>
+                      <p className="fs-5 fw-light">Take a little break from the everyday work stress. Plan a trip and explore beautiful destinations!</p>
                     </div>
                     <div className="position-relative search-wrap with-label mb-lg-0 mb-4">
                       <div className="row align-items-center justify-content-between">
