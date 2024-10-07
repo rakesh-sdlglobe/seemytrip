@@ -107,7 +107,7 @@ const Header02 = () => {
             </div>
             <div className="nav-menus-wrapper" style={{ transitionProperty: 'none' }}>
               <ul className="nav-menu">
-                <li><NavLink exact to="/" activeClassName="active"><i className="fa-solid fa-train fa-lg me-2 mt-3" />Train</NavLink></li>
+                <li><NavLink exact to="/" activeClassName="active"><i className="fa-solid fa-train fa-lg me-2 mt-3" />Trains</NavLink></li>
                 <li><NavLink to="/home-flight" activeClassName="active"><i className="fa-solid fa-jet-fighter fa-lg me-2 mt-3" />Flights</NavLink></li>
                 <li><NavLink to="/home-hotel" activeClassName="active"><i className="fa-solid fa-spa fa-lg me-2 mt-3" />Hotels</NavLink></li>
                 <li><NavLink to="/home-car" activeClassName="active"><i className="fa-solid fa-car fa-lg me-2 mt-3" />Cabs</NavLink></li>

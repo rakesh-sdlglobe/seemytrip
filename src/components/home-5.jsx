@@ -93,8 +93,7 @@ const Home05 = () => {
                               </path>
                             </svg>
                           </span></span> You</h1>
-                      <p className="fs-5 fw-light">Take a little break from the work strss of everyday. Discover plan trip and
-                        explore beautiful destinations.</p>
+                      <p className="fs-5 fw-light">Take a little break from the everyday work stress. Plan a trip and explore beautiful destinations!</p>
                     </div>
                   </div>
                   <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">

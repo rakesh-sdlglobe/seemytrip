@@ -203,7 +203,7 @@ const BusBookingPayment= ()=>{
                                       <i className="fa-brands fa-cc-amazon-pay text-warning fs-1" />
                                     </div>
                                     <div className="paymnt-caps-details ps-2">
-                                      <span className="text-uppercase d-block fw-semibold text-md text-dark lh-2 mb-0">Amazone
+                                      <span className="text-uppercase d-block fw-semibold text-md text-dark lh-2 mb-0">Amazon
                                         Pay</span>
                                     </div>
                                   </div>
