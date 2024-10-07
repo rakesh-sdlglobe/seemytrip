@@ -1149,9 +1149,7 @@ const Home = () => {
                       </div>
                       <div className="fbxerWraps-caps">
                         <h5 className="fw-bold fs-6">Get Superb Deals</h5>
-                        <p className="fw-light fs-6 m-0">Just fill up a page with draft copy about the client’s business and
-                          they will actually read it and comment on it. They will be drawn to it, fiercely. Do it the wrong
-                          way.</p>
+                        <p className="fw-light fs-6 m-0">Discover amazing discounts on train tickets that make your journey more affordable!</p>
                       </div>
                     </div>
                   </div>
@@ -1162,9 +1160,7 @@ const Home = () => {
                       </div>
                       <div className="fbxerWraps-caps">
                         <h5 className="fw-bold fs-6">100% Transparency Price</h5>
-                        <p className="fw-light fs-6 m-0">Just fill up a page with draft copy about the client’s business and
-                          they will actually read it and comment on it. They will be drawn to it, fiercely. Do it the wrong
-                          way.</p>
+                        <p className="fw-light fs-6 m-0">Enjoy clear and upfront pricing—no hidden fees, just straightforward deals.</p>
                       </div>
                     </div>
                   </div>
@@ -1176,9 +1172,7 @@ const Home = () => {
                       </div>
                       <div className="fbxerWraps-caps">
                         <h5 className="fw-bold fs-6">Pure Trusted &amp; Free</h5>
-                        <p className="fw-light fs-6 m-0">Just fill up a page with draft copy about the client’s business and
-                          they will actually read it and comment on it. They will be drawn to it, fiercely. Do it the wrong
-                          way.</p>
+                        <p className="fw-light fs-6 m-0">Travel with peace of mind knowing you’re supported by a trusted service, with no extra charges.</p>
                       </div>
                     </div>
                   </div>
@@ -1190,9 +1184,7 @@ const Home = () => {
                       </div>
                       <div className="fbxerWraps-caps">
                         <h5 className="fw-bold fs-6">Travel With Confidence</h5>
-                        <p className="fw-light fs-6 m-0">Just fill up a page with draft copy about the client’s business and
-                          they will actually read it and comment on it. They will be drawn to it, fiercely. Do it the wrong
-                          way.</p>
+                        <p className="fw-light fs-6 m-0">Explore new destinations with assurance, backed by reliable train services and support.</p>
                       </div>
                     </div>
                   </div>
@@ -1219,7 +1211,7 @@ const Home = () => {
                             <div className="ps-3 d-block">
                               <h2 className="fw-bold fs-2 mb-1">Download App Now!</h2>
                               <p>Use Code <span className="text-primary text-uppercase fw-medium">Welcome</span>and get <span className="text-success text-uppercase fw-medium">Flat 20%</span> OFF* on your first domestic
-                                flight booking</p>
+                              train ticket booking!</p>
                             </div>
                           </div>
                           <div className="appLink-forms mt-4">
@@ -1303,7 +1295,7 @@ const Home = () => {
               <div className="col-xl-8 col-lg-9 col-md-11 col-sm-12">
                 <div className="secHeading-wrap text-center mb-5">
                   <h2>Loving Reviews By Our Customers</h2>
-                  <p>Cicero famously orated against his political opponent Lucius Sergius Catilina.</p>
+                  <p>Traveling by train opened up a world of experiences and unforgettable moments!.</p>
                 </div>
               </div>
             </div>
@@ -1317,7 +1309,7 @@ const Home = () => {
                       </div>
                       <div className="revws-caps ps-3">
                         <h6 className="fw-bold fs-6 m-0">Aman Diwakar</h6>
-                        <p className="text-muted-2 text-md m-0">United States</p>
+                        <p className="text-muted-2 text-md m-0">Delhi, India</p>
                         <div className="d-flex align-items-center justify-content-start">
                           <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
                           <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
@@ -1327,8 +1319,7 @@ const Home = () => {
                       </div>
                     </div>
                     <div className="revws-desc mt-3">
-                      <p className="m-0 text-md">Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit,
-                        sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt</p>
+                      <p className="m-0 text-md">The journey was smooth and comfortable! The scenic views made it unforgettable.</p>
                     </div>
                   </div>
                 </div>
@@ -1342,7 +1333,7 @@ const Home = () => {
                       </div>
                       <div className="revws-caps ps-3">
                         <h6 className="fw-bold fs-6 m-0">Kunal M. Thakur</h6>
-                        <p className="text-muted-2 text-md m-0">United States</p>
+                        <p className="text-muted-2 text-md m-0">Mumbai, India</p>
                         <div className="d-flex align-items-center justify-content-start">
                           <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
                           <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
@@ -1352,8 +1343,7 @@ const Home = () => {
                       </div>
                     </div>
                     <div className="revws-desc mt-3">
-                      <p className="m-0 text-md">Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit,
-                        sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt</p>
+                      <p className="m-0 text-md">I had a fantastic experience. The booking process was easy, and the train was on time!</p>
                     </div>
                   </div>
                 </div>
@@ -1367,7 +1357,7 @@ const Home = () => {
                       </div>
                       <div className="revws-caps ps-3">
                         <h6 className="fw-bold fs-6 m-0">Divya Talwar</h6>
-                        <p className="text-muted-2 text-md m-0">United States</p>
+                        <p className="text-muted-2 text-md m-0">Bengaluru, India</p>
                         <div className="d-flex align-items-center justify-content-start">
                           <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
                           <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
@@ -1377,8 +1367,7 @@ const Home = () => {
                       </div>
                     </div>
                     <div className="revws-desc mt-3">
-                      <p className="m-0 text-md">Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit,
-                        sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt</p>
+                      <p className="m-0 text-md">The service was excellent! I loved the cleanliness and the friendly staff on board.</p>
                     </div>
                   </div>
                 </div>
@@ -1392,7 +1381,7 @@ const Home = () => {
                       </div>
                       <div className="revws-caps ps-3">
                         <h6 className="fw-bold fs-6 m-0">Karan Maheshwari</h6>
-                        <p className="text-muted-2 text-md m-0">United States</p>
+                        <p className="text-muted-2 text-md m-0">Chennai, India</p>
                         <div className="d-flex align-items-center justify-content-start">
                           <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
                           <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
@@ -1402,8 +1391,7 @@ const Home = () => {
                       </div>
                     </div>
                     <div className="revws-desc mt-3">
-                      <p className="m-0 text-md">Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit,
-                        sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt</p>
+                      <p className="m-0 text-md">Traveling by train was a breeze. I enjoyed every moment of my trip!</p>
                     </div>
                   </div>
                 </div>
@@ -1417,7 +1405,7 @@ const Home = () => {
                       </div>
                       <div className="revws-caps ps-3">
                         <h6 className="fw-bold fs-6 m-0">Ritika Mathur</h6>
-                        <p className="text-muted-2 text-md m-0">United States</p>
+                        <p className="text-muted-2 text-md m-0">Kolkata, India</p>
                         <div className="d-flex align-items-center justify-content-start">
                           <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
                           <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
@@ -1427,8 +1415,7 @@ const Home = () => {
                       </div>
                     </div>
                     <div className="revws-desc mt-3">
-                      <p className="m-0 text-md">Nemo enim ipsam voluptatem, quia voluptas sit, aspernatur aut odit aut fugit,
-                        sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt</p>
+                      <p className="m-0 text-md">I highly recommend this service. The journey was delightful and hassle-free!</p>
                     </div>
                   </div>
                 </div>
@@ -1509,7 +1496,7 @@ const Home = () => {
           <div className="container">
             <div className="row align-items-center justify-content-between">
               <div className="col-xl-4 col-lg-4 col-md-6">
-                <h4 className="text-light fw-bold lh-base m-0">Join our Newsletter To Keep Up To Date With Us!</h4>
+                <h4 className="text-light fw-bold lh-base m-0">Join our Newsletter to Stay Up to Date with Us!</h4>
               </div>
               <div className="col-xl-5 col-lg-5 col-md-6">
                 <div className="newsletter-forms mt-md-0 mt-4">
@@ -1517,7 +1504,7 @@ const Home = () => {
                     <div className="row align-items-center justify-content-between bg-white rounded-3 p-2 gx-0">
                       <div className="col-xl-9 col-lg-8 col-md-8">
                         <div className="form-group m-0">
-                          <input type="text" className="form-control bold ps-1 border-0" placeholder="Enter Your Mail!" />
+                          <input type="text" className="form-control bold ps-1 border-0" placeholder="Enter Your Email!" />
                         </div>
                       </div>
                       <div className="col-xl-3 col-lg-4 col-md-4">

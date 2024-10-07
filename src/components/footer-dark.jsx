@@ -22,14 +22,14 @@ const FooterDark = () => {
                   </div>
                 </div>
                 <div className="footer-add pe-xl-3">
-                  <p>We make your dream more beautiful &amp; enjoyful with lots of happiness.</p>
+                  <p>We make your dreams more beautiful &amp; enjoyful, filled with happiness.</p>
                 </div>
                 <div className="foot-socials">
                   <ul>
-                    <li><Link to="#" onClick={(e) => { e.preventDefault() }}><i className="fa-brands fa-facebook" /></Link></li>
+                    <li><Link to="https://www.facebook.com"><i className="fa-brands fa-facebook" /></Link></li>
                     {/* <li><Link to="#" onClick={(e) => { e.preventDefault() }}><i className="fa-brands fa-linkedin" /></Link></li> */}
-                    <li><Link to="#" onClick={(e) => { e.preventDefault() }}><i className="fa-brands fa-google-plus" /></Link></li>
-                    <li><Link to="#" onClick={(e) => { e.preventDefault() }}><i className="fa-regular fa-envelope"></i></Link></li>
+                    <li><Link to="https://www.google.com"><i className="fa-brands fa-google-plus" /></Link></li>
+                    <li><Link to="https://www.gmail.com"><i className="fa-regular fa-envelope"></i></Link></li>
                     {/* <li><Link to="#" onClick={(e) => { e.preventDefault() }}><i className="fa-brands fa-twitter" /></Link></li> */}
                     {/* <li><Link to="#" onClick={(e) => { e.preventDefault() }}><i className="fa-brands fa-dribbble" /></Link></li> */}
                   </ul>
@@ -38,39 +38,40 @@ const FooterDark = () => {
             </div>
             <div className="col-lg-2 col-md-4">
               <div className="footer-widget">
-                <h4 className="widget-title">The Navigation</h4>
+                <h4 className="widget-title">Travel Services</h4>
                 <ul className="footer-menu">
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Talent Marketplace</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Payroll Services</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Direct Contracts</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Hire Worldwide</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Hire in the India</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>How to Hire</Link></li>
+                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Trains</Link></li>
+                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Flights</Link></li>
+                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Hotels</Link></li>
+                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Cabs</Link></li>
+                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Cruises</Link></li>
+                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Buses</Link></li>
+                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Business Tourism</Link></li>
+                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Medical Tourism</Link></li>
                 </ul>
               </div>
             </div>
             <div className="col-lg-2 col-md-4">
               <div className="footer-widget">
-                <h4 className="widget-title">Our Resources</h4>
+                <h4 className="widget-title">Travel Resources</h4>
                 <ul className="footer-menu">
                   <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Free Business tools</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Affiliate Program</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Success Stories</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Upwork Reviews</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Resources</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Help &amp; Support</Link></li>
+                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Travel Guides</Link></li>
+                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Customer Reviews</Link></li>
+                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>FAQs</Link></li>
+                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Packing Tips</Link></li>
+                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Blog</Link></li>
                 </ul>
               </div>
             </div>
             <div className="col-lg-2 col-md-6">
               <div className="footer-widget">
-                <h4 className="widget-title">The Company</h4>
+                <h4 className="widget-title">Company Information</h4>
                 <ul className="footer-menu">
                   <li><Link to="#" onClick={(e) => { e.preventDefault() }}>About Us</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Leadership</Link></li>
                   <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Contact Us</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Investor Relations</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Trust, Safety &amp; Security</Link></li>
+                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Privacy Policy</Link></li>
+                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Terms of Service</Link></li>
                 </ul>
               </div>
             </div>
