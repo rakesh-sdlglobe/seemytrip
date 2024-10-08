@@ -25,7 +25,7 @@ import UPI from '../assets/images/upi-icon.png'
 import Indigo from '../assets/images/6E.png'
 import AirIndia from '../assets/images/AI.png'
 import Vistara from '../assets/images/UK.png'
-import Hyderbad from '../assets/images/Hyderbad.png'
+import Hyderabad from '../assets/images/Hyderbad.png'
 import indigo from '../assets/images/6E.png';
 import Mumbai from '../assets/images/mumbai-1.png';
 import Bangalore from '../assets/images/Bangalore-1.png';
@@ -65,5 +65,5 @@ import MedicalTourismImage from '../assets/images/MedicalTourismImage.jpg'
 import DoctorImage from './images/DoctorImage.jpg'
 
 export {
-  trainImage,indian_flag,charminar,benglore, kolkota, mumbai, utterpradesh, kerla, delhi,chennai,youngIndianCouple, team1, indianTrain,team2,team3,team4,team5,login,charminar2,ramoji,gloconda,D,UPI,Indigo,AirIndia,Vistara,Hyderbad,indigo,Mumbai,Bangalore,Delhi,Hotel01,Hotel02,Hotel03,Hotel04,Nexon,Carnival,Jazz,Ertiga,Toyota,Tiago,ship1,ship2,ship3,ship4,ship5,ship6,bus1,bus2,bus3,bus4,bus5,bus6,bus7,bus8,bus9,bus10,cab,bus,bus11,bus12,MedicalTourismImage,DoctorImage
+  trainImage,indian_flag,charminar,benglore, kolkota, mumbai, utterpradesh, kerla, delhi,chennai,youngIndianCouple, team1, indianTrain,team2,team3,team4,team5,login,charminar2,ramoji,gloconda,D,UPI,Indigo,AirIndia,Vistara,Hyderabad,indigo,Mumbai,Bangalore,Delhi,Hotel01,Hotel02,Hotel03,Hotel04,Nexon,Carnival,Jazz,Ertiga,Toyota,Tiago,ship1,ship2,ship3,ship4,ship5,ship6,bus1,bus2,bus3,bus4,bus5,bus6,bus7,bus8,bus9,bus10,cab,bus,bus11,bus12,MedicalTourismImage,DoctorImage
 };

@@ -16,7 +16,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Footer from './footer';
 import FlightSearch from './flight_components/flight_search';
 import { useState } from 'react';
-import { AirIndia, Bangalore, Delhi, Hyderbad, Indigo, indigo, Mumbai, Vistara } from '../assets/images';
+import { AirIndia, Bangalore, Delhi, Hyderabad, Indigo, indigo, Mumbai, Vistara } from '../assets/images';
 import FooterDark from './footer-dark';
 import HorizontalContainer from './flight_components/HorizontalContainer';
 
@@ -307,7 +307,7 @@ const HomeFlight = () => {
                   <Link to="#" className="card rounded-3 border br-dashed h-100 m-0">
                     <div className="flight-thumb-wrapper">
                       <div className="popFlights-item-overHidden">
-                        <img src={Hyderbad} className="img-fluid" alt="" />
+                        <img src={Hyderabad} className="img-fluid" alt="" />
                       </div>
                     </div>
                     <div className="touritem-middle position-relative p-3">
@@ -320,7 +320,7 @@ const HomeFlight = () => {
                               <path opacity="0.3" d="M17.4 3V13L21.7 8.70001C22.1 8.30001 22.1 7.69999 21.7 7.29999L17.4 3ZM6.6 11V21L2.3 16.7C1.9 16.3 1.9 15.7 2.3 15.3L6.6 11Z" fill="currentColor" />
                             </svg>
                           </span>
-                          <span>Hyderbad</span>
+                          <span>Hyderabad</span>
                         </h4>
                         <p className="detail ellipsis-container">
                           <span className="ellipsis-item__normal">Round-trip</span>
@@ -415,7 +415,7 @@ const HomeFlight = () => {
                     <div className="touritem-middle position-relative p-3">
                       <div className="touritem-flexxer">
                         <h4 className="city fs-6 m-0 fw-bold">
-                          <span>Hyderbad</span>
+                          <span>Hyderabad</span>
                           <span className="svg-icon svg-icon-muted svg-icon-2hx px-1">
                             <svg width={24} height={24} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                               <path d="M17.4 7H4C3.4 7 3 7.4 3 8C3 8.6 3.4 9 4 9H17.4V7ZM6.60001 15H20C20.6 15 21 15.4 21 16C21 16.6 20.6 17 20 17H6.60001V15Z" fill="currentColor" />

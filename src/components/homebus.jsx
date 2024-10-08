@@ -17,7 +17,7 @@ import Footer from './footer';
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Bangalore, bus1, bus10, bus11, bus12, bus2, bus3, bus4, bus5, bus6, bus7, bus8, bus9, Carnival, Delhi, Ertiga, Hyderbad, Jazz, Mumbai, Nexon, Tiago, Toyota } from '../assets/images';
+import { Bangalore, bus1, bus10, bus11, bus12, bus2, bus3, bus4, bus5, bus6, bus7, bus8, bus9, Carnival, Delhi, Ertiga, Hyderabad, Jazz, Mumbai, Nexon, Tiago, Toyota } from '../assets/images';
 import BusSearch from './bus_components/bus_search_page';
 
 const HomeBus = () => {
@@ -390,7 +390,7 @@ const HomeBus = () => {
                 <a href="#" className="card rounded-3 shadow-wrap h-100 m-0">
                   <div className="flight-thumb-wrapper">
                     <div className="popFlights-item-overHidden">
-                      <img src={Hyderbad} className="img-fluid" alt="Hyderabad to Vijayawada" />
+                      <img src={Hyderabad} className="img-fluid" alt="Hyderabad to Vijayawada" />
                     </div>
                   </div>
                   <div className="touritem-middle position-relative p-3">
