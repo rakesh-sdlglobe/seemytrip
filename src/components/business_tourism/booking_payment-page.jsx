@@ -124,13 +124,13 @@ const BtBookingPayment= ()=>{
                               <div className="col-xl-6 col-lg-6 col-md-6">
                                 <div className="form-group">
                                   <label className="form-label">City\State</label>
-                                  <input type="text" className="form-control" placeholder="Passport Number" />
+                                  <input type="text" className="form-control" placeholder="City\State" />
                                 </div>
                               </div>
                               <div className="col-xl-6 col-lg-6 col-md-6">
                                 <div className="form-group">
                                   <label className="form-label">Postal Code</label>
-                                  <input type="text" className="form-control" placeholder="Passport Number" />
+                                  <input type="text" className="form-control" placeholder="Postal Code" />
                                 </div>
                               </div>
                               {/* <div className="col-xl-12 col-lg-12 col-md-12">
@@ -237,7 +237,7 @@ const BtBookingPayment= ()=>{
                                 <span className="fw-semibold text-md">₹772.40</span>
                               </li>
                               <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-1">
-                                <span className="fw-medium text-sm text-muted mb-0">Payment Methode fee</span>
+                                <span className="fw-medium text-sm text-muted mb-0">Payment Method fee</span>
                                 <span className="fw-semibold text-md">₹0</span>
                               </li>
                               <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-1">

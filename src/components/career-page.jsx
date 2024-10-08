@@ -165,7 +165,7 @@ const CareerPage = () => {
                               <i className="fa-brands fa-paypal fs-3 icons" />
                             </div>
                             <div className="careerBoxflcaps ps-3">
-                              <h5 className="career-tlt fs-6 mb-1">Payment Methode Developer</h5>
+                              <h5 className="career-tlt fs-6 mb-1">Payment Method Developer</h5>
                               <p className="career-jbs text-md">12+ Active Jobs</p>
                             </div>
                           </div>

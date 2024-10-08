@@ -17,7 +17,7 @@ import Footer from './footer';
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Bangalore, Carnival, delhi, Delhi, Ertiga, Hyderbad, Jazz, Mumbai, Nexon, Tiago, Toyota } from '../assets/images';
+import { Bangalore, Carnival, delhi, Delhi, Ertiga, Hyderabad, Jazz, Mumbai, Nexon, Tiago, Toyota } from '../assets/images';
 import CabSearch from './cab_components/cab_search_componets';
 
 const HomeCar = () => {
@@ -102,12 +102,12 @@ const HomeCar = () => {
                           <span className="label text-light bg-danger fw-medium">20% Off</span>
                         </div>
                         <div className="offer-pic">
-                          <img src={Hyderbad} className="img-fluid rounded" width={110} alt="Cab Offer" />
+                          <img src={Hyderabad} className="img-fluid rounded" width={110} alt="Cab Offer" />
                         </div>
                       </div>
                       <div className="offer-captions ps-3">
                         <h4 className="destination fs-6 m-0 fw-bold">
-                          <span>Hyderbad</span>
+                          <span>Hyderabad</span>
                         </h4>
                         <p className="details ellipsis-container">
                           <span className="ellipsis-item__normal">Round-trip</span>
@@ -290,7 +290,7 @@ const HomeCar = () => {
                 <a href="#" className="card rounded-3 shadow-wrap h-100 m-0">
                   <div className="flight-thumb-wrapper">
                     <div className="popFlights-item-overHidden">
-                      <img src={Hyderbad} className="img-fluid" alt="Hyderabad to Vijayawada" />
+                      <img src={Hyderabad} className="img-fluid" alt="Hyderabad to Vijayawada" />
                     </div>
                   </div>
                   <div className="touritem-middle position-relative p-3">

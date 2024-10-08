@@ -15,7 +15,7 @@ import Header02 from './header02';
 import { Link } from 'react-router-dom';
 import Footer from './footer';
 import { HotelSearchbar } from './hotel_components/HotelSearchbar';
-import { Bangalore, Delhi, Hotel01, Hotel02, Hotel03, Hotel04, Hyderbad, Mumbai } from '../assets/images';
+import { Bangalore, benglore, charminar, chennai, delhi, Delhi, Hotel01, Hotel02, Hotel03, Hotel04, Hyderabad, kerla, kolkota, mumbai, Mumbai, utterpradesh } from '../assets/images';
 
 const HomeHotel = () => {
   return (
@@ -159,6 +159,229 @@ const HomeHotel = () => {
           </div>
         </section> */}
         {/* ============================ Offers End ================================== */}
+        <section>
+          <div className="container">
+            <div className="row align-items-center justify-content-center">
+              <div className="col-xl-8 col-lg-9 col-md-11 col-sm-12">
+                <div className="secHeading-wrap text-center mb-5">
+                  <h2>Top Places</h2>
+                  <p>Experience the scenic journeys that connect you to remarkable destinations.</p>
+                </div>
+              </div>
+            </div>
+            <div className="row justify-content-center gy-4 gx-3">
+              <Link to="./" />
+              <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                <div className="destination-blocks bg-white p-2 rounded border br-dashed h-100">
+                  <div className="destination-blocks-pics p-1">
+                    <Link to="#">
+                      <div className="flight-thumb-wrapper p-2 pb-0">
+                        <div className="popFlights-item-overHidden rounded-3">
+                          <img src={charminar} className="img-fluid" alt="" />
+                        </div>
+                      </div>
+                    </Link>
+                    {/* <Link to="#"><img src="./assets/images/charminar.png" class="img-fluid " alt=""></Link> */}
+                  </div>
+                  <div className="destination-blocks-captions">
+                    <div className="touritem-flexxer text-center p-3">
+                      <h4 className="city fs-5 m-0 fw-bold">
+                        <span>Hyderabad</span>
+                      </h4>
+                      <p className="detail ellipsis-container m-0">
+                        <span className="ellipsis-item__normal">10 Destinations</span>
+                        <span className="separate ellipsis-item__normal" />
+                        <span className="ellipsis-item">5 Hotels</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                <div className="destination-blocks bg-white p-2 rounded border br-dashed h-100">
+                  <div className="destination-blocks-pics p-1">
+                    <Link to='#'>
+                      <div className="flight-thumb-wrapper p-2 pb-0">
+                        <div className="popFlights-item-overHidden rounded-3">
+                          <img src={benglore} className="img-fluid" alt="" />
+                        </div>
+                      </div>
+                    </Link>
+                    {/* <Link to="#"><img src="./assets/images/Bangalore.png" class="img-fluid rounded" alt=""></Link> */}
+                  </div>
+                  <div className="destination-blocks-captions">
+                    <div className="touritem-flexxer text-center p-3">
+                      <h4 className="city fs-5 m-0 fw-bold">
+                        <span>Bangalore</span>
+                      </h4>
+                      <p className="detail ellipsis-container m-0">
+                        <span className="ellipsis-item__normal">06 Destinations</span>
+                        <span className="separate ellipsis-item__normal" />
+                        <span className="ellipsis-item">14 Hotels</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                <div className="destination-blocks bg-white p-2 rounded border br-dashed h-100">
+                  <div className="destination-blocks-pics p-1">
+                    <Link to="#">
+                      <div className="flight-thumb-wrapper p-2 pb-0">
+                        <div className="popFlights-item-overHidden rounded-3">
+                          <img src={kolkota} className="img-fluid" alt="" />
+                        </div>
+                      </div>
+                    </Link>
+                    {/* <Link to="#"><img src="./assets/images/kolkata.png" class="img-fluid rounded" alt=""></Link> */}
+                  </div>
+                  <div className="destination-blocks-captions">
+                    <div className="touritem-flexxer text-center p-3">
+                      <h4 className="city fs-5 m-0 fw-bold">
+                        <span>Kolkata</span>
+                      </h4>
+                      <p className="detail ellipsis-container m-0">
+                        <span className="ellipsis-item__normal">09 Destinations</span>
+                        <span className="separate ellipsis-item__normal" />
+                        <span className="ellipsis-item">16 Hotels</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                <div className="destination-blocks bg-white p-2 rounded border br-dashed h-100">
+                  <div className="destination-blocks-pics p-1">
+                    <Link to="#">
+                      <div className="flight-thumb-wrapper p-2 pb-0">
+                        <div className="popFlights-item-overHidden rounded-3">
+                          <img src={mumbai} className="img-fluid" alt="" />
+                        </div>
+                      </div>
+                    </Link>
+                    {/* <Link to="#"><img src="./assets/images/mumbai.png" class="img-fluid rounded" alt=""></Link> */}
+                  </div>
+                  <div className="destination-blocks-captions">
+                    <div className="touritem-flexxer text-center p-3">
+                      <h4 className="city fs-5 m-0 fw-bold">
+                        <span>Mumbai</span>
+                      </h4>
+                      <p className="detail ellipsis-container m-0">
+                        <span className="ellipsis-item__normal">07 Destinations</span>
+                        <span className="separate ellipsis-item__normal" />
+                        <span className="ellipsis-item">18 Hotels</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                <div className="destination-blocks bg-white p-2 rounded border br-dashed h-100">
+                  <div className="destination-blocks-pics p-1">
+                    <Link to="#">
+                      <div className="flight-thumb-wrapper p-2 pb-0">
+                        <div className="popFlights-item-overHidden rounded-3">
+                          <img src={utterpradesh} className="img-fluid" alt="" />
+                        </div>
+                      </div>
+                    </Link>
+                    {/* <Link to="#"><img src="./assets/images/Uttrapradesh.png" class="img-fluid rounded" alt=""></Link> */}
+                  </div>
+                  <div className="destination-blocks-captions">
+                    <div className="touritem-flexxer text-center p-3">
+                      <h4 className="city fs-5 m-0 fw-bold">
+                        <span>Uttar Pradesh</span>
+                      </h4>
+                      <p className="detail ellipsis-container m-0">
+                        <span className="ellipsis-item__normal">4 Destinations</span>
+                        <span className="separate ellipsis-item__normal" />
+                        <span className="ellipsis-item">12 Hotels</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                <div className="destination-blocks bg-white p-2 rounded border br-dashed h-100">
+                  <div className="destination-blocks-pics p-1">
+                    <Link to="#">
+                      <div className="flight-thumb-wrapper p-2 pb-0">
+                        <div className="popFlights-item-overHidden rounded-3">
+                          <img src={kerla} className="img-fluid" alt="" />
+                        </div>
+                      </div>
+                    </Link>
+                    {/* <Link to="#"><img src="./assets/images/kerala.png" class="img-fluid rounded" alt=""></Link> */}
+                  </div>
+                  <div className="destination-blocks-captions">
+                    <div className="touritem-flexxer text-center p-3">
+                      <h4 className="city fs-5 m-0 fw-bold">
+                        <span>Kerala</span>
+                      </h4>
+                      <p className="detail ellipsis-container m-0">
+                        <span className="ellipsis-item__normal">16 Destinations</span>
+                        <span className="separate ellipsis-item__normal" />
+                        <span className="ellipsis-item">7 Hotels</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                <div className="destination-blocks bg-white p-2 rounded border br-dashed h-100">
+                  <div className="destination-blocks-pics p-1">
+                    <Link to="#">
+                      <div className="flight-thumb-wrapper p-2 pb-0">
+                        <div className="popFlights-item-overHidden rounded-3">
+                          <img src={delhi} className="img-fluid" alt="" />
+                        </div>
+                      </div>
+                    </Link>
+                    {/* <Link to="#"><img src="./assets/images/delhi.png" class="img-fluid rounded" alt=""></Link> */}
+                  </div>
+                  <div className="destination-blocks-captions">
+                    <div className="touritem-flexxer text-center p-3">
+                      <h4 className="city fs-5 m-0 fw-bold">
+                        <span>Delhi</span>
+                      </h4>
+                      <p className="detail ellipsis-container m-0">
+                        <span className="ellipsis-item__normal">14 Destinations</span>
+                        <span className="separate ellipsis-item__normal" />
+                        <span className="ellipsis-item">10 Hotels</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                <div className="destination-blocks bg-white p-2 rounded border br-dashed h-100">
+                  <div className="destination-blocks-pics p-1">
+                    <Link to="#">
+                      <div className="flight-thumb-wrapper p-2 pb-0">
+                        <div className="popFlights-item-overHidden rounded-3">
+                          <img src={chennai} className="img-fluid" alt="" />
+                        </div>
+                      </div>
+                    </Link>
+                    {/* <Link to="#"><img src="./assets/images/chennai.png" class="img-fluid rounded" alt=""></Link> */}
+                  </div>
+                  <div className="destination-blocks-captions">
+                    <div className="touritem-flexxer text-center p-3">
+                      <h4 className="city fs-5 m-0 fw-bold">
+                        <span>Chennai</span>
+                      </h4>
+                      <p className="detail ellipsis-container m-0">
+                        <span className="ellipsis-item__normal">12 Destinations</span>
+                        <span className="separate ellipsis-item__normal" />
+                        <span className="ellipsis-item">32 Hotels</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
         {/* ============================ Popular Hotels Start ================================== */}
         <section className="py-5">
           <div className="container">
