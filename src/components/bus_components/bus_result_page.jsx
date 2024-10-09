@@ -39,11 +39,11 @@ const BusResultPage = () => {
                 <div className="col-xl-12 col-lg-12 col-12">
                     <div className="card list-layout-block rounded-3 p-3">
                         <div className="row">
-                            <div className="col-xl-4 col-lg-3 col-md">
+                            {/* <div className="col-xl-4 col-lg-3 col-md">
                                 <div className="cardImage__caps rounded-2 overflow-hidden h-100">
                                     <img className="img-fluid h-100 object-fit" src={bus} alt="bus" />
                                 </div>
-                            </div>
+                            </div> */}
                             <div className="col-xl col-lg col-md">
                                 <div className="listLayout_midCaps mt-md-0 mt-3 mb-md-0 mb-3">
                                     <h4 className="fs-5 fw-bold mb-1">Luxury Bus - Volvo</h4>
@@ -124,11 +124,11 @@ const BusResultPage = () => {
                 <div className="col-xl-12 col-lg-12 col-12">
                     <div className="card list-layout-block rounded-3 p-3">
                         <div className="row">
-                            <div className="col-xl-4 col-lg-3 col-md">
+                            {/* <div className="col-xl-4 col-lg-3 col-md">
                                 <div className="cardImage__caps rounded-2 overflow-hidden h-100">
                                     <img className="img-fluid h-100 object-fit" src={bus} alt="bus" />
                                 </div>
-                            </div>
+                            </div> */}
                             <div className="col-xl col-lg col-md">
                                 <div className="listLayout_midCaps mt-md-0 mt-3 mb-md-0 mb-3">
                                     <h4 className="fs-5 fw-bold mb-1">Luxury Bus - Volvo</h4>

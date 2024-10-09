@@ -158,10 +158,10 @@ const HorizontalContainer = () => {
   return (
     <>
       <div style={containerStyle}>
-        <div style={itemStyle} onClick={() => handleOpenModal('runningStatus')}>
+        {/* <div style={itemStyle} onClick={() => handleOpenModal('runningStatus')}>
           <FaTrain style={iconStyle} />
           <span style={textStyle}>Running Status</span>
-        </div>
+        </div> */}
         <div style={itemStyle} onClick={() => handleOpenModal('pnrStatus')}>
           <FaTicketAlt style={iconStyle} />
           <span style={textStyle}>PNR Status Enquiry</span>
@@ -178,14 +178,14 @@ const HorizontalContainer = () => {
           <FaMap style={iconStyle} />
           <span style={textStyle}>Search By Station</span>
         </div>
-        <div style={itemStyle} onClick={() => handleOpenModal('platformLocator')}>
+        {/* <div style={itemStyle} onClick={() => handleOpenModal('platformLocator')}>
           <FaCalendarAlt style={iconStyle} />
           <span style={textStyle}>Train Platform Locator</span>
-        </div>
-        <div style={itemStyle} onClick={() => handleOpenModal('tatkalReservation')}>
+        </div> */}
+        {/* <div style={itemStyle} onClick={() => handleOpenModal('tatkalReservation')}>
           <FaConciergeBell style={iconStyle} />
           <span style={textStyle}>Tatkal Railway Reservation</span>
-        </div>
+        </div> */}
         <div style={itemStyle} onClick={() => handleOpenModal('foodBooking')}>
           <FaUtensils style={iconStyle} />
           <span style={textStyle}>IRCTC Food Booking</span>

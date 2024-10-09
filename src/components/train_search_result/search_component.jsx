@@ -187,7 +187,7 @@ const SearchComponent = ({
                     options={generalOptions}
                     value={generalSelection}
                     onChange={setGeneralSelection}
-                    placeholder="Select Quota"
+                    placeholder="Quota"
                     styles={customSelectStyles}
                   />
                 </div>
@@ -196,7 +196,7 @@ const SearchComponent = ({
                     options={classOptions}
                     value={classSelection}
                     onChange={setClassSelection}
-                    placeholder="Select Class"
+                    placeholder="Class"
                     styles={customSelectStyles}
                   />
                 </div>
@@ -215,7 +215,7 @@ const SearchComponent = ({
                             options={stationOptions}
                             value={leavingFrom}
                             onChange={handleFromStationChange}
-                            placeholder="Select From Station"
+                            placeholder="From"
                             styles={customSelectStyles}
                           />
                         </div>
@@ -226,11 +226,11 @@ const SearchComponent = ({
                             <label className="text-light text-uppercase opacity-75">{goingLabel}</label>
                           )}
                           <Select
-                            id="toStation"
+                            id="to"
                             options={stationOptions}
                             value={goingTo}
                             onChange={handleToStationChange}
-                            placeholder="Select To Station"
+                            placeholder="To"
                             styles={customSelectStyles}
                           />
                         </div>
@@ -248,7 +248,7 @@ const SearchComponent = ({
                             selected={journeyDate}
                             onChange={handleJourneyDateChange}
                             dateFormat="dd/MM/yyyy"
-                            placeholderText="DD/MM/YYYY"
+                            placeholderText="Departure Date"
                             className="form-control fw-bold"
                           />
                         </div>
