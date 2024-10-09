@@ -170,7 +170,7 @@ export const HotelSearchbar = () => {
                       onClick={handleShowGuestsModal}
                       className="form-control text-start"
                     >
-                      {adults} Adult{adults > 1 ? 's' : ''}, {children} Child{children !== 1 ? 'ren' : ''}, {rooms} Room{rooms > 1 ? 's' : ''}
+                      {adults} Adults{adults > 1 ? 's' : ''}, {children} Child{children !== 1 ? 'ren' : ''}, {rooms} Room{rooms > 1 ? 's' : ''}
                     </button>
                   </div>
                 </div>

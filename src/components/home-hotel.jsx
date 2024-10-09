@@ -409,7 +409,7 @@ const HomeHotel = () => {
                     <div className="touritem-middle position-relative p-3">
                       <div className="touritem-flexxer">
                         <h4 className="city fs-6 m-0 fw-bold">
-                          <span>Hydebad</span>
+                          <span>Hyderabad</span>
                         </h4>
                         <p className="detail ellipsis-container">
                           <span className="ellipsis-item__normal">Delhi</span>
