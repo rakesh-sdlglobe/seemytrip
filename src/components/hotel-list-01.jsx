@@ -11,7 +11,7 @@ import '../assets/css/prism.css';
 import '../assets/css/bootstrap-icons.css';
 import '../assets/css/fontawesome.css';
 import '../assets/css/style.css';
-import { Bangalore, Delhi, Hotel01, Hotel02, Hotel03, Hotel04, Hyderbad, Mumbai, trainImage } from '../assets/images';
+import { Bangalore, Delhi, Hotel01, Hotel02, Hotel03, Hotel04, Hyderabad, Mumbai, trainImage } from '../assets/images';
 import { Link } from 'react-router-dom';
 import Footer from './footer';
 import Header02 from './header02';

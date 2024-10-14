@@ -1,5 +1,5 @@
 import React from 'react'
-import { Hotel01, Hyderbad } from '../../assets/images';
+import { Hotel01, Hyderabad } from '../../assets/images';
 import { Link } from 'react-router-dom';
 import Header02 from '../header02';
 import FooterDark from '../footer-dark';

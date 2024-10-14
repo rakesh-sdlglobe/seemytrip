@@ -251,7 +251,7 @@ const FlightBookingPage02= ()=>{
                                 <span className="fw-semibold text-md">₹5,700.00</span>
                               </li>
                               <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-1">
-                                <span className="fw-medium text-sm text-muted mb-0">Payment Methode fee</span>
+                                <span className="fw-medium text-sm text-muted mb-0">Payment Method fee</span>
                                 <span className="fw-semibold text-md">₹0</span>
                               </li>
                               <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-1">

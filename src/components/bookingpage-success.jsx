@@ -110,7 +110,7 @@ const BookingPageSuccess =() =>{
                         </div>
                         <div className="text-center d-flex align-items-center justify-content-center">
                           <Link to="/" className="btn btn-md btn-light-seegreen fw-semibold mx-2">Book Next Tour</Link>
-                          <Link to="#" data-bs-toggle="modal" data-bs-target="#invoice" className="btn btn-md btn-light-primary fw-semibold mx-2">View invoice Print</Link>
+                          <Link to="#" data-bs-toggle="modal" data-bs-target="#invoice" className="btn btn-md btn-light-primary fw-semibold mx-2">View Invoice Print</Link>
                         </div>
                       </div>
                     </div>
