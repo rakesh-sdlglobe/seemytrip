@@ -7,7 +7,7 @@ const FooterDark = () => {
     <footer className="footer skin-dark-footer">
       <div>
         <div className="container">
-          <div className="row">
+          <div className="row justify-content-around">
             {/* Footer Column 1 */}
             <div className="col-lg-3 col-md-4">
               <div className="footer-widget">
@@ -72,22 +72,23 @@ const FooterDark = () => {
                   <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Contact Us</Link></li>
                   <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Privacy Policy</Link></li>
                   <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Terms of Service</Link></li>
+                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Support </Link></li>
                 </ul>
               </div>
             </div>
-            <div className="col-lg-3 col-md-6">
+              {/* <div className="col-lg-3 col-md-6">
               <div className="footer-widget">
                 <h4 className="widget-title">Payment Methods</h4>
                 <div className="pmt-wrap">
-                  {/* <img className="img-fluid" src="assets/img/visa.png" width={55} alt="Visa" /> */}
+                  {/* <img className="img-fluid" src="assets/img/visa.png" width={55} alt="Visa" /> 
                   <div className="card h-100">
                     <div className="bg-dark p-4 rounded-3">
                       <div className="d-flex justify-content-between align-items-start">
                         <img className="img-fluid text-white" src="assets/img/visa.png" width={55} alt="Visa" />
-                        {/* Card action START */}
+                        {/* Card action START
                         <div className="dropdown">
                           <Link className="text-white" to="#" id="creditcardDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            {/* Dropdown Icon */}
+                            {/* Dropdown Icon 
                             <svg width={24} height={24} fill="none">
                               <circle fill="currentColor" cx="12.5" cy="3.5" r="2.5" />
                               <circle fill="currentColor" opacity="0.5" cx="12.5" cy="11.5" r="2.5" />
@@ -99,7 +100,7 @@ const FooterDark = () => {
                             <li><Link className="dropdown-item" to="#"><i className="bi bi-calculator me-2 fw-icon" />Currency converter</Link></li>
                           </ul>
                         </div>
-                        {/* Card action END */}
+                        {/* Card action END 
                       </div>
                       <h4 className="text-white fs-6 mt-4">**** **** **** 1569</h4>
                       <div className="d-flex justify-content-between text-white mt-4">
@@ -121,19 +122,19 @@ const FooterDark = () => {
                   </div>
                   <div className="prtn-thumbs d-flex align-items-center justify-content-start">
                     <div className="pmt-wrap pe-4">
-                      {/* <img src="https://placehold.co/300x100" className="img-fluid" alt="" /> */}
+                      {/* <img src="https://placehold.co/300x100" className="img-fluid" alt="" /> 
                       <img src={UPI} alt="" style={{width:"50px"}}/>
                     </div>
                     <div className="pmt-wrap pe-4">
-                      {/* <img src="https://placehold.co/300x100" className="img-fluid" alt="" /> */}
+                      {/* <img src="https://placehold.co/300x100" className="img-fluid" alt="" /> 
                     </div>
                     <div className="pmt-wrap pe-4">
-                      {/* <img src="https://placehold.co/300x100" className="img-fluid" alt="" /> */}
+                      {/* <img src="https://placehold.co/300x100" className="img-fluid" alt="" /> 
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

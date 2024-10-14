@@ -1,7 +1,17 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { bus, bus7, bus8 } from '../../assets/images';
+import { bus } from '../../assets/images';
+import SeatSelection from '../seatselection';
 
 const BusResultPage = () => {
+    // State to manage dropdown visibility
+    const [showSeats, setShowSeats] = useState(false);
+
+    // Toggle function for dropdown
+    const toggleSeatSelection = () => {
+        setShowSeats((prev) => !prev);
+    };
+
     return (
         <div className="col-xl-9 col-lg-8 col-md-12">
             <div className="row align-items-center justify-content-between">
@@ -34,6 +44,7 @@ const BusResultPage = () => {
                     </div>
                 </div>
             </div>
+
             <div className="row align-items-center g-4 mt-2">
                 {/* Single List */}
                 <div className="col-xl-12 col-lg-12 col-12">
@@ -102,6 +113,16 @@ const BusResultPage = () => {
                                 </div>
                             </div>
                         </div>
+                        {/* Show Seats Button */}
+                        <div className="mt-3">
+                            <button className="btn btn-secondary" onClick={toggleSeatSelection}>
+                                {showSeats ? 'Hide Seats' : 'Show Seats'}
+                            </button>
+                        </div>
+                        {/* Seat Selection Dropdown */}
+                        {showSeats && (
+                            <SeatSelection/>
+                        )}
                     </div>
                 </div>
                 {/* /Single List */}
@@ -112,84 +133,15 @@ const BusResultPage = () => {
                             <div className="flx-icon-first mb-md-0 mb-3">
                                 <div className="square--60 circle bg-white"><i className="fa-solid fa-gift fs-3 text-success" /></div>
                             </div>
-                            <div className="flx-caps-first ps-2">
-                                <h6 className="fs-5 fw-medium text-light mb-0">Start Exploring The World</h6>
-                                <p className="text-light mb-0">Book Buses Effortlessly and Earn $50+ for each booking with Booking.com</p>
+                            <div className="ms-md-3">
+                                <h5 className="text-light fs-6 fw-bold mb-0">Grab your Coupon!</h5>
+                                <p className="text-light mb-0">Get 15% Off using code <strong>HURRYUP15</strong></p>
                             </div>
                         </div>
-                        <div className="flx-last text-md-end mt-md-0 mt-4"><button type="button" className="btn btn-whites fw-medium full-width text-dark px-xl-4">Get Started</button></div>
+                        <Link to="#" className="btn btn-md btn-light fw-medium mt-md-0 mt-3">Get Coupon</Link>
                     </div>
                 </div>
-                {/* Single List */}
-                <div className="col-xl-12 col-lg-12 col-12">
-                    <div className="card list-layout-block rounded-3 p-3">
-                        <div className="row">
-                            <div className="col-xl-4 col-lg-3 col-md">
-                                <div className="cardImage__caps rounded-2 overflow-hidden h-100">
-                                    <img className="img-fluid h-100 object-fit" src={bus} alt="bus" />
-                                </div>
-                            </div>
-                            <div className="col-xl col-lg col-md">
-                                <div className="listLayout_midCaps mt-md-0 mt-3 mb-md-0 mb-3">
-                                    <h4 className="fs-5 fw-bold mb-1">Luxury Bus - Volvo</h4>
-                                    <ul className="row gx-2 p-0 excortio">
-                                        <li className="col-auto">
-                                            <p className="text-muted-2 text-md">Delhi to Agra</p>
-                                        </li>
-                                        <li className="col-auto">
-                                            <p className="text-muted-2 text-md fw-bold">.</p>
-                                        </li>
-                                        <li className="col-auto">
-                                            <p className="text-muted-2 text-md">Approx 4 hours</p>
-                                        </li>
-                                        <li className="col-auto">
-                                            <p className="text-muted-2 text-md fw-bold">.</p>
-                                        </li>
-                                        <li className="col-auto">
-                                            <p className="text-muted-2 text-md"><Link to="#" className="text-primary">View on Map</Link></p>
-                                        </li>
-                                    </ul>
-                                    <div className="position-relative mt-3">
-                                        <div className="fw-medium text-dark">Available Now</div>
-                                        <div className="text-md text-muted">Last booked 10 min ago</div>
-                                    </div>
-                                    <div className="position-relative mt-4">
-                                        <div className="d-block position-relative">
-                                            <span className="label bg-light-success text-success">Free Cancellation up to 30 min before departure</span>
-                                        </div>
-                                        <div className="text-md mt-2">
-                                            <p className="m-0"><Link to="#" className="text-primary">Login</Link> &amp; get ₹10 Off using <span className="text-primary">PayPal</span></p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col-xl-auto col-lg-auto col-md-auto text-right text-md-left d-flex align-items-start align-items-md-end flex-column">
-                                <div className="row align-items-center justify-content-start justify-content-md-end gx-2 mb-3">
-                                    <div className="col-auto text-start text-md-end">
-                                        <div className="text-md text-dark fw-medium">Excellent</div>
-                                        <div className="text-md text-muted-2">1,234 reviews</div>
-                                    </div>
-                                    <div className="col-auto">
-                                        <div className="square--40 rounded-2 bg-primary text-light">4.5</div>
-                                    </div>
-                                </div>
-                                <div className="position-relative mt-auto full-width">
-                                    <div className="d-flex align-items-center justify-content-start justify-content-md-end mb-1">
-                                        <span className="label bg-success text-light">10% Off</span>
-                                    </div>
-                                    <div className="d-flex align-items-center justify-content-start justify-content-md-end">
-                                        <div className="text-muted-2 fw-medium text-decoration-line-through me-2">₹5000</div>
-                                        <div className="text-dark fw-bold fs-3">₹4500</div>
-                                    </div>
-                                    <div className="d-flex align-items-start align-items-md-end text-start text-md-end flex-column">
-                                        <Link to="/busbookingpage" className="btn btn-md btn-primary full-width fw-medium px-lg-4">See Availability<i className="fa-solid fa-arrow-trend-up ms-2" /></Link>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {/* /Single List */}
+                {/* /Offer Coupon Box */}
             </div>
         </div>
     );

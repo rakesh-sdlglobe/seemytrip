@@ -77,6 +77,7 @@ const TrainList01 = () => {
           buttonTextColor="#cd2c22"
           dropdownHindden='none'
           checklabelColor ='#ffffff'
+          hindenswap = 'none'
         />
         <section className="gray-simple">
           <div className="container">

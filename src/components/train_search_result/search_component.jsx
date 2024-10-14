@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
-import DatePicker from 'react-datepicker'; 
-import 'react-datepicker/dist/react-datepicker.css'; 
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { fetchStations, fetchTrains } from '../../store/Actions/filterActions';
 import { selectStations } from '../../store/Selectors/filterSelectors';
 import { useNavigate } from 'react-router-dom';
 
 const SearchComponent = ({
-  onSearchResults = () => {},
+  onSearchResults = () => { },
   buttonText = 'Search',
   backgroundColor = '#f0f0f0',
   buttonBackgroundColor = '#007bff',
@@ -18,7 +18,8 @@ const SearchComponent = ({
   goingLabel = 'Going To',
   dateLabel = 'Journey Date',
   dropdownHindden = 'auto',
-  checklabelColor ='auto'
+  checklabelColor = 'auto',
+  hindenswap = 'auto',
 }) => {
   const dispatch = useDispatch();
   const stations = useSelector(selectStations);
@@ -79,6 +80,12 @@ const SearchComponent = ({
     setJourneyDate(date);
   };
 
+  const handleSwapLocations = () => {
+    const temp = leavingFrom;
+    setLeavingFrom(goingTo);
+    setGoingTo(temp);
+  };
+
   const handleSearch = () => {
     if (leavingFrom && goingTo && journeyDate) {
       dispatch(fetchTrains(leavingFrom.value, journeyDate));
@@ -87,7 +94,7 @@ const SearchComponent = ({
       alert('Please select all fields.');
     }
   };
-  
+
 
   const stationOptions = stations.map((station) => ({
     value: station.id,
@@ -128,17 +135,33 @@ const SearchComponent = ({
             background-position: center;
           }
 
+           @media (max-width: 1024px) {
+            .search-component {
+              height: 320px;
+              padding: 15px;
+            }
+          }
+
           @media (max-width: 768px) {
             .search-component {
-              height: 340px;
+              height: 320px;
               padding: 15px;
+            }
+            .swap-icon-container {
+              top: 52%; 
+              left: calc(34% - 15px);  
             }
           }
 
           @media (max-width: 576px) {
             .search-component {
-              height: 320px;
+              height: 510px;
               padding: 10px;
+            }
+            .swap-button {
+              // top: -132%; 
+              // left: calc(300% - 15px);
+              display: none;
             }
           }
 
@@ -174,6 +197,27 @@ const SearchComponent = ({
             margin-right: 10px; 
             accent-color: #cd2c22;
           }
+          .swap-icon-container {
+            display: ${hindenswap};
+            position: absolute; 
+            top: 42%; 
+            left: calc(34% - 15px); 
+            z-index: 1; 
+          }
+
+          .swap-button {
+            background: none; 
+            border: none; 
+            color: gray; 
+            cursor: pointer; 
+            padding: 0; 
+            font-size: inherit; 
+          }
+
+          .swap-button i {
+            font-size: 1.2em; 
+          }
+            
         `}
       </style>
       <div className="search-component">
@@ -181,7 +225,7 @@ const SearchComponent = ({
           <div className="row justify-content-center align-items-center">
 
             <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-            <div className="dropdown-container">
+              <div className="dropdown-container">
                 <div className="general-dropdown">
                   <Select
                     options={generalOptions}
@@ -201,6 +245,16 @@ const SearchComponent = ({
                   />
                 </div>
               </div>
+              <div className="swap-icon-container">
+                <button
+                  type="button"
+                  className="btn swap-button"
+                  onClick={handleSwapLocations}
+                >
+                  <i className="fas fa-exchange-alt" /> {/* Swap icon */}
+                </button>
+              </div>
+
               <div className="search-wrap position-relative">
                 <div className="row align-items-end gy-3 gx-md-3 gx-sm-2">
                   <div className="col-xl-8 col-lg-7 col-md-12">
