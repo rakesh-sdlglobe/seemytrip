@@ -16,6 +16,7 @@ import { Link } from 'react-router-dom';
 import Footer from './footer';
 import { HotelSearchbar } from './hotel_components/HotelSearchbar';
 import { Bangalore, benglore, charminar, chennai, delhi, Delhi, Hotel01, Hotel02, Hotel03, Hotel04, Hyderabad, kerla, kolkota, mumbai, Mumbai, utterpradesh } from '../assets/images';
+import AppApk from './App_apk_promotion';
 
 const HomeHotel = () => {
   return (
@@ -409,7 +410,7 @@ const HomeHotel = () => {
                     <div className="touritem-middle position-relative p-3">
                       <div className="touritem-flexxer">
                         <h4 className="city fs-6 m-0 fw-bold">
-                          <span>Hydebad</span>
+                          <span>Hyderabad</span>
                         </h4>
                         <p className="detail ellipsis-container">
                           <span className="ellipsis-item__normal">Delhi</span>
@@ -917,79 +918,7 @@ const HomeHotel = () => {
         {/* ============================ Popular Routes End ================================== */}
         {/* ============================ Google & IOS App Start ================================== */}
         <section className="py-5">
-          <div className="container">
-            <div className="row">
-              <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                <div className="card rounded-3 border-0 bg-light-primary border-1 m-0 appLink-card p-xl-4 p-3">
-                  <div className="card-body">
-                    <div className="row align-items-center justify-content-between">
-                      <div className="col-xl-7 col-lg-7 col-md-6 col-sm-12">
-                        <div className="appLink-captions">
-                          <div className="appLink-captions d-flex align-items-center justify-content-start">
-                            <div className="d-inline-block">
-                              {/* <img src="https://placehold.co/450x450" className="img-fluid" width={65} alt="" /> */}
-                            </div>
-                            <div className="ps-3 d-block">
-                              <h2 className="fw-bold fs-2 mb-1">Download App Now!</h2>
-                              <p>Use Code <span className="text-primary text-uppercase fw-medium">Welcome</span>and get <span className="text-success text-uppercase fw-medium">Flat 20%</span> OFF* on your first domestic
-                                flight booking</p>
-                            </div>
-                          </div>
-                          <div className="appLink-forms mt-4">
-                            <form>
-                              <div className="row align-items-center justify-content-start g-0">
-                                <div className="col-xl-9 col-lg-10 col-md-10 col-sm-12">
-                                  <div className="appLink-frmbox bg-white border br-dashed rounded-2 p-2">
-                                    <div className="row align-items-center g-0">
-                                      <div className="col-xl-8 col-lg-8 col-md-8 col-sm-8">
-                                        <div className="form-group position-relative m-0">
-                                          <input type="text" className="form-control form-control-md bold border-0 ps-5" placeholder="Enter Mobile Number" />
-                                          <span className="position-absolute top-50 ms-4 translate-middle fw-medium text-dark">+91 -
-                                          </span>
-                                        </div>
-                                      </div>
-                                      <div className="col-xl-4 col-lg-4 col-md-4 col-sm-4">
-                                        <button type="button" className="btn btn-md btn-primary full-width fw-medium">Get App
-                                          Link</button>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </form>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-xl-4 col-lg-4 col-md-5 col-sm-12">
-                        <div className="appLink-buttons text-md-end mt-md-0 mt-4">
-                          <div className="app-wrap">
-                            <Link to="#" className="d-inline-flex">
-                              <div className="cardApp-box bg-dark border-primary d-inline-flex py-3 px-4 rounded align-items-center mb-3">
-                                <div className="cardApp-icon"><i className="fa-brands fa-google-play text-light fs-1" /></div>
-                                <div className="cardApp-caption text-start ps-3">
-                                  <p className="text-light opacity-75 text-uppercase m-0">Get It On</p>
-                                  <h5 className="fw-bold text-light fs-5 m-0">Google Play</h5>
-                                </div>
-                              </div>
-                            </Link>
-                            <Link to="#" className="d-inline-flex">
-                              <div className="cardApp-box bg-primary d-inline-flex py-3 px-4 rounded align-items-center">
-                                <div className="cardApp-icon"><i className="fa-brands fa-apple text-light fs-1" /></div>
-                                <div className="cardApp-caption text-start ps-3">
-                                  <p className="text-light opacity-75 text-uppercase m-0">Download On The</p>
-                                  <h5 className="fw-bold text-light fs-5 m-0">App Store</h5>
-                                </div>
-                              </div>
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+           <AppApk/>
         </section>
         {/* ============================ Google & IOS App End ================================== */}
         {/* ============================ Featured Rental Property Start ================================== */}
