@@ -28,6 +28,9 @@ import CruiseSearch from './cruise_components/Cruise_search_page';
 import BtSearch from './business_tourism/bt_search_componets';
 import MtSearch from './medical_tourism/mt_search_componets';
 import AppApk from './App_apk_promotion';
+import WelcomePopup from './WelcomePopup';
+import ChatBot from './ChatBot';
+import OffersSection from './Offers';
 const Home = () => {
   const [results, setResults] = useState([]);
   const [flightResults, setFlightResults] = useState([]);
@@ -137,10 +140,75 @@ const Home = () => {
                         <i className="fa-solid fa-heartbeat me-2" />Health Tourism
                       </Link>
                     </li>
+                    <li className="nav-item ">
+  <Link
+    className={`nav-link ${activeTab === 'Offers' ? 'active' : ''}`}
+    onClick={() => setActiveTab('Offers')}
+  >
+    <i className="fa-solid fa-tags me-2" />Offers
+  </Link>
+</li>
+<li className="nav-item">
+  <Link
+    className={`nav-link ${activeTab === 'Guides' ? 'active' : ''}`}
+    onClick={() => setActiveTab('Guides')}
+  >
+    <i className="fa-solid fa-book me-2" />Guides
+  </Link>
+</li>
+<li className="nav-item mt-3">
+  <Link
+    className={`nav-link ${activeTab === 'Self Drive' ? 'active' : ''}`}
+    onClick={() => setActiveTab('Self Drive')}
+  >
+    <i className="fa-solid fa-car me-2" />Self Drive
+  </Link>
+</li>
+<li className="nav-item mt-3">
+  <Link
+    className={`nav-link ${activeTab === 'Photographer' ? 'active' : ''}`}
+    onClick={() => setActiveTab('Photographer')}
+  >
+    <i className="fa-solid fa-camera me-2" />Photographer
+  </Link>
+</li>
+<li className="nav-item mt-3">
+  <Link
+    className={`nav-link ${activeTab === 'HomeStaysVillas' ? 'active' : ''}`}
+    onClick={() => setActiveTab('HomeStaysVillas')}
+  >
+    <i className="fa-solid fa-house-user me-2" />Home Stays & Villas
+  </Link>
+</li>
+<li className="nav-item mt-3">
+  <Link
+    className={`nav-link ${activeTab === 'TravelInsurance' ? 'active' : ''}`}
+    onClick={() => setActiveTab('TravelInsurance')}
+  >
+    <i className="fa-solid fa-shield-alt me-2" />Travel Insurance
+  </Link>
+</li>
+<li className="nav-item mt-3">
+  <Link
+    className={`nav-link ${activeTab === 'Packages' ? 'active' : ''}`}
+    onClick={() => setActiveTab('Packages')}
+  >
+    <i className="fa-solid fa-suitcase-rolling me-2" />Packages
+  </Link>
+</li>
+<li className="nav-item mt-3">
+  <Link
+    className={`nav-link ${activeTab === 'GiftCards' ? 'active' : ''}`}
+    onClick={() => setActiveTab('GiftCards')}
+  >
+    <i className="fa-solid fa-gift me-2" />Gift Cards
+  </Link>
+</li>
+
                   </ul>
-                  <div>
-                    <h5 className='text-black text-center fs-5 fw-light'>Welcome to Seemytrip</h5>
-                  </div>
+                  {/* <div>
+                    <h2 className='text-black text-center fs-5 fw-light'>Welcome to Seemytrip</h2>
+                  </div> */}
                   <div className="tab-content">
                     <div className="tab-pane show active" id="Trains">
                       {activeTab === 'Trains' && (
@@ -204,6 +272,46 @@ const Home = () => {
                         <MtSearch/>
                         </div>
                       )}
+                      {activeTab === 'Offers' && (
+                        <div className="tab-pane" id="Offers">
+                        <MtSearch/>
+                        </div>
+                      )}
+                      {activeTab === 'Guides' && (
+                        <div className="tab-pane" id="Guides">
+                        <MtSearch/>
+                        </div>
+                      )}
+                      {activeTab === 'Self Drive' && (
+                        <div className="tab-pane" id="Self Drive">
+                        <MtSearch/>
+                        </div>
+                      )}
+                      {activeTab === 'Photographer' && (
+                        <div className="tab-pane" id="Photographer">
+                        <MtSearch/>
+                        </div>
+                      )}
+                      {activeTab === 'HomeStaysVillas' && (
+                        <div className="tab-pane" id="HomeStaysVillas">
+                        <MtSearch/>
+                        </div>
+                      )}
+                      {activeTab === 'TravelInsurance' && (
+                        <div className="tab-pane" id="TravelInsurance">
+                        <MtSearch/>
+                        </div>
+                      )}
+                      {activeTab === 'Packages' && (
+                        <div className="tab-pane" id="Packages">
+                        <MtSearch/>
+                        </div>
+                      )}
+                      {activeTab === 'GiftCards' && (
+                        <div className="tab-pane" id="GiftCards">
+                        <MtSearch/>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -217,66 +325,75 @@ const Home = () => {
         {/* Train Status start */}
         <HorizontalContainer />
         {/* Train Status End  */}
-
+        <WelcomePopup/>
         {/*  Features Start  */}
-        <section className="border-bottom">
-          <div className="container">
-            <div className="row align-items-center justify-content-between g-4">
-              <h4 className='text-black fs-5 fw-light'>Why book with Seemytrip?</h4>
-              {/* Easy Booking */}
-              <div className="col-xl-3 col-lg-3 col-md-6 col-sm-5">
-                <div className="featuresBox-wrap">
-                  <div className="featuresBox-icons mb-3">
-                    <i className="fa-solid fa-sack-dollar fs-1 text-primary" />
-                  </div>
-                  <div className="featuresBox-captions">
-                    <h4 className="fw-bold fs-5 lh-base mb-0">Easy Booking</h4>
-                    <p className="m-0">Book your trips effortlessly with our user-friendly platform, designed to make your travel plans stress-free and smooth.</p>
-                  </div>
-                </div>
-              </div>
+      <OffersSection/>
+        <section className="border-bottom py-5">
+  <div className="container">
+    {/* Section Heading */}
+    <div className="row justify-content-center mb-4">
+      <div className="col-lg-8 text-center">
+        <h2 className="fw-bold fs-2">Why Book with SeeMyTrip?</h2>
+        <p className="fs-5 text-muted">Discover the unique benefits that make your travel experience seamless and memorable.</p>
+      </div>
+    </div>
 
-              {/* Best Destinations */}
-              <div className="col-xl-3 col-lg-3 col-md-6 col-sm-5">
-                <div className="featuresBox-wrap">
-                  <div className="featuresBox-icons mb-3">
-                    <i className="fa-solid fa-umbrella-beach fs-1 text-primary " />
-                  </div>
-                  <div className="featuresBox-captions">
-                    <h4 className="fw-bold fs-5 lh-base mb-0">Best Destinations</h4>
-                    <p className="m-0">Explore handpicked destinations around the globe, from tropical beaches to cultural landmarks, curated for every type of traveler.</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Travel Guides */}
-              <div className="col-xl-3 col-lg-3 col-md-6 col-sm-5">
-                <div className="featuresBox-wrap">
-                  <div className="featuresBox-icons mb-3">
-                    <i className="fa-solid fa-person-walking-luggage fs-1 text-primary" />
-                  </div>
-                  <div className="featuresBox-captions">
-                    <h4 className="fw-bold fs-5 lh-base mb-0">Expert Travel Guides</h4>
-                    <p className="m-0">Get valuable tips and insights from our experienced travel guides, ensuring you make the most out of every journey.</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Friendly Support */}
-              <div className="col-xl-3 col-lg-3 col-md-6 col-sm-5">
-                <div className="featuresBox-wrap">
-                  <div className="featuresBox-icons mb-3">
-                    <i className="fa-solid fa-headset fs-1 text-primary" />
-                  </div>
-                  <div className="featuresBox-captions">
-                    <h4 className="fw-bold fs-5 lh-base mb-0">Friendly Support</h4>
-                    <p className="m-0">Our 24/7 customer support team is here to assist you with any queries, ensuring a hassle-free travel experience.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+    <div className="row align-items-center justify-content-between g-4">
+      {/* Easy Booking */}
+      <div className="col-xl-3 col-lg-3 col-md-6 col-sm-5">
+        <div className="featuresBox-wrap">
+          <div className="featuresBox-icons mb-3">
+            <i className="fa-solid fa-sack-dollar fs-1 text-primary" />
           </div>
-        </section>
+          <div className="featuresBox-captions">
+            <h4 className="fw-bold fs-5 lh-base mb-0">Easy Booking</h4>
+            <p className="m-0">Book your trips effortlessly with our user-friendly platform, designed to make your travel plans stress-free and smooth.</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Best Destinations */}
+      <div className="col-xl-3 col-lg-3 col-md-6 col-sm-5">
+        <div className="featuresBox-wrap">
+          <div className="featuresBox-icons mb-3">
+            <i className="fa-solid fa-umbrella-beach fs-1 text-primary" />
+          </div>
+          <div className="featuresBox-captions">
+            <h4 className="fw-bold fs-5 lh-base mb-0">Best Destinations</h4>
+            <p className="m-0">Explore handpicked destinations around the globe, from tropical beaches to cultural landmarks, curated for every type of traveler.</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Travel Guides */}
+      <div className="col-xl-3 col-lg-3 col-md-6 col-sm-5">
+        <div className="featuresBox-wrap">
+          <div className="featuresBox-icons mb-3">
+            <i className="fa-solid fa-person-walking-luggage fs-1 text-primary" />
+          </div>
+          <div className="featuresBox-captions">
+            <h4 className="fw-bold fs-5 lh-base mb-0">Expert Travel Guides</h4>
+            <p className="m-0">Get valuable tips and insights from our experienced travel guides, ensuring you make the most out of every journey.</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Friendly Support */}
+      <div className="col-xl-3 col-lg-3 col-md-6 col-sm-5">
+        <div className="featuresBox-wrap">
+          <div className="featuresBox-icons mb-3">
+            <i className="fa-solid fa-headset fs-1 text-primary" />
+          </div>
+          <div className="featuresBox-captions">
+            <h4 className="fw-bold fs-5 lh-base mb-0">Friendly Support</h4>
+            <p className="m-0">Our 24/7 customer support team is here to assist you with any queries, ensuring a hassle-free travel experience.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
         {/*  Features End  */}
         {/*  Best Locations Design Start  */}
         <section>
@@ -1880,6 +1997,7 @@ const Home = () => {
           </div>
         </div>
         {/* Video Modal */}
+        <ChatBot/>
         <div className="modal fade" id="popup-video" tabIndex={-1} role="dialog" aria-labelledby="popupvideo" aria-hidden="true">
           <div className="modal-dialog modal-dialog-centered" role="document">
             <div className="modal-content" id="popupvideo">
@@ -1894,6 +2012,11 @@ const Home = () => {
       {/* All Jquery */}
       {/* This page plugins */}
     </div>
+  
   );
+  
 }
 export default Home;
+
+
+

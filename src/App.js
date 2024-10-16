@@ -91,6 +91,7 @@ import MtBookingPayment from './components/medical_tourism/booking_payment-page.
 import TrainSearchResultList from './components/train_search_result/train_search-result.jsx';
 
 import OTPModal from './components/otp-modal.jsx';
+import SupportPage from './components/SupportPage.jsx';
 
 function App() {
   const dispatch = useDispatch();
@@ -218,6 +219,7 @@ function App() {
           
           {/* phone auth routes */}
           <Route path='/otp-modal' element = {<OTPModal/>}/>
+          <Route path='/support' element = {<SupportPage/>}/>
 
         </Routes>
       </Router>

@@ -107,16 +107,16 @@ const Header02 = () => {
             </div>
             <div className="nav-menus-wrapper" style={{ transitionProperty: 'none' }}>
               <ul className="nav-menu">
-                <li><NavLink exact to="/" activeClassName="active"><i className="fa-solid fa-train fa-lg me-2 mt-3" />Trains</NavLink></li>
-                <li><NavLink to="/home-flight" activeClassName="active"><i className="fa-solid fa-jet-fighter fa-lg me-2 mt-3" />Flights</NavLink></li>
-                <li><NavLink to="/home-hotel" activeClassName="active"><i className="fa-solid fa-spa fa-lg me-2 mt-3" />Hotels</NavLink></li>
-                <li><NavLink to="/home-car" activeClassName="active"><i className="fa-solid fa-car fa-lg me-2 mt-3" />Cabs</NavLink></li>
-                <li><NavLink to="/home-cruise" activeClassName="active"><i className="fa-solid fa-ship fa-lg me-2 mt-3" />Cruises</NavLink></li>
-                <li><NavLink to="/home-bus" activeClassName="active"><i className="fa-solid fa-bus fa-lg me-2 mt-3" />Buses</NavLink></li>
-                <li><NavLink to="/home-businesstourism" activeClassName="active"><i className="fa-solid fa-briefcase fa-lg me-2 mt-3" />Business Tourism</NavLink></li>
-                <li><NavLink to="/home-medicaltourism" activeClassName="active"><i className="fa-solid fa-heartbeat fa-lg me-2 mt-3" />Health Tourism</NavLink></li>
+                <li><NavLink exact to="/" activeClassName="active"><i className="fa-solid fa-train fa-lg me-2 mt-4" />Trains</NavLink></li>
+                <li><NavLink to="/home-flight" activeClassName="active"><i className="fa-solid fa-jet-fighter fa-lg me-2 mt-4" />Flights</NavLink></li>
+                <li><NavLink to="/home-hotel" activeClassName="active"><i className="fa-solid fa-spa fa-lg me-2 mt-4" />Hotels</NavLink></li>
+                <li><NavLink to="/home-car" activeClassName="active"><i className="fa-solid fa-car fa-lg me-2 mt-4" />Cabs</NavLink></li>
+                <li><NavLink to="/home-cruise" activeClassName="active"><i className="fa-solid fa-ship fa-lg me-2 mt-4" />Cruises</NavLink></li>
+                <li><NavLink to="/home-bus" activeClassName="active"><i className="fa-solid fa-bus fa-lg me-2 mt-4" />Buses</NavLink></li>
+                <li><NavLink to="/home-businesstourism" activeClassName="active"><i className="fa-solid fa-briefcase fa-lg me-2 mt-4" />Business Tourism</NavLink></li>
+                <li><NavLink to="/home-medicaltourism" activeClassName="active"><i className="fa-solid fa-heartbeat fa-lg me-2 mt-4" />Health Tourism</NavLink></li>
               </ul>
-              <ul className="nav-menu nav-menu-social align-to-right">
+              <ul className="nav-menu nav-menu-social align-to-right mt-3">
 
                {/* <li className="currencyDropdown me-2">
 
@@ -145,12 +145,16 @@ const Header02 = () => {
                         <Link className="dropdown-item" to="/my-profile">Profile</Link>
                       </li>
                       <li>
+                        <Link className="dropdown-item" to="/support">support</Link>
+                      </li>
+                      <li>
                         <Link className="dropdown-item" to="#">Settings</Link>
                       </li>
                       <li><hr className="dropdown-divider" /></li>
                       <li>
                         <Link className="dropdown-item" to="#" onClick={handleLogout}>Logout</Link>
                       </li>
+                      
                     </ul>
                   </li>
                 ) : (
