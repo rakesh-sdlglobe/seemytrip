@@ -87,7 +87,7 @@ function SupportPage() {
           <h2 className="fw-bold mb-4">Need More Help?</h2>
           <p className="fs-5">You can also reach out to us via email or call our 24/7 customer support team.</p>
           <p className="fs-5 mb-1"><strong>Email:</strong> support@seemytrip.com</p>
-          <p className="fs-5 mb-0"><strong>Phone:</strong> +1-800-123-4567</p>
+          <p className="fs-5 mb-0"><strong>Phone:</strong> 9611533511</p>
         </div>
       </div>
     </div>
