@@ -198,7 +198,7 @@ const handleReturnDateChange = (date) => {
                       </div>
                       <div className='dropdown-container'>
                         <select value={travellers} onChange={handleTravellersChange} className="form-select">
-                          <option value={1}>Adult(12Y+)</option>
+                          <option value={1}>Adults(12Y+)</option>
                           <option value={2}>Children(2Y-12Y)</option>
                           <option value={3}>Infants(below 2y)</option>
                           {/* Add more options as needed */}

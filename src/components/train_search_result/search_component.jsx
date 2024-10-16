@@ -231,7 +231,7 @@ const SearchComponent = ({
                     options={generalOptions}
                     value={generalSelection}
                     onChange={setGeneralSelection}
-                    placeholder="Select Quota"
+                    placeholder="Quota"
                     styles={customSelectStyles}
                   />
                 </div>
@@ -240,7 +240,7 @@ const SearchComponent = ({
                     options={classOptions}
                     value={classSelection}
                     onChange={setClassSelection}
-                    placeholder="Select Class"
+                    placeholder="Class"
                     styles={customSelectStyles}
                   />
                 </div>
@@ -269,7 +269,7 @@ const SearchComponent = ({
                             options={stationOptions}
                             value={leavingFrom}
                             onChange={handleFromStationChange}
-                            placeholder="Select From Station"
+                            placeholder="From"
                             styles={customSelectStyles}
                           />
                         </div>
@@ -284,7 +284,7 @@ const SearchComponent = ({
                             options={stationOptions}
                             value={goingTo}
                             onChange={handleToStationChange}
-                            placeholder="Select To Station"
+                            placeholder="To"
                             styles={customSelectStyles}
                           />
                         </div>

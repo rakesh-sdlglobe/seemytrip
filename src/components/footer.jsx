@@ -38,7 +38,7 @@ const Footer = () => {
                   <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Cruises</Link></li>
                   <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Buses</Link></li>
                   <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Business Tourism</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Medical Tourism</Link></li>
+                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Health Tourism</Link></li>
                 </ul>
               </div>
             </div>
@@ -63,7 +63,7 @@ const Footer = () => {
                   <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Contact Us</Link></li>
                   <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Privacy Policy</Link></li>
                   <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Terms of Service</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Support </Link></li>
+                  <li><Link to="/support" >Support </Link></li>
                 </ul>
               </div>
             </div>
