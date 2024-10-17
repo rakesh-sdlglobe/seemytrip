@@ -225,7 +225,7 @@ const handleReturnDateChange = (date) => {
                             options={airportOptions}
                             value={fromAirport}
                             onChange={handleFromAirportChange}
-                            placeholder="Select From Airport"
+                            placeholder="From "
                             styles={customSelectStyles}
                           />
                         </div>
@@ -242,7 +242,7 @@ const handleReturnDateChange = (date) => {
                             options={airportOptions}
                             value={toAirport}
                             onChange={handleToAirportChange}
-                            placeholder="Select To Airport"
+                            placeholder="To "
                             styles={customSelectStyles}
                           />
                         </div>
@@ -258,7 +258,7 @@ const handleReturnDateChange = (date) => {
                             selected={journeyDate}
                             onChange={handleJourneyDateChange}
                             dateFormat="dd/MM/yyyy"
-                            placeholderText="Journey Date"
+                            placeholderText="Depature"
                             className="form-control fw-bold"
                           />
                         </div>
@@ -272,7 +272,7 @@ const handleReturnDateChange = (date) => {
                             selected={returnDate}
                             onChange={handleReturnDateChange}
                             dateFormat="dd/MM/yyyy"
-                            placeholderText="Return Date"
+                            placeholderText="Return"
                             className="form-control fw-bold"
                           />
                         </div>

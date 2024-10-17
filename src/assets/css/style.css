@@ -6504,3 +6504,7 @@ Responsiveness Start
 .guests-input button:focus {
   outline: none;
 }
+.nav-item1{
+  margin:10px;
+  margin-inline: 0px;
+}

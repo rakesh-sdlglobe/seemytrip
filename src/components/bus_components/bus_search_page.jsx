@@ -103,7 +103,7 @@ const BusSearch = () => {
                       <Select
                         id="fromCity"
                         options={cabOptions}
-                        placeholder="Enter pickup city"
+                        placeholder="From"
                         styles={customSelectStyles}
                       />
                     </div>
@@ -112,7 +112,7 @@ const BusSearch = () => {
                       <Select
                         id="toCity"
                         options={cabOptions}
-                        placeholder="Select destination city"
+                        placeholder="To"
                         styles={customSelectStyles}
                       />
                     </div>
@@ -123,7 +123,7 @@ const BusSearch = () => {
                         selected={startDate}
                         onChange={date => setStartDate(date)}
                         dateFormat="dd/MM/yyyy"
-                        placeholderText="Select Journey Date"
+                        placeholderText="Journey Date"
                         className="form-control"
                       />
                     </div>
