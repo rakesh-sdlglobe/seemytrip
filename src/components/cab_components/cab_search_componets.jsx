@@ -203,7 +203,7 @@ const CabSearch = () => {
                         <Select
                           id="fromAirport"
                           options={cabOptions}
-                          placeholder="Enter pickup city"
+                          placeholder="pickup"
                           styles={customSelectStyles}
                         />
                       </div>
@@ -215,7 +215,7 @@ const CabSearch = () => {
                         <Select
                           id="toAirport"
                           options={cabOptions}
-                          placeholder="Select destination city"
+                          placeholder="destination"
                           styles={customSelectStyles}
                         />
                       </div>
@@ -228,7 +228,7 @@ const CabSearch = () => {
                           selected={startDate}
                           onChange={date => setStartDate(date)}
                           dateFormat="dd/MM/yyyy"
-                          placeholderText="Departure"
+                          placeholderText="Date"
                           className="form-control fw-bold"
                         />
                       </div>
@@ -237,13 +237,17 @@ const CabSearch = () => {
                     {/* Mobile Number */}
                     <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6">
                       <div className="form-group mb-0">
-                        <input
-                          type="time"
+                      <input
+                          placeholder="Time" // This will show now
+                          type="text"
                           className="form-control"
                           style={{ border: '1px solid #ccc' }} // Add border
                           value={mobileNumber}
                           onChange={e => setMobileNumber(e.target.value)}
+                          onFocus={(e) => e.target.type = 'time'} // Change input type to 'time' on focus
+                          onBlur={(e) => e.target.type = 'text'}  // Change back to 'text' on blur if no value
                         />
+
                       </div>
                     </div>
 

@@ -23,7 +23,7 @@ import Destination03 from './components/destination-03';
 import DestinationDetail from './components/destination-detail';
 import Faq from './components/faq';
 import FlightDetail from './components/Flight-detail';
-import FlightList01 from './components/train_search_result/flight-list-01.jsx';
+import FlightList01 from './components/train_search_result/TrainList.jsx';
 import FlightList02 from './components/flight-list-02';
 import ForgotPassword from './components/forgot-password';
 import HelpCenter from './components/help-center';
@@ -92,6 +92,7 @@ import TrainSearchResultList from './components/train_search_result/train_search
 
 import OTPModal from './components/otp-modal.jsx';
 import SupportPage from './components/SupportPage.jsx';
+import TrainList01 from './components/train_search_result/TrainList.jsx';
 
 function App() {
   const dispatch = useDispatch();
@@ -121,7 +122,7 @@ function App() {
           <Route path="/hotel-list-03" element={<HotelList03 />} />
           <Route path="/hotel-detail-01" element={<HotelDetail01 />} />
           <Route path="/hotel-detail-02" element={<HotelDetail02 />} />
-          <Route path="/flight-list-01" element={<FlightList01 />} />
+          <Route path="/flight-list-01" element={<TrainList01 />} />
           
           <Route path="/flight-list-02" element={<FlightList02 />} />
           <Route path="/flight-detail" element={<FlightDetail />} />
