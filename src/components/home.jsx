@@ -77,134 +77,70 @@ const Home = () => {
               <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                 <div className="search-wrap bg-white rounded-3 p-3">
                   <ul className="nav nav-pills primary-soft medium justify-content-center mb-3" id="tour-pills-tab" role="tablist">
-                    <li className="nav-item nav-item1">
+                    {/* <li className="nav-item nav-item1">
                       <Link
                         className={`nav-link ${activeTab === 'Trains' ? 'active' : ''}`}
                         onClick={() => setActiveTab('Trains')}
                       >
                         <i className="fa-solid fa-train me-2" />Trains
                       </Link>
-                    </li>
+                    </li> */}
                     <li className="nav-item nav-item1">
-                      <Link
-                        className={`nav-link ${activeTab === 'Flights' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('Flights')}
-                      >
-                        <i className="fa-solid fa-jet-fighter me-2" />Flights
+                      <Link className={`nav-link`} to='/offers'>
+                        <i className="fa-solid fa-tags me-2" />Offers
                       </Link>
                     </li>
                     <li className="nav-item nav-item1">
-                      <Link
-                        className={`nav-link ${activeTab === 'tours' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('tours')}
-                      >
-                        <i className="fa-solid fa-spa me-2" />Hotels
+                      <Link className={`nav-link`} to='/guides'>
+                        <i className="fa-solid fa-book me-2" />Guides
                       </Link>
                     </li>
                     <li className="nav-item nav-item1">
-                      <Link
-                        className={`nav-link ${activeTab === 'cabs' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('cabs')}
-                      >
-                        <i className="fa-solid fa-car me-2" />Cabs
+                      <Link className={`nav-link`} to='/selfdrivecars'>
+                        <i className="fa-solid fa-car me-2" />Self Drive
                       </Link>
                     </li>
-                     <li className="nav-item nav-item1">
+
+                    <li className="nav-item nav-item1 ">
                       <Link
-                        className={`nav-link ${activeTab === 'Cruises' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('Cruises')}
+                        className={`nav-link ${activeTab === 'Photographer' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('Photographer')}
                       >
-                        <i className="fa-solid fa-ship me-2" />Cruises
-                      </Link>
-                    </li>
-                    <li className="nav-item nav-item1">
-                      <Link
-                        className={`nav-link ${activeTab === 'bus' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('bus')}
-                      >
-                        <i className="fa-solid fa-bus me-2" />Buses
-                      </Link>
-                    </li>
-                    <li className="nav-item nav-item1">
-                      <Link
-                        className={`nav-link ${activeTab === 'Businesstourism' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('Businesstourism')}
-                      >
-                        <i className="fa-solid fa-briefcase me-2" />Business Tourism
-                      </Link>
-                    </li>
-                    <li className="nav-item nav-item1">
-                      <Link
-                        className={`nav-link ${activeTab === 'Medicaltourism' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('Medicaltourism')}
-                      >
-                        <i className="fa-solid fa-heartbeat me-2" />Health Tourism
+                        <i className="fa-solid fa-camera me-2" />Photographer
                       </Link>
                     </li>
                     <li className="nav-item nav-item1 ">
-  <Link
-    className={`nav-link ${activeTab === 'Offers' ? 'active' : ''}`}
-    onClick={() => setActiveTab('Offers')}
-  >
-    <i className="fa-solid fa-tags me-2" />Offers
-  </Link>
-</li>
-<li className="nav-item nav-item1 ">
-  <Link
-    className={`nav-link ${activeTab === 'Guides' ? 'active' : ''}`}
-    onClick={() => setActiveTab('Guides')}
-  >
-    <i className="fa-solid fa-book me-2 " />Guides
-  </Link>
-</li>
-<li className="nav-item nav-item1 ">
-  <Link
-    className={`nav-link ${activeTab === 'Self Drive' ? 'active' : ''}`}
-    onClick={() => setActiveTab('Self Drive')}
-  >
-    <i className="fa-solid fa-car me-2" />Self Drive
-  </Link>
-</li>
-<li className="nav-item nav-item1 ">
-  <Link
-    className={`nav-link ${activeTab === 'Photographer' ? 'active' : ''}`}
-    onClick={() => setActiveTab('Photographer')}
-  >
-    <i className="fa-solid fa-camera me-2" />Photographer
-  </Link>
-</li>
-<li className="nav-item nav-item1 ">
-  <Link
-    className={`nav-link ${activeTab === 'HomeStaysVillas' ? 'active' : ''}`}
-    onClick={() => setActiveTab('HomeStaysVillas')}
-  >
-    <i className="fa-solid fa-house-user me-2" />Home Stays & Villas
-  </Link>
-</li>
-<li className="nav-item nav-item1 ">
-  <Link
-    className={`nav-link ${activeTab === 'TravelInsurance' ? 'active' : ''}`}
-    onClick={() => setActiveTab('TravelInsurance')}
-  >
-    <i className="fa-solid fa-shield-alt me-2" />Travel Insurance
-  </Link>
-</li>
-<li className="nav-item nav-item1 ">
-  <Link
-    className={`nav-link ${activeTab === 'Packages' ? 'active' : ''}`}
-    onClick={() => setActiveTab('Packages')}
-  >
-    <i className="fa-solid fa-suitcase-rolling me-2" />Packages
-  </Link>
-</li>
-<li className="nav-item nav-item1 ">
-  <Link
-    className={`nav-link ${activeTab === 'GiftCards' ? 'active' : ''}`}
-    onClick={() => setActiveTab('GiftCards')}
-  >
-    <i className="fa-solid fa-gift me-2" />Gift Cards
-  </Link>
-</li>
+                      <Link
+                        className={`nav-link ${activeTab === 'HomeStaysVillas' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('HomeStaysVillas')}
+                      >
+                        <i className="fa-solid fa-house-user me-2" />Home Stays & Villas
+                      </Link>
+                    </li>
+                    <li className="nav-item nav-item1 ">
+                      <Link
+                        className={`nav-link ${activeTab === 'TravelInsurance' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('TravelInsurance')}
+                      >
+                        <i className="fa-solid fa-shield-alt me-2" />Travel Insurance
+                      </Link>
+                    </li>
+                    <li className="nav-item nav-item1 ">
+                      <Link
+                        className={`nav-link ${activeTab === 'Packages' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('Packages')}
+                      >
+                        <i className="fa-solid fa-suitcase-rolling me-2" />Packages
+                      </Link>
+                    </li>
+                    <li className="nav-item nav-item1 ">
+                      <Link
+                        className={`nav-link ${activeTab === 'GiftCards' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('GiftCards')}
+                      >
+                        <i className="fa-solid fa-gift me-2" />Gift Cards
+                      </Link>
+                    </li>
 
                   </ul>
                   {/* <div>

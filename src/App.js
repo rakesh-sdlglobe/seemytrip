@@ -93,6 +93,9 @@ import TrainSearchResultList from './components/train_search_result/train_search
 import OTPModal from './components/otp-modal.jsx';
 import SupportPage from './components/SupportPage.jsx';
 import TrainList01 from './components/train_search_result/TrainList.jsx';
+import CardOffers from './components/Offers/Offers_Result.jsx';
+import TourGuides from './components/Guides/Guides.jsx';
+import SelfDriveCars from './components/Self Drive/Selfdrivecars.jsx';
 
 function App() {
   const dispatch = useDispatch();
@@ -222,6 +225,9 @@ function App() {
           <Route path='/otp-modal' element = {<OTPModal/>}/>
           <Route path='/support' element = {<SupportPage/>}/>
 
+          <Route path = "/offers" element = {<CardOffers/>}/>
+          <Route path = "/guides" element = {<TourGuides/>}/>
+          <Route path = "/selfdrivecars" element = {<SelfDriveCars/>}/>
         </Routes>
       </Router>
     </div>
