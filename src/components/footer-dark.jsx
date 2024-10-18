@@ -40,14 +40,14 @@ const FooterDark = () => {
               <div className="footer-widget">
                 <h4 className="widget-title">Travel Services</h4>
                 <ul className="footer-menu">
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Trains</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Flights</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Hotels</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Cabs</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Cruises</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Buses</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Business Tourism</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Medical Tourism</Link></li>
+                  <li><Link to="/" >Trains</Link></li>
+                  <li><Link to="/home-flight" >Flights</Link></li>
+                  <li><Link to="/home-hotel" >Hotels</Link></li>
+                  <li><Link to="/home-car" >Cabs</Link></li>
+                  <li><Link to="/home-cruise" >Cruises</Link></li>
+                  <li><Link to="/home-bus" >Buses</Link></li>
+                  <li><Link to="/home-businesstourism" >Business Tourism</Link></li>
+                  <li><Link to="/home-medicaltourism" >Health Tourism</Link></li>
                 </ul>
               </div>
             </div>
