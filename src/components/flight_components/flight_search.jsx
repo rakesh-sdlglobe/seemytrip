@@ -29,19 +29,18 @@ const FlightSearch = ({
   goingLabel = 'Going To',
   dateLabel = 'Journey Date',
   dropdownHindden = 'auto',
-  radioHindden ='auto',
+  radioHindden = 'auto',
   ReturnLable = 'auto'
 }) => {
   const [tripType, setTripType] = useState('one-way'); // State for radio buttons
   const [travellers, setTravellers] = useState(1); // State for number of travellers
-  const [travelClass, setTravelClass] = useState('Economy'); // State for travel clas
+  const [travelClass, setTravelClass] = useState('Economy'); // State for travel class
 
   const [returnDate, setReturnDate] = useState(null);
 
-const handleReturnDateChange = (date) => {
-  setReturnDate(date);
-};
-
+  const handleReturnDateChange = (date) => {
+    setReturnDate(date);
+  };
 
   const findAirportByName = (name) => {
     return airportData.find(airport => airport.name === name);
@@ -118,7 +117,13 @@ const handleReturnDateChange = (date) => {
 
   const airportOptions = airportData.map(airport => ({ value: airport.id, label: airport.name }));
   const customSelectStyles = {
-    control: (provided) => ({ ...provided, boxShadow: 'none', borderRadius: '4px', backgroundColor: '#fff', padding: '12px' }),
+    control: (provided) => ({
+      ...provided,
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+      border: 'none',
+      borderRadius: '4px',
+      padding: '8px'
+    }),
     menu: (provided) => ({ ...provided, borderRadius: '4px' }),
     placeholder: (provided) => ({ ...provided, color: '#999' }),
     singleValue: (provided) => ({ ...provided, color: '#333' })
@@ -150,16 +155,23 @@ const handleReturnDateChange = (date) => {
 
           .form-control {
             font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
           }
 
           .btn.full-width {
             width: 100%;
             font-weight: 500;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: none;
+            padding: 12px;
           }
           .radiobutton{
             display:  ${radioHindden}; 
             align-items: center;
-             accent-color: #cd2c22;
+            accent-color: #cd2c22;
           }
           .dropdown-container  {
             display:  ${dropdownHindden}; 
@@ -207,93 +219,71 @@ const handleReturnDateChange = (date) => {
                         <select value={travelClass} onChange={handleTravelClassChange} className="form-select">
                           <option value="Economy">Economy</option>
                           <option value="Business">Business</option>
-                          <option value="First Class">First Class</option>
+                          <option value="First">First Class</option>
                         </select>
                       </div>
                     </div>
                   </div>
-                  <div className="col-xl-12">
-                    <div className="row align-items-end gy-3 gx-md-3 gx-sm-2">
-                      {/* From Airport Select */}
-                      <div className="col-xl-3 col-lg-4 col-md-4 col-sm-6 position-relative">
-                        <div className="form-group hdd-arrow mb-0">
-                          {leavingLabel && (
-                            <label className="text-light text-uppercase opacity-75">{leavingLabel}</label>
-                          )}
-                          <Select
-                            id="fromAirport"
-                            options={airportOptions}
-                            value={fromAirport}
-                            onChange={handleFromAirportChange}
-                            placeholder="From "
-                            styles={customSelectStyles}
-                          />
-                        </div>
-                      </div>
 
-                      {/* To Airport Select */}
-                      <div className="col-xl-3 col-lg-4 col-md-4 col-sm-6">
-                        <div className="form-group hdd-arrow mb-0">
-                          {goingLabel && (
-                            <label className="text-light text-uppercase opacity-75">{goingLabel}</label>
-                          )}
-                          <Select
-                            id="toAirport"
-                            options={airportOptions}
-                            value={toAirport}
-                            onChange={handleToAirportChange}
-                            placeholder="To "
-                            styles={customSelectStyles}
-                          />
-                        </div>
-                      </div>
+                  {/* Select Fields */}
+                  <div className="col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                    <label>{leavingLabel}</label>
+                    <Select
+                      value={fromAirport}
+                      onChange={handleFromAirportChange}
+                      options={airportOptions}
+                      styles={customSelectStyles}
+                      placeholder="From"
+                    />
+                  </div>
+                  <div className="col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                    <label>{goingLabel}</label>
+                    <Select
+                      value={toAirport}
+                      onChange={handleToAirportChange}
+                      options={airportOptions}
+                      styles={customSelectStyles}
+                      placeholder="To"
+                    />
+                  </div>
 
-                      {/* Journey Date Picker */}
-                      <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6">
-                        <div className="form-group mb-0">
-                          {dateLabel && (
-                            <label className="text-light text-uppercase opacity-75">{dateLabel}</label>
-                          )}
-                          <DatePicker
-                            selected={journeyDate}
-                            onChange={handleJourneyDateChange}
-                            dateFormat="dd/MM/yyyy"
-                            placeholderText="Depature"
-                            className="form-control fw-bold"
-                          />
-                        </div>
-                      </div>
+                  {/* Date Pickers */}
+                  <div className="col-xl-2 col-lg-2 col-md-6 col-sm-6">
+                    <label>{dateLabel}</label>
+                    <DatePicker
+                      selected={journeyDate}
+                      onChange={handleJourneyDateChange}
+                      className="form-control"
+                      placeholderText="Journey Date"
+                      dateFormat="dd/MM/yyyy"
+                    />
+                  </div>
 
-                      {/* Return Date Picker */}
-                      <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6">
-                        <div className="form-group mb-0">
-                          <label className="text-light text-uppercase opacity-75">{ReturnLable}</label>
-                          <DatePicker
-                            selected={returnDate}
-                            onChange={handleReturnDateChange}
-                            dateFormat="dd/MM/yyyy"
-                            placeholderText="Return"
-                            className="form-control fw-bold"
-                          />
-                        </div>
-                      </div>
-
-                      {/* Search Button */}
-                      <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6">
-                        <div className="form-group mb-0">
-                          <button
-                            className="btn full-width text-uppercase"
-                            style={{
-                              backgroundColor: buttonBackgroundColor,
-                              color: buttonTextColor,
-                            }}
-                            onClick={handleSearch}
-                          >
-                            {buttonText}
-                          </button>
-                        </div>
-                      </div>
+                  {tripType === 'round-trip' && (
+                    <div className="col-xl-2 col-lg-2 col-md-6 col-sm-6">
+                      <label>{ReturnLable}</label>
+                      <DatePicker
+                        selected={returnDate}
+                        onChange={handleReturnDateChange}
+                        className="form-control"
+                        placeholderText="Return Date"
+                        dateFormat="dd/MM/yyyy"
+                      />
                     </div>
+                  )}
+
+                  {/* Search Button */}
+                  <div className="col-xl-2 col-lg-2 col-md-6 col-sm-6">
+                    <button
+                      className="btn btn-danger full-width"
+                      onClick={handleSearch}
+                      style={{
+                        backgroundColor: buttonBackgroundColor,
+                        color: buttonTextColor,
+                      }}
+                    >
+                      {buttonText}
+                    </button>
                   </div>
                 </div>
               </div>

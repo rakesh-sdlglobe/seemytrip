@@ -84,13 +84,14 @@ export const HotelSearchbar = () => {
   ];
 
   const customSelectStyles = {
-    control: (provided) => ({
+    control: (provided,state) => ({
       ...provided,
-      boxShadow: 'none',
-      borderRadius: '4px',
-      backgroundColor: '#fff',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', // Default box shadow
+      border: 'none', // Remove border
       padding: '12px',
-      border: '0.5px solid #ccc', // Add border
+      backgroundColor: '#fff',
+      // Add a slight transition for smoother visual changes
+      transition: 'box-shadow 0.2s ease',
     }),
     menu: (provided) => ({
       ...provided,
@@ -114,18 +115,126 @@ export const HotelSearchbar = () => {
              border-width: 0.5px; /* Adjust the border width as needed */
              border-color: #ccc;  /* Ensure the border color matches */
            }
+             .custom-input {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  background-color: #fff;
+}
+
+.custom-input:focus {
+  outline: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Darker shadow on focus */
+}
+
+.custom-button {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 15px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.custom-button:focus {
+  outline: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.custom-select {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 8px;
+}
+
+.custom-select__control {
+  box-shadow: none;
+  border: none;
+}
+
+.custom-select__control {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important; /* Force box shadow */
+  border: none !important; /* Ensure border is removed */
+}
+
+
         `}
+        
       </style>
       <div className="search-wrap with-label bg-white rounded-3 p-3 pt-4">
+      <ul className="nav nav-pills primary-soft medium justify-content-center mb-3" id="tour-pills-tab" role="tablist">
+                    {/* <li className="nav-item nav-item1">
+                      <Link
+                        className={`nav-link ${activeTab === 'Trains' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('Trains')}
+                      >
+                        <i className="fa-solid fa-train me-2" />Trains
+                      </Link>
+                    </li> */}
+                    <li className="nav-item nav-item1">
+                      <Link className={`nav-link`} to='/offers'>
+                        <i className="fa-solid fa-tags me-2" />Offers
+                      </Link>
+                    </li>
+                    <li className="nav-item nav-item1">
+                      <Link className={`nav-link`} to='/guides'>
+                        <i className="fa-solid fa-book me-2" />Guides
+                      </Link>
+                    </li>
+                    <li className="nav-item nav-item1">
+                      <Link className={`nav-link`} to='/selfdrivecars'>
+                        <i className="fa-solid fa-car me-2" />Self Drive
+                      </Link>
+                    </li>
+
+                    <li className="nav-item nav-item1 ">
+                      <Link
+                        className={`nav-link`}
+                      >
+                        <i className="fa-solid fa-camera me-2" />Photographer
+                      </Link>
+                    </li>
+                    <li className="nav-item nav-item1 ">
+                      <Link
+                        className={`nav-link`}
+                      >
+                        <i className="fa-solid fa-house-user me-2" />Home Stays & Villas
+                      </Link>
+                    </li>
+                    <li className="nav-item nav-item1 ">
+                      <Link
+                        className={`nav-link`}
+                      >
+                        <i className="fa-solid fa-shield-alt me-2" />Travel Insurance
+                      </Link>
+                    </li>
+                    <li className="nav-item nav-item1 ">
+                      <Link
+                        className={`nav-link`}
+                      >
+                        <i className="fa-solid fa-suitcase-rolling me-2" />Packages
+                      </Link>
+                    </li>
+                    <li className="nav-item nav-item1 ">
+                      <Link
+                        className={`nav-link`}
+                      >
+                        <i className="fa-solid fa-gift me-2" />Gift Cards
+                      </Link>
+                    </li>
+
+                  </ul>
         <div className="row gy-3 gx-md-3 gx-sm-2">
           <div className="col-xl-8 col-lg-7 col-md-12">
             <div className="row gy-3 gx-md-3 gx-sm-2">
               <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
                 <div className="form-group hdd-arrow custom-border rounded-1 mb-0">
                   <div className="form-group hdd-arrow mb-0">
-                    <Select
+                  <Select
                       options={hotelOptions}
                       placeholder="Destination"
+                      classNamePrefix="custom-select"
                       styles={customSelectStyles}
                     />
                   </div>
@@ -143,7 +252,7 @@ export const HotelSearchbar = () => {
                       startDate={startDate}
                       endDate={endDate}
                       placeholderText="Check-In"
-                      className="form-control fw-bold"
+                      className="form-control fw-bold custom-input"
                     />
                     <DatePicker
                       selected={endDate}
@@ -153,7 +262,7 @@ export const HotelSearchbar = () => {
                       endDate={endDate}
                       minDate={startDate}
                       placeholderText="Check-Out"
-                      className="form-control fw-bold ms-2"
+                      className="form-control fw-bold ms-2 custom-input"
                     />
                   </div>
                 </div>
@@ -168,7 +277,7 @@ export const HotelSearchbar = () => {
                   <div className="booking-form__input">
                     <button
                       onClick={handleShowGuestsModal}
-                      className="form-control text-start"
+                      className="form-control text-start custom-button"
                     >
                       {adults} Adults{adults > 1 ? 's' : ''}, {children} Child{children !== 1 ? 'ren' : ''}, {rooms} Room{rooms > 1 ? 's' : ''}
                     </button>

@@ -1,141 +1,220 @@
-import React, { useState } from 'react';
-// import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useState, useEffect } from 'react';
 import { Modal } from 'react-bootstrap';
-import { FaTimes } from 'react-icons/fa'; // For the cross icon
-import { trainImage } from '../assets/images';
+import { FaTimes, FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa'; 
+import { Appstoreicon, Playstoreicon, trainImage } from '../assets/images'; 
+import popupImage from '../assets/images/popup.png';
 
 function WelcomePopup() {
-  // State to control the modal visibility
-  const [show, setShow] = useState(true);
-  const [email, setEmail] = useState(''); // To store the email input
-  const [submitted, setSubmitted] = useState(false); // To track submission
+  const [show, setShow] = useState(false);
+  const [email, setEmail] = useState(''); 
+  const [submitted, setSubmitted] = useState(false);
 
-  // Handlers to close the modal
+  useEffect(() => {
+    const hasShownPopup = sessionStorage.getItem('welcomePopupShown');
+    if (!hasShownPopup) {
+      setShow(true);
+      sessionStorage.setItem('welcomePopupShown', 'true');
+    }
+  }, []);
+
   const handleClose = () => setShow(false);
-
-  // Handle input change
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
-
-  // Handle form submission
+  const handleEmailChange = (e) => setEmail(e.target.value);
   const handleSubmit = (e) => {
     e.preventDefault();
     if (email) {
-      setSubmitted(true); // Mark as submitted
+      setSubmitted(true);
       console.log("Email submitted:", email);
-      // Perform any other actions, like sending the email to the server
     }
   };
 
   return (
     <>
-      {/* Custom Styled Modal */}
       <Modal
         show={show}
         onHide={handleClose}
         centered
-        dialogClassName="custom-modal"
+        dialogClassName="image-modal"
+        size="xl"
       >
-        <Modal.Header>
-          {/* Cross Icon to Close the Modal */}
+       <Modal.Header style={{ borderBottom: 'none' }} className="border-none">
+          <div>
+            <img
+              src={trainImage} 
+              alt="Train" 
+              className="train-image mt-0"
+            />
+          </div>
           <FaTimes
             className="close-icon"
             onClick={handleClose}
-            style={{ cursor: 'pointer', fontSize: '1.5rem', color: '#333' }}
+            style={{ cursor: 'pointer', fontSize: '1.5rem', color: '#fff' }}
           />
         </Modal.Header>
-        <Modal.Body className="text-center">
-          {/* Image Field */}
-          <img
-            src={trainImage} // Replace with your image URL
-            alt="Welcome to SeeMyTrip"
-            className="welcome-image mb-4"
-          />
-          <h1 className="mb-4">Welcome to SeeMyTrip</h1>
-          <p className="lead">
-            We're excited to have you here! Explore the platform and start booking your dream trips with ease.
-          </p>
+        <Modal.Body className="text-center overlay-content">
+          <div className="app-section d-flex justify-content-between mb-4">
+            <div className="get-app d-flex align-items-center">
+              <span className="mr-3">Get the App</span>
+               <img src={Playstoreicon} alt="Play Store" className="app-icon playstore-icon ms-3" />
+               <img src={Appstoreicon} alt="App Store" className="app-icon appstore-icon ms-3" />
+            </div>
+            <div className="social-icons d-flex">
+              <FaFacebook className="social-icon" />
+              <FaTwitter className="social-icon" />
+              <FaInstagram className="social-icon" />
+            </div>
+          </div>
 
-          {/* Email Form */}
-          {!submitted ? (
-            <form onSubmit={handleSubmit}>
-              <input
-                type="email"
-                value={email}
-                onChange={handleEmailChange}
-                className="email-input"
-                placeholder="Enter your email for latest updates"
-                required
-              />
-              <button type="submit" className="submit-btn mt-3">Submit</button>
-            </form>
-          ) : (
-            <p className="mt-3 text-success">Thank you for submitting your email!</p>
-          )}
+          <div className="content-section">
+            <h1 className="mb-4 text-white">Welcome to SeeMyTrip</h1>
+            <p className="lead text-white">
+              We're excited to have you here! Explore the platform and start booking your dream trips with ease.
+            </p>
+          </div>
+
+          <div className="email-section mt-5">
+            {!submitted ? (
+              <form onSubmit={handleSubmit} className="email-form">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={handleEmailChange}
+                  className="email-input"
+                  placeholder="Enter your email for latest updates"
+                  required
+                />
+                <button type="submit" className="submit-btn mt-3">Submit</button>
+              </form>
+            ) : (
+              <p className="mt-3 text-success">Thank you for submitting your email!</p>
+            )}
+          </div>
         </Modal.Body>
       </Modal>
 
-      {/* Custom Styles */}
       <style jsx>{`
-        .custom-modal .modal-content {
-          background-color: #f9f9f9;
-          border-radius: 15px;
+        .image-modal .modal-content {
+          background-image: url(${popupImage});
+          background-size: cover;
+          background-position: center;
+          border-radius: 20px;
           padding: 2rem;
-          max-width: 700px;
+          max-width: 1200px;
           width: 100%;
+          height: 80vh;
+          color: white;
+          position: relative;
+          overflow: hidden;
         }
 
-        .custom-modal .modal-header {
-          border-bottom: none;
+        .image-modal .modal-content::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.5); 
+          z-index: 1;
+        }
+
+        .image-modal .modal-body {
+          padding: 0;
+          position: relative;
+          height: 100%;
+          z-index: 2;
+        }
+
+        .app-icon {
+          height: 30px;
+          width: 30px;
+        }
+
+        .overlay-content {
           display: flex;
-          justify-content: flex-end;
+          flex-direction: column;
+          justify-content: space-between;
+          height: 100%;
         }
 
-        .custom-modal .modal-body {
-          font-size: 1.2rem;
-          padding: 2rem;
+        .train-image {
+          position: absolute;
+          top: 20px;
+          left: 40px;
+          height: 60px;
+          z-index: 2;
         }
 
-        .custom-modal h1 {
+        .app-section {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 2rem;
+          padding: 0 20px;
+        }
+
+        .close-icon {
+          z-index: 3;
+          cursor: pointer;
+        }
+
+        .social-icon {
+          font-size: 1.8rem;
+          margin-left: 20px;
+          color: white;
+          cursor: pointer;
+        }
+
+        .content-section {
+          margin-bottom: 2rem;
+          text-align: center;
+          padding: 0 20px;
+        }
+
+        .image-modal h1 {
           font-size: 2.5rem;
         }
 
-        .custom-modal p {
-          color: #555;
-          font-size: 1.1rem;
+        .email-section {
+          position: absolute;
+          bottom: -10px;
+          width: 100%;
+          left: 0;
+          display: flex;
+          justify-content: center;
+          padding: 0 20px;
         }
 
-        .welcome-image {
-          max-width: 50%;
-          height: auto;
-          border-radius: 10px;
+        .email-form {
+          max-width: 600px;
+          width: 100%;
         }
 
         .email-input {
-          width: 100%;
+          width: 70%;
           padding: 10px;
-          font-size: 1rem;
-          border: 1px solid #ccc;
-          border-radius: 5px;
+          font-size: 1.2rem;
+          border: none;
+          border-radius: 8px 0 0 8px;
         }
 
         .submit-btn {
           background-color: #cd2c22;
           color: #fff;
           border: none;
-          padding: 10px 20px;
-          font-size: 1rem;
-          border-radius: 5px;
+          padding: 10px 15px;
+          font-size: 1.2rem;
+          border-radius: 0 8px 8px 0;
           cursor: pointer;
+          transition: background-color 0.3s ease;
         }
 
         .submit-btn:hover {
-          background-color: #cd2c22;
+          background-color: #b22b1f;
         }
 
         .text-success {
           color: #28a745;
+          font-size: 1.2rem;
         }
       `}</style>
     </>
