@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const BtSearch = () => {
   const [tripType, setTripType] = useState('one-way');
@@ -10,7 +10,7 @@ const BtSearch = () => {
   const [endDate, setEndDate] = useState(null);
   const [mobileNumber, setMobileNumber] = useState('');
   const [journeyType, setJourneyType] = useState('outstation');
-  const [carType, setCarType] = useState('executive'); // Added car type for business
+  const [carType, setCarType] = useState('executive');
   const navigate = useNavigate();
 
   const cabOptions = [
@@ -33,15 +33,14 @@ const BtSearch = () => {
   const customSelectStyles = {
     control: (provided) => ({
       ...provided,
-      boxShadow: 'none',
-      borderRadius: '4px',
-      backgroundColor: '#fff',
-      padding: '12px',
-      border: '1px solid #ccc',
+      boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', // Add box shadow
+      border: 'none', // Remove border
+      borderRadius: '8px',
+      padding: '10px', // Adjust padding
     }),
     menu: (provided) => ({
       ...provided,
-      borderRadius: '4px',
+      borderRadius: '8px',
     }),
     placeholder: (provided) => ({
       ...provided,
@@ -54,8 +53,7 @@ const BtSearch = () => {
   };
 
   const handleSearch = () => {
-    navigate('/bt-list')
-    // Add search logic here
+    navigate('/bt-list');
     console.log({
       tripType,
       startDate,
@@ -71,98 +69,93 @@ const BtSearch = () => {
       <style>
         {`
           .search-wrap {
-            background-color: #f9f9f9; /* Lighter background for a business look */
-            height: auto;
+            background-color: #f9f9f9;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for elevation */
-          }
-
-          @media (max-width: 768px) {
-            .search-wrap {
-              padding: 15px;
-              margin-top: 15px;
-            }
-          }
-
-          @media (max-width: 576px) {
-            .search-wrap {
-              padding: 10px;
-              margin-top: 10px;
-            }
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
           }
 
           .form-control {
-            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add box shadow */
+            border: none; /* Remove border */
+            border-radius: 8px; /* Rounded corners */
+            padding: 12px; /* Adjust padding for a modern look */
           }
 
           .btn.full-width {
             width: 100%;
             font-weight: 500;
+            background-color: #cd2c22;
+            color: #fff;
+            border: none;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1); /* Add button shadow */
           }
 
-          .radiobutton {
-            display: flex; 
-            align-items: center;
-            margin-bottom: 1rem;
-            accent-color: #cd2c22; /* Business blue color */
-          }
-
-          .dropdown-container {
-            display: flex;
-            align-items: center;
-          }
-
-          .toggle-buttons {
-            display: flex;
-            margin-bottom: 1rem;
-            align-items: center;
+          .radiobutton label {
+            font-weight: bold;
+            color: #333;
           }
 
           .toggle-button {
             padding: 10px 20px;
-            margin-right: 10px;
-            border: 1px solid #cd2c22;
-            border-radius: 4px;
-            cursor: pointer;
+            border: none; /* Remove border */
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add box shadow */
             background-color: #fff;
             color: #cd2c22;
             font-weight: 500;
-            text-align: center;
+            cursor: pointer;
           }
 
           .toggle-button.active {
             background-color: #cd2c22;
             color: #fff;
-          }
-
-          .toggle-radio-group {
-            display: flex;
-            align-items: center;
-          }
-
-          .toggle-radio-group label {
-            margin-right: 15px;
-            display: flex;
-            align-items: center;
-          }
-
-          @media (max-width: 768px) {
-            .react-select__control {
-              border: 1px solid #ccc;
-            }
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1); /* Add shadow to active state */
           }
         `}
       </style>
       <div className="container">
+        {/* Navigation Tabs */}
+        <ul className="nav nav-pills primary-soft medium justify-content-center mb-3">
+          <li className="nav-item nav-item1">
+            <Link className={`nav-link`} to='/offers'>
+              <i className="fa-solid fa-tags me-2" />Offers
+            </Link>
+          </li>
+          <li className="nav-item nav-item1">
+            <Link className={`nav-link`} to='/guides'>
+              <i className="fa-solid fa-book me-2" />Guides
+            </Link>
+          </li>
+          <li className="nav-item nav-item1">
+            <Link className={`nav-link`} to='/selfdrivecars'>
+              <i className="fa-solid fa-car me-2" />Self Drive
+            </Link>
+          </li>
+          <li className="nav-item nav-item1 ">
+            <Link className={`nav-link`}><i className="fa-solid fa-camera me-2" />Photographer</Link>
+          </li>
+          <li className="nav-item nav-item1 ">
+            <Link className={`nav-link`}><i className="fa-solid fa-house-user me-2" />Home Stays & Villas</Link>
+          </li>
+          <li className="nav-item nav-item1 ">
+            <Link className={`nav-link`}><i className="fa-solid fa-shield-alt me-2" />Travel Insurance</Link>
+          </li>
+          <li className="nav-item nav-item1 ">
+            <Link className={`nav-link`}><i className="fa-solid fa-suitcase-rolling me-2" />Packages</Link>
+          </li>
+          <li className="nav-item nav-item1 ">
+            <Link className={`nav-link`}><i className="fa-solid fa-gift me-2" />Gift Cards</Link>
+          </li>
+        </ul>
+
+        {/* Search Section */}
         <div className="row justify-content-center align-items-center">
           <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
             <div className="search-wrap position-relative">
               <div className="row gy-3 gx-md-1 gx-sm-1">
-                {/* Toggle Buttons and Radio Buttons in a Single Row */}
-                <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                <div className="col-xl-12">
                   <div className="d-flex flex-wrap justify-content-between toggle-radio-group">
-                    {/* Toggle Buttons for OutStation and Local */}
                     <div className="toggle-buttons">
                       <div
                         className={`toggle-button ${journeyType === 'outstation' ? 'active' : ''}`}
@@ -177,8 +170,6 @@ const BtSearch = () => {
                         Local
                       </div>
                     </div>
-
-                    {/* Radio Buttons for One Way and Round Trip */}
                     <div className="radiobutton">
                       <label className="me-3">
                         <input
@@ -199,13 +190,12 @@ const BtSearch = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Form Fields */}
                 <div className="col-xl-12">
                   <div className="row gy-3 gx-md-3 gx-sm-2">
-                    {/* From City Select */}
                     <div className="col-xl-3 col-lg-4 col-md-4 col-sm-6">
-                      <div className="form-group hdd-arrow mb-0">
+                      <div className="form-group mb-0">
                         <Select
                           id="fromCity"
                           options={cabOptions}
@@ -215,9 +205,8 @@ const BtSearch = () => {
                       </div>
                     </div>
 
-                    {/* To City Select */}
                     <div className="col-xl-3 col-lg-4 col-md-4 col-sm-6">
-                      <div className="form-group hdd-arrow mb-0">
+                      <div className="form-group mb-0">
                         <Select
                           id="toCity"
                           options={cabOptions}
@@ -227,7 +216,6 @@ const BtSearch = () => {
                       </div>
                     </div>
 
-                    {/* Journey Date Picker */}
                     <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6">
                       <div className="form-group mb-0">
                         <DatePicker
@@ -235,53 +223,51 @@ const BtSearch = () => {
                           onChange={date => setStartDate(date)}
                           dateFormat="dd/MM/yyyy"
                           placeholderText="Select Journey Date"
-                          className="form-control fw-bold"
+                          className="form-control"
                         />
                       </div>
                     </div>
 
-                    {/* Car Type Select */}
                     <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6">
-                      <div className="form-group hdd-arrow mb-0">
+                      <div className="form-group mb-0">
+                        <DatePicker
+                          selected={endDate}
+                          onChange={date => setEndDate(date)}
+                          dateFormat="dd/MM/yyyy"
+                          placeholderText="Return Date"
+                          className="form-control"
+                          disabled={tripType === 'one-way'}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6">
+                      <div className="form-group mb-0">
                         <Select
                           id="carType"
                           options={carOptions}
                           placeholder="Car Type"
                           styles={customSelectStyles}
-                          value={carOptions.find(option => option.value === carType)}
-                          onChange={option => setCarType(option.value)}
                         />
                       </div>
                     </div>
 
-                    {/* Mobile Number */}
-                    <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6">
+                    <div className="col-xl-3 col-lg-4 col-md-4 col-sm-6">
                       <div className="form-group mb-0">
                         <input
                           type="text"
-                          className="form-control"
-                          style={{ border: '1px solid #ccc' }}
-                          placeholder="Enter mobile number"
                           value={mobileNumber}
                           onChange={e => setMobileNumber(e.target.value)}
+                          className="form-control"
+                          placeholder="Enter Mobile No."
                         />
                       </div>
                     </div>
 
-                    {/* Search Button */}
-                    <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6">
-                      <div className="form-group mb-0">
-                        <button
-                          className="btn full-width text-uppercase"
-                          style={{
-                            backgroundColor: '#cd2c22', // Business blue color
-                            color: '#fff',
-                          }}
-                          onClick={handleSearch}
-                        >
-                          Search
-                        </button>
-                      </div>
+                    <div className="col-xl-12">
+                      <button className="btn full-width" onClick={handleSearch}>
+                        Search Cabs
+                      </button>
                     </div>
                   </div>
                 </div>

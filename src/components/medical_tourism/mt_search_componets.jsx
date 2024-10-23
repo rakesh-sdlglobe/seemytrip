@@ -9,7 +9,7 @@ const MtSearch = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [mobileNumber, setMobileNumber] = useState('');
-  const [treatmentType, setTreatmentType] = useState('surgery'); // Added treatment type for medical tourism
+  const [treatmentType, setTreatmentType] = useState('surgery');
   const navigate = useNavigate();
 
   const cityOptions = [
@@ -33,11 +33,11 @@ const MtSearch = () => {
   const customSelectStyles = {
     control: (provided) => ({
       ...provided,
-      boxShadow: 'none',
+      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Add box shadow
       borderRadius: '4px',
       backgroundColor: '#fff',
       padding: '12px',
-      border: '1px solid #ccc',
+      border: 'none', // Remove border
     }),
     menu: (provided) => ({
       ...provided,
@@ -54,7 +54,7 @@ const MtSearch = () => {
   };
 
   const handleSearch = () => {
-    navigate('/mt-list'); // Adjusted for medical tourism results page
+    navigate('/mt-list');
     console.log({
       tripType,
       startDate,
@@ -92,6 +92,8 @@ const MtSearch = () => {
 
           .form-control {
             font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add box shadow */
+            border: none; /* Remove border */
           }
 
           .btn.full-width {
@@ -103,7 +105,7 @@ const MtSearch = () => {
             display: flex; 
             align-items: center;
             margin-bottom: 1rem;
-            accent-color: #cd2c22; /* Medical theme color */
+            accent-color: #cd2c22;
           }
 
           .dropdown-container {
@@ -191,7 +193,7 @@ const MtSearch = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Form Fields */}
                 <div className="col-xl-12">
                   <div className="row gy-3 gx-md-3 gx-sm-2">
@@ -252,7 +254,7 @@ const MtSearch = () => {
                         <input
                           type="text"
                           className="form-control"
-                          style={{ border: '1px solid #ccc' }}
+                          style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }} // Add box shadow
                           placeholder="Enter mobile number"
                           value={mobileNumber}
                           onChange={e => setMobileNumber(e.target.value)}
@@ -266,7 +268,7 @@ const MtSearch = () => {
                         <button
                           className="btn full-width text-uppercase"
                           style={{
-                            backgroundColor: '#cd2c22', // Medical theme color
+                            backgroundColor: '#cd2c22',
                             color: '#fff',
                           }}
                           onClick={handleSearch}
@@ -275,6 +277,7 @@ const MtSearch = () => {
                         </button>
                       </div>
                     </div>
+
                   </div>
                 </div>
               </div>

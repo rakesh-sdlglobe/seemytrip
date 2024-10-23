@@ -104,14 +104,17 @@ const SearchComponent = ({
   const customSelectStyles = {
     control: (provided) => ({
       ...provided,
-      boxShadow: 'none',
+      // boxShadow: 'none',
       borderRadius: '4px',
       backgroundColor: '#fff',
+      border: 'none',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
       padding: '12px'
     }),
     menu: (provided) => ({
       ...provided,
-      borderRadius: '4px'
+      borderRadius: '4px',
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
     }),
     placeholder: (provided) => ({
       ...provided,
@@ -122,6 +125,7 @@ const SearchComponent = ({
       color: '#333'
     })
   };
+  
 
   return (
     <>
@@ -166,12 +170,16 @@ const SearchComponent = ({
           }
 
           .form-control {
-            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Shadow for inputs */
+            border: none; /* Remove border */
+            padding: 12px; /* Add padding */
+            border-radius: 4px; /* Rounded corners */
           }
 
           .btn.full-width {
             width: 100%;
             font-weight: 500;
+             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Button shadow */
           }
             
           .dropdown-container  {
@@ -217,6 +225,11 @@ const SearchComponent = ({
           .swap-button i {
             font-size: 1.2em; 
           }
+            .react-datepicker-wrapper .form-control:focus,
+            .react-datepicker-wrapper .form-control:active {
+              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Keep the box shadow on focus */
+              outline: none; /* Optional: remove the default outline */
+            }
             
         `}
       </style>
@@ -260,11 +273,12 @@ const SearchComponent = ({
                   <div className="col-xl-8 col-lg-7 col-md-12">
                     <div className="row gy-3 gx-md-3 gx-sm-2">
                       <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
-                        <div className="form-group hdd-arrow mb-0">
+                        <div className="form-group hdd-arrow mb-0 me-2">
                           {leavingLabel && (
                             <label className="text-light text-uppercase opacity-75">{leavingLabel}</label>
                           )}
                           <Select
+                          
                             id="fromStation"
                             options={stationOptions}
                             value={leavingFrom}
@@ -275,7 +289,7 @@ const SearchComponent = ({
                         </div>
                       </div>
                       <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                        <div className="form-group hdd-arrow mb-0">
+                        <div className="form-group hdd-arrow mb-0 ms-2">
                           {goingLabel && (
                             <label className="text-light text-uppercase opacity-75">{goingLabel}</label>
                           )}
@@ -294,7 +308,7 @@ const SearchComponent = ({
                   <div className="col-xl-4 col-lg-5 col-md-12">
                     <div className="row align-items-end gy-3 gx-md-3 gx-sm-2">
                       <div className="col-xl-8 col-lg-8 col-md-8 col-sm-8">
-                        <div className="form-group mb-0">
+                        <div className="form-group mb-0 ">
                           {dateLabel && (
                             <label className="text-light text-uppercase opacity-75">{dateLabel}</label>
                           )}

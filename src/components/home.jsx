@@ -103,40 +103,35 @@ const Home = () => {
 
                     <li className="nav-item nav-item1 ">
                       <Link
-                        className={`nav-link ${activeTab === 'Photographer' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('Photographer')}
+                        className={`nav-link`}
                       >
                         <i className="fa-solid fa-camera me-2" />Photographer
                       </Link>
                     </li>
                     <li className="nav-item nav-item1 ">
                       <Link
-                        className={`nav-link ${activeTab === 'HomeStaysVillas' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('HomeStaysVillas')}
+                        className={`nav-link`}
                       >
                         <i className="fa-solid fa-house-user me-2" />Home Stays & Villas
                       </Link>
                     </li>
                     <li className="nav-item nav-item1 ">
                       <Link
-                        className={`nav-link ${activeTab === 'TravelInsurance' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('TravelInsurance')}
+                        className={`nav-link`}
                       >
                         <i className="fa-solid fa-shield-alt me-2" />Travel Insurance
                       </Link>
                     </li>
                     <li className="nav-item nav-item1 ">
                       <Link
-                        className={`nav-link ${activeTab === 'Packages' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('Packages')}
+                        className={`nav-link`}
                       >
                         <i className="fa-solid fa-suitcase-rolling me-2" />Packages
                       </Link>
                     </li>
                     <li className="nav-item nav-item1 ">
                       <Link
-                        className={`nav-link ${activeTab === 'GiftCards' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('GiftCards')}
+                        className={`nav-link`}
                       >
                         <i className="fa-solid fa-gift me-2" />Gift Cards
                       </Link>
@@ -162,7 +157,7 @@ const Home = () => {
                           />
                         </div>
                       )}
-                      {activeTab === 'Flights' && (
+                      {/* {activeTab === 'Flights' && (
                         <div className="tab-pane" id="Flights">
                           <FlightSearch
                             onSearchResults={handleSearchResults}
@@ -248,7 +243,7 @@ const Home = () => {
                         <div className="tab-pane" id="GiftCards">
                         <GiftSearch/>
                         </div>
-                      )}
+                      )} */}
                     </div>
                   </div>
                 </div>

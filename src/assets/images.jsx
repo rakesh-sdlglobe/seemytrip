@@ -63,7 +63,9 @@ import cab from '../assets/images/cab.png'
 import bus from '../assets/images/bus.png'
 import MedicalTourismImage from '../assets/images/MedicalTourismImage.jpg'
 import DoctorImage from './images/DoctorImage.jpg'
+import Playstoreicon from '../assets/images/google-play.png'
+import Appstoreicon from '../assets/images/app_store.png'
 
 export {
-  trainImage,indian_flag,charminar,benglore, kolkota, mumbai, utterpradesh, kerla, delhi,chennai,youngIndianCouple, team1, indianTrain,team2,team3,team4,team5,login,charminar2,ramoji,gloconda,D,UPI,Indigo,AirIndia,Vistara,Hyderabad,indigo,Mumbai,Bangalore,Delhi,Hotel01,Hotel02,Hotel03,Hotel04,Nexon,Carnival,Jazz,Ertiga,Toyota,Tiago,ship1,ship2,ship3,ship4,ship5,ship6,bus1,bus2,bus3,bus4,bus5,bus6,bus7,bus8,bus9,bus10,cab,bus,bus11,bus12,MedicalTourismImage,DoctorImage
+  trainImage,indian_flag,charminar,benglore, kolkota, mumbai, utterpradesh, kerla, delhi,chennai,youngIndianCouple, team1, indianTrain,team2,team3,team4,team5,login,charminar2,ramoji,gloconda,D,UPI,Indigo,AirIndia,Vistara,Hyderabad,indigo,Mumbai,Bangalore,Delhi,Hotel01,Hotel02,Hotel03,Hotel04,Nexon,Carnival,Jazz,Ertiga,Toyota,Tiago,ship1,ship2,ship3,ship4,ship5,ship6,bus1,bus2,bus3,bus4,bus5,bus6,bus7,bus8,bus9,bus10,cab,bus,bus11,bus12,MedicalTourismImage,DoctorImage,Playstoreicon,Appstoreicon
 };
