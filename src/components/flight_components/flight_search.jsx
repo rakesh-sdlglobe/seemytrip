@@ -168,6 +168,9 @@ const FlightSearch = ({
             border: none;
             padding: 12px;
           }
+            .btn.full-width:hover {
+    background-color: #cd2c22 !important;
+}
           .radiobutton{
             display:  ${radioHindden}; 
             align-items: center;

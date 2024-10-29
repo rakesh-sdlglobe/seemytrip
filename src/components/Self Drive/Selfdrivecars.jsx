@@ -2,7 +2,8 @@ import React from 'react';
 import { Card, Container, Row, Col } from 'react-bootstrap';
 import Header02 from '../header02'; // Assuming you have this header component
 import FooterDark from '../footer-dark'; // Assuming you have this footer component
-import selfdrive from '../../assets/images/self-drive.png';
+import { selfdrive } from '../../assets/images';
+
 
 const SelfDriveCars = () => {
   const cars = [

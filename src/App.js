@@ -96,6 +96,12 @@ import TrainList01 from './components/train_search_result/TrainList.jsx';
 import CardOffers from './components/Offers/Offers_Result.jsx';
 import TourGuides from './components/Guides/Guides.jsx';
 import SelfDriveCars from './components/Self Drive/Selfdrivecars.jsx';
+import Photographers from './components/Photographer/photographer.jsx';
+import HomeStaysVillas from './components/Homestays&villas/HomeStaysVillas.jsx';
+import TravelInsurance from './components/TravelInsurance/TravelInsurance.jsx';
+import Packages from './components/packages/Packages.jsx';
+import GiftCards from './components/Giftcards/GiftCards.jsx';
+
 
 function App() {
   const dispatch = useDispatch();
@@ -228,6 +234,11 @@ function App() {
           <Route path = "/offers" element = {<CardOffers/>}/>
           <Route path = "/guides" element = {<TourGuides/>}/>
           <Route path = "/selfdrivecars" element = {<SelfDriveCars/>}/>
+          <Route path = "/photographers" element = {<Photographers/>}/>
+          <Route path = "/homestaysvillas" element = {<HomeStaysVillas/>}/>
+          <Route path = "/travelinsurance" element = {<TravelInsurance/>}/>
+          <Route path = "/packages" element = {<Packages/>}/>
+          <Route path = "/giftcards" element = {<GiftCards/>}/>
         </Routes>
       </Router>
     </div>

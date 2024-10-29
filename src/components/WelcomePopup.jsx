@@ -1,224 +1,291 @@
 import React, { useState, useEffect } from 'react';
-import { Modal } from 'react-bootstrap';
-import { FaTimes, FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa'; 
-import { Appstoreicon, Playstoreicon, trainImage } from '../assets/images'; 
-import popupImage from '../assets/images/popup.png';
+import { Modal, Container, Row, Col, Card, Form, Alert } from 'react-bootstrap';
+import { FaInstagram, FaFacebook, FaTwitter, FaTimes } from 'react-icons/fa';
+import { Appstoreicon, offer, Playstoreicon, PopupImage } from '../assets/images';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faInstagram, faFacebook, faXTwitter } from '@fortawesome/free-brands-svg-icons';
 
-function WelcomePopup() {
+const WelcomePopup = () => {
   const [show, setShow] = useState(false);
-  const [email, setEmail] = useState(''); 
+  const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    const hasShownPopup = sessionStorage.getItem('welcomePopupShown');
-    if (!hasShownPopup) {
+    const hasVisited = localStorage.getItem('hasVisited');
+    if (!hasVisited) {
       setShow(true);
-      sessionStorage.setItem('welcomePopupShown', 'true');
+      localStorage.setItem('hasVisited', 'true');
     }
   }, []);
 
-  const handleClose = () => setShow(false);
-  const handleEmailChange = (e) => setEmail(e.target.value);
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (email) {
-      setSubmitted(true);
-      console.log("Email submitted:", email);
-    }
+    setSubmitted(true);
   };
+
+  const handleClose = () => setShow(false);
 
   return (
     <>
-      <Modal
-        show={show}
-        onHide={handleClose}
-        centered
-        dialogClassName="image-modal"
-        size="xl"
-      >
-       <Modal.Header style={{ borderBottom: 'none' }} className="border-none">
-          <div>
-            <img
-              src={trainImage} 
-              alt="Train" 
-              className="train-image mt-0"
-            />
-          </div>
-          <FaTimes
-            className="close-icon"
-            onClick={handleClose}
-            style={{ cursor: 'pointer', fontSize: '1.5rem', color: '#fff' }}
-          />
-        </Modal.Header>
-        <Modal.Body className="text-center overlay-content">
-          <div className="app-section d-flex justify-content-between mb-4">
-            <div className="get-app d-flex align-items-center">
-              <span className="mr-3">Get the App</span>
-               <img src={Playstoreicon} alt="Play Store" className="app-icon playstore-icon ms-3" />
-               <img src={Appstoreicon} alt="App Store" className="app-icon appstore-icon ms-3" />
-            </div>
-            <div className="social-icons d-flex">
-              <FaFacebook className="social-icon" />
-              <FaTwitter className="social-icon" />
-              <FaInstagram className="social-icon" />
+      <Modal show={show} onHide={handleClose} centered dialogClassName="custom-modal-60w">
+        <div className="modal-header-container">
+          <FaTimes className="close-icon" onClick={handleClose} />
+          <div className="modal-image">
+            <div className="image-overlay" />
+            <div className="header-content">
+              <div className="app-promo-card">
+                <h6>Get the App</h6>
+                <div className="store-icons">
+                  <img src={Playstoreicon} alt="Google Play" className="store-icon" />
+                  <img src={Appstoreicon} alt="App Store" className="store-icon" />
+                </div>
+              </div>
+              <div className="social-links-card">
+                <div className="social-icons">
+                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+                    <FontAwesomeIcon icon={faInstagram} className="social-icon" />
+                  </a>
+                  <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+                    <FontAwesomeIcon icon={faFacebook} className="social-icon" />
+                  </a>
+                  <a href="https://x.com" target="_blank" rel="noopener noreferrer">
+                    <FontAwesomeIcon icon={faXTwitter} className="social-icon" />
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
-
-          <div className="content-section">
-            <h1 className="mb-4 text-white">Welcome to SeeMyTrip</h1>
-            <p className="lead text-white">
-              We're excited to have you here! Explore the platform and start booking your dream trips with ease.
-            </p>
+          <div className="text-overlay">
+            <h2>Welcome to See My Trip!</h2>
+            <p>Plan your journey and book your train tickets with ease.</p>
           </div>
+        </div>
 
-          <div className="email-section mt-5">
-            {!submitted ? (
-              <form onSubmit={handleSubmit} className="email-form">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={handleEmailChange}
-                  className="email-input"
-                  placeholder="Enter your email for latest updates"
-                  required
-                />
-                <button type="submit" className="submit-btn mt-3">Submit</button>
-              </form>
-            ) : (
-              <p className="mt-3 text-success">Thank you for submitting your email!</p>
-            )}
-          </div>
+        <Modal.Body>
+          <Container fluid>
+            <Row className="justify-content-center">
+              <Col md={3}>
+                <Card className="mb-4 custom-card">
+                  <Card.Body className="d-flex flex-column align-items-center card-body-full-height">
+                    <h4>Offers</h4>
+                    <img src={offer} alt="Discount offer" className="explore-image" />
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col md={6}>
+                <Card className="mb-4 custom-card">
+                  <Card.Body className="d-flex flex-column card-body-full-height">
+                    <h2>Stay Updated</h2>
+                    {!submitted ? (
+                      <Form onSubmit={handleSubmit} className="email-form">
+                        <div className="full-width-email-group">
+                          <input
+                            type="email"
+                            placeholder="Enter your email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            className="custom-email-input"
+                          />
+                          <button type="submit" className="custom-submit-button">
+                            Submit
+                          </button>
+                        </div>
+                      </Form>
+                    ) : (
+                      <Alert variant="success" className="mt-3">
+                        Your email is successfully submitted.
+                      </Alert>
+                    )}
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col md={3}>
+                <Card className="mb-4 custom-card">
+                  <Card.Body className="d-flex flex-column card-body-full-height">
+                    <h4>Plan Your Journey</h4>
+                    <Card.Text>
+                      Our easy-to-use booking system helps you find the best routes and rates.
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
+          </Container>
         </Modal.Body>
       </Modal>
 
-      <style jsx>{`
-        .image-modal .modal-content {
-          background-image: url(${popupImage});
-          background-size: cover;
-          background-position: center;
-          border-radius: 20px;
-          padding: 2rem;
-          max-width: 1200px;
-          width: 100%;
-          height: 80vh;
-          color: white;
-          position: relative;
-          overflow: hidden;
-        }
+      <style type="text/css">
+  {`
+    .custom-modal-60w {
+      max-width: 80%;
+    }
 
-        .image-modal .modal-content::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: rgba(0, 0, 0, 0.5); 
-          z-index: 1;
-        }
+    .modal-header-container {
+      position: relative;
+      margin: 2px;
+    }
 
-        .image-modal .modal-body {
-          padding: 0;
-          position: relative;
-          height: 100%;
-          z-index: 2;
-        }
+    .close-icon {
+      position: absolute;
+      top: -10px;
+      right: -30px;
+      font-size: 24px;
+      color: white;
+      cursor: pointer;
+      z-index: 4;
+    }
 
-        .app-icon {
-          height: 30px;
-          width: 30px;
-        }
+    .explore-image {
+      width: 100%;
+     
+      margin-top: 10px;
+    }
 
-        .overlay-content {
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          height: 100%;
-        }
+    .full-width-email-group {
+      display: flex;
+      min-width: 100% !important;
+      position: relative;
+      justify-content:center;
+    }
 
-        .train-image {
-          position: absolute;
-          top: 20px;
-          left: 40px;
-          height: 60px;
-          z-index: 2;
-        }
+    .custom-email-input {
+      flex: 1;
+      padding: 10px;
+      outline: none;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+      border: none;
+      border-radius: 5px 0 0 5px;
+      min-width: 100%;
+    }
 
-        .app-section {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 2rem;
-          padding: 0 20px;
-        }
+    .custom-submit-button {
+      padding: 10px 20px;
+      background-color: #d20000;
+      color: #fff;
+      border: none;
+      border-radius: 0 5px 5px 0;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15); /* Added box-shadow */
+    }
 
-        .close-icon {
-          z-index: 3;
-          cursor: pointer;
-        }
+    .custom-submit-button:hover {
+      background-color: #d20000;
+    }
 
-        .social-icon {
-          font-size: 1.8rem;
-          margin-left: 20px;
-          color: white;
-          cursor: pointer;
-        }
+    .email-form .email-group .email-input-group {
+      display: flex;
+      gap: 10px;
+    }
 
-        .content-section {
-          margin-bottom: 2rem;
-          text-align: center;
-          padding: 0 20px;
-        }
+    .custom-card {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
 
-        .image-modal h1 {
-          font-size: 2.5rem;
-        }
+    .card-body-full-height {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
 
-        .email-section {
-          position: absolute;
-          bottom: -10px;
-          width: 100%;
-          left: 0;
-          display: flex;
-          justify-content: center;
-          padding: 0 20px;
-        }
+    .text-overlay h2,
+    .text-overlay p {
+      color: white !important;
+    }
 
-        .email-form {
-          max-width: 600px;
-          width: 100%;
-        }
+    .modal-image {
+      margin: 10px;
+      height: 60vh;
+      background-image: url('${PopupImage}');
+      background-size: cover;
+      background-position: center;
+      z-index: 1;
+      border-radius: 20px;
+      position: relative;
+    }
 
-        .email-input {
-          width: 70%;
-          padding: 10px;
-          font-size: 1.2rem;
-          border: none;
-          border-radius: 8px 0 0 8px;
-        }
+    .image-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.4);
+      border-radius: 20px;
+      z-index: 0;
+    }
 
-        .submit-btn {
-          background-color: #cd2c22;
-          color: #fff;
-          border: none;
-          padding: 10px 15px;
-          font-size: 1.2rem;
-          border-radius: 0 8px 8px 0;
-          cursor: pointer;
-          transition: background-color 0.3s ease;
-        }
+    .header-content {
+      position: absolute;
+      top: 3%;
+      left: 2%;
+      right: 2%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 2;
+    }
 
-        .submit-btn:hover {
-          background-color: #b22b1f;
-        }
+    .app-promo-card,
+    .social-links-card {
+      background-color: white;
+      padding: 7px 10px;
+      border-radius: 20px;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      display: flex;
+      align-items: center;
+    }
 
-        .text-success {
-          color: #28a745;
-          font-size: 1.2rem;
-        }
-      `}</style>
+    .social-icons {
+      margin-top: 0px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .social-icon {
+      font-size: 18px;
+      margin: 0 5px;
+      color: #000;
+      transition: color 0.3s;
+    }
+
+    .social-icon:hover {
+      color: #007bff;
+    }
+
+    .text-overlay {
+      position: absolute;
+      top: 50%;
+      left: 30%;
+      transform: translateY(-50%);
+      z-index: 2;
+      color: white !important;
+      text-align: center;
+    }
+
+    .store-icons {
+      display: flex;
+      justify-content: center;
+      margin-left: 10px;
+    }
+
+    .store-icon {
+      height: 20px;
+      margin: 0 5px;
+    }
+  `}
+</style>
+
     </>
   );
-}
+};
 
 export default WelcomePopup;

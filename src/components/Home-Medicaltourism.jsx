@@ -20,6 +20,7 @@ import { AirIndia, Bangalore, Delhi, Hyderabad, Indigo, indigo, Mumbai, Vistara 
 import FooterDark from './footer-dark';
 import HorizontalContainer from './flight_components/HorizontalContainer';
 import MtSearch from './medical_tourism/mt_search_componets';
+import Horizontalissues from './medical_tourism/Horizontalissues';
 
 const MedicalTrourism = () => {
   const [flightResults, setFlightResults] = useState([]);
@@ -194,7 +195,7 @@ const MedicalTrourism = () => {
         {/* ============================ Hero Banner End ================================== */}
 
         {/* Train Status start */}
-        <HorizontalContainer />
+        <Horizontalissues />
         {/* Train Status End  */}
         {/* ============================ Offers Start ================================== */}
         <section className="pt-4 pb-0">
