@@ -25,19 +25,35 @@ const MtFilterPage = () => {
               <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2 mb-0">
                 <li className="col-6">
                   <input type="checkbox" className="btn-check" id="cardiology" />
-                  <label className="btn btn-sm btn-secondary rounded-1 fw-medium full-width" htmlFor="cardiology">Cardiology</label>
+                  <label className="btn btn-sm btn-secondary rounded-1 fw-medium full-width" htmlFor="cardiology">Bhagandara Chikitsa </label>
                 </li>
                 <li className="col-6">
                   <input type="checkbox" className="btn-check" id="orthopedics" />
-                  <label className="btn btn-sm btn-secondary rounded-1 fw-medium full-width" htmlFor="orthopedics">Orthopedics</label>
+                  <label className="btn btn-sm btn-secondary rounded-1 fw-medium full-width" htmlFor="orthopedics">Shastra Karma</label>
                 </li>
                 <li className="col-6">
                   <input type="checkbox" className="btn-check" id="cosmetic" />
-                  <label className="btn btn-sm btn-secondary rounded-1 fw-medium full-width" htmlFor="cosmetic">Cosmetic Surgery</label>
+                  <label className="btn btn-sm btn-secondary rounded-1 fw-medium full-width" htmlFor="cosmetic">Agnikarma</label>
                 </li>
                 <li className="col-6">
                   <input type="checkbox" className="btn-check" id="dental" />
-                  <label className="btn btn-sm btn-secondary rounded-1 fw-medium full-width" htmlFor="dental">Dental Care</label>
+                  <label className="btn btn-sm btn-secondary rounded-1 fw-medium full-width" htmlFor="dental">Jalaukaavacharan</label>
+                </li>
+                <li className="col-6">
+                  <input type="checkbox" className="btn-check" id="dental" />
+                  <label className="btn btn-sm btn-secondary rounded-1 fw-medium full-width" htmlFor="dental">Kshara Karma</label>
+                </li>
+                <li className="col-6">
+                  <input type="checkbox" className="btn-check" id="dental" />
+                  <label className="btn btn-sm btn-secondary rounded-1 fw-medium full-width" htmlFor="dental">Arsha Chikitsa</label>
+                </li>
+                <li className="col-6">
+                  <input type="checkbox" className="btn-check" id="dental" />
+                  <label className="btn btn-sm btn-secondary rounded-1 fw-medium full-width" htmlFor="dental">Nasa Roga Chikitsa </label>
+                </li>
+                <li className="col-6">
+                  <input type="checkbox" className="btn-check" id="dental" />
+                  <label className="btn btn-sm btn-secondary rounded-1 fw-medium full-width" htmlFor="dental">Astra Karma</label>
                 </li>
               </ul>
             </div>

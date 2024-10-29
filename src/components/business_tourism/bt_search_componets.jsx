@@ -33,10 +33,10 @@ const BtSearch = () => {
   const customSelectStyles = {
     control: (provided) => ({
       ...provided,
-      boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)', // Add box shadow
-      border: 'none', // Remove border
+      boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+      border: 'none',
       borderRadius: '8px',
-      padding: '10px', // Adjust padding
+      padding: '10px',
     }),
     menu: (provided) => ({
       ...provided,
@@ -76,10 +76,10 @@ const BtSearch = () => {
           }
 
           .form-control {
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add box shadow */
-            border: none; /* Remove border */
-            border-radius: 8px; /* Rounded corners */
-            padding: 12px; /* Adjust padding for a modern look */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
           }
 
           .btn.full-width {
@@ -88,7 +88,7 @@ const BtSearch = () => {
             background-color: #cd2c22;
             color: #fff;
             border: none;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1); /* Add button shadow */
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
           }
 
           .radiobutton label {
@@ -98,64 +98,105 @@ const BtSearch = () => {
 
           .toggle-button {
             padding: 10px 20px;
-            border: none; /* Remove border */
+            border: none;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add box shadow */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             background-color: #fff;
             color: #cd2c22;
             font-weight: 500;
             cursor: pointer;
+            width: 150px;
+            text-align: center;
           }
 
           .toggle-button.active {
             background-color: #cd2c22;
             color: #fff;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1); /* Add shadow to active state */
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+          }
+
+          .toggle-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+          }
+
+          .radiobutton {
+            display: flex;
+            align-items: center;
+            gap: 20px;
           }
         `}
       </style>
       <div className="container">
-        {/* Navigation Tabs */}
-        <ul className="nav nav-pills primary-soft medium justify-content-center mb-3">
-          <li className="nav-item nav-item1">
-            <Link className={`nav-link`} to='/offers'>
-              <i className="fa-solid fa-tags me-2" />Offers
-            </Link>
-          </li>
-          <li className="nav-item nav-item1">
-            <Link className={`nav-link`} to='/guides'>
-              <i className="fa-solid fa-book me-2" />Guides
-            </Link>
-          </li>
-          <li className="nav-item nav-item1">
-            <Link className={`nav-link`} to='/selfdrivecars'>
-              <i className="fa-solid fa-car me-2" />Self Drive
-            </Link>
-          </li>
-          <li className="nav-item nav-item1 ">
-            <Link className={`nav-link`}><i className="fa-solid fa-camera me-2" />Photographer</Link>
-          </li>
-          <li className="nav-item nav-item1 ">
-            <Link className={`nav-link`}><i className="fa-solid fa-house-user me-2" />Home Stays & Villas</Link>
-          </li>
-          <li className="nav-item nav-item1 ">
-            <Link className={`nav-link`}><i className="fa-solid fa-shield-alt me-2" />Travel Insurance</Link>
-          </li>
-          <li className="nav-item nav-item1 ">
-            <Link className={`nav-link`}><i className="fa-solid fa-suitcase-rolling me-2" />Packages</Link>
-          </li>
-          <li className="nav-item nav-item1 ">
-            <Link className={`nav-link`}><i className="fa-solid fa-gift me-2" />Gift Cards</Link>
-          </li>
-        </ul>
+      <ul className="nav nav-pills primary-soft medium justify-content-center mb-3" id="tour-pills-tab" role="tablist">
+                    {/* <li className="nav-item nav-item1">
+                      <Link
+                        className={`nav-link ${activeTab === 'Trains' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('Trains')}
+                      >
+                        <i className="fa-solid fa-train me-2" />Trains
+                      </Link>
+                    </li> */}
+                    <li className="nav-item nav-item1">
+                      <Link className={`nav-link`} to='/offers'>
+                        <i className="fa-solid fa-tags me-2" />Offers
+                      </Link>
+                    </li>
+                    <li className="nav-item nav-item1">
+                      <Link className={`nav-link`} to='/guides'>
+                        <i className="fa-solid fa-book me-2" />Guides
+                      </Link>
+                    </li>
+                    <li className="nav-item nav-item1">
+                      <Link className={`nav-link`} to='/selfdrivecars'>
+                        <i className="fa-solid fa-car me-2" />Self Drive
+                      </Link>
+                    </li>
 
-        {/* Search Section */}
+                    <li className="nav-item nav-item1 ">
+                      <Link
+                        className={`nav-link`} to="/photographers"
+                      >
+                        <i className="fa-solid fa-camera me-2" />Photographer
+                      </Link>
+                    </li>
+                    <li className="nav-item nav-item1 ">
+                      <Link
+                        className={`nav-link`} to = "/homestaysvillas"
+                      >
+                        <i className="fa-solid fa-house-user me-2" />Home Stays & Villas
+                      </Link>
+                    </li>
+                    <li className="nav-item nav-item1 ">
+                      <Link
+                        className={`nav-link`} to="/travelinsurance"
+                      >
+                        <i className="fa-solid fa-shield-alt me-2" />Travel Insurance
+                      </Link>
+                    </li>
+                    <li className="nav-item nav-item1 ">
+                      <Link
+                        className={`nav-link`} to = "/packages"
+                      >
+                        <i className="fa-solid fa-suitcase-rolling me-2" />Packages
+                      </Link>
+                    </li>
+                    <li className="nav-item nav-item1 ">
+                      <Link
+                        className={`nav-link`} to = "/giftcards"
+                      >
+                        <i className="fa-solid fa-gift me-2" />Gift Cards
+                      </Link>
+                    </li>
+
+                  </ul>
         <div className="row justify-content-center align-items-center">
           <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
             <div className="search-wrap position-relative">
               <div className="row gy-3 gx-md-1 gx-sm-1">
                 <div className="col-xl-12">
-                  <div className="d-flex flex-wrap justify-content-between toggle-radio-group">
+                  <div className="d-flex flex-wrap justify-content-between align-items-center">
                     <div className="toggle-buttons">
                       <div
                         className={`toggle-button ${journeyType === 'outstation' ? 'active' : ''}`}
@@ -171,7 +212,7 @@ const BtSearch = () => {
                       </div>
                     </div>
                     <div className="radiobutton">
-                      <label className="me-3">
+                      <label>
                         <input
                           type="radio"
                           value="one-way"
@@ -199,7 +240,7 @@ const BtSearch = () => {
                         <Select
                           id="fromCity"
                           options={cabOptions}
-                          placeholder="Pickup City"
+                          placeholder="From"
                           styles={customSelectStyles}
                         />
                       </div>
@@ -210,7 +251,7 @@ const BtSearch = () => {
                         <Select
                           id="toCity"
                           options={cabOptions}
-                          placeholder="Destination City"
+                          placeholder="To"
                           styles={customSelectStyles}
                         />
                       </div>
@@ -241,7 +282,7 @@ const BtSearch = () => {
                       </div>
                     </div>
 
-                    <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6">
+                    {/* <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6">
                       <div className="form-group mb-0">
                         <Select
                           id="carType"
@@ -250,23 +291,11 @@ const BtSearch = () => {
                           styles={customSelectStyles}
                         />
                       </div>
-                    </div>
+                    </div> */}
 
-                    <div className="col-xl-3 col-lg-4 col-md-4 col-sm-6">
-                      <div className="form-group mb-0">
-                        <input
-                          type="text"
-                          value={mobileNumber}
-                          onChange={e => setMobileNumber(e.target.value)}
-                          className="form-control"
-                          placeholder="Enter Mobile No."
-                        />
-                      </div>
-                    </div>
-
-                    <div className="col-xl-12">
+                    <div className="col-xl-2">
                       <button className="btn full-width" onClick={handleSearch}>
-                        Search Cabs
+                        Search Flights
                       </button>
                     </div>
                   </div>

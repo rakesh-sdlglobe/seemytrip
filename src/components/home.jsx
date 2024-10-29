@@ -103,35 +103,35 @@ const Home = () => {
 
                     <li className="nav-item nav-item1 ">
                       <Link
-                        className={`nav-link`}
+                        className={`nav-link`} to="/photographers"
                       >
                         <i className="fa-solid fa-camera me-2" />Photographer
                       </Link>
                     </li>
                     <li className="nav-item nav-item1 ">
                       <Link
-                        className={`nav-link`}
+                        className={`nav-link`} to = "/homestaysvillas"
                       >
                         <i className="fa-solid fa-house-user me-2" />Home Stays & Villas
                       </Link>
                     </li>
                     <li className="nav-item nav-item1 ">
                       <Link
-                        className={`nav-link`}
+                        className={`nav-link`} to="/travelinsurance"
                       >
                         <i className="fa-solid fa-shield-alt me-2" />Travel Insurance
                       </Link>
                     </li>
                     <li className="nav-item nav-item1 ">
                       <Link
-                        className={`nav-link`}
+                        className={`nav-link`} to = "/packages"
                       >
                         <i className="fa-solid fa-suitcase-rolling me-2" />Packages
                       </Link>
                     </li>
                     <li className="nav-item nav-item1 ">
                       <Link
-                        className={`nav-link`}
+                        className={`nav-link`} to = "/giftcards"
                       >
                         <i className="fa-solid fa-gift me-2" />Gift Cards
                       </Link>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const MtSearch = () => {
   const [tripType, setTripType] = useState('one-way');
@@ -28,6 +28,13 @@ const MtSearch = () => {
     { value: 'therapy', label: 'Therapy' },
     { value: 'diagnosis', label: 'Diagnosis' },
     { value: 'rehabilitation', label: 'Rehabilitation' },
+    { value: 'consulting', label: 'Consulting' },
+    { value: 'spa', label: 'SPA' },
+  ];
+  const Ayurvedic = [
+    { value: 'ayurvedic', label: 'Ayurvedic' },
+    { value: 'homeopathy', label: 'Homeopathy' },
+    { value: 'allopathy', label: 'Allopathy' },
   ];
 
   const customSelectStyles = {
@@ -149,6 +156,68 @@ const MtSearch = () => {
         `}
       </style>
       <div className="container">
+      <ul className="nav nav-pills primary-soft medium justify-content-center mb-3" id="tour-pills-tab" role="tablist">
+                    {/* <li className="nav-item nav-item1">
+                      <Link
+                        className={`nav-link ${activeTab === 'Trains' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('Trains')}
+                      >
+                        <i className="fa-solid fa-train me-2" />Trains
+                      </Link>
+                    </li> */}
+                    <li className="nav-item nav-item1">
+                      <Link className={`nav-link`} to='/offers'>
+                        <i className="fa-solid fa-tags me-2" />Offers
+                      </Link>
+                    </li>
+                    <li className="nav-item nav-item1">
+                      <Link className={`nav-link`} to='/guides'>
+                        <i className="fa-solid fa-book me-2" />Guides
+                      </Link>
+                    </li>
+                    <li className="nav-item nav-item1">
+                      <Link className={`nav-link`} to='/selfdrivecars'>
+                        <i className="fa-solid fa-car me-2" />Self Drive
+                      </Link>
+                    </li>
+
+                    <li className="nav-item nav-item1 ">
+                      <Link
+                        className={`nav-link`} to="/photographers"
+                      >
+                        <i className="fa-solid fa-camera me-2" />Photographer
+                      </Link>
+                    </li>
+                    <li className="nav-item nav-item1 ">
+                      <Link
+                        className={`nav-link`} to = "/homestaysvillas"
+                      >
+                        <i className="fa-solid fa-house-user me-2" />Home Stays & Villas
+                      </Link>
+                    </li>
+                    <li className="nav-item nav-item1 ">
+                      <Link
+                        className={`nav-link`} to="/travelinsurance"
+                      >
+                        <i className="fa-solid fa-shield-alt me-2" />Travel Insurance
+                      </Link>
+                    </li>
+                    <li className="nav-item nav-item1 ">
+                      <Link
+                        className={`nav-link`} to = "/packages"
+                      >
+                        <i className="fa-solid fa-suitcase-rolling me-2" />Packages
+                      </Link>
+                    </li>
+                    <li className="nav-item nav-item1 ">
+                      <Link
+                        className={`nav-link`} to = "/giftcards"
+                      >
+                        <i className="fa-solid fa-gift me-2" />Gift Cards
+                      </Link>
+                    </li>
+
+                  </ul>
         <div className="row justify-content-center align-items-center">
           <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
             <div className="search-wrap position-relative">
@@ -157,40 +226,10 @@ const MtSearch = () => {
                 <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                   <div className="d-flex flex-wrap justify-content-between toggle-radio-group">
                     {/* Toggle Buttons for Treatment and Therapy */}
-                    <div className="toggle-buttons">
-                      <div
-                        className={`toggle-button ${treatmentType === 'surgery' ? 'active' : ''}`}
-                        onClick={() => setTreatmentType('surgery')}
-                      >
-                        Surgery
-                      </div>
-                      <div
-                        className={`toggle-button ${treatmentType === 'therapy' ? 'active' : ''}`}
-                        onClick={() => setTreatmentType('therapy')}
-                      >
-                        Therapy
-                      </div>
-                    </div>
+                   
 
                     {/* Radio Buttons for One Way and Round Trip */}
-                    <div className="radiobutton">
-                      <label className="me-3">
-                        <input
-                          type="radio"
-                          value="one-way"
-                          checked={tripType === 'one-way'}
-                          onChange={() => setTripType('one-way')}
-                        /> One Way
-                      </label>
-                      <label>
-                        <input
-                          type="radio"
-                          value="round-trip"
-                          checked={tripType === 'round-trip'}
-                          onChange={() => setTripType('round-trip')}
-                        /> Round Trip
-                      </label>
-                    </div>
+                   
                   </div>
                 </div>
 
@@ -215,7 +254,7 @@ const MtSearch = () => {
                         <Select
                           id="toCity"
                           options={cityOptions}
-                          placeholder="Destination City (for treatment)"
+                          placeholder="Location (for treatment)"
                           styles={customSelectStyles}
                         />
                       </div>
@@ -228,7 +267,7 @@ const MtSearch = () => {
                           selected={startDate}
                           onChange={date => setStartDate(date)}
                           dateFormat="dd/MM/yyyy"
-                          placeholderText="Select Travel Date"
+                          placeholderText="Consulting Date"
                           className="form-control fw-bold"
                         />
                       </div>
@@ -250,18 +289,17 @@ const MtSearch = () => {
 
                     {/* Mobile Number */}
                     <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6">
-                      <div className="form-group mb-0">
-                        <input
-                          type="text"
-                          className="form-control"
-                          style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }} // Add box shadow
-                          placeholder="Enter mobile number"
-                          value={mobileNumber}
-                          onChange={e => setMobileNumber(e.target.value)}
+                      <div className="form-group hdd-arrow mb-0">
+                        <Select
+                          id="treatmentType"
+                          options={Ayurvedic}
+                          placeholder="Treatment Type"
+                          styles={customSelectStyles}
+                          value={Ayurvedic.find(option => option.value === treatmentType)}
+                          onChange={option => setTreatmentType(option.value)}
                         />
                       </div>
                     </div>
-
                     {/* Search Button */}
                     <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6">
                       <div className="form-group mb-0">
