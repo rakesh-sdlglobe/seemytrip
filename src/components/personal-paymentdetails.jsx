@@ -86,9 +86,9 @@ const PersonalPaymentDetails = () => {
                         <div className="col-xl-2 col-lg-6 col-md-6">
                             <div className="card d-flex align-items-center justify-content-center border br-dashed border-2 py-3 h-100">
                                 <div className="d-flex align-items-center justify-content-center">
-                                    <Link to="#" className="square--60 circle bg-light-primary text-primary fs-2" data-bs-toggle="modal" data-bs-target="#addcard">
+                                    {/* <Link to="#" className="square--60 circle bg-light-primary text-primary fs-2" data-bs-toggle="modal" data-bs-target="#addcard"> */}
                                         <i className="fa-solid fa-circle-plus" />
-                                    </Link>
+                                    {/* </Link> */}
                                 </div>
                             </div>
                         </div>

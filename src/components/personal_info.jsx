@@ -1,85 +1,138 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfile, editUserProfile } from '../store/Actions/userActions';
 import { selectGoogleUser } from '../store/Selectors/authSelectors';
-import { selectUserProfile} from '../store/Selectors/userSelector';
+import { selectUserProfile } from '../store/Selectors/userSelector';
+import { Button } from 'react-bootstrap';
+// import {
+//     sendVerificationOTP,
+//     verifyEmailOTP,
+// } from '../store/Actions/emailAction';
+import {
+    sendOTP,
+    verifyOTP,
+    resetPassword,
+} from '../store/Actions/verifyEmail';
 
 const PersonalInfo = () => {
     const dispatch = useDispatch();
-    const userProfile = useSelector(selectUserProfile);  
+    const navigate = useNavigate();
+    const userProfile = useSelector(selectUserProfile);
     const googleUser = useSelector(selectGoogleUser); // Google profile
     const [isEditable, setIsEditable] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [otp, setOtp] = useState('');
+    const [oldPassword, setOldPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [formData, setFormData] = useState({
-      name: '',
-      lastname:'',
-      mobile: '',
-      dob: '',
-      gender:'Male',
-      email: '',
+        name: '',
+        lastname: '',
+        mobile: '',
+        dob: '',
+        gender: 'Male',
+        email: '',
     });
-  
+
     useEffect(() => {
-      dispatch(getUserProfile());
+        dispatch(getUserProfile());
     }, [dispatch]);
-  
+
     useEffect(() => {
-      if (userProfile) {
-        setFormData({
-          name: userProfile.name || '',
-          lastname : userProfile.lastname ||  '',
-          mobile : userProfile.mobile || '',
-          dob:  userProfile.dob ? new Date(userProfile.dob).toISOString().split('T')[0] : '',
-          gender: userProfile.gender || 'Male',
-          email: userProfile.email || '',
-        });
-      }
+        if (userProfile) {
+            setFormData({
+                name: userProfile.name || '',
+                lastname: userProfile.lastname || '',
+                mobile: userProfile.mobile || '',
+                dob: userProfile.dob ? new Date(userProfile.dob).toISOString().split('T')[0] : '',
+                gender: userProfile.gender || 'Male',
+                email: userProfile.email || '',
+            });
+        }
     }, [userProfile]);
 
     useEffect(() => {
         if (googleUser) {
-          setFormData((prevData) => ({
-            ...prevData,
-            name: googleUser.name || prevData.name,
-            lastname: googleUser.lastname || prevData.lastname,
-            email: googleUser.email || prevData.email,
-          }));
+            setFormData((prevData) => ({
+                ...prevData,
+                name: googleUser.name || prevData.name,
+                lastname: googleUser.lastname || prevData.lastname,
+                email: googleUser.email || prevData.email,
+            }));
         }
-      }, [googleUser]);
-  
-  
+    }, [googleUser]);
+
+
     const toggleEdit = () => {
-      setIsEditable(!isEditable);
+        setIsEditable(!isEditable);
     };
-  
+
     const handleChange = (e) => {
-      setFormData({ ...formData, [e.target.name]: e.target.value });
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
-  
-   
-const handleSave = () => {
+
+
+    const handleSave = () => {
+
+        const userData = {
+            name: formData.name,
+            lastname: formData.lastname,
+            mobile: formData.mobile,
+            dob: formData.dob,
+            gender: formData.gender,
+            email: formData.email,
+        };
+
+        dispatch(editUserProfile(userData));
+        setIsEditable(false);
+    };
+
+    const handlePasswordChange = () => {
+        // Basic validation to check if passwords are entered
+        if (!newPassword || !confirmPassword) {
+            alert('Please enter both password fields.');
+            return;
+        }
     
-    const userData = {
-      name: formData.name,
-      lastname:formData.lastname,
-      mobile:formData.mobile,
-      dob:formData.dob,
-      gender:formData.gender,
-      email: formData.email,
+        // Check if passwords match
+        if (newPassword !== confirmPassword) {
+            alert('New passwords do not match!');
+            return;
+        }
+    
+        // Check for password length
+        if (newPassword.length < 6) {
+            alert('Password must be at least 6 characters long.');
+            return;
+        }
+    
+        // Dispatch the reset password action
+        dispatch(resetPassword(formData.email, newPassword));
+        console.log(formData.email, newPassword);
+        
     };
-      
-    dispatch(editUserProfile(userData));
-    setIsEditable(false);
-  };
-  
-  
+    
+
     const handleVerifyClick = () => {
-      setShowModal(true);
+        setShowModal(true);
+        if (formData.email) {
+            dispatch(sendOTP(formData.email));
+        }
     };
-  
+
+    // Example with a success response handling
+    const handleVerifyOTP = async () => {
+        const success = dispatch(verifyOTP(formData.email, otp, navigate));
+        console.log(success);
+
+        if (success) {
+            setShowModal(false);
+        }
+    };
+
     const handleCloseModal = () => {
-      setShowModal(false);
+        setShowModal(false);
     };
     return (
         <>
@@ -109,62 +162,71 @@ const handleSave = () => {
                 </div>
                 <div className="card-body">
                     <div className="row align-items-center justify-content-start">
-                        <div className="col-xl-12 col-lg-12 col-md-12 mb-4">
+                        {/* <div className="col-xl-12 col-lg-12 col-md-12 mb-4">
                             <div className="d-flex align-items-center">
                                 <label className="position-relative me-4 center" htmlFor="uploadfile-1" title="Replace this pic">
-                                    {/* Avatar placeholder */}
+                                    {/* Avatar placeholder 
                                     <span className="avatar avatar-xl">
                                         <img id="uploadfile-1-preview" className="avatar-img rounded-circle border border-white border-3 shadow" src="https://placehold.co/500x500" alt="" />
                                     </span>
                                 </label>
-                                {/* Upload button */}
+                                {/* Upload button 
                                 <label className={`btn btn-sm ${isEditable ? 'btn-light-primary' : 'btn-secondary'} px-4 fw-medium mb-0`} htmlFor="uploadfile-1">
                                     {isEditable ? 'Change' : 'Disabled'}
                                 </label>
                                 <input id="uploadfile-1" className="form-control d-none" type="file" disabled={!isEditable} />
                             </div>
-                        </div>
+                        </div> */}
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">First Name</label>
-                                <input type="text" className="form-control" 
-                                name="name" 
-                                value={formData.name} 
-                                onChange={handleChange}
-                                disabled={!isEditable || googleUser} />
+                                <input type="text" className="form-control"
+                                    name="name"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    disabled={!isEditable || googleUser} />
                             </div>
                         </div>
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">Last Name</label>
-                                <input type="text" className="form-control" 
-                                name="lastname" 
-                                value={formData.lastname} 
-                                onChange={handleChange}
-                                disabled={!isEditable} />
+                                <input type="text" className="form-control"
+                                    name="lastname"
+                                    value={formData.lastname}
+                                    onChange={handleChange}
+                                    disabled={!isEditable} />
                             </div>
                         </div>
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">Email ID</label>
                                 <input type="text" className="form-control"
-                                 name="email" 
-                                 value={formData.email} 
-                                 onChange={handleChange}
-                                 disabled={!isEditable || googleUser} />
+                                    name="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    disabled={!isEditable || googleUser} />
                                 {isEditable && (
-                                    <button className="btn btn-text-secondary btn-sm verify-button" onClick={handleVerifyClick}>Verify</button>
+                                    userProfile.isEmailVerified ? (
+                                        <i className="fa fa-check text-success verify-tick" aria-hidden="true"></i>
+                                    ) : (
+                                        <button
+                                            className="btn btn-text-secondary btn-sm verify-button"
+                                            onClick={handleVerifyClick}
+                                        >
+                                            Verify
+                                        </button>
+                                    )
                                 )}
                             </div>
                         </div>
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">Mobile</label>
-                                <input type="text" className="form-control" 
-                                name="mobile" 
-                                value={formData.mobile} 
-                                onChange={handleChange}
-                                disabled={!isEditable} />
+                                <input type="text" className="form-control"
+                                    name="mobile"
+                                    value={formData.mobile}
+                                    onChange={handleChange}
+                                    disabled={!isEditable} />
                                 {isEditable && (
                                     <button className="btn btn-text-secondary btn-sm verify-button" onClick={handleVerifyClick}>Verify</button>
                                 )}
@@ -179,13 +241,13 @@ const handleSave = () => {
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">Gender</label>
-                                <select className="form-control custom-select" 
+                                <select className="form-control custom-select"
                                     name="gender"
                                     value={formData.gender}
                                     onChange={handleChange}
                                     disabled={!isEditable}>
                                     <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
+                                    {/* <option value="Female">Female</option> */}
                                     <option value="Other">Other</option>
                                 </select>
                                 <i className="fa fa-chevron-down select-icon"></i>
@@ -194,7 +256,7 @@ const handleSave = () => {
                     </div>
                 </div>
             </div>
-            <div className="card mb-4">
+            {/* <div className="card mb-4">
                 <div className="card-header">
                     <h4><i className="fa-solid fa-envelope-circle-check me-2" />Update Your Email</h4>
                 </div>
@@ -213,7 +275,7 @@ const handleSave = () => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
             <div className="card">
                 <div className="card-header">
                     <h4><i className="fa-solid fa-lock me-2" />Update Password</h4>
@@ -223,24 +285,27 @@ const handleSave = () => {
                         <div className="col-xl-12 col-lg-12 col-md-12">
                             <div className="form-group">
                                 <label className="form-label">Old Password</label>
-                                <input type="password" className="form-control" placeholder="*********" />
+                                <input type="password" className="form-control" placeholder="*********" value={oldPassword}
+                                    onChange={(e) => setOldPassword(e.target.value)} />
                             </div>
                         </div>
                         <div className="col-xl-12 col-lg-12 col-md-12">
                             <div className="form-group">
                                 <label className="form-label">New Password</label>
-                                <input type="password" className="form-control" placeholder="*********" />
+                                <input type="password" className="form-control" placeholder="*********" value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)} />
                             </div>
                         </div>
                         <div className="col-xl-12 col-lg-12 col-md-12">
                             <div className="form-group">
                                 <label className="form-label">Confirm Password</label>
-                                <input type="password" className="form-control" placeholder="*********" />
+                                <input type="password" className="form-control" placeholder="*********" value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)} />
                             </div>
                         </div>
                         <div className="col-xl-12 col-lg-12 col-md-12">
                             <div className="text-end">
-                                <Link to="#" className="btn btn-md btn-primary mb-0">Change Password</Link>
+                                <Link to="#" className="btn btn-md btn-primary mb-0" onClick={handlePasswordChange}>Change Password</Link>
                             </div>
                         </div>
                     </div>
@@ -283,13 +348,26 @@ const handleSave = () => {
                     font-size: 1rem;
                     color: #6c757d;
                 }
+                .verify-tick {
+                    position: absolute;
+                    right: 0;
+                    top: 65%;
+                    transform: translateY(-50%);
+                    font-size: 1.2rem;
+                }
+
             `}</style>
-            <OTPModal showModal={showModal} handleClose={handleCloseModal} />
+            <OTPModal
+                showModal={showModal}
+                handleClose={handleCloseModal}
+                handleVerifyOTP={handleVerifyOTP}
+                setOtp={setOtp}
+            />
         </>
     );
 }
 
-const OTPModal = ({ showModal, handleClose }) => {
+const OTPModal = ({ showModal, handleClose, handleVerifyOTP, setOtp, navigate }) => {
     return (
         <div className={`modal fade ${showModal ? 'show' : ''}`} style={{ display: showModal ? 'block' : 'none' }} tabIndex="-1" role="dialog" aria-labelledby="otpModalLabel" aria-hidden="true">
             <div className="modal-dialog" role="document">
@@ -302,9 +380,18 @@ const OTPModal = ({ showModal, handleClose }) => {
                         <form>
                             <div className="form-group">
                                 <label htmlFor="otpInput">OTP</label>
-                                <input type="text" className="form-control" id="otpInput" placeholder="Enter OTP" />
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    id="otpInput"
+                                    placeholder="Enter OTP"
+                                    onChange={(e) => setOtp(e.target.value)}
+                                />
                             </div>
-                            <button type="submit" className="btn btn-primary mt-3">Submit</button>
+                            <div className="modal-footer">
+                                <Button variant="secondary" onClick={handleClose}>Close</Button>
+                                <Button variant="primary" onClick={handleVerifyOTP}>Verify OTP</Button>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -312,6 +399,8 @@ const OTPModal = ({ showModal, handleClose }) => {
         </div>
     );
 };
+
+
 
 
 export default PersonalInfo;

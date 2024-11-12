@@ -41,6 +41,10 @@ const PersonalTravel = () => {
     dispatch(removeTraveler(id, navigate));
   };
 
+  const formatDOB = (dob) => {
+    if (!dob) return ""; // Return an empty string if dob is not defined
+    return dob.split("T")[0]; // Extracts only the date part (YYYY-MM-DD)
+  };
   return (
     <div className="card">
       <div className="card-header">
@@ -116,7 +120,7 @@ const PersonalTravel = () => {
                     <input
                       type="text"
                       className="form-control"
-                      value={traveler.dob}
+                      value={formatDOB(traveler.dob)}
                       readOnly
                     />
                   </div>

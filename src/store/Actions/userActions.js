@@ -4,6 +4,8 @@ export const FETCH_USER_PROFILE_SUCCESS = 'FETCH_USER_PROFILE_SUCCESS';
 export const FETCH_USER_PROFILE_FAILURE = 'FETCH_USER_PROFILE_FAILURE';
 export const EDIT_USER_PROFILE_SUCCESS = 'EDIT_USER_PROFILE_SUCCESS';
 export const EDIT_USER_PROFILE_FAILURE = 'EDIT_USER_PROFILE_FAILURE';
+export const EDIT_USER_EMAIL_SUCCESS = 'EDIT_USER_EMAIL_SUCCESS';
+export const EDIT_USER_EMAIL_FAILURE = 'EDIT_USER_EMAIL_FAILURE';
 export const FETCH_USER_BOOKINGS_SUCCESS = 'FETCH_USER_BOOKINGS_SUCCESS';
 export const FETCH_USER_BOOKINGS_FAILURE = 'FETCH_USER_BOOKINGS_FAILURE';
 export const ADD_TRAVELER_REQUEST = 'ADD_TRAVELER_REQUEST';
@@ -28,6 +30,7 @@ export const getUserProfile = () => {
           Authorization: `Bearer ${authToken}`,
         },
       });
+      console.log(response.data);
       
       dispatch({ type: FETCH_USER_PROFILE_SUCCESS, payload: response.data });
     } catch (error) {
@@ -50,6 +53,25 @@ export const editUserProfile = (userData) => {
       dispatch({ type: EDIT_USER_PROFILE_SUCCESS, payload: response.data.user });
     } catch (error) {    
       dispatch({ type: EDIT_USER_PROFILE_FAILURE, payload: error.response.data.message });
+    }
+  };
+};
+
+export const editUserEmail = (userData) => {
+  return async (dispatch) => {
+    const authToken = localStorage.authToken; 
+
+    try {
+      const response = await axios.post('https://tripadmin.onrender.com/api/users/editEmail', userData, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      console.log(response.data.user);
+      
+      dispatch({ type: EDIT_USER_EMAIL_SUCCESS, payload: response.data.user });
+    } catch (error) {    
+      dispatch({ type: EDIT_USER_EMAIL_FAILURE, payload: error.response.data.message });
     }
   };
 };

@@ -11,7 +11,7 @@ const rootReducer = combineReducers({
   user: userReducer,
   filters: filterReducer,
   mobileOtp: mobileOtpReducer,
-  emailAuth: emailAuthReducer
+  emailAuth: emailAuthReducer,
 });
 
 // Add thunk middleware when creating the store
