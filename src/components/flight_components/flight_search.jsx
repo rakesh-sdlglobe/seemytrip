@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 import { airportData } from './model/airportData';
 import { flightData } from './model/flightData';
 import { seatData } from './model/seatData';
@@ -50,7 +52,9 @@ const FlightSearch = ({
     const storedFromAirport = sessionStorage.getItem('fromAirport');
     return storedFromAirport ? { value: findAirportByName(storedFromAirport)?.id, label: storedFromAirport } : null;
   });
-
+  const [showJourneyCalendar, setShowJourneyCalendar] = useState(false);
+  const [showReturnCalendar, setShowReturnCalendar] = useState(false);
+  
   const [toAirport, setToAirport] = useState(() => {
     const storedToAirport = sessionStorage.getItem('toAirport');
     return storedToAirport ? { value: findAirportByName(storedToAirport)?.id, label: storedToAirport } : null;
@@ -180,6 +184,35 @@ const FlightSearch = ({
             display:  ${dropdownHindden}; 
             align-items: center;
           }
+            .calendar-popup {
+              position: absolute;
+              bottom: 40%;
+              transform: translateY(-10px);
+              z-index: 1000;
+              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+              border-radius: 8px;
+              padding: 10px;
+              background-color: white;
+            }
+
+            .form-control {
+              width: 100%;
+              max-width: 100%; /* Keeps width responsive without affecting other elements */
+              padding: 12px;
+            }
+              .react-calendar__tile--active {
+              background: #d20000;
+              color: white;
+            }
+               .react-calendar__tile {
+              border-radius: 8px; /* Makes each tile rounded */
+              padding: 10px; /* Adds padding to tiles */
+              margin: 4px; /* Spacing between tiles */
+            }
+          .form-control:focus {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Keep shadow on focus */
+            outline: none;
+          }
         `}
       </style>
 
@@ -253,27 +286,51 @@ const FlightSearch = ({
                   {/* Date Pickers */}
                   <div className="col-xl-2 col-lg-2 col-md-6 col-sm-6">
                     <label>{dateLabel}</label>
-                    <DatePicker
-                      selected={journeyDate}
-                      onChange={handleJourneyDateChange}
+                    <input
+                      type="text"
                       className="form-control"
-                      placeholderText="Journey Date"
-                      dateFormat="dd/MM/yyyy"
+                      placeholder="Journey Date"
+                      value={journeyDate ? format(journeyDate, 'dd/MM/yyyy') : ''}
+                      readOnly
+                      onClick={() => setShowJourneyCalendar(!showJourneyCalendar)}
                     />
+                    {showJourneyCalendar && (
+                      <Calendar
+                        onChange={(date) => {
+                          handleJourneyDateChange(date);
+                          setShowJourneyCalendar(false);
+                        }}
+                        value={journeyDate}
+                        className="calendar-popup"
+                      />
+                    )}
                   </div>
 
-                  {tripType === 'round-trip' && (
-                    <div className="col-xl-2 col-lg-2 col-md-6 col-sm-6">
-                      <label>{ReturnLable}</label>
-                      <DatePicker
-                        selected={returnDate}
-                        onChange={handleReturnDateChange}
-                        className="form-control"
-                        placeholderText="Return Date"
-                        dateFormat="dd/MM/yyyy"
+
+                                  {tripType === 'round-trip' && (
+                  <div className="col-xl-2 col-lg-2 col-md-6 col-sm-6">
+                    <label>{ReturnLable}</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Return Date"
+                      value={returnDate ? format(returnDate, 'dd/MM/yyyy') : ''}
+                      readOnly
+                      onClick={() => setShowReturnCalendar(!showReturnCalendar)}
+                    />
+                    {showReturnCalendar && (
+                      <Calendar
+                        onChange={(date) => {
+                          handleReturnDateChange(date);
+                          setShowReturnCalendar(false);
+                        }}
+                        value={returnDate}
+                        className="calendar-popup"
                       />
-                    </div>
-                  )}
+                    )}
+                  </div>
+                )}
+
 
                   {/* Search Button */}
                   <div className="col-xl-2 col-lg-2 col-md-6 col-sm-6">

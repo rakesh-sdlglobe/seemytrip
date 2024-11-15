@@ -19,6 +19,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Bangalore, bus1, bus10, bus11, bus12, bus2, bus3, bus4, bus5, bus6, bus7, bus8, bus9, Carnival, Delhi, Ertiga, Hyderabad, Jazz, Mumbai, Nexon, Tiago, Toyota } from '../assets/images';
 import BusSearch from './bus_components/bus_search_page';
+import { Features } from './medical_tourism/Features';
 
 const HomeBus = () => {
   const [selectedDate, setSelectedDate] = useState(null);
@@ -81,9 +82,11 @@ const HomeBus = () => {
                 </div>
               </div>
               <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+              <div className="search-wrap bg-white rounded-3 p-3">
+                <Features/>
                 <BusSearch/>
               </div>
-
+              </div>
             </div>
             {/* </row> */}
           </div>

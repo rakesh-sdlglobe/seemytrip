@@ -4,6 +4,7 @@ import Header02 from '../header02';
 import FooterDark from '../footer-dark';
 import MtFilterPage from './mt_filter_page';
 import MtResultPage from './mt_result_page';
+import MtSearch from './mt_search_componets';
 
 
 const MtList = () => {
@@ -33,7 +34,7 @@ const MtList = () => {
                 <div className="py-5 bg-primary position-relative">
                     <div className="container">
                         {/* Search Form */}
-                        <CabSearch />
+                        <MtSearch />
                         {/* </row> */}
                     </div>
                 </div>
