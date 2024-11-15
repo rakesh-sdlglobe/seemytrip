@@ -21,6 +21,7 @@ import FooterDark from './footer-dark';
 import HorizontalContainer from './flight_components/HorizontalContainer';
 import MtSearch from './medical_tourism/mt_search_componets';
 import Horizontalissues from './medical_tourism/Horizontalissues';
+import { Features } from './medical_tourism/Features';
 
 const MedicalTrourism = () => {
   const [flightResults, setFlightResults] = useState([]);
@@ -184,6 +185,7 @@ const MedicalTrourism = () => {
                           </div>
                         </div>
                       </div> */}
+                      <Features/>
                   <MtSearch/>
                 </div>
               </div>

@@ -1,55 +1,73 @@
+import "../assets/css/bootstrap.min.css";
+import "../assets/css/animation.css";
+import "../assets/css/dropzone.min.css";
+import "../assets/css/flatpickr.min.css";
+import "../assets/css/flickity.min.css";
+import "../assets/css/lightbox.min.css";
+import "../assets/css/magnifypopup.css";
+import "../assets/css/select2.min.css";
+import "../assets/css/rangeSlider.min.css";
+import "../assets/css/prism.css";
+import "../assets/css/bootstrap-icons.css";
+import "../assets/css/fontawesome.css";
+import "../assets/css/style.css";
+import {
+  charminar,
+  benglore,
+  kolkota,
+  mumbai,
+  utterpradesh,
+  kerla,
+  delhi,
+  chennai,
+  youngIndianCouple,
+  team1,
+  team2,
+  team3,
+  team4,
+  team5,
+} from "../assets/images";
+import { Link, useNavigate } from "react-router-dom";
+import Header02 from "./header02";
+import Footer from "./footer";
+import SearchComponent from "./train_search_result/search_component";
 
-import '../assets/css/bootstrap.min.css';
-import '../assets/css/animation.css';
-import '../assets/css/dropzone.min.css';
-import '../assets/css/flatpickr.min.css';
-import '../assets/css/flickity.min.css';
-import '../assets/css/lightbox.min.css';
-import '../assets/css/magnifypopup.css';
-import '../assets/css/select2.min.css';
-import '../assets/css/rangeSlider.min.css';
-import '../assets/css/prism.css';
-import '../assets/css/bootstrap-icons.css';
-import '../assets/css/fontawesome.css';
-import '../assets/css/style.css'
-import { charminar, benglore, kolkota, mumbai, utterpradesh, kerla, delhi, chennai, youngIndianCouple, team1, team2, team3, team4, team5 } from '../assets/images';
-import { Link, useNavigate } from 'react-router-dom';
-import Header02 from './header02';
-import Footer from './footer';
-import SearchComponent from './train_search_result/search_component';
-
-import { useState } from 'react';
-import FlightSearch from './flight_components/flight_search';
-import HorizontalContainer from './train_search_result/HorizontalContainer';
-import { HotelSearchbar } from './hotel_components/HotelSearchbar';
-import CabSearch from './cab_components/cab_search_componets';
-import BusSearch from './bus_components/bus_search_page';
-import CruiseSearch from './cruise_components/Cruise_search_page';
-import BtSearch from './business_tourism/bt_search_componets';
-import MtSearch from './medical_tourism/mt_search_componets';
-import AppApk from './App_apk_promotion';
-import WelcomePopup from './WelcomePopup';
-import ChatBot from './ChatBot';
-import OffersSection from './Offers';
-import GiftSearch from './medical_tourism/mt_search_componets';
+import { useState } from "react";
+import FlightSearch from "./flight_components/flight_search";
+import HorizontalContainer from "./train_search_result/HorizontalContainer";
+import { HotelSearchbar } from "./hotel_components/HotelSearchbar";
+import CabSearch from "./cab_components/cab_search_componets";
+import BusSearch from "./bus_components/bus_search_page";
+import CruiseSearch from "./cruise_components/Cruise_search_page";
+import BtSearch from "./business_tourism/bt_search_componets";
+import MtSearch from "./medical_tourism/mt_search_componets";
+import AppApk from "./App_apk_promotion";
+import WelcomePopup from "./WelcomePopup";
+import ChatBot from "./ChatBot";
+import OffersSection from "./Offers";
+import GiftSearch from "./medical_tourism/mt_search_componets";
+import { Features } from "./medical_tourism/Features";
+import Whyseemytrip from "./Whyseemytrip";
+import TrainRoutesTabs from "./Trainroutestabs";
 const Home = () => {
   const [results, setResults] = useState([]);
   const [flightResults, setFlightResults] = useState([]);
-  const [activeTab, setActiveTab] = useState('Trains')
+  const [activeTab, setActiveTab] = useState("Trains");
   const navigate = useNavigate();
 
-
-
   const handleSearchResults = (data) => {
-    console.log('Search results:', data); // Check if flight results are coming
+    console.log("Search results:", data); // Check if flight results are coming
     setFlightResults(data);
-    navigate('/flight-list', { state: { flightResults: data } });
+    navigate("/flight-list", { state: { flightResults: data } });
   };
 
   return (
     <div>
       <div id="preloader">
-        <div className="preloader"><span /><span /></div>
+        <div className="preloader">
+          <span />
+          <span />
+        </div>
       </div>
       {/* Main wrapper - style you can find in pages.scss */}
       <div id="main-wrapper">
@@ -58,96 +76,51 @@ const Home = () => {
         <div className="clearfix" />
         {/* Top header  */}
         {/*  Hero Banner  Start */}
-        <div className="image-cover hero-header bg-white" style={{ background: 'url(../images/indian_train.png)no-repeat' }} data-overlay={5}>
+        <div
+          className="image-cover hero-header bg-white"
+          style={{ background: "url(../images/indian_train.png)no-repeat" }}
+          data-overlay={5}
+        >
           <div className="container">
             {/* Search Form */}
             <div className="row justify-content-center align-items-center">
               <div className="col-xl-9 col-lg-10 col-md-12 col-sm-12">
                 <div className="position-relative text-center mb-5">
-                  <h1>Start Your Trip with <span className="position-relative z-4">See My Trip<span className="position-absolute top-50 start-50 translate-middle d-none d-md-block mt-4">
-                    <svg width="185px" height="23px" viewBox="0 0 445.5 23">
-                      <path className="fill-white opacity-7" d="M409.9,2.6c-9.7-0.6-19.5-1-29.2-1.5c-3.2-0.2-6.4-0.2-9.7-0.3c-7-0.2-14-0.4-20.9-0.5 c-3.9-0.1-7.8-0.2-11.7-0.3c-1.1,0-2.3,0-3.4,0c-2.5,0-5.1,0-7.6,0c-11.5,0-23,0-34.5,0c-2.7,0-5.5,0.1-8.2,0.1 c-6.8,0.1-13.6,0.2-20.3,0.3c-7.7,0.1-15.3,0.1-23,0.3c-12.4,0.3-24.8,0.6-37.1,0.9c-7.2,0.2-14.3,0.3-21.5,0.6 c-12.3,0.5-24.7,1-37,1.5c-6.7,0.3-13.5,0.5-20.2,0.9C112.7,5.3,99.9,6,87.1,6.7C80.3,7.1,73.5,7.4,66.7,8 C54,9.1,41.3,10.1,28.5,11.2c-2.7,0.2-5.5,0.5-8.2,0.7c-5.5,0.5-11,1.2-16.4,1.8c-0.3,0-0.7,0.1-1,0.1c-0.7,0.2-1.2,0.5-1.7,1 C0.4,15.6,0,16.6,0,17.6c0,1,0.4,2,1.1,2.7c0.7,0.7,1.8,1.2,2.7,1.1c6.6-0.7,13.2-1.5,19.8-2.1c6.1-0.5,12.3-1,18.4-1.6 c6.7-0.6,13.4-1.1,20.1-1.7c2.7-0.2,5.4-0.5,8.1-0.7c10.4-0.6,20.9-1.1,31.3-1.7c6.5-0.4,13-0.7,19.5-1.1c2.7-0.1,5.4-0.3,8.1-0.4 c10.3-0.4,20.7-0.8,31-1.2c6.3-0.2,12.5-0.5,18.8-0.7c2.1-0.1,4.2-0.2,6.3-0.2c11.2-0.3,22.3-0.5,33.5-0.8 c6.2-0.1,12.5-0.3,18.7-0.4c2.2-0.1,4.4-0.1,6.7-0.1c11.5-0.1,23-0.2,34.6-0.4c7.2-0.1,14.4-0.1,21.6-0.1c12.2,0,24.5,0.1,36.7,0.1 c2.4,0,4.8,0.1,7.2,0.2c6.8,0.2,13.5,0.4,20.3,0.6c5.1,0.2,10.1,0.3,15.2,0.4c3.6,0.1,7.2,0.4,10.8,0.6c10.6,0.6,21.1,1.2,31.7,1.8 c2.7,0.2,5.4,0.4,8,0.6c2.9,0.2,5.8,0.4,8.6,0.7c0.4,0.1,0.9,0.2,1.3,0.3c1.1,0.2,2.2,0.2,3.2-0.4c0.9-0.5,1.6-1.5,1.9-2.5 c0.6-2.2-0.7-4.5-2.9-5.2c-1.9-0.5-3.9-0.7-5.9-0.9c-1.4-0.1-2.7-0.3-4.1-0.4c-2.6-0.3-5.2-0.4-7.9-0.6 C419.7,3.1,414.8,2.9,409.9,2.6z">
-                      </path>
-                    </svg>
-                  </span></span></h1>
-                  <p className="fs-5 fw-light">Take a little break from the work stress of everyday. Discover plan trip and
-                    explore beautiful destinations.</p>
+                  <h1>
+                    Start Your Trip with{" "}
+                    <span className="position-relative z-4">
+                      See My Trip
+                      <span className="position-absolute top-50 start-50 translate-middle d-none d-md-block mt-4">
+                        <svg width="185px" height="23px" viewBox="0 0 445.5 23">
+                          <path
+                            className="fill-white opacity-7"
+                            d="M409.9,2.6c-9.7-0.6-19.5-1-29.2-1.5c-3.2-0.2-6.4-0.2-9.7-0.3c-7-0.2-14-0.4-20.9-0.5 c-3.9-0.1-7.8-0.2-11.7-0.3c-1.1,0-2.3,0-3.4,0c-2.5,0-5.1,0-7.6,0c-11.5,0-23,0-34.5,0c-2.7,0-5.5,0.1-8.2,0.1 c-6.8,0.1-13.6,0.2-20.3,0.3c-7.7,0.1-15.3,0.1-23,0.3c-12.4,0.3-24.8,0.6-37.1,0.9c-7.2,0.2-14.3,0.3-21.5,0.6 c-12.3,0.5-24.7,1-37,1.5c-6.7,0.3-13.5,0.5-20.2,0.9C112.7,5.3,99.9,6,87.1,6.7C80.3,7.1,73.5,7.4,66.7,8 C54,9.1,41.3,10.1,28.5,11.2c-2.7,0.2-5.5,0.5-8.2,0.7c-5.5,0.5-11,1.2-16.4,1.8c-0.3,0-0.7,0.1-1,0.1c-0.7,0.2-1.2,0.5-1.7,1 C0.4,15.6,0,16.6,0,17.6c0,1,0.4,2,1.1,2.7c0.7,0.7,1.8,1.2,2.7,1.1c6.6-0.7,13.2-1.5,19.8-2.1c6.1-0.5,12.3-1,18.4-1.6 c6.7-0.6,13.4-1.1,20.1-1.7c2.7-0.2,5.4-0.5,8.1-0.7c10.4-0.6,20.9-1.1,31.3-1.7c6.5-0.4,13-0.7,19.5-1.1c2.7-0.1,5.4-0.3,8.1-0.4 c10.3-0.4,20.7-0.8,31-1.2c6.3-0.2,12.5-0.5,18.8-0.7c2.1-0.1,4.2-0.2,6.3-0.2c11.2-0.3,22.3-0.5,33.5-0.8 c6.2-0.1,12.5-0.3,18.7-0.4c2.2-0.1,4.4-0.1,6.7-0.1c11.5-0.1,23-0.2,34.6-0.4c7.2-0.1,14.4-0.1,21.6-0.1c12.2,0,24.5,0.1,36.7,0.1 c2.4,0,4.8,0.1,7.2,0.2c6.8,0.2,13.5,0.4,20.3,0.6c5.1,0.2,10.1,0.3,15.2,0.4c3.6,0.1,7.2,0.4,10.8,0.6c10.6,0.6,21.1,1.2,31.7,1.8 c2.7,0.2,5.4,0.4,8,0.6c2.9,0.2,5.8,0.4,8.6,0.7c0.4,0.1,0.9,0.2,1.3,0.3c1.1,0.2,2.2,0.2,3.2-0.4c0.9-0.5,1.6-1.5,1.9-2.5 c0.6-2.2-0.7-4.5-2.9-5.2c-1.9-0.5-3.9-0.7-5.9-0.9c-1.4-0.1-2.7-0.3-4.1-0.4c-2.6-0.3-5.2-0.4-7.9-0.6 C419.7,3.1,414.8,2.9,409.9,2.6z"
+                          ></path>
+                        </svg>
+                      </span>
+                    </span>
+                  </h1>
+                  <p className="fs-5 fw-light">
+                    Take a little break from the work stress of everyday.
+                    Discover plan trip and explore beautiful destinations.
+                  </p>
                 </div>
               </div>
               <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                <div className="search-wrap bg-white rounded-3 p-3">
-                  <ul className="nav nav-pills primary-soft medium justify-content-center mb-3" id="tour-pills-tab" role="tablist">
-                    {/* <li className="nav-item nav-item1">
-                      <Link
-                        className={`nav-link ${activeTab === 'Trains' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('Trains')}
-                      >
-                        <i className="fa-solid fa-train me-2" />Trains
-                      </Link>
-                    </li> */}
-                    <li className="nav-item nav-item1">
-                      <Link className={`nav-link`} to='/offers'>
-                        <i className="fa-solid fa-tags me-2" />Offers
-                      </Link>
-                    </li>
-                    <li className="nav-item nav-item1">
-                      <Link className={`nav-link`} to='/guides'>
-                        <i className="fa-solid fa-book me-2" />Guides
-                      </Link>
-                    </li>
-                    <li className="nav-item nav-item1">
-                      <Link className={`nav-link`} to='/selfdrivecars'>
-                        <i className="fa-solid fa-car me-2" />Self Drive
-                      </Link>
-                    </li>
-
-                    <li className="nav-item nav-item1 ">
-                      <Link
-                        className={`nav-link`} to="/photographers"
-                      >
-                        <i className="fa-solid fa-camera me-2" />Photographer
-                      </Link>
-                    </li>
-                    <li className="nav-item nav-item1 ">
-                      <Link
-                        className={`nav-link`} to = "/homestaysvillas"
-                      >
-                        <i className="fa-solid fa-house-user me-2" />Home Stays & Villas
-                      </Link>
-                    </li>
-                    <li className="nav-item nav-item1 ">
-                      <Link
-                        className={`nav-link`} to="/travelinsurance"
-                      >
-                        <i className="fa-solid fa-shield-alt me-2" />Travel Insurance
-                      </Link>
-                    </li>
-                    <li className="nav-item nav-item1 ">
-                      <Link
-                        className={`nav-link`} to = "/packages"
-                      >
-                        <i className="fa-solid fa-suitcase-rolling me-2" />Packages
-                      </Link>
-                    </li>
-                    <li className="nav-item nav-item1 ">
-                      <Link
-                        className={`nav-link`} to = "/giftcards"
-                      >
-                        <i className="fa-solid fa-gift me-2" />Gift Cards
-                      </Link>
-                    </li>
-
-                  </ul>
+                <div
+                  className="search-wrap bg-white rounded-3 p-3"
+                >
+                  <Features />
                   {/* <div>
                     <h2 className='text-black text-center fs-5 fw-light'>Welcome to Seemytrip</h2>
                   </div> */}
                   <div className="tab-content">
                     <div className="tab-pane show active" id="Trains">
-                      {activeTab === 'Trains' && (
+                      {activeTab === "Trains" && (
                         <div className="tab-pane show active" id="Trains">
                           <SearchComponent
-                            backgroundColor="#ffffff"
-                            height="210px"                 
+                            backgroundColor="#f6f6f6"
+                            height="210px"
                             leavingLabel={null}
                             goingLabel={null}
                             dateLabel={null}
@@ -257,74 +230,92 @@ const Home = () => {
         {/* Train Status start */}
         <HorizontalContainer />
         {/* Train Status End  */}
-        <WelcomePopup/>
+        <WelcomePopup />
         {/*  Features Start  */}
-      <OffersSection/>
+        {/* <OffersSection/> */}
         <section className="border-bottom py-5">
-  <div className="container">
-    {/* Section Heading */}
-    <div className="row justify-content-center mb-4">
-      <div className="col-lg-8 text-center">
-        <h2 className="fw-bold fs-2">Why Book with SeeMyTrip?</h2>
-        <p className="fs-5 text-muted">Discover the unique benefits that make your travel experience seamless and memorable.</p>
-      </div>
-    </div>
-
-    <div className="row align-items-center justify-content-between g-4">
-      {/* Easy Booking */}
+          <div className="container">
+            {/* Section Heading */}
+            <div className="row justify-content-center mb-4">
+              <div className="col-lg-8 text-center">
+                <h2 className="fw-bold fs-2">
+                  Why Book Your Train Journey with SeeMyTrip?
+                </h2>
+                <p className="fs-5 text-muted">
+                  Discover the ultimate convenience and features designed for
+                  seamless train travel across India.
+                </p>
+              </div>
+            </div>
+            <Whyseemytrip />
+            {/* <div className="row align-items-center justify-content-between g-4">
+      
       <div className="col-xl-3 col-lg-3 col-md-6 col-sm-5">
         <div className="featuresBox-wrap">
           <div className="featuresBox-icons mb-3">
-            <i className="fa-solid fa-sack-dollar fs-1 text-primary" />
+            <i className="fa-solid fa-train-subway fs-1 text-primary" />
           </div>
           <div className="featuresBox-captions">
-            <h4 className="fw-bold fs-5 lh-base mb-0">Easy Booking</h4>
-            <p className="m-0">Book your trips effortlessly with our user-friendly platform, designed to make your travel plans stress-free and smooth.</p>
+            <h4 className="fw-bold fs-5 lh-base mb-0">Easy Train Booking</h4>
+            <p className="m-0">Book your train tickets in just 2 minutes on our user-friendly platform, making your travel planning quick and stress-free.</p>
           </div>
         </div>
       </div>
 
-      {/* Best Destinations */}
+      
       <div className="col-xl-3 col-lg-3 col-md-6 col-sm-5">
         <div className="featuresBox-wrap">
           <div className="featuresBox-icons mb-3">
-            <i className="fa-solid fa-umbrella-beach fs-1 text-primary" />
+            <i className="fa-solid fa-route fs-1 text-primary" />
           </div>
           <div className="featuresBox-captions">
-            <h4 className="fw-bold fs-5 lh-base mb-0">Best Destinations</h4>
-            <p className="m-0">Explore handpicked destinations around the globe, from tropical beaches to cultural landmarks, curated for every type of traveler.</p>
+            <h4 className="fw-bold fs-5 lh-base mb-0">Wide Route Network</h4>
+            <p className="m-0">Access an extensive network of train routes across India, connecting every city, town, and region with ease.</p>
           </div>
         </div>
       </div>
 
-      {/* Travel Guides */}
+      
       <div className="col-xl-3 col-lg-3 col-md-6 col-sm-5">
         <div className="featuresBox-wrap">
           <div className="featuresBox-icons mb-3">
-            <i className="fa-solid fa-person-walking-luggage fs-1 text-primary" />
+            <i className="fa-solid fa-clock fs-1 text-primary" />
           </div>
           <div className="featuresBox-captions">
-            <h4 className="fw-bold fs-5 lh-base mb-0">Expert Travel Guides</h4>
-            <p className="m-0">Get valuable tips and insights from our experienced travel guides, ensuring you make the most out of every journey.</p>
+            <h4 className="fw-bold fs-5 lh-base mb-0">Live Train Status</h4>
+            <p className="m-0">Check live train status anytime for real-time updates on arrival, delays, and schedules for a hassle-free journey.</p>
           </div>
         </div>
       </div>
 
-      {/* Friendly Support */}
+      
+       <div className="col-xl-3 col-lg-3 col-md-6 col-sm-5">
+        <div className="featuresBox-wrap">
+          <div className="featuresBox-icons mb-3">
+            <i className="fa-solid fa-lock fs-1 text-primary" />
+          </div>
+          <div className="featuresBox-captions">
+            <h4 className="fw-bold fs-5 lh-base mb-0">Secure Payment Gateway</h4>
+            <p className="m-0">Enjoy peace of mind with our secure payment gateway, ensuring safe and encrypted transactions for your bookings.</p>
+          </div>
+        </div>
+      </div> 
+      
+      
       <div className="col-xl-3 col-lg-3 col-md-6 col-sm-5">
         <div className="featuresBox-wrap">
           <div className="featuresBox-icons mb-3">
             <i className="fa-solid fa-headset fs-1 text-primary" />
           </div>
           <div className="featuresBox-captions">
-            <h4 className="fw-bold fs-5 lh-base mb-0">Friendly Support</h4>
-            <p className="m-0">Our 24/7 customer support team is here to assist you with any queries, ensuring a hassle-free travel experience.</p>
+            <h4 className="fw-bold fs-5 lh-base mb-0">Reliable Support</h4>
+            <p className="m-0">Our dedicated support team is available 24/7 to assist with booking queries and travel needs for a smooth experience.</p>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-</section>
+    </div> */}
+          </div>
+        </section>
 
         {/*  Features End  */}
         {/*  Best Locations Design Start  */}
@@ -334,7 +325,10 @@ const Home = () => {
               <div className="col-xl-8 col-lg-9 col-md-11 col-sm-12">
                 <div className="secHeading-wrap text-center mb-5">
                   <h2>Top Train Routes</h2>
-                  <p>Experience the scenic journeys that connect you to remarkable destinations.</p>
+                  <p>
+                    Experience the scenic journeys that connect you to
+                    remarkable destinations.
+                  </p>
                 </div>
               </div>
             </div>
@@ -358,7 +352,9 @@ const Home = () => {
                         <span>Hyderabad</span>
                       </h4>
                       <p className="detail ellipsis-container m-0">
-                        <span className="ellipsis-item__normal">10 Destinations</span>
+                        <span className="ellipsis-item__normal">
+                          10 Destinations
+                        </span>
                         <span className="separate ellipsis-item__normal" />
                         <span className="ellipsis-item">5 Hotels</span>
                       </p>
@@ -369,7 +365,7 @@ const Home = () => {
               <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                 <div className="destination-blocks bg-white p-2 rounded border br-dashed h-100">
                   <div className="destination-blocks-pics p-1">
-                    <Link to='#'>
+                    <Link to="#">
                       <div className="flight-thumb-wrapper p-2 pb-0">
                         <div className="popFlights-item-overHidden rounded-3">
                           <img src={benglore} className="img-fluid" alt="" />
@@ -384,7 +380,9 @@ const Home = () => {
                         <span>Bangalore</span>
                       </h4>
                       <p className="detail ellipsis-container m-0">
-                        <span className="ellipsis-item__normal">06 Destinations</span>
+                        <span className="ellipsis-item__normal">
+                          06 Destinations
+                        </span>
                         <span className="separate ellipsis-item__normal" />
                         <span className="ellipsis-item">14 Hotels</span>
                       </p>
@@ -410,7 +408,9 @@ const Home = () => {
                         <span>Kolkata</span>
                       </h4>
                       <p className="detail ellipsis-container m-0">
-                        <span className="ellipsis-item__normal">09 Destinations</span>
+                        <span className="ellipsis-item__normal">
+                          09 Destinations
+                        </span>
                         <span className="separate ellipsis-item__normal" />
                         <span className="ellipsis-item">16 Hotels</span>
                       </p>
@@ -436,7 +436,9 @@ const Home = () => {
                         <span>Mumbai</span>
                       </h4>
                       <p className="detail ellipsis-container m-0">
-                        <span className="ellipsis-item__normal">07 Destinations</span>
+                        <span className="ellipsis-item__normal">
+                          07 Destinations
+                        </span>
                         <span className="separate ellipsis-item__normal" />
                         <span className="ellipsis-item">18 Hotels</span>
                       </p>
@@ -450,7 +452,11 @@ const Home = () => {
                     <Link to="#">
                       <div className="flight-thumb-wrapper p-2 pb-0">
                         <div className="popFlights-item-overHidden rounded-3">
-                          <img src={utterpradesh} className="img-fluid" alt="" />
+                          <img
+                            src={utterpradesh}
+                            className="img-fluid"
+                            alt=""
+                          />
                         </div>
                       </div>
                     </Link>
@@ -462,7 +468,9 @@ const Home = () => {
                         <span>Uttar Pradesh</span>
                       </h4>
                       <p className="detail ellipsis-container m-0">
-                        <span className="ellipsis-item__normal">4 Destinations</span>
+                        <span className="ellipsis-item__normal">
+                          4 Destinations
+                        </span>
                         <span className="separate ellipsis-item__normal" />
                         <span className="ellipsis-item">12 Hotels</span>
                       </p>
@@ -488,7 +496,9 @@ const Home = () => {
                         <span>Kerala</span>
                       </h4>
                       <p className="detail ellipsis-container m-0">
-                        <span className="ellipsis-item__normal">16 Destinations</span>
+                        <span className="ellipsis-item__normal">
+                          16 Destinations
+                        </span>
                         <span className="separate ellipsis-item__normal" />
                         <span className="ellipsis-item">7 Hotels</span>
                       </p>
@@ -514,7 +524,9 @@ const Home = () => {
                         <span>Delhi</span>
                       </h4>
                       <p className="detail ellipsis-container m-0">
-                        <span className="ellipsis-item__normal">14 Destinations</span>
+                        <span className="ellipsis-item__normal">
+                          14 Destinations
+                        </span>
                         <span className="separate ellipsis-item__normal" />
                         <span className="ellipsis-item">10 Hotels</span>
                       </p>
@@ -540,7 +552,9 @@ const Home = () => {
                         <span>Chennai</span>
                       </h4>
                       <p className="detail ellipsis-container m-0">
-                        <span className="ellipsis-item__normal">12 Destinations</span>
+                        <span className="ellipsis-item__normal">
+                          12 Destinations
+                        </span>
                         <span className="separate ellipsis-item__normal" />
                         <span className="ellipsis-item">32 Hotels</span>
                       </p>
@@ -923,334 +937,12 @@ const Home = () => {
     </section> */}
         {/*  Popular Routes Design Start  */}
         {/*  Flexible features End  */}
-        <section>
-          <div className="container">
-            <div className="row align-items-center justify-content-between">
-              <div className="col-xl-5 col-lg-5 col-md-12 position-relative pe-xl-5 pe-lg-4 pe-md-4 pb-xl-5 pb-lg-4 pb-md-4">
-                <div className="position-relative mb-lg-0 mb-4">
-                  <img src={youngIndianCouple} className="img-fluid rounded-3 position-relative z-1" alt="" />
-                  <div className="position-absolute bottom-0 start-0 z-index-1 mb-4 ms-5">
-                    <div className="bg-body d-flex d-inline-block rounded-3 position-relative p-3 z-2">
-                      {/* Avatar group */}
-                      <div className="me-4">
-                        <h6 className="fw-normal">Client</h6>
-                        {/* Avatar group */}
-                        <ul className="avatar-group mb-0">
-                          <li className="avatar avatar-md">
-                            <img className="avatar-img circle" src="https://placehold.co/500x500" alt="avatar" />
-                          </li>
-                          <li className="avatar avatar-md">
-                            <img className="avatar-img circle" src="https://placehold.co/500x500" alt="avatar" />
-                          </li>
-                          <li className="avatar avatar-md">
-                            <img className="avatar-img circle" src="https://placehold.co/500x500" alt="avatar" />
-                          </li>
-                          <li className="avatar avatar-md">
-                            <img className="avatar-img circle" src="https://placehold.co/500x500" alt="avatar" />
-                          </li>
-                          <li className="avatar avatar-md">
-                            <div className="avatar-img circle bg-primary">
-                              <span className="text-white position-absolute top-50 start-50 translate-middle small">1K+</span>
-                            </div>
-                          </li>
-                        </ul>
-                      </div>
-                      {/* Rating */}
-                      <div>
-                        <h6 className="fw-normal mb-3">Rating</h6>
-                        <h6 className="m-0">4.5<i className="fa-solid fa-star text-warning ms-1" /></h6>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <figure className="position-absolute bottom-0 end-0 d-none d-md-block mb-n5 me-n4">
-                  <svg height={400} className="fill-primary opacity-25" viewBox="0 0 340 340">
-                    <circle cx="194.2" cy="2.2" r="2.2" />
-                    <circle cx="2.2" cy="2.2" r="2.2" />
-                    <circle cx="218.2" cy="2.2" r="2.2" />
-                    <circle cx="26.2" cy="2.2" r="2.2" />
-                    <circle cx="242.2" cy="2.2" r="2.2" />
-                    <circle cx="50.2" cy="2.2" r="2.2" />
-                    <circle cx="266.2" cy="2.2" r="2.2" />
-                    <circle cx="74.2" cy="2.2" r="2.2" />
-                    <circle cx="290.2" cy="2.2" r="2.2" />
-                    <circle cx="98.2" cy="2.2" r="2.2" />
-                    <circle cx="314.2" cy="2.2" r="2.2" />
-                    <circle cx="122.2" cy="2.2" r="2.2" />
-                    <circle cx="338.2" cy="2.2" r="2.2" />
-                    <circle cx="146.2" cy="2.2" r="2.2" />
-                    <circle cx="170.2" cy="2.2" r="2.2" />
-                    <circle cx="194.2" cy="26.2" r="2.2" />
-                    <circle cx="2.2" cy="26.2" r="2.2" />
-                    <circle cx="218.2" cy="26.2" r="2.2" />
-                    <circle cx="26.2" cy="26.2" r="2.2" />
-                    <circle cx="242.2" cy="26.2" r="2.2" />
-                    <circle cx="50.2" cy="26.2" r="2.2" />
-                    <circle cx="266.2" cy="26.2" r="2.2" />
-                    <circle cx="74.2" cy="26.2" r="2.2" />
-                    <circle cx="290.2" cy="26.2" r="2.2" />
-                    <circle cx="98.2" cy="26.2" r="2.2" />
-                    <circle cx="314.2" cy="26.2" r="2.2" />
-                    <circle cx="122.2" cy="26.2" r="2.2" />
-                    <circle cx="338.2" cy="26.2" r="2.2" />
-                    <circle cx="146.2" cy="26.2" r="2.2" />
-                    <circle cx="170.2" cy="26.2" r="2.2" />
-                    <circle cx="194.2" cy="50.2" r="2.2" />
-                    <circle cx="2.2" cy="50.2" r="2.2" />
-                    <circle cx="218.2" cy="50.2" r="2.2" />
-                    <circle cx="26.2" cy="50.2" r="2.2" />
-                    <circle cx="242.2" cy="50.2" r="2.2" />
-                    <circle cx="50.2" cy="50.2" r="2.2" />
-                    <circle cx="266.2" cy="50.2" r="2.2" />
-                    <circle cx="74.2" cy="50.2" r="2.2" />
-                    <circle cx="290.2" cy="50.2" r="2.2" />
-                    <circle cx="98.2" cy="50.2" r="2.2" />
-                    <circle cx="314.2" cy="50.2" r="2.2" />
-                    <circle cx="122.2" cy="50.2" r="2.2" />
-                    <circle cx="338.2" cy="50.2" r="2.2" />
-                    <circle cx="146.2" cy="50.2" r="2.2" />
-                    <circle cx="170.2" cy="50.2" r="2.2" />
-                    <circle cx="194.2" cy="74.2" r="2.2" />
-                    <circle cx="2.2" cy="74.2" r="2.2" />
-                    <circle cx="218.2" cy="74.2" r="2.2" />
-                    <circle cx="26.2" cy="74.2" r="2.2" />
-                    <circle cx="242.2" cy="74.2" r="2.2" />
-                    <circle cx="50.2" cy="74.2" r="2.2" />
-                    <circle cx="266.2" cy="74.2" r="2.2" />
-                    <circle cx="74.2" cy="74.2" r="2.2" />
-                    <circle cx="290.2" cy="74.2" r="2.2" />
-                    <circle cx="98.2" cy="74.2" r="2.2" />
-                    <circle cx="314.2" cy="74.2" r="2.2" />
-                    <circle cx="122.2" cy="74.2" r="2.2" />
-                    <circle cx="338.2" cy="74.2" r="2.2" />
-                    <circle cx="146.2" cy="74.2" r="2.2" />
-                    <circle cx="170.2" cy="74.2" r="2.2" />
-                    <circle cx="194.2" cy="98.2" r="2.2" />
-                    <circle cx="2.2" cy="98.2" r="2.2" />
-                    <circle cx="218.2" cy="98.2" r="2.2" />
-                    <circle cx="26.2" cy="98.2" r="2.2" />
-                    <circle cx="242.2" cy="98.2" r="2.2" />
-                    <circle cx="50.2" cy="98.2" r="2.2" />
-                    <circle cx="266.2" cy="98.2" r="2.2" />
-                    <circle cx="74.2" cy="98.2" r="2.2" />
-                    <circle cx="290.2" cy="98.2" r="2.2" />
-                    <circle cx="98.2" cy="98.2" r="2.2" />
-                    <circle cx="314.2" cy="98.2" r="2.2" />
-                    <circle cx="122.2" cy="98.2" r="2.2" />
-                    <circle cx="338.2" cy="98.2" r="2.2" />
-                    <circle cx="146.2" cy="98.2" r="2.2" />
-                    <circle cx="170.2" cy="98.2" r="2.2" />
-                    <circle cx="194.2" cy="122.2" r="2.2" />
-                    <circle cx="2.2" cy="122.2" r="2.2" />
-                    <circle cx="218.2" cy="122.2" r="2.2" />
-                    <circle cx="26.2" cy="122.2" r="2.2" />
-                    <circle cx="242.2" cy="122.2" r="2.2" />
-                    <circle cx="50.2" cy="122.2" r="2.2" />
-                    <circle cx="266.2" cy="122.2" r="2.2" />
-                    <circle cx="74.2" cy="122.2" r="2.2" />
-                    <circle cx="290.2" cy="122.2" r="2.2" />
-                    <circle cx="98.2" cy="122.2" r="2.2" />
-                    <circle cx="314.2" cy="122.2" r="2.2" />
-                    <circle cx="122.2" cy="122.2" r="2.2" />
-                    <circle cx="338.2" cy="122.2" r="2.2" />
-                    <circle cx="146.2" cy="122.2" r="2.2" />
-                    <circle cx="170.2" cy="122.2" r="2.2" />
-                    <circle cx="194.2" cy="146.2" r="2.2" />
-                    <circle cx="2.2" cy="146.2" r="2.2" />
-                    <circle cx="218.2" cy="146.2" r="2.2" />
-                    <circle cx="26.2" cy="146.2" r="2.2" />
-                    <circle cx="242.2" cy="146.2" r="2.2" />
-                    <circle cx="50.2" cy="146.2" r="2.2" />
-                    <circle cx="266.2" cy="146.2" r="2.2" />
-                    <circle cx="74.2" cy="146.2" r="2.2" />
-                    <circle cx="290.2" cy="146.2" r="2.2" />
-                    <circle cx="98.2" cy="146.2" r="2.2" />
-                    <circle cx="314.2" cy="146.2" r="2.2" />
-                    <circle cx="122.2" cy="146.2" r="2.2" />
-                    <circle cx="338.2" cy="146.2" r="2.2" />
-                    <circle cx="146.2" cy="146.2" r="2.2" />
-                    <circle cx="170.2" cy="146.2" r="2.2" />
-                    <circle cx="194.2" cy="170.2" r="2.2" />
-                    <circle cx="2.2" cy="170.2" r="2.2" />
-                    <circle cx="218.2" cy="170.2" r="2.2" />
-                    <circle cx="26.2" cy="170.2" r="2.2" />
-                    <circle cx="242.2" cy="170.2" r="2.2" />
-                    <circle cx="50.2" cy="170.2" r="2.2" />
-                    <circle cx="266.2" cy="170.2" r="2.2" />
-                    <circle cx="74.2" cy="170.2" r="2.2" />
-                    <circle cx="290.2" cy="170.2" r="2.2" />
-                    <circle cx="98.2" cy="170.2" r="2.2" />
-                    <circle cx="314.2" cy="170.2" r="2.2" />
-                    <circle cx="122.2" cy="170.2" r="2.2" />
-                    <circle cx="338.2" cy="170.2" r="2.2" />
-                    <circle cx="146.2" cy="170.2" r="2.2" />
-                    <circle cx="170.2" cy="170.2" r="2.2" />
-                    <circle cx="194.2" cy="194.2" r="2.2" />
-                    <circle cx="2.2" cy="194.2" r="2.2" />
-                    <circle cx="218.2" cy="194.2" r="2.2" />
-                    <circle cx="26.2" cy="194.2" r="2.2" />
-                    <circle cx="242.2" cy="194.2" r="2.2" />
-                    <circle cx="50.2" cy="194.2" r="2.2" />
-                    <circle cx="266.2" cy="194.2" r="2.2" />
-                    <circle cx="74.2" cy="194.2" r="2.2" />
-                    <circle cx="290.2" cy="194.2" r="2.2" />
-                    <circle cx="98.2" cy="194.2" r="2.2" />
-                    <circle cx="314.2" cy="194.2" r="2.2" />
-                    <circle cx="122.2" cy="194.2" r="2.2" />
-                    <circle cx="338.2" cy="194.2" r="2.2" />
-                    <circle cx="146.2" cy="194.2" r="2.2" />
-                    <circle cx="170.2" cy="194.2" r="2.2" />
-                    <circle cx="194.2" cy="218.2" r="2.2" />
-                    <circle cx="2.2" cy="218.2" r="2.2" />
-                    <circle cx="218.2" cy="218.2" r="2.2" />
-                    <circle cx="26.2" cy="218.2" r="2.2" />
-                    <circle cx="242.2" cy="218.2" r="2.2" />
-                    <circle cx="50.2" cy="218.2" r="2.2" />
-                    <circle cx="266.2" cy="218.2" r="2.2" />
-                    <circle cx="74.2" cy="218.2" r="2.2" />
-                    <circle cx="290.2" cy="218.2" r="2.2" />
-                    <circle cx="98.2" cy="218.2" r="2.2" />
-                    <circle cx="314.2" cy="218.2" r="2.2" />
-                    <circle cx="122.2" cy="218.2" r="2.2" />
-                    <circle cx="338.2" cy="218.2" r="2.2" />
-                    <circle cx="146.2" cy="218.2" r="2.2" />
-                    <circle cx="170.2" cy="218.2" r="2.2" />
-                    <circle cx="194.2" cy="242.2" r="2.2" />
-                    <circle cx="2.2" cy="242.2" r="2.2" />
-                    <circle cx="218.2" cy="242.2" r="2.2" />
-                    <circle cx="26.2" cy="242.2" r="2.2" />
-                    <circle cx="242.2" cy="242.2" r="2.2" />
-                    <circle cx="50.2" cy="242.2" r="2.2" />
-                    <circle cx="266.2" cy="242.2" r="2.2" />
-                    <circle cx="74.2" cy="242.2" r="2.2" />
-                    <circle cx="290.2" cy="242.2" r="2.2" />
-                    <circle cx="98.2" cy="242.2" r="2.2" />
-                    <circle cx="314.2" cy="242.2" r="2.2" />
-                    <circle cx="122.2" cy="242.2" r="2.2" />
-                    <circle cx="338.2" cy="242.2" r="2.2" />
-                    <circle cx="146.2" cy="242.2" r="2.2" />
-                    <circle cx="170.2" cy="242.2" r="2.2" />
-                    <circle cx="194.2" cy="266.2" r="2.2" />
-                    <circle cx="2.2" cy="266.2" r="2.2" />
-                    <circle cx="218.2" cy="266.2" r="2.2" />
-                    <circle cx="26.2" cy="266.2" r="2.2" />
-                    <circle cx="242.2" cy="266.2" r="2.2" />
-                    <circle cx="50.2" cy="266.2" r="2.2" />
-                    <circle cx="266.2" cy="266.2" r="2.2" />
-                    <circle cx="74.2" cy="266.2" r="2.2" />
-                    <circle cx="290.2" cy="266.2" r="2.2" />
-                    <circle cx="98.2" cy="266.2" r="2.2" />
-                    <circle cx="314.2" cy="266.2" r="2.2" />
-                    <circle cx="122.2" cy="266.2" r="2.2" />
-                    <circle cx="338.2" cy="266.2" r="2.2" />
-                    <circle cx="146.2" cy="266.2" r="2.2" />
-                    <circle cx="170.2" cy="266.2" r="2.2" />
-                    <circle cx="194.2" cy="290.2" r="2.2" />
-                    <circle cx="2.2" cy="290.2" r="2.2" />
-                    <circle cx="218.2" cy="290.2" r="2.2" />
-                    <circle cx="26.2" cy="290.2" r="2.2" />
-                    <circle cx="242.2" cy="290.2" r="2.2" />
-                    <circle cx="50.2" cy="290.2" r="2.2" />
-                    <circle cx="266.2" cy="290.2" r="2.2" />
-                    <circle cx="74.2" cy="290.2" r="2.2" />
-                    <circle cx="290.2" cy="290.2" r="2.2" />
-                    <circle cx="98.2" cy="290.2" r="2.2" />
-                    <circle cx="314.2" cy="290.2" r="2.2" />
-                    <circle cx="122.2" cy="290.2" r="2.2" />
-                    <circle cx="338.2" cy="290.2" r="2.2" />
-                    <circle cx="146.2" cy="290.2" r="2.2" />
-                    <circle cx="170.2" cy="290.2" r="2.2" />
-                    <circle cx="194.2" cy="314.2" r="2.2" />
-                    <circle cx="2.2" cy="314.2" r="2.2" />
-                    <circle cx="218.2" cy="314.2" r="2.2" />
-                    <circle cx="26.2" cy="314.2" r="2.2" />
-                    <circle cx="242.2" cy="314.2" r="2.2" />
-                    <circle cx="50.2" cy="314.2" r="2.2" />
-                    <circle cx="266.2" cy="314.2" r="2.2" />
-                    <circle cx="74.2" cy="314.2" r="2.2" />
-                    <circle cx="290.2" cy="314.2" r="2.2" />
-                    <circle cx="98.2" cy="314.2" r="2.2" />
-                    <circle cx="314.2" cy="314.2" r="2.2" />
-                    <circle cx="122.2" cy="314.2" r="2.2" />
-                    <circle cx="338.2" cy="314.2" r="2.2" />
-                    <circle cx="146.2" cy="314.2" r="2.2" />
-                    <circle cx="170.2" cy="314.2" r="2.2" />
-                    <circle cx="194.2" cy="338.2" r="2.2" />
-                    <circle cx="2.2" cy="338.2" r="2.2" />
-                    <circle cx="218.2" cy="338.2" r="2.2" />
-                    <circle cx="26.2" cy="338.2" r="2.2" />
-                    <circle cx="242.2" cy="338.2" r="2.2" />
-                    <circle cx="50.2" cy="338.2" r="2.2" />
-                    <circle cx="266.2" cy="338.2" r="2.2" />
-                    <circle cx="74.2" cy="338.2" r="2.2" />
-                    <circle cx="290.2" cy="338.2" r="2.2" />
-                    <circle cx="98.2" cy="338.2" r="2.2" />
-                    <circle cx="314.2" cy="338.2" r="2.2" />
-                    <circle cx="122.2" cy="338.2" r="2.2" />
-                    <circle cx="338.2" cy="338.2" r="2.2" />
-                    <circle cx="146.2" cy="338.2" r="2.2" />
-                    <circle cx="170.2" cy="338.2" r="2.2" />
-                  </svg>
-                </figure>
-              </div>
-              <div className="col-xl-6 col-lg-6 col-md-12">
-                <div className="row gy-xl-5 g-4">
-                  <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                    <div className="fbxer-wraps">
-                      <div className="fbxerWraps-icons mb-3">
-                        <div className="square--70 circle bg-light-primary"><i className="fa-solid fa-gifts text-primary fs-3" />
-                        </div>
-                      </div>
-                      <div className="fbxerWraps-caps">
-                        <h5 className="fw-bold fs-6">Get Superb Deals</h5>
-                        <p className="fw-light fs-6 m-0">Discover amazing discounts on train tickets that make your journey more affordable!</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                    <div className="fbxer-wraps">
-                      <div className="fbxerWraps-icons mb-3">
-                        <div className="square--70 circle bg-light-info"><i className="fa-solid fa-gifts text-info fs-3" /></div>
-                      </div>
-                      <div className="fbxerWraps-caps">
-                        <h5 className="fw-bold fs-6">100% Transparency Price</h5>
-                        <p className="fw-light fs-6 m-0">Enjoy clear and upfront pricing—no hidden fees, just straightforward deals.</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                    <div className="fbxer-wraps">
-                      <div className="fbxerWraps-icons mb-3">
-                        <div className="square--70 circle bg-light-success"><i className="fa-solid fa-gifts text-success fs-3" />
-                        </div>
-                      </div>
-                      <div className="fbxerWraps-caps">
-                        <h5 className="fw-bold fs-6">Pure Trusted &amp; Free</h5>
-                        <p className="fw-light fs-6 m-0">Travel with peace of mind knowing you’re supported by a trusted service, with no extra charges.</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                    <div className="fbxer-wraps">
-                      <div className="fbxerWraps-icons mb-3">
-                        <div className="square--70 circle bg-light-warning"><i className="fa-solid fa-gifts text-warning fs-3" />
-                        </div>
-                      </div>
-                      <div className="fbxerWraps-caps">
-                        <h5 className="fw-bold fs-6">Travel With Confidence</h5>
-                        <p className="fw-light fs-6 m-0">Explore new destinations with assurance, backed by reliable train services and support.</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+
         {/*  Flexible features End  */}
         {/*  Google & IOS App Start  */}
+
         <section className="py-5">
-           <AppApk/>
+          <AppApk />
         </section>
         {/*  Google & IOS App End  */}
         {/*  Video Helps End  */}
@@ -1271,7 +963,7 @@ const Home = () => {
     </section> */}
         {/*  Video Helps End  */}
         {/*  Our Reviews Start  */}
-        <section className="gray">
+        {/* <section className="gray">
           <div className="container">
             <div className="row align-items-center justify-content-center">
               <div className="col-xl-8 col-lg-9 col-md-11 col-sm-12">
@@ -1404,6 +1096,143 @@ const Home = () => {
               </div>
             </div>
           </div>
+        </section> */}
+       <section style={{ backgroundColor: "#f6f6f6" }}>
+  <div className="container">
+    <h3>Frequently Asked Questions (FAQs)</h3>
+    <div className="row align-items-start">
+      <div className="col-xl-12 col-lg-12 col-md-12 mt-4">
+        <div className="accordion accordion-flush" id="accordionFlushExample">
+          <div className="accordion-item border">
+            <h2 className="accordion-header rounded-2">
+              <button
+                className="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#flush-collapseOne"
+                aria-expanded="false"
+                aria-controls="flush-collapseOne"
+              >
+                Why book train tickets online with See My Trip?
+              </button>
+            </h2>
+            <div
+              id="flush-collapseOne"
+              className="accordion-collapse collapse" 
+              data-bs-parent="#accordionFlushExample"
+            >
+              <div className="accordion-body">
+                Through See My Trip’s train ticket booking platform, traveling
+                to your favorite destination has never been easier. Now, with
+                our seamless mobile app, you can quickly search and book trains
+                to your desired location. Our platform also offers a host of
+                features to enhance your travel experience, like checking
+                PNR status, tracking live running status (even offline),
+                viewing coach positions, and more.
+              </div>
+            </div>
+          </div>
+
+          <div className="accordion-item border rounded-2">
+            <h2 className="accordion-header">
+              <button
+                className="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#flush-collapseTwo"
+                aria-expanded="false"
+                aria-controls="flush-collapseTwo"
+              >
+                How do I book train tickets online through See My Trip?
+              </button>
+            </h2>
+            <div
+              id="flush-collapseTwo"
+              className="accordion-collapse collapse"
+              data-bs-parent="#accordionFlushExample"
+            >
+              <div className="accordion-body">
+                Using See My Trip for online ticket booking is straightforward.
+                Just follow these steps:
+                <ul className="ps-3" style={{ listStyleType: "disc", paddingLeft: "20px" }}>
+                  <li>Visit the See My Trip website or mobile app.</li>
+                  <li>Enter your departure and arrival destinations.</li>
+                  <li>Choose your preferred train.</li>
+                  <li>Fill in the traveler's details.</li>
+                  <li>Proceed to our secure payment gateway.</li>
+                  <li>Log in with your IRCTC username and password.</li>
+                </ul>
+                You’ll receive booking confirmation via Email and SMS. Check
+                your confirmed tickets anytime under "My Trips" on our app or
+                website. That's it! Booking Indian railway tickets online has
+                never been simpler.
+              </div>
+            </div>
+          </div>
+
+          <div className="accordion-item border rounded-2">
+            <h2 className="accordion-header">
+              <button
+                className="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#flush-collapseThree"
+                aria-expanded="false"
+                aria-controls="flush-collapseThree"
+              >
+                What is the maximum number of people I can book in a single train ticket booking?
+              </button>
+            </h2>
+            <div
+              id="flush-collapseThree"
+              className="accordion-collapse collapse"
+              data-bs-parent="#accordionFlushExample"
+            >
+              <div className="accordion-body">
+                As per booking guidelines, you can add up to 6 passengers per ticket booking. Here’s how to proceed:
+                <ul className="ps-3" style={{ listStyleType: "disc", paddingLeft: "20px" }}>
+                  <li>Enter the names and ages of all travelers.</li>
+                  <li>Specify berth preferences and meal options, if available.</li>
+                </ul>
+                For tatkal bookings, you can add up to 4 passengers per booking. You may also add details for two children below 5 years (who won’t need a ticket), and can choose to only book if all berths are confirmed, all berths are in the same coach, or if lower berths are available.
+              </div>
+            </div>
+          </div>
+
+          <div className="accordion-item border rounded-2">
+            <h2 className="accordion-header">
+              <button
+                className="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#flush-collapseFour"
+                aria-expanded="false"
+                aria-controls="flush-collapseFour"
+              >
+                I don't have an IRCTC username or password. What should I do?
+              </button>
+            </h2>
+            <div
+              id="flush-collapseFour"
+              className="accordion-collapse collapse"
+              data-bs-parent="#accordionFlushExample"
+            >
+              <div className="accordion-body">
+                An IRCTC username and password are required for online bookings.
+                If you don’t have one, don’t worry! See My Trip can guide you through creating
+                your username and password so you can easily complete your train ticket booking.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+        <section>
+          <TrainRoutesTabs />
         </section>
         {/*  Our Reviews End  */}
         {/* ==== Article Section Start ===== */}
@@ -1506,112 +1335,243 @@ const Home = () => {
         <Footer />
         {/*  Footer End  */}
         {/* Log In Modal */}
-        <div className="modal fade" id="login" tabIndex={-1} role="dialog" aria-labelledby="loginmodal" aria-hidden="true">
-          <div className="modal-dialog modal-dialog-centered login-pop-form" role="document">
+        <div
+          className="modal fade"
+          id="login"
+          tabIndex={-1}
+          role="dialog"
+          aria-labelledby="loginmodal"
+          aria-hidden="true"
+        >
+          <div
+            className="modal-dialog modal-dialog-centered login-pop-form"
+            role="document"
+          >
             <div className="modal-content" id="loginmodal">
               <div className="modal-header bg-primary">
                 <h4 className="modal-title fs-6">Sign In / Register</h4>
-                <Link to="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></Link>
+                <Link
+                  to="#"
+                  className="text-muted fs-4"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <i className="fa-solid fa-square-xmark" />
+                </Link>
               </div>
               <div className="modal-body">
                 <div className="modal-login-form py-4 px-md-3 px-0">
                   <form>
                     <div className="form-floating mb-4">
-                      <input type="email" className="form-control" placeholder="name@example.com" />
+                      <input
+                        type="email"
+                        className="form-control"
+                        placeholder="name@example.com"
+                      />
                       <label>User Name</label>
                     </div>
                     <div className="form-floating mb-4">
-                      <input type="password" className="form-control" placeholder="Password" />
+                      <input
+                        type="password"
+                        className="form-control"
+                        placeholder="Password"
+                      />
                       <label>Password</label>
                     </div>
                     <div className="form-group">
-                      <button type="submit" className="btn btn-primary full-width font--bold btn-lg">Log In</button>
+                      <button
+                        type="submit"
+                        className="btn btn-primary full-width font--bold btn-lg"
+                      >
+                        Log In
+                      </button>
                     </div>
                     <div className="modal-flex-item d-flex align-items-center justify-content-between mb-3">
                       <div className="modal-flex-first">
                         <div className="form-check form-check-inline">
-                          <input className="form-check-input" type="checkbox" id="savepassword" defaultValue="option1" />
-                          <label className="form-check-label" htmlFor="savepassword">Save Password</label>
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            id="savepassword"
+                            defaultValue="option1"
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor="savepassword"
+                          >
+                            Save Password
+                          </label>
                         </div>
                       </div>
                       <div className="modal-flex-last">
-                        <Link to="#" onClick={(e) => { e.preventDefault() }} className="text-primary fw-medium">Forget Password?</Link>
+                        <Link
+                          to="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                          }}
+                          className="text-primary fw-medium"
+                        >
+                          Forget Password?
+                        </Link>
                       </div>
                     </div>
                   </form>
                 </div>
                 <div className="prixer px-3">
                   <div className="devider-wraps position-relative">
-                    <div className="devider-text text-muted-2 text-md">Sign In with More Methods</div>
+                    <div className="devider-text text-muted-2 text-md">
+                      Sign In with More Methods
+                    </div>
                   </div>
                 </div>
                 <div className="social-login py-4 px-2">
                   <ul className="row align-items-center justify-content-between g-3 p-0 m-0">
-                    <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 full-width"><i className="fa-brands fa-facebook color--facebook fs-2" /></Link></li>
-                    <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-whatsapp color--whatsapp fs-2" /></Link></li>
-                    <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-linkedin color--linkedin fs-2" /></Link></li>
-                    <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-dribbble color--dribbble fs-2" /></Link></li>
-                    <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-twitter color--twitter fs-2" /></Link></li>
+                    <li className="col">
+                      <Link
+                        to="#"
+                        className="square--60 border br-dashed rounded-2 full-width"
+                      >
+                        <i className="fa-brands fa-facebook color--facebook fs-2" />
+                      </Link>
+                    </li>
+                    <li className="col">
+                      <Link
+                        to="#"
+                        className="square--60 border br-dashed rounded-2"
+                      >
+                        <i className="fa-brands fa-whatsapp color--whatsapp fs-2" />
+                      </Link>
+                    </li>
+                    <li className="col">
+                      <Link
+                        to="#"
+                        className="square--60 border br-dashed rounded-2"
+                      >
+                        <i className="fa-brands fa-linkedin color--linkedin fs-2" />
+                      </Link>
+                    </li>
+                    <li className="col">
+                      <Link
+                        to="#"
+                        className="square--60 border br-dashed rounded-2"
+                      >
+                        <i className="fa-brands fa-dribbble color--dribbble fs-2" />
+                      </Link>
+                    </li>
+                    <li className="col">
+                      <Link
+                        to="#"
+                        className="square--60 border br-dashed rounded-2"
+                      >
+                        <i className="fa-brands fa-twitter color--twitter fs-2" />
+                      </Link>
+                    </li>
                   </ul>
                 </div>
               </div>
               <div className="modal-footer align-items-center justify-content-center">
-                <p>Don't have an account yet?<Link to="/signup" className="text-primary fw-medium ms-1">Sign Up</Link></p>
+                <p>
+                  Don't have an account yet?
+                  <Link to="/signup" className="text-primary fw-medium ms-1">
+                    Sign Up
+                  </Link>
+                </p>
               </div>
             </div>
           </div>
         </div>
         {/* End Modal */}
         {/* Choose Currency Modal */}
-        <div className="modal modal-lg fade" id="currencyModal" tabIndex={-1} aria-labelledby="currenyModalLabel" aria-hidden="true">
+        <div
+          className="modal modal-lg fade"
+          id="currencyModal"
+          tabIndex={-1}
+          aria-labelledby="currenyModalLabel"
+          aria-hidden="true"
+        >
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
-                <h4 className="modal-title fs-6" id="currenyModalLabel">Select Your Currency</h4>
-                <Link to="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></Link>
+                <h4 className="modal-title fs-6" id="currenyModalLabel">
+                  Select Your Currency
+                </h4>
+                <Link
+                  to="#"
+                  className="text-muted fs-4"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <i className="fa-solid fa-square-xmark" />
+                </Link>
               </div>
               <div className="modal-body">
                 <div className="allCurrencylist">
                   <div className="suggestedCurrencylist-wrap mb-4">
                     <div className="d-inline-block mb-0 ps-3">
-                      <h5 className="fs-6 fw-bold">Suggested Currency For you</h5>
+                      <h5 className="fs-6 fw-bold">
+                        Suggested Currency For you
+                      </h5>
                     </div>
                     <div className="suggestedCurrencylists">
                       <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-md-2 row-cols-2 gy-2 gx-3 m-0 p-0">
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">United State Dollar</div>
-                            <div className="text-muted-2 text-md text-uppercase">USD</div>
+                            <div className="text-dark text-md fw-medium">
+                              United State Dollar
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              USD
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">Pound Sterling</div>
-                            <div className="text-muted-2 text-md text-uppercase">GBP</div>
+                            <div className="text-dark text-md fw-medium">
+                              Pound Sterling
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              GBP
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCurrency active" to="#">
-                            <div className="text-dark text-md fw-medium">Indian Rupees</div>
-                            <div className="text-muted-2 text-md text-uppercase">Inr</div>
+                            <div className="text-dark text-md fw-medium">
+                              Indian Rupees
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              Inr
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">Euro</div>
-                            <div className="text-muted-2 text-md text-uppercase">EUR</div>
+                            <div className="text-dark text-md fw-medium">
+                              Euro
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              EUR
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">Australian Dollar</div>
-                            <div className="text-muted-2 text-md text-uppercase">aud</div>
+                            <div className="text-dark text-md fw-medium">
+                              Australian Dollar
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              aud
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">Thai Baht</div>
-                            <div className="text-muted-2 text-md text-uppercase">thb</div>
+                            <div className="text-dark text-md fw-medium">
+                              Thai Baht
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              thb
+                            </div>
                           </Link>
                         </li>
                       </ul>
@@ -1625,116 +1585,192 @@ const Home = () => {
                       <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-md-2 row-cols-2 gy-2 gx-3 m-0 p-0">
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">United State Dollar</div>
-                            <div className="text-muted-2 text-md text-uppercase">USD</div>
+                            <div className="text-dark text-md fw-medium">
+                              United State Dollar
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              USD
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">Property currency</div>
-                            <div className="text-muted-2 text-md text-uppercase">GBP</div>
+                            <div className="text-dark text-md fw-medium">
+                              Property currency
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              GBP
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">Argentine Peso</div>
-                            <div className="text-muted-2 text-md text-uppercase">EUR</div>
+                            <div className="text-dark text-md fw-medium">
+                              Argentine Peso
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              EUR
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">Azerbaijani Manat</div>
-                            <div className="text-muted-2 text-md text-uppercase">Inr</div>
+                            <div className="text-dark text-md fw-medium">
+                              Azerbaijani Manat
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              Inr
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">Australian Dollar</div>
-                            <div className="text-muted-2 text-md text-uppercase">aud</div>
+                            <div className="text-dark text-md fw-medium">
+                              Australian Dollar
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              aud
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">Bahraini Dinar</div>
-                            <div className="text-muted-2 text-md text-uppercase">thb</div>
+                            <div className="text-dark text-md fw-medium">
+                              Bahraini Dinar
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              thb
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">Brazilian Real</div>
-                            <div className="text-muted-2 text-md text-uppercase">USD</div>
+                            <div className="text-dark text-md fw-medium">
+                              Brazilian Real
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              USD
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">Bulgarian Lev</div>
-                            <div className="text-muted-2 text-md text-uppercase">GBP</div>
+                            <div className="text-dark text-md fw-medium">
+                              Bulgarian Lev
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              GBP
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">Canadian Dollar</div>
-                            <div className="text-muted-2 text-md text-uppercase">EUR</div>
+                            <div className="text-dark text-md fw-medium">
+                              Canadian Dollar
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              EUR
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">Chilean Peso</div>
-                            <div className="text-muted-2 text-md text-uppercase">Inr</div>
+                            <div className="text-dark text-md fw-medium">
+                              Chilean Peso
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              Inr
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">Colombian Peso</div>
-                            <div className="text-muted-2 text-md text-uppercase">aud</div>
+                            <div className="text-dark text-md fw-medium">
+                              Colombian Peso
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              aud
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">Danish Krone</div>
-                            <div className="text-muted-2 text-md text-uppercase">thb</div>
+                            <div className="text-dark text-md fw-medium">
+                              Danish Krone
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              thb
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">Egyptian Pound</div>
-                            <div className="text-muted-2 text-md text-uppercase">USD</div>
+                            <div className="text-dark text-md fw-medium">
+                              Egyptian Pound
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              USD
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">Hungarian Forint</div>
-                            <div className="text-muted-2 text-md text-uppercase">GBP</div>
+                            <div className="text-dark text-md fw-medium">
+                              Hungarian Forint
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              GBP
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">Japanese Yen</div>
-                            <div className="text-muted-2 text-md text-uppercase">EUR</div>
+                            <div className="text-dark text-md fw-medium">
+                              Japanese Yen
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              EUR
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">Jordanian Dinar</div>
-                            <div className="text-muted-2 text-md text-uppercase">Inr</div>
+                            <div className="text-dark text-md fw-medium">
+                              Jordanian Dinar
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              Inr
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">Kuwaiti Dinar</div>
-                            <div className="text-muted-2 text-md text-uppercase">aud</div>
+                            <div className="text-dark text-md fw-medium">
+                              Kuwaiti Dinar
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              aud
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">Malaysian Ringgit</div>
-                            <div className="text-muted-2 text-md text-uppercase">thb</div>
+                            <div className="text-dark text-md fw-medium">
+                              Malaysian Ringgit
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              thb
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">Singapore Dollar</div>
-                            <div className="text-muted-2 text-md text-uppercase">thb</div>
+                            <div className="text-dark text-md fw-medium">
+                              Singapore Dollar
+                            </div>
+                            <div className="text-muted-2 text-md text-uppercase">
+                              thb
+                            </div>
                           </Link>
                         </li>
                       </ul>
@@ -1746,55 +1782,126 @@ const Home = () => {
           </div>
         </div>
         {/* Choose Countries Modal */}
-        <div className="modal modal-lg fade" id="countryModal" tabIndex={-1} aria-labelledby="countryModalLabel" aria-hidden="true">
+        <div
+          className="modal modal-lg fade"
+          id="countryModal"
+          tabIndex={-1}
+          aria-labelledby="countryModalLabel"
+          aria-hidden="true"
+        >
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
-                <h4 className="modal-title fs-6" id="countryModalLabel">Select Your Country</h4>
-                <Link to="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></Link>
+                <h4 className="modal-title fs-6" id="countryModalLabel">
+                  Select Your Country
+                </h4>
+                <Link
+                  to="#"
+                  className="text-muted fs-4"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                >
+                  <i className="fa-solid fa-square-xmark" />
+                </Link>
               </div>
               <div className="modal-body">
                 <div className="allCountrieslist">
                   <div className="suggestedCurrencylist-wrap mb-4">
                     <div className="d-inline-block mb-0 ps-3">
-                      <h5 className="fs-6 fw-bold">Suggested Countries For you</h5>
+                      <h5 className="fs-6 fw-bold">
+                        Suggested Countries For you
+                      </h5>
                     </div>
                     <div className="suggestedCurrencylists">
                       <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-2 gy-2 gx-3 m-0 p-0">
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">United State Dollar</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              United State Dollar
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">Pound Sterling</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              Pound Sterling
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCountry active" to="#">
-                            <div className="d-inline-block"><img src="./assets/images/flags/Indian_flag.png" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">Indian Rupees</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="./assets/images/flags/Indian_flag.png"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              Indian Rupees
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">Euro</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              Euro
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">Australian Dollar</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              Australian Dollar
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">Thai Baht</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              Thai Baht
+                            </div>
                           </Link>
                         </li>
                       </ul>
@@ -1808,116 +1915,287 @@ const Home = () => {
                       <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-2 gy-2 gx-3 m-0 p-0">
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">United State Dollar</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              United State Dollar
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">Property currency</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              Property currency
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">Argentine Peso</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              Argentine Peso
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">Azerbaijani Manat</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              Azerbaijani Manat
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">Australian Dollar</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              Australian Dollar
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">Bahraini Dinar</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              Bahraini Dinar
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">Brazilian Real</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              Brazilian Real
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">Bulgarian Lev</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              Bulgarian Lev
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">Canadian Dollar</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              Canadian Dollar
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">Chilean Peso</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              Chilean Peso
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">Colombian Peso</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              Colombian Peso
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">Danish Krone</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              Danish Krone
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">Egyptian Pound</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              Egyptian Pound
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">Hungarian Forint</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              Hungarian Forint
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">Japanese Yen</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              Japanese Yen
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">Jordanian Dinar</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              Jordanian Dinar
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">Kuwaiti Dinar</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              Kuwaiti Dinar
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">Malaysian Ringgit</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              Malaysian Ringgit
+                            </div>
                           </Link>
                         </li>
                         <li className="col">
                           <Link className="selectCountry" to="#">
-                            <div className="d-inline-block"><img src="https://placehold.co/100x100" className="img-fluid circle" width={35} alt="" /></div>
-                            <div className="text-dark text-md fw-medium ps-2">Singapore Dollar</div>
+                            <div className="d-inline-block">
+                              <img
+                                src="https://placehold.co/100x100"
+                                className="img-fluid circle"
+                                width={35}
+                                alt=""
+                              />
+                            </div>
+                            <div className="text-dark text-md fw-medium ps-2">
+                              Singapore Dollar
+                            </div>
                           </Link>
                         </li>
                       </ul>
@@ -1929,26 +2207,37 @@ const Home = () => {
           </div>
         </div>
         {/* Video Modal */}
-        <ChatBot/>
-        <div className="modal fade" id="popup-video" tabIndex={-1} role="dialog" aria-labelledby="popupvideo" aria-hidden="true">
+        <ChatBot />
+        <div
+          className="modal fade"
+          id="popup-video"
+          tabIndex={-1}
+          role="dialog"
+          aria-labelledby="popupvideo"
+          aria-hidden="true"
+        >
           <div className="modal-dialog modal-dialog-centered" role="document">
             <div className="modal-content" id="popupvideo">
-              <iframe className="embed-responsive-item full-width" title="YouTube video: Example Title" height={480} src="https://www.youtube.com/embed/qN3OueBm9F4?rel=0" frameBorder={0} allowFullScreen />
+              <iframe
+                className="embed-responsive-item full-width"
+                title="YouTube video: Example Title"
+                height={480}
+                src="https://www.youtube.com/embed/qN3OueBm9F4?rel=0"
+                frameBorder={0}
+                allowFullScreen
+              />
             </div>
           </div>
         </div>
         {/* End Video Modal */}
-        <Link id="back2Top" className="top-scroll" title="Back to top" to="#"><i className="fa-solid fa-sort-up" /></Link>
+        <Link id="back2Top" className="top-scroll" title="Back to top" to="#">
+          <i className="fa-solid fa-sort-up" />
+        </Link>
       </div>
       {/* End Wrapper */}
       {/* All Jquery */}
       {/* This page plugins */}
     </div>
-  
   );
-  
-}
+};
 export default Home;
-
-
-

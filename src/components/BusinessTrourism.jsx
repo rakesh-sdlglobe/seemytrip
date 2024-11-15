@@ -20,6 +20,7 @@ import { AirIndia, Bangalore, Delhi, Hyderabad, Indigo, indigo, Mumbai, Vistara 
 import FooterDark from './footer-dark';
 import HorizontalContainer from './flight_components/HorizontalContainer';
 import BtSearch from './business_tourism/bt_search_componets';
+import { Features } from './medical_tourism/Features';
 
 const BusinessTrourism = () => {
   const [flightResults, setFlightResults] = useState([]);
@@ -183,6 +184,7 @@ const BusinessTrourism = () => {
                           </div>
                         </div>
                       </div> */}
+                      <Features/>
                  <BtSearch/>
                 </div>
               </div>

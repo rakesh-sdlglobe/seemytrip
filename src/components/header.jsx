@@ -169,7 +169,7 @@ const Header = () => {
                                     </li>
                                     <li><Link to="#" onClick={(e) => e.preventDefault()}>Flight<span className="submenu-indicator" /></Link>
                                         <ul className="nav-dropdown nav-submenu">
-                                            <li><Link to="/flight-list-01">Flight List 01</Link></li>
+                                            <li><Link to="/Train-list-01">Flight List 01</Link></li>
                                             <li><Link to="/flight-list-02">Flight List 02</Link></li>
                                             <li><Link to="/flight-detail">Flight Detail</Link></li>
                                         </ul>

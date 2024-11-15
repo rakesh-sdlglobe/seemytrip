@@ -88,7 +88,7 @@ const PageNotFound = () =>{
                           </li>
                           <li><Link to="#" onClick={(e)=>{e.preventDefault()}}>Flight<span className="submenu-indicator" /></Link>
                             <ul className="nav-dropdown nav-submenu">
-                              <li><Link to="flight-list-01.html">Flight List 01</Link></li>
+                              <li><Link to="Train-list-01.html">Flight List 01</Link></li>
                               <li><Link to="flight-list-02.html">Flight List 02</Link></li>
                               <li><Link to="Flight-detail.html">Flight Detail</Link></li>
                             </ul>

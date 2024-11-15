@@ -20,6 +20,7 @@ import { AirIndia, Bangalore, Delhi, Hyderabad, Indigo, indigo, Mumbai, Vistara 
 import FooterDark from './footer-dark';
 import HorizontalContainer from './flight_components/HorizontalContainer';
 import AppApk from './App_apk_promotion';
+import { Features } from './medical_tourism/Features';
 
 const HomeFlight = () => {
   const [flightResults, setFlightResults] = useState([]);
@@ -71,68 +72,7 @@ const HomeFlight = () => {
               </div>
               <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                 <div className="search-wrap bg-white rounded-3 p-3">
-                <ul className="nav nav-pills primary-soft medium justify-content-center mb-3" id="tour-pills-tab" role="tablist">
-                    {/* <li className="nav-item nav-item1">
-                      <Link
-                        className={`nav-link ${activeTab === 'Trains' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('Trains')}
-                      >
-                        <i className="fa-solid fa-train me-2" />Trains
-                      </Link>
-                    </li> */}
-                    <li className="nav-item nav-item1">
-                      <Link className={`nav-link`} to='/offers'>
-                        <i className="fa-solid fa-tags me-2" />Offers
-                      </Link>
-                    </li>
-                    <li className="nav-item nav-item1">
-                      <Link className={`nav-link`} to='/guides'>
-                        <i className="fa-solid fa-book me-2" />Guides
-                      </Link>
-                    </li>
-                    <li className="nav-item nav-item1">
-                      <Link className={`nav-link`} to='/selfdrivecars'>
-                        <i className="fa-solid fa-car me-2" />Self Drive
-                      </Link>
-                    </li>
-
-                    <li className="nav-item nav-item1 ">
-                      <Link
-                        className={`nav-link`}
-                      >
-                        <i className="fa-solid fa-camera me-2" />Photographer
-                      </Link>
-                    </li>
-                    <li className="nav-item nav-item1 ">
-                      <Link
-                        className={`nav-link`}
-                      >
-                        <i className="fa-solid fa-house-user me-2" />Home Stays & Villas
-                      </Link>
-                    </li>
-                    <li className="nav-item nav-item1 ">
-                      <Link
-                        className={`nav-link`}
-                      >
-                        <i className="fa-solid fa-shield-alt me-2" />Travel Insurance
-                      </Link>
-                    </li>
-                    <li className="nav-item nav-item1 ">
-                      <Link
-                        className={`nav-link`}
-                      >
-                        <i className="fa-solid fa-suitcase-rolling me-2" />Packages
-                      </Link>
-                    </li>
-                    <li className="nav-item nav-item1 ">
-                      <Link
-                        className={`nav-link`}
-                      >
-                        <i className="fa-solid fa-gift me-2" />Gift Cards
-                      </Link>
-                    </li>
-
-                  </ul>
+                <Features/>
                   {/* <div className="search-upper">
                     <div className="d-flex align-items-center justify-content-between flex-wrap">
                       <div className="flx-start mb-sm-0 mb-2">
