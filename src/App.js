@@ -101,6 +101,8 @@ import HomeStaysVillas from './components/Homestays&villas/HomeStaysVillas.jsx';
 import TravelInsurance from './components/TravelInsurance/TravelInsurance.jsx';
 import Packages from './components/packages/Packages.jsx';
 import GiftCards from './components/Giftcards/GiftCards.jsx';
+import Trainform from './components/train_search_result/Trainform.jsx';
+import TrainBookingDetails from './components/train_search_result/TrainBookingDetails.jsx';
 
 
 function App() {
@@ -131,7 +133,7 @@ function App() {
           <Route path="/hotel-list-03" element={<HotelList03 />} />
           <Route path="/hotel-detail-01" element={<HotelDetail01 />} />
           <Route path="/hotel-detail-02" element={<HotelDetail02 />} />
-          <Route path="/flight-list-01" element={<TrainList01 />} />
+          <Route path="/Train-list-01" element={<TrainList01 />} />
           
           <Route path="/flight-list-02" element={<FlightList02 />} />
           <Route path="/flight-detail" element={<FlightDetail />} />
@@ -177,6 +179,8 @@ function App() {
           <Route path="/home-car" element={<HomeCar />} />
           <Route path="/home-destination" element={<HomeStay />} />
           <Route path= "/booking-page" element={<BookingPage/>}/>
+          <Route path= "/trainbookingdetails" element={<TrainBookingDetails/>}/>
+          <Route path= "/bookingpage01" element={<Trainform/>}/>
           <Route path= "/booking-page-2" element={<BookingPage2/>}/>
           <Route path= "/booking-page-3" element={<BookingPage3/>}/>
           <Route path= "/booking-page-success" element={<BookingPageSuccess/>}/>
