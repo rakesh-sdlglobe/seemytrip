@@ -23,7 +23,7 @@ const TopHeader = () => {
                             <li><NavLink to="/payment-detail" activeClassName="active"><i className="fa-solid fa-wallet me-2" />Payment Details</NavLink></li>
                             {/* <li><NavLink to="/my-wishlists"><i className="fa-solid fa-shield-heart me-2" />My Wishlist</NavLink></li> */}
                             <li><NavLink to="/settings" activeClassName="active"><i className="fa-solid fa-sliders me-2" />Settings</NavLink></li>
-                            <li><NavLink to="/delete-account" activeClassName="active"><i className="fa-solid fa-trash-can me-2" />Delete Profile</NavLink></li>
+                            {/* <li><NavLink to="/delete-account" activeClassName="active"><i className="fa-solid fa-trash-can me-2" />Delete Profile</NavLink></li> */}
                             {/* <li><NavLink to="/login"><i className="fa-solid fa-power-off me-2" />Sign Out</NavLink></li> */}
                         </ul>
                     </div>
