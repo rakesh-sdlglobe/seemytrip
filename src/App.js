@@ -102,6 +102,7 @@ import TravelInsurance from './components/TravelInsurance/TravelInsurance.jsx';
 import Packages from './components/packages/Packages.jsx';
 import GiftCards from './components/Giftcards/GiftCards.jsx';
 import TrainBookingDetails from './components/train_search_result/TrainBookingDetails.jsx';
+import TrainBooking from './components/train_search_result/trainlistcard.jsx';
 
 
 function App() {
@@ -188,6 +189,7 @@ function App() {
           <Route path= "/my-wishlists" element ={<MyWishlists/>}/>
           <Route path= "/settings" element ={<Settings/>}/>
           <Route path= "/delete-account" element ={<DeleteAccount/>}/>
+          <Route path= "/train-card" element ={<TrainBooking/>}/>
 
           {/* Flights Routes */}
           <Route path="/flight-list" element={<FlightList/>} />

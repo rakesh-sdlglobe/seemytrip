@@ -242,7 +242,41 @@ const TrainBookingDetails = () => {
       </button>
     </div>
   );
-
+  const renderSavedTravelers = () => (
+    travelers.length > 0 && (
+      <div className="mt-4">
+        <h4 className="mb-3">Saved Travelers</h4>
+        <div className="row g-3">
+          {travelers.map((traveler, index) => (
+            <div key={index} className="col-md-6">
+              <div className="card shadow-sm">
+                <div className="card-body">
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <p className="fw-bold mb-0">{traveler.name}</p>
+                    <div>
+                      <button className="btn btn-sm btn-outline-primary me-2">
+                        <Edit2 size={16} />
+                      </button>
+                      <button 
+                        className="btn btn-sm btn-outline-danger"
+                        onClick={() => handleDeleteTraveler(index)}
+                      >
+                        <i className="fa-solid fa-trash-can"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-muted small mb-0">
+                    {traveler.age} years • {traveler.gender}
+                    {parseInt(traveler.age) >= 5 ? ` • ${traveler.berth} berth` : ' • No berth (under 5)'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  );
   const renderBookingSummary = () => (
     <div className="booking-summary-sticky">
       <div className="card p-4">
@@ -361,41 +395,6 @@ const TrainBookingDetails = () => {
     </div>
   );
 
-  const renderSavedTravelers = () => (
-    travelers.length > 0 && (
-      <div className="mt-4">
-        <h4 className="mb-3">Saved Travelers</h4>
-        <div className="row g-3">
-          {travelers.map((traveler, index) => (
-            <div key={index} className="col-md-6">
-              <div className="card shadow-sm">
-                <div className="card-body">
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <p className="fw-bold mb-0">{traveler.name}</p>
-                    <div>
-                      <button className="btn btn-sm btn-outline-primary me-2">
-                        <Edit2 size={16} />
-                      </button>
-                      <button 
-                        className="btn btn-sm btn-outline-danger"
-                        onClick={() => handleDeleteTraveler(index)}
-                      >
-                        <i className="fa-solid fa-trash-can"></i>
-                      </button>
-                    </div>
-                  </div>
-                  <p className="text-muted small mb-0">
-                    {traveler.age} years • {traveler.gender}
-                    {parseInt(traveler.age) >= 5 ? ` • ${traveler.berth} berth` : ' • No berth (under 5)'}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    )
-  );
 
   // Add new contact details form
   const renderContactDetails = () => (
