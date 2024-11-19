@@ -73,11 +73,13 @@ const TrainList01 = () => {
           leavingLabel={null}
           goingLabel={null}
           dateLabel={null}
-          buttonBackgroundColor="#ffffff"
-          buttonTextColor="#cd2c22"
+          buttonBackgroundColor="#cd2c22"
+          buttonTextColor="#ffffff"
           dropdownHindden='none'
           checklabelColor ='#ffffff'
           hindenswap = 'none'
+          highlightsContainer = 'none'
+          authorizedContainer = 'none'
         />
         <section className="gray-simple" >
           <div className="container" >

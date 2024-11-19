@@ -119,7 +119,7 @@ const Home = () => {
                       {activeTab === "Trains" && (
                         <div className="tab-pane show active" id="Trains">
                           <SearchComponent
-                            backgroundColor="#f6f6f6"
+                            // backgroundColor="#f6f6f6"
                             height="210px"
                             leavingLabel={null}
                             goingLabel={null}
