@@ -11,10 +11,10 @@ const WelcomePopup = () => {
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    const hasVisited = localStorage.getItem('hasVisited');
-    if (!hasVisited) {
+    const hasVisitedThisSession = sessionStorage.getItem('hasVisitedThisSession');
+    if (!hasVisitedThisSession) {
       setShow(true);
-      localStorage.setItem('hasVisited', 'true');
+      sessionStorage.setItem('hasVisitedThisSession', 'true');
     }
   }, []);
 
@@ -34,7 +34,7 @@ const WelcomePopup = () => {
             <div className="image-overlay" />
             <div className="header-content">
               <div className="app-promo-card">
-                <h6>Get the App</h6>
+                <h6 className="mt-2">Get the App</h6>
                 <div className="store-icons">
                   <img src={Playstoreicon} alt="Google Play" className="store-icon" />
                   <img src={Appstoreicon} alt="App Store" className="store-icon" />

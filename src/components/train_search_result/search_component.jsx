@@ -125,24 +125,27 @@ const SearchComponent = ({
   const customSelectStyles = {
     control: (provided, state) => ({
       ...provided,
-      borderRadius: '8px',
-      backgroundColor: '#f4f5f5',
-      border: 'none',
+      borderRadius: '12px',
+      backgroundColor: '#ffffff',
+      border: '1px solid #e0e0e0',
       padding: '12px',
       minWidth: '200px',
       fontSize: '16px',
       fontWeight: 'bold',
       paddingLeft: '50px',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.0)',
       '&:hover': {
+        // borderColor: '#d20000',
         paddingLeft: '50px',
       }
     }),
     menu: (provided) => ({
       ...provided,
-      borderRadius: '4px',
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-      minWidth: '250px', // Made dropdown menu wider
-    fontSize: '15px'
+      borderRadius: '8px',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+      minWidth: '250px',
+      fontSize: '15px',
+      overflow: 'hidden', // Ensures content respects border radius
     }),
     option: (provided, state) => ({
       ...provided,
@@ -191,7 +194,7 @@ const SearchComponent = ({
            @media (max-width: 1024px) {
             .search-component {
               height: 320px;
-              padding: 15px;
+              padding: 15px;å
             }
           }
 
@@ -222,9 +225,11 @@ const SearchComponent = ({
             font-weight: bold;
             color: #333;
             border: none;
-            background: #f4f5f5 !important;
+            border-radius: 12px;
+            background: #ffffff !important;
             padding: 12px;
             font-size: 16px;
+            transition: all 0.3s ease;
           }
 
           .form-control::placeholder {
@@ -233,11 +238,11 @@ const SearchComponent = ({
           }
 
           .form-control:focus {
-            background: #f4f5f5 !important;
+            background: #ffffff !important;
             box-shadow: none;
             outline: none;
           }
-
+  
           .btn.full-width {
             width: 100%;
             font-weight: 500;
@@ -273,14 +278,14 @@ const SearchComponent = ({
             display: ${hindenswap};
             position: absolute; 
             top: 20%; 
-            left: calc(34% - 15px); 
+            left: calc(34% - 12px); 
             z-index: 1; 
           }
 
           .swap-button {
             background: none; 
             border: none; 
-            color: #888888FF; 
+            color: #17181c; 
             cursor: pointer; 
             padding: 0; 
             padding: 0; 
@@ -299,6 +304,7 @@ const SearchComponent = ({
             // }
             .calendar-wrapper {
               position: relative;
+              
             }
 
             .calendar-popup {
@@ -384,6 +390,9 @@ const SearchComponent = ({
           .form-control:focus {
             // box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Keep shadow on focus */
             outline: none;
+          }
+          .form-control:hover {
+            border:1px solid #e0e0e0;
           }
             .react-calendar__tile {
               border-radius: 8px; /* Makes each tile rounded */
@@ -494,6 +503,7 @@ const SearchComponent = ({
               background: transparent;
               padding: 12px;
               font-size: 16px;
+              border:1px solid #e0e0e0;
             }
 
             .select__dropdown-indicator {
@@ -509,7 +519,7 @@ const SearchComponent = ({
             .field-separator {
               width: 1px;
               height: 40px;
-              background-color: #e0e0e0;
+              background-color: #cccccc;
               position: absolute;
               right: 0;
               top: 50%;
