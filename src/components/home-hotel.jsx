@@ -17,6 +17,7 @@ import Footer from './footer';
 import { HotelSearchbar } from './hotel_components/HotelSearchbar';
 import { Bangalore, benglore, charminar, chennai, delhi, Delhi, Hotel01, Hotel02, Hotel03, Hotel04, Hyderabad, kerla, kolkota, mumbai, Mumbai, utterpradesh } from '../assets/images';
 import AppApk from './App_apk_promotion';
+import { Features } from './medical_tourism/Features';
 
 const HomeHotel = () => {
   return (
@@ -57,7 +58,12 @@ const HomeHotel = () => {
                   <p className="fs-5 fw-light">Take a little break from the everyday work stress. Plan a trip and explore beautiful destinations!</p>
                 </div>
               </div>
-             <HotelSearchbar/>
+              <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+              <div className="search-wrap bg-white rounded-3 p-3">
+              <Features/>
+              <HotelSearchbar/>
+              </div>
+             </div>
             </div>
             {/* </row> */}
           </div>

@@ -77,7 +77,20 @@ import Healthissues3 from '../assets/images/Healthissues/Healthissue-3.png';
 import Healthissues4 from '../assets/images/Healthissues/Healthissue-4.png';
 import Healthissues5 from '../assets/images/Healthissues/Healthissue-5.png';
 import Healthissues6 from '../assets/images/Healthissues/Healthissue-6.png';
+import Irctc from '../assets/images/Whyseemytrip/Irctc.png'
+import refund from '../assets/images/Whyseemytrip/Refund.png'
+import upi from '../assets/images/Whyseemytrip/UPI.png'
+import Trainoffer from '../assets/images/Whyseemytrip/Train_offer.png'
+import auth from '../assets/img/auth.svg'
+import rupay from '../assets/images/rupay.png'
+import creditcard from '../assets/images/credit-card.png'
+import wallets from '../assets/images/wallet.png'
+import Netbanking from '../assets/images/online-banking.png'
+import IRCTC_Logo from '../assets/images/Irctc_logo.png'
+import Entering from '../assets/images/Entering.svg'
+import Leaving from '../assets/images/Leaving.svg'  
+import Calendar1 from '../assets/images/Calendar.svg' 
 
 export {
-  trainImage,indian_flag,charminar,benglore, kolkota, mumbai, utterpradesh, kerla, delhi,chennai,youngIndianCouple, team1, indianTrain,team2,team3,team4,team5,login,charminar2,ramoji,gloconda,D,UPI,Indigo,AirIndia,Vistara,Hyderabad,indigo,Mumbai,Bangalore,Delhi,Hotel01,Hotel02,Hotel03,Hotel04,Nexon,Carnival,Jazz,Ertiga,Toyota,Tiago,ship1,ship2,ship3,ship4,ship5,ship6,bus1,bus2,bus3,bus4,bus5,bus6,bus7,bus8,bus9,bus10,cab,bus,bus11,bus12,MedicalTourismImage,DoctorImage,Playstoreicon,Appstoreicon,Homevilla,selfdrive,Insurance,Packagesimage,PopupImage,offer,Healthissues1,Healthissues2,Healthissues3,Healthissues4,Healthissues5,Healthissues6
+  trainImage,indian_flag,charminar,benglore, kolkota, mumbai, utterpradesh, kerla, delhi,chennai,youngIndianCouple, team1, indianTrain,team2,team3,team4,team5,login,charminar2,ramoji,gloconda,D,UPI,Indigo,AirIndia,Vistara,Hyderabad,indigo,Mumbai,Bangalore,Delhi,Hotel01,Hotel02,Hotel03,Hotel04,Nexon,Carnival,Jazz,Ertiga,Toyota,Tiago,ship1,ship2,ship3,ship4,ship5,ship6,bus1,bus2,bus3,bus4,bus5,bus6,bus7,bus8,bus9,bus10,cab,bus,bus11,bus12,MedicalTourismImage,DoctorImage,Playstoreicon,Appstoreicon,Homevilla,selfdrive,Insurance,Packagesimage,PopupImage,offer,Healthissues1,Healthissues2,Healthissues3,Healthissues4,Healthissues5,Healthissues6,Irctc,auth,refund,upi,Trainoffer,rupay,creditcard,wallets,Netbanking,IRCTC_Logo,Entering,Leaving,Calendar1
 };

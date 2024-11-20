@@ -98,7 +98,7 @@ const PersonalSetting = () => {
             </div>
 
             {/* Security Settings */}
-            <div className="card mb-4">
+            {/* <div className="card mb-4">
                 <div className="card-header">
                     <h4><i className="fa-solid fa-gear me-2" />Security Settings</h4>
                 </div>
@@ -110,7 +110,7 @@ const PersonalSetting = () => {
                         <button className="btn btn-md btn-primary fw-medium">Send Code</button>
                     </form>
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 }

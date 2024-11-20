@@ -67,7 +67,8 @@ const TrainSearchResultList = ({ filters }) => {
   }, [trainData, filters]);
   
   const handleBooking = (train) => {
-    navigate('/booking-page', { state: { trainData: train } });
+    // navigate('/booking-page', { state: { trainData: train } });
+    navigate('/trainbookingdetails', { state: { trainData: train } });
 };
 
   return (
@@ -95,31 +96,45 @@ const TrainSearchResultList = ({ filters }) => {
       {/* Train list */}
       {filteredTrainData.length > 0 ? (
         filteredTrainData.map(train => (
-          <div key={train.id} className="col-xl-12 col-lg-12 col-md-12">
-            <div className="train-availability-card bg-white rounded-3 p-3">
+          <div key={train.id} className="col-xl-12 col-lg-12 col-md-12" >
+            <div className="train-availability-card bg-white rounded-3 p-3" style={{ boxShadow:"0 2px 5px rgba(0, 0, 0, 0.1)" }}>
               <div className="row gy-4 align-items-center justify-content-between">
                 {/* Train Info Header */}
                 <div className="col-xl-12 col-lg-12 col-md-12">
                   <div className="d-flex align-items-center justify-content-between">
                     <div className="train-name me-4">
                       <h5 className="mb-1">{train.trainName}</h5>
-                      <div className="text-muted small">Runs on: {train.trainNumber}</div>
+                      {/* <div className="text-muted small">Runs on: {train.trainNumber}</div> */}
+                      <div className="text-muted small">
+                        Runs on: 
+                        <span> S M </span>
+                        <span style={{ fontWeight: 'bold', color: 'black' }}>W</span>
+                        <span> T F </span>
+                        <span style={{ fontWeight: 'bold', color: 'black' }}>S</span>
+                      </div>
+
                     </div>
-                    <div className="d-flex align-items-center flex-grow-1" style={{ padding: '10px', borderRadius: '8px' }}>
+                    <div className="d-flex align-items-center flex-grow-1" style={{ padding: '10px', borderRadius: '8px', }}>
                       <div className="d-flex flex-column align-items-center me-1" style={{ flex: '1' }}>
-                        <div className="fw-bold fs-6">{train.departure_time}</div>
-                        <div className="text-muted small">{train.startStation}</div>
+                        {/* <div className="fw-bold fs-6">{train.departure_time}</div>
+                        <div className="text-muted small">{train.startStation}</div> */}
+                        <div className="text-muted small" style={{fontWeight: 'bold' }}>{train.startStation}</div>
+                        <div className="fw-bold fs-6">4:20 PM</div>
+                        <div className="text-muted small">Tue, 12 NOV</div>
                       </div>
                       <div className="text-center" style={{ flex: '1', position: 'relative' }}>
                         <div style={{ display: 'flex', alignItems: 'center', position: 'relative', justifyContent: 'center' }}>
                           <div style={{ flex: 1, height: '1px', backgroundColor: '#ddd' }}></div>
-                          <div style={{ margin: '0 10px', fontWeight: 'bold', fontSize: '16px', zIndex: 1 }}>{train.duration}</div>
+                          {/* <div style={{ margin: '0 10px', fontWeight: 'bold', fontSize: '16px', zIndex: 1 }}>{train.duration}</div> */}
+                          <div style={{ margin: '0 10px', fontWeight: 'bold', fontSize: '16px', zIndex: 1 }}>12hr 40min</div>
                           <div style={{ flex: 1, height: '1px', backgroundColor: '#ddd' }}></div>
                         </div>
                       </div>
                       <div className="d-flex flex-column align-items-center ms-1" style={{ flex: '1' }}>
-                        <div className="fw-bold fs-6">{train.arrival_time}</div>
-                        <div className="text-muted small">{train.endStation}</div>
+                        <div className="text-muted small" style={{fontWeight: 'bold' }}>{train.endStation}</div>
+                        {/* <div className="fw-bold fs-6">{train.arrival_time}</div> */}
+                        <div className="fw-bold fs-6">5:30 AM</div>
+                        <div className="text-muted small">Wed, 13 NOV</div>
                       </div>
                     </div>
                     <button className="btn btn-primary ms-3">Availability  <span className="arrow-down" /></button>

@@ -5,6 +5,7 @@ import { Modal, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Select from 'react-select';
 import './Hotel.css';
+import { Features } from '../medical_tourism/Features';
 
 const CustomModalHeader = ({ onClose }) => (
   <Modal.Header closeButton className="border-0">
@@ -163,68 +164,6 @@ export const HotelSearchbar = () => {
         
       </style>
       <div className="search-wrap with-label bg-white rounded-3 p-3 pt-4">
-      <ul className="nav nav-pills primary-soft medium justify-content-center mb-3" id="tour-pills-tab" role="tablist">
-                    {/* <li className="nav-item nav-item1">
-                      <Link
-                        className={`nav-link ${activeTab === 'Trains' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('Trains')}
-                      >
-                        <i className="fa-solid fa-train me-2" />Trains
-                      </Link>
-                    </li> */}
-                    <li className="nav-item nav-item1">
-                      <Link className={`nav-link`} to='/offers'>
-                        <i className="fa-solid fa-tags me-2" />Offers
-                      </Link>
-                    </li>
-                    <li className="nav-item nav-item1">
-                      <Link className={`nav-link`} to='/guides'>
-                        <i className="fa-solid fa-book me-2" />Guides
-                      </Link>
-                    </li>
-                    <li className="nav-item nav-item1">
-                      <Link className={`nav-link`} to='/selfdrivecars'>
-                        <i className="fa-solid fa-car me-2" />Self Drive
-                      </Link>
-                    </li>
-
-                    <li className="nav-item nav-item1 ">
-                      <Link
-                        className={`nav-link`}
-                      >
-                        <i className="fa-solid fa-camera me-2" />Photographer
-                      </Link>
-                    </li>
-                    <li className="nav-item nav-item1 ">
-                      <Link
-                        className={`nav-link`}
-                      >
-                        <i className="fa-solid fa-house-user me-2" />Home Stays & Villas
-                      </Link>
-                    </li>
-                    <li className="nav-item nav-item1 ">
-                      <Link
-                        className={`nav-link`}
-                      >
-                        <i className="fa-solid fa-shield-alt me-2" />Travel Insurance
-                      </Link>
-                    </li>
-                    <li className="nav-item nav-item1 ">
-                      <Link
-                        className={`nav-link`}
-                      >
-                        <i className="fa-solid fa-suitcase-rolling me-2" />Packages
-                      </Link>
-                    </li>
-                    <li className="nav-item nav-item1 ">
-                      <Link
-                        className={`nav-link`}
-                      >
-                        <i className="fa-solid fa-gift me-2" />Gift Cards
-                      </Link>
-                    </li>
-
-                  </ul>
         <div className="row gy-3 gx-md-3 gx-sm-2">
           <div className="col-xl-8 col-lg-7 col-md-12">
             <div className="row gy-3 gx-md-3 gx-sm-2">

@@ -73,19 +73,21 @@ const TrainList01 = () => {
           leavingLabel={null}
           goingLabel={null}
           dateLabel={null}
-          buttonBackgroundColor="#ffffff"
-          buttonTextColor="#cd2c22"
+          buttonBackgroundColor="#cd2c22"
+          buttonTextColor="#ffffff"
           dropdownHindden='none'
           checklabelColor ='#ffffff'
           hindenswap = 'none'
+          highlightsContainer = 'none'
+          authorizedContainer = 'none'
         />
-        <section className="gray-simple">
-          <div className="container">
+        <section className="gray-simple" >
+          <div className="container" >
             <div className="row justify-content-between gy-4 gx-xl-4 gx-lg-3 gx-md-3 gx-4">
-              <div className="col-xl-3 col-lg-4 col-md-12">
-                <div className="filter-searchBar bg-white rounded-3">
+              <div className="col-xl-3 col-lg-4 col-md-12" >
+                <div className="filter-searchBar bg-white rounded-3" style={{ boxShadow:"0 2px 5px rgba(0, 0, 0, 0.1)" }}>
                   <div className="filter-searchBar-head border-bottom">
-                    <div className="searchBar-headerBody d-flex align-items-start justify-content-between px-3 py-3">
+                    <div className="searchBar-headerBody d-flex align-items-start justify-content-between px-3 py-3" >
                       <div className="searchBar-headerfirst">
                         <h6 className="fw-bold fs-5 m-0">Filters</h6>
                       </div>

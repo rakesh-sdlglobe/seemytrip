@@ -8,6 +8,14 @@ import { selectPhoneNumber } from '../store/Selectors/mobileSelector';
 import { selectEmail, statedata } from '../store/Selectors/emailSelector'; 
 import { logoutMobileUser } from '../store/Actions/mobileOtpAction';
 import { logoutEmailUser } from '../store/Actions/emailAction';
+import {ReactComponent as Trainicon} from '../assets/images/Navbaricons/Train.svg'
+import {ReactComponent as Flighticon} from '../assets/images/Navbaricons/Flight.svg'
+import {ReactComponent as Hotelicon} from '../assets/images/Navbaricons/Hotel.svg'
+import {ReactComponent as Cabicon} from '../assets/images/Navbaricons/cab.svg'
+import {ReactComponent as Cruiseicon} from '../assets/images/Navbaricons/Cruise.svg'
+import {ReactComponent as Busicon} from '../assets/images/Navbaricons/Bus.svg'
+import {ReactComponent as Businessicon} from '../assets/images/Navbaricons/Business.svg'
+import {ReactComponent as Healthicon} from '../assets/images/Navbaricons/Medical.svg'
 
 const Header02 = () => {
   const dispatch = useDispatch();
@@ -111,15 +119,15 @@ const Header02 = () => {
               </div>
             </div>
             <div className="nav-menus-wrapper" style={{ transitionProperty: 'none' }}>
-              <ul className="nav-menu">
-                <li><NavLink exact to="/" activeClassName="active"><i className="fa-solid fa-train fa-lg me-2 mt-4" />Trains</NavLink></li>
-                <li><NavLink to="/home-flight" activeClassName="active"><i className="fa-solid fa-jet-fighter fa-lg me-2 mt-4" />Flights</NavLink></li>
-                <li><NavLink to="/home-hotel" activeClassName="active"><i className="fa-solid fa-spa fa-lg me-2 mt-4" />Hotels</NavLink></li>
-                <li><NavLink to="/home-car" activeClassName="active"><i className="fa-solid fa-car fa-lg me-2 mt-4" />Cabs</NavLink></li>
-                <li><NavLink to="/home-cruise" activeClassName="active"><i className="fa-solid fa-ship fa-lg me-2 mt-4" />Cruises</NavLink></li>
-                <li><NavLink to="/home-bus" activeClassName="active"><i className="fa-solid fa-bus fa-lg me-2 mt-4" />Buses</NavLink></li>
-                <li><NavLink to="/home-businesstourism" activeClassName="active"><i className="fa-solid fa-briefcase fa-lg me-2 mt-4" />Business Tourism</NavLink></li>
-                <li><NavLink to="/home-medicaltourism" activeClassName="active"><i className="fa-solid fa-heartbeat fa-lg me-2 mt-4" />Health Tourism</NavLink></li>
+            <ul className="nav-menu">
+                <li className='mt-3'><NavLink exact to="/" activeClassName="active"> <i className="fa-solid fa-train me-2 fa-lg" />Trains</NavLink></li>
+                <li className="mt-3"><NavLink to="/home-flight" activeClassName="active"><i className="fa-solid fa-plane me-2 fa-lg" />Flights</NavLink></li>
+                <li className='mt-3'><NavLink to="/home-hotel" activeClassName="active"><i className="fa-solid fa-hotel me-2 fa-lg" />Hotels</NavLink></li>
+                <li className='mt-3'><NavLink to="/home-car" activeClassName="active"><i className="fa-solid fa-car me-2 fa-lg" />Cabs</NavLink></li>
+                <li className="mt-3"><NavLink to="/home-cruise" activeClassName="active"><i className="fa-solid fa-ship me-2 fa-lg" />Cruises</NavLink></li>
+                <li className="mt-3"><NavLink to="/home-bus" activeClassName="active"><i className="fa-solid fa-bus me-2 fa-lg" />Buses</NavLink></li>
+                <li className="mt-3"><NavLink to="/home-businesstourism" activeClassName="active"><i className="fa-solid fa-briefcase me-2 fa-lg" />Business Tourism</NavLink></li>
+                <li className="mt-3"><NavLink to="/home-medicaltourism" activeClassName="active"><i className="fa-solid fa-heart-pulse me-2 fa-lg" />Health Tourism</NavLink></li>
               </ul>
               <ul className="nav-menu nav-menu-social align-to-right mt-3">
 
