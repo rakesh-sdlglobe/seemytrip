@@ -8,7 +8,7 @@ export const RESET_PASSWORD_SUCCESS = 'RESET_PASSWORD_SUCCESS';
 export const RESET_PASSWORD_ERROR = 'RESET_PASSWORD_ERROR';
 
 // Base API URL
-const API_BASE_URL = 'https://tripadmin.onrender.com/api'; // Adjust if needed
+const API_BASE_URL = 'http://localhost:3002/api'; // Adjust if needed
 
 // Action to set OTP verified status
 export const setOTPVerified = (status) => ({

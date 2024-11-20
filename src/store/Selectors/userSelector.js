@@ -6,3 +6,4 @@ export const selectUserBookings = (state) => state.user.bookings;
 export const selectTravelers = (state) => state.user.travelers;
 export const selectTravelerLoading = (state) => state.user.loading;
 export const selectTravelerError = (state) => state.user.error;
+export const selectUserName = (state) => state.user.name;

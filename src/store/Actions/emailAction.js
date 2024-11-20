@@ -8,7 +8,7 @@ export const SET_EMAIL_USER = 'SET_EMAIL_USER';
 export const LOGOUT_EMAIL_USER = 'LOGOUT_EMAIL_USER';
 
 // Base API URL
-const API_BASE_URL = 'https://tripadmin.onrender.com/api'; // Adjust if needed
+const API_BASE_URL = 'http://localhost:3002/api'; // Adjust if needed
 
 // Action to set OTP sent status
 export const setOTPSent = (status) => ({
@@ -56,10 +56,13 @@ export const verifyEmailOTP = (email, otp, navigate) => async (dispatch) => {
     const response = await axios.post(`${API_BASE_URL}/verify-otp-auth`, { email, otp });
 
     if (response.data) {
-      const { token } = response.data;
+      const { token, user } = response.data;
+      console.log("60 response from the email action ",response);
+      email = user;
       localStorage.setItem('authToken', token);
       localStorage.setItem('user', email); // Store email or user info
 
+      dispatch(setEmail(email))
       dispatch(setEmailUser(email, token));
       navigate('/');
     }
@@ -73,6 +76,7 @@ export const verifyEmailOTP = (email, otp, navigate) => async (dispatch) => {
 export const logoutEmailUser = (navigate) => (dispatch) => {
   localStorage.removeItem('authToken');
   localStorage.removeItem('user');
+  localStorage.removeItem('googleUserName')
   dispatch({ type: LOGOUT_EMAIL_USER });
   if (navigate) {
     navigate('/login');

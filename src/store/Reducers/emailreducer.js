@@ -23,6 +23,8 @@ const emailAuthReducer = (state = initialState, action) => {
 
     case SET_EMAIL_USER: {
       const { user, token } = action.payload;
+      console.log("26 email and token is from email reducer ",user,token);
+      
 
       // Save user and token to localStorage
       localStorage.setItem('authToken', token);
@@ -41,6 +43,8 @@ const emailAuthReducer = (state = initialState, action) => {
       // Remove data from localStorage on logout
       localStorage.removeItem('authToken');
       localStorage.removeItem('user');
+      localStorage.removeItem('googleUserName')
+
       return { ...initialState, email: '', user: null };
 
     default:
