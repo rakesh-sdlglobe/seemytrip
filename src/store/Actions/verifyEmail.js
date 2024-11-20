@@ -8,7 +8,7 @@ export const RESET_PASSWORD_SUCCESS = 'RESET_PASSWORD_SUCCESS';
 export const RESET_PASSWORD_ERROR = 'RESET_PASSWORD_ERROR';
 
 // Base API URL
-const API_BASE_URL = 'http://localhost:3002/api'; // Adjust if needed
+const API_BASE_URL = 'https://tripadmin.onrender.com/api'; // Adjust if needed
 
 // Action to set OTP verified status
 export const setOTPVerified = (status) => ({
@@ -72,7 +72,7 @@ export const resetPassword = (email, newPassword) => async (dispatch) => {
 
   try {
     // Make the API request to reset the password
-    const response = await axios.post('http://localhost:3002/api/password/reset-password', { email, newPassword });
+    const response = await axios.post('https://tripadmin.onrender.com/api/password/reset-password', { email, newPassword });
 
     // Check the response status and success flag
     if (response.status === 200 && response.data.success) {

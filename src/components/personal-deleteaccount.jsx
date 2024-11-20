@@ -16,7 +16,7 @@ const PersonalDeleteAccount = () => {
     try {
       const token = localStorage.getItem("authToken");
        await axios.delete(
-        "http://localhost:3002/api/deleteAccount",
+        "https://tripadmin.onrender.com/api/deleteAccount",
         {
           headers: {
             Authorization: `Bearer ${token}`,

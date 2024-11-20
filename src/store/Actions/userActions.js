@@ -21,7 +21,7 @@ export const REMOVE_TRAVELER_FAILURE = 'REMOVE_TRAVELER_FAILURE';
 
 
 // Fetch user profile
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3002/api';
+const API_URL = process.env.REACT_APP_API_URL || 'https://tripadmin.onrender.com/api';
 
 
 export const getUserProfile = () => {
