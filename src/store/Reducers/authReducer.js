@@ -64,7 +64,7 @@ const authReducer = (state = initialState, action) => {
       const {
         name
       } = action.payload;
-      localStorage.setItem('user', JSON.stringify(action.payload));
+      // localStorage.setItem('user', JSON.stringify(action.payload));
       return {
         ...state, user: action.payload, name: name
       };
@@ -80,7 +80,7 @@ const authReducer = (state = initialState, action) => {
       });
 
       localStorage.setItem('authToken', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('user', JSON.stringify(user.email)); 
 
       return {
         ...state,
@@ -97,6 +97,8 @@ const authReducer = (state = initialState, action) => {
     case LOGOUT:
       localStorage.removeItem('authToken');
       localStorage.removeItem('user');
+      localStorage.removeItem('googleUserName')
+
       return {
         ...initialState, name: '', user: null
       };

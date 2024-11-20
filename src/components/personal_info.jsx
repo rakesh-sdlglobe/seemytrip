@@ -20,6 +20,9 @@ const PersonalInfo = () => {
     const navigate = useNavigate();
     const userProfile = useSelector(selectUserProfile);
     const googleUser = useSelector(selectGoogleUser); // Google profile
+
+    console.log("Google user ", googleUser,"\nUser profile",userProfile);
+    
     const [isEditable, setIsEditable] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [otp, setOtp] = useState('');
@@ -33,6 +36,7 @@ const PersonalInfo = () => {
         dob: '',
         gender: 'Male',
         email: '',
+        isEmailVerified : 0,
     });
 
     useEffect(() => {
@@ -45,7 +49,7 @@ const PersonalInfo = () => {
                 name: userProfile.name || '',
                 lastname: userProfile.lastname || '',
                 mobile: userProfile.mobile || '',
-                dob: userProfile.dob ? new Date(userProfile.dob).toISOString().split('T')[0] : '',
+                dob: userProfile.dob ? new Date(userProfile.dob).toISOString().split('T')[0] : null,
                 gender: userProfile.gender || 'Male',
                 email: userProfile.email || '',
             });
@@ -53,15 +57,16 @@ const PersonalInfo = () => {
     }, [userProfile]);
 
     useEffect(() => {
-        if (googleUser) {
-            setFormData((prevData) => ({
-                ...prevData,
-                name: googleUser.name || prevData.name,
-                lastname: googleUser.lastname || prevData.lastname,
-                email: googleUser.email || prevData.email,
+        if (googleUser || userProfile) {
+            setFormData((userProfile) => ({
+                ...userProfile,
+                name: googleUser?.name || userProfile.name,
+                lastname: googleUser?.lastname || userProfile.lastname,
+                email: googleUser?.email || userProfile.email,
+                isEmailVerified : googleUser?.isEmailVerified || userProfile.isEmailVerified
             }));
         }
-    }, [googleUser]);
+    }, [googleUser,userProfile]);
 
 
     const toggleEdit = () => {
@@ -82,8 +87,11 @@ const PersonalInfo = () => {
             dob: formData.dob,
             gender: formData.gender,
             email: formData.email,
+            isEmailVerified : formData.isEmailVerified,
         };
-
+        setIsEditable(userData.isEmailVerified ? true : false)
+        console.log("93 the userData is ",userData);
+        
         dispatch(editUserProfile(userData));
         setIsEditable(false);
     };
@@ -206,7 +214,7 @@ const PersonalInfo = () => {
                                     onChange={handleChange}
                                     disabled={!isEditable || googleUser} />
                                 {isEditable && (
-                                    userProfile.isEmailVerified ? (
+                                    userProfile?.isEmailVerified ? (
                                         <i className="fa fa-check text-success verify-tick" aria-hidden="true"></i>
                                     ) : (
                                         <button

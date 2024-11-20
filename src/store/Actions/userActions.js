@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { json } from 'react-router-dom';
 
 export const FETCH_USER_PROFILE_SUCCESS = 'FETCH_USER_PROFILE_SUCCESS';
 export const FETCH_USER_PROFILE_FAILURE = 'FETCH_USER_PROFILE_FAILURE';
@@ -20,21 +21,33 @@ export const REMOVE_TRAVELER_FAILURE = 'REMOVE_TRAVELER_FAILURE';
 
 
 // Fetch user profile
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3002/api';
+
+
 export const getUserProfile = () => {
   return async (dispatch) => {
-    const authToken = localStorage.authToken; 
-
     try {
-      const response = await axios.get('https://tripadmin.onrender.com/api/users/userProfile', {
+      const authToken = localStorage.getItem('authToken');
+      if (!authToken) {
+        throw new Error('No auth token found');
+      }
+
+      const response = await axios.get(`${API_URL}/users/userProfile`, {
         headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
+        }
       });
-      console.log(response.data);
-      
-      dispatch({ type: FETCH_USER_PROFILE_SUCCESS, payload: response.data });
+
+      dispatch({ 
+        type: FETCH_USER_PROFILE_SUCCESS, 
+        payload: response.data 
+      });
     } catch (error) {
-      dispatch({ type: FETCH_USER_PROFILE_FAILURE, payload: error.response.data.message });
+      dispatch({ 
+        type: FETCH_USER_PROFILE_FAILURE, 
+        payload: error.response?.data?.message || 'Failed to fetch user profile'
+      });
     }
   };
 };
@@ -42,13 +55,19 @@ export const getUserProfile = () => {
 export const editUserProfile = (userData) => {
   return async (dispatch) => {
     const authToken = localStorage.authToken; 
-
+    console.log("57 YEs ");
+    
     try {
-      const response = await axios.post('https://tripadmin.onrender.com/api/users/editProfile', userData, {
+      const response = await axios.post(`${API_URL}/users/editProfile`, userData, {
         headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
+        }
       });
+      console.log("64 data ",response.data)
+      localStorage.googleUserName = JSON.stringify(userData.name)
+      console.log("Now user name is ", localStorage.googleUserName);
+      
       
       dispatch({ type: EDIT_USER_PROFILE_SUCCESS, payload: response.data.user });
     } catch (error) {    

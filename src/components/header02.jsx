@@ -5,7 +5,7 @@ import { useSelector,useDispatch } from 'react-redux';
 import { logout } from '../store/Actions/authActions';
 import { selectName,selectGoogleUser  } from '../store/Selectors/authSelectors';
 import { selectPhoneNumber } from '../store/Selectors/mobileSelector'; 
-import { selectEmail } from '../store/Selectors/emailSelector'; 
+import { selectEmail, statedata } from '../store/Selectors/emailSelector'; 
 import { logoutMobileUser } from '../store/Actions/mobileOtpAction';
 import { logoutEmailUser } from '../store/Actions/emailAction';
 import {ReactComponent as Trainicon} from '../assets/images/Navbaricons/Train.svg'
@@ -24,12 +24,17 @@ const Header02 = () => {
   const googleUser = useSelector(selectGoogleUser);
   const phoneNumber = useSelector(selectPhoneNumber);
   const emailuser = useSelector(selectEmail);
+  const statdata = useSelector(statedata)
   const isLoggedIn = Boolean(user || googleUser || phoneNumber|| emailuser);
+  const googleUserName = localStorage.googleUser || localStorage.googleUserName?.replace(/["']/g, '')
 
+  
   console.log(googleUser);
   console.log(isLoggedIn);
   console.log(phoneNumber);
   console.log(emailuser);
+  console.log(statdata);
+  
   
   
   
@@ -146,7 +151,7 @@ const Header02 = () => {
                   <li className="nav-item dropdown">
                     <Link className="nav-link dropdown-toggle d-flex align-items-center" to="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                       <i className="fa-regular fa-circle-user fs-5 me-2" />
-                      <span>{googleUser?.name || user || (phoneNumber && "Hi, Traveller") || (emailuser && "Hii, Traveller")}</span>
+                      <span>{googleUser?.name || googleUserName || user || (phoneNumber && "Hi, Traveller") || (emailuser && "Hii, Traveller")}</span>
                     </Link>
                     <ul className="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
                       <li>
