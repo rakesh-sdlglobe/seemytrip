@@ -7,7 +7,7 @@ import 'react-calendar/dist/Calendar.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import { fetchStations, fetchTrains } from '../../store/Actions/filterActions';
 import { selectStations } from '../../store/Selectors/filterSelectors';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Entering, IRCTC_Logo, Leaving, Calendar1 } from '../../assets/images';
 
 const SearchComponent = ({
@@ -25,14 +25,17 @@ const SearchComponent = ({
   dropdownHindden = 'auto',
   checklabelColor = 'auto',
   hindenswap = 'auto',
+  initialValues = null,
+  customStyles = {},
 }) => {
   const dispatch = useDispatch();
   const stations = useSelector(selectStations);
   const navigate = useNavigate()
+  const location = useLocation();
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const [leavingFrom, setLeavingFrom] = useState('');
-  const [goingTo, setGoingTo] = useState('');
-  const [journeyDate, setJourneyDate] = useState(null);
+  const [leavingFrom, setLeavingFrom] = useState(initialValues?.from || '');
+  const [goingTo, setGoingTo] = useState(initialValues?.to || '');
+  const [journeyDate, setJourneyDate] = useState(initialValues?.date ? new Date(initialValues?.date) : null);
   const [disabilityConcession, setDisabilityConcession] = useState(false);
   const [flexibleDate, setFlexibleDate] = useState(false);
   const [availableBerth, setAvailableBerth] = useState(false);
@@ -109,8 +112,13 @@ const SearchComponent = ({
 
   const handleSearch = () => {
     if (leavingFrom && goingTo && journeyDate) {
-      dispatch(fetchTrains(leavingFrom.value, journeyDate));
-      navigate('/Train-list-01')
+      navigate('/Train-list-01', {
+        state: {
+          from: leavingFrom,
+          to: goingTo,
+          date: journeyDate
+        }
+      });
     } else {
       alert('Please select all fields.');
     }
@@ -183,6 +191,7 @@ const SearchComponent = ({
     <>
       <style>
         {`
+          ${customStyles.swapIcon || ''}
           .search-component {
             background-color: ${backgroundColor};
             height: 100px;
@@ -223,6 +232,7 @@ const SearchComponent = ({
 
           .form-control {
             font-weight: bold;
+            height:60px;
             color: #333;
             border: none;
             border-radius: 12px;
@@ -278,8 +288,8 @@ const SearchComponent = ({
             display: ${hindenswap};
             position: absolute; 
             top: 20%; 
-            left: calc(34% - 12px); 
-            z-index: 1; 
+            left: calc(34% - 10px); 
+            z-index: 1;
           }
 
           .swap-button {
