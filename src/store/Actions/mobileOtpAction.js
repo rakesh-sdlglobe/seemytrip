@@ -9,7 +9,8 @@ export const SET_MOBILE_USER = 'SET_MOBILE_USER';
 export const LOGOUT_MOBILE_USER = 'LOGOUT_MOBILE_USER';
 
 // Base API URL
-const API_BASE_URL = 'https://tripadmin.onrender.com/twilio-sms';
+// const API_BASE_URL = 'https://tripadmin.onrender.com/twilio-sms';
+const API_BASE_URL = 'http://localhost:3002/api/otp';
 
 // Action to set the OTP
 export const setOtp = (otp) => ({
@@ -46,12 +47,12 @@ export const setMobileUser = (user, token) => ({
 
 
 // Action to send OTP
-export const sendOtp = (countryCode, phoneNumber) => async (dispatch) => {
-  console.log(countryCode,phoneNumber);
+export const sendOtp = ( phoneNumber) => async (dispatch) => {
+  console.log(phoneNumber);
   
   try {
     dispatch(setOtpError('')); // Clear previous error
-    await axios.post(`${API_BASE_URL}/send-otp`, { countryCode, phoneNumber });
+    await axios.post(`${API_BASE_URL}/send-otp`, { phoneNumber });
     dispatch(setOtpSent(true)); // OTP sent successfully
   } catch (error) {
     const errorMessage = error.response?.data?.message || 'Failed to send OTP';
@@ -61,10 +62,10 @@ export const sendOtp = (countryCode, phoneNumber) => async (dispatch) => {
 
 // Action to verify OTP
 // Action to verify OTP
-export const verifyOtp = (countryCode, phoneNumber, otp, navigate) => async (dispatch) => {
+export const verifyOtp = ( phoneNumber, otp, navigate) => async (dispatch) => {
   try {
     dispatch(setOtpError('')); // Clear previous error
-    const response = await axios.post(`${API_BASE_URL}/verify-otp`, { countryCode, phoneNumber, otp });
+    const response = await axios.post(`${API_BASE_URL}/verify-otp`, { phoneNumber, otp });
 
     const { user, authToken } = response.data; // Change `token` to `authToken`
     console.log('Response from verify OTP:', response.data); // Log the full response for debugging

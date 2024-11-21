@@ -38,7 +38,7 @@ const OTPModal = ({ show, handleClose, navigate }) => {
   // Handler to send OTP
   const handleSendOtp = () => {
     if (phoneNumber) {
-      dispatch(sendOtp(countryCode, phoneNumber));
+      dispatch(sendOtp( phoneNumber));
     }
   };
 
