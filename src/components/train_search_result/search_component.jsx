@@ -137,6 +137,7 @@ const SearchComponent = ({
       '&:hover': {
         // borderColor: '#d20000',
         paddingLeft: '50px',
+        backgroundColor:'none'
       }
     }),
     menu: (provided) => ({
@@ -659,7 +660,7 @@ const SearchComponent = ({
                             }}
                           />
                         </div>
-                        {/* <div className="field-separator"></div> */}
+                        
                       </div>
                       <div className="highlights-container" style={{display:highlightsContainer}} >
                             <div className="highlight-item" key={currentHighlightIndex}>
@@ -699,7 +700,7 @@ const SearchComponent = ({
                         <div className="form-group mb-0 position-relative">
                           <div className="input-icon">
                             <img src={Calendar1} alt="Calendar" />
-                          </div>
+                          </div> 
                           {dateLabel && (
                             <label className="text-light text-uppercase opacity-75">{dateLabel}</label>
                           )}
