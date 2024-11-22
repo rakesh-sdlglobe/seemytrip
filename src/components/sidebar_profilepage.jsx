@@ -12,6 +12,7 @@ const SideBarProfilePage = () => {
             setUploadedImage(URL.createObjectURL(file));
         }
     };
+    console.log(userProfile)
 
     return (
         <div className="col-xl-4 col-lg-4 col-md-12">
@@ -29,7 +30,7 @@ const SideBarProfilePage = () => {
                             </div>
                             <div className="mt-3">
                                 <label className="btn btn-light mb-3">
-                                    <i className="fa-solid fa-upload me-2"></i> Upload Photo
+                                    <i className="fa-solid fa-pen-to-square"></i>
                                     <input
                                         type="file"
                                         accept="image/*"
@@ -40,14 +41,14 @@ const SideBarProfilePage = () => {
                             </div>
                         </div>
                         <div className="crd-capser text-center">
-                            <h5 className="mb-0 text-light fw-semibold">{userProfile?.name}</h5>
+                            <h5 className="mb-0 text-light fw-semibold">{userProfile?.name || "Guest User"}</h5>
                             <span className="text-light opacity-75 fw-medium text-md">
                                 <i className="fa-solid fa-location-dot me-2" />Karnataka, India
                             </span>
                         </div>
                     </div>
                 </div>
-                <div className="card-middle mt-5 mb-4 px-4">
+                {/* <div className="card-middle mt-5 mb-4 px-4">
                     <div className="revs-wraps mb-3">
                         <div className="revs-wraps-flex d-flex align-items-center justify-content-between mb-1">
                             <span className="text-dark fw-semibold text-md">Complete Your Profile</span>
@@ -62,7 +63,7 @@ const SideBarProfilePage = () => {
                             <i className="fa-solid fa-sun me-2" />Upgrade Pro
                         </button>
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     );

@@ -112,6 +112,7 @@ const SearchComponent = ({
 
   const handleSearch = () => {
     if (leavingFrom && goingTo && journeyDate) {
+      dispatch(fetchTrains(leavingFrom.value, journeyDate));
       navigate('/Train-list-01', {
         state: {
           from: leavingFrom,

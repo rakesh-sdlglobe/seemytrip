@@ -96,75 +96,109 @@ const TrainSearchResultList = ({ filters }) => {
       {/* Train list */}
       {filteredTrainData.length > 0 ? (
         filteredTrainData.map(train => (
-          <div key={train.id} className="col-xl-12 col-lg-12 col-md-12" >
-            <div className="train-availability-card bg-white rounded-3 p-3" style={{ boxShadow:"0 2px 5px rgba(0, 0, 0, 0.1)" }}>
+          <div key={train.id} className="col-xl-12 col-lg-12 col-md-12">
+            <div className="train-availability-card bg-white rounded-3 p-4 hover-shadow" style={{ 
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
+              transition: "all 0.3s ease",
+              border: "1px solid #eee"
+            }}>
               <div className="row gy-4 align-items-center justify-content-between">
                 {/* Train Info Header */}
                 <div className="col-xl-12 col-lg-12 col-md-12">
                   <div className="d-flex align-items-center justify-content-between">
                     <div className="train-name me-4">
-                      <h5 className="mb-1">{train.trainName}</h5>
-                      {/* <div className="text-muted small">Runs on: {train.trainNumber}</div> */}
-                      <div className="text-muted small">
+                      <h5 className="mb-2 fw-bold" style={{color: "#2c3e50"}}>{train.trainName}</h5>
+                      <div className="text-muted small d-flex align-items-center">
+                        <i className="fas fa-calendar-alt me-2"></i>
                         Runs on: 
-                        <span> S M </span>
-                        <span style={{ fontWeight: 'bold', color: 'black' }}>W</span>
-                        <span> T F </span>
-                        <span style={{ fontWeight: 'bold', color: 'black' }}>S</span>
-                      </div>
+                        <span className="mx-1"> S </span>
+                        <span className="mx-1">M</span>
+                        <span className="mx-1" style={{ fontWeight: 'bold', color: '#d20000' }}>W</span>
+                        <span className="mx-1"> T </span>
+                        <span className="mx-1">F</span>
+                        <span className="mx-1" style={{ fontWeight: 'bold', color: '#d20000' }}>S</span>
 
-                    </div>
-                    <div className="d-flex align-items-center flex-grow-1" style={{ padding: '10px', borderRadius: '8px', }}>
-                      <div className="d-flex flex-column align-items-center me-1" style={{ flex: '1' }}>
-                        {/* <div className="fw-bold fs-6">{train.departure_time}</div>
-                        <div className="text-muted small">{train.startStation}</div> */}
-                        <div className="text-muted small" style={{fontWeight: 'bold' }}>{train.startStation}</div>
-                        <div className="fw-bold fs-6">4:20 PM</div>
-                        <div className="text-muted small">Tue, 12 NOV</div>
                       </div>
-                      <div className="text-center" style={{ flex: '1', position: 'relative' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', position: 'relative', justifyContent: 'center' }}>
-                          <div style={{ flex: 1, height: '1px', backgroundColor: '#ddd' }}></div>
-                          {/* <div style={{ margin: '0 10px', fontWeight: 'bold', fontSize: '16px', zIndex: 1 }}>{train.duration}</div> */}
-                          <div style={{ margin: '0 10px', fontWeight: 'bold', fontSize: '16px', zIndex: 1 }}>12hr 40min</div>
-                          <div style={{ flex: 1, height: '1px', backgroundColor: '#ddd' }}></div>
+                    </div>
+
+                    <div className="journey-details flex-grow-1 mx-4 p-3" style={{
+                      background: "linear-gradient(to right, #f8f9fa, #ffffff, #f8f9fa)",
+                      borderRadius: "12px"
+                    }}>
+                      <div className="d-flex align-items-center justify-content-between">
+                        <div className="text-center">
+                          <div className="text-primary fw-bold" style={{fontSize: "0.9rem"}}>{train.startStation}</div>
+                          <div className="h4 mb-0 fw-bold">4:20 PM</div>
+                          <div className="text-muted small">Tue, 12 NOV</div>
+                        </div>
+
+                        <div className="flex-grow-1 px-4">
+                          <div className="journey-line position-relative">
+                            <div className="line" style={{
+                              height: "2px",
+                              background: "linear-gradient(to right, #4CAF50, #2196F3)",
+                              position: "relative"
+                            }}></div>
+                            <div className="duration text-center mt-2">
+                              <span className="badge bg-light text-dark px-3 py-2" style={{boxShadow: "0 2px 4px rgba(0,0,0,0.1)"}}>
+                                12hr 40min
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="text-center">
+                          <div className="text-primary fw-bold" style={{fontSize: "0.9rem"}}>{train.endStation}</div>
+                          <div className="h4 mb-0 fw-bold">5:30 AM</div>
+                          <div className="text-muted small">Wed, 13 NOV</div>
                         </div>
                       </div>
-                      <div className="d-flex flex-column align-items-center ms-1" style={{ flex: '1' }}>
-                        <div className="text-muted small" style={{fontWeight: 'bold' }}>{train.endStation}</div>
-                        {/* <div className="fw-bold fs-6">{train.arrival_time}</div> */}
-                        <div className="fw-bold fs-6">5:30 AM</div>
-                        <div className="text-muted small">Wed, 13 NOV</div>
-                      </div>
                     </div>
-                    <button className="btn btn-primary ms-3">Availability  <span className="arrow-down" /></button>
+
+                    {/* <button className="btn btn-primary px-4 py-2" style={{
+                      background: "linear-gradient(45deg, #2196F3, #1976D2)",
+                      border: "none",
+                      borderRadius: "8px",
+                      boxShadow: "0 4px 6px rgba(33, 150, 243, 0.3)"
+                    }}>
+                      <i className="fas fa-ticket-alt me-2"></i>
+                      Availability
+                    </button> */}
                   </div>
                 </div>
-                {/* Train Class Availability */}
-                <div className="w-100 border-top border-secondary my-1"></div>
+
+                <div className="w-100 border-top my-2 opacity-25"></div>
+
                 <div className="col-xl-12 col-lg-12 col-md-12">
-                  <div className="row text-center gx-2 gy-2">
+                  <div className="row text-center g-3 justify-content-start">
                     {train.seats.map((cls, index) => (
-                      <div key={index} className="col-auto flex-shrink-0">
+                      <div key={index} className="col-auto">
                         <div
-                          className={`availability-card cursor-pointer ${cls.availableSeats ? 'bg-success-subtle' : 'bg-danger-subtle'} rounded-2 p-2`}
+                          className="availability-card p-3"
                           style={{
-                            border: `1px solid ${cls.availableSeats ? 'rgba(40, 167, 69, 0.2)' : 'rgba(220, 53, 69, 0.2)'}`,
-                            backgroundColor: cls.availableSeats ? 'rgba(40, 167, 69, 0.05)' : 'rgba(220, 53, 69, 0.05)', // Lighter
-                            cursor: 'pointer', // Add this line to change the cursor on hover
+                            minWidth: "180px",
+                            background: cls.availableSeats ? "linear-gradient(145deg, #e8f5e9, #f1f8e9)" : "linear-gradient(145deg, #ffebee, #fce4ec)",
+                            border: `1px solid ${cls.availableSeats ? '#81c784' : '#e57373'}`,
+                            borderRadius: "10px",
+                            cursor: "pointer",
+                            transition: "transform 0.2s ease",
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.05)"
                           }}
                           onClick={() => handleBooking(train)}
                         >
-                          <div className="row justify-content-between align-items-center">
-                            <div className="col">
-                              <h5 className="mb-1">{cls.seatClass}</h5>
-                            </div>
-                            <div className="col text-end">
-                              <div className="price">₹{cls.price}</div>
-                            </div>
+                          <div className="d-flex justify-content-between align-items-center mb-2">
+                            <h6 className="mb-0 fw-bold" style={{color: cls.availableSeats ? "#2e7d32" : "#c62828"}}>{cls.seatClass}</h6>
+                            <div className="price fw-bold">₹{cls.price}</div>
                           </div>
-                          <div className="availability-status mt-1">{cls.status}</div>
-                          <div className="availability-percentage">{cls.availableSeats} available</div>
+                          <div className="status-badge mb-1" style={{
+                            color: cls.availableSeats ? "#2e7d32" : "#c62828",
+                            fontSize: "0.9rem"
+                          }}>
+                            {cls.status}
+                          </div>
+                          <div className="availability small" style={{color: "#666"}}>
+                            {cls.availableSeats} available
+                          </div>
                         </div>
                       </div>
                     ))}
