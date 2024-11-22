@@ -172,5 +172,3 @@ export const handleGoogleLogin = (accessToken, navigate) => async (dispatch) => 
       dispatch(googleLoginFailure(errorMessage));
   }
 };
-
-//space
