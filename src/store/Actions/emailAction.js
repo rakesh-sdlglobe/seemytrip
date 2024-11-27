@@ -72,6 +72,26 @@ export const verifyEmailOTP = (email, otp, navigate) => async (dispatch) => {
   }
 };
 
+export const verifyEmailOTPForgot = (email, otp, navigate) => async (dispatch) => {
+  try {
+    dispatch(setOTPError('')); // Clear previous error
+
+    const response = await axios.post(`${API_BASE_URL}/verify-otp-auth`, { email, otp });
+
+    if (response.data) {
+      const { token, user } = response.data;
+      console.log("60 response from the email action ",response);
+      email = user;
+
+      dispatch(setEmail(email))
+      dispatch(setEmailUser(email, token));
+    }
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || 'Invalid or expired OTP';
+    dispatch(setOTPError(errorMessage));
+  }
+};
+
 // Action to log out the email user
 export const logoutEmailUser = (navigate) => (dispatch) => {
   localStorage.removeItem('authToken');
