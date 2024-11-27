@@ -606,6 +606,44 @@ const SearchComponent = ({
             box-shadow: none;
             outline: none;
           }
+
+          .form-floating {
+            position: relative;
+          }
+
+          .form-floating > .form-control,
+          .form-floating > .floating-select {
+            height: calc(3.5rem + 2px);
+            padding: 1rem 0.75rem;
+          }
+
+          .form-floating > label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            padding: 1rem 0.75rem;
+            pointer-events: none;
+            border: 1px solid transparent;
+            transform-origin: 0 0;
+            transition: opacity .1s ease-in-out,transform .1s ease-in-out;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+          }
+
+          .form-floating > .form-control:focus ~ label,
+          .form-floating > .form-control:not(:placeholder-shown) ~ label,
+          .form-floating > .floating-select:focus ~ label,
+          .form-floating > .floating-select .select__single-value ~ label {
+            opacity: .65;
+            transform: scale(.85) translateY(-0.5rem) translateX(0.15rem);
+          }
+
+          .floating-select .select__control {
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+          }
         `}
       </style>
       <div className="search-component" style={{ height:"150px" }}>

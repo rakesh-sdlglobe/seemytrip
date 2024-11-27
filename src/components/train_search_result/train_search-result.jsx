@@ -134,11 +134,37 @@ const TrainSearchResultList = ({ filters }) => {
 
                         <div className="flex-grow-1 px-4">
                           <div className="journey-line position-relative">
-                            <div className="line" style={{
+                            <div className="line d-flex align-items-center" style={{
                               height: "2px",
-                              background: "linear-gradient(to right, #4CAF50, #2196F3)",
                               position: "relative"
-                            }}></div>
+                            }}>
+                              {/* Start dot */}
+                              <div style={{
+                                width: "8px",
+                                height: "8px",
+                                backgroundColor: "#333333",
+                                borderRadius: "50%",
+                                position: "absolute",
+                                left: "-4px",
+                                zIndex: "1"
+                              }}></div>
+                              {/* Connecting line */}
+                              <div style={{
+                                height: "2px",
+                                flex: "1",
+                                backgroundColor: "#e0e0e0"
+                              }}></div>
+                              {/* End dot */}
+                              <div style={{
+                                width: "8px",
+                                height: "8px",
+                                backgroundColor: "#333333",
+                                borderRadius: "50%",
+                                position: "absolute",
+                                right: "-4px",
+                                zIndex: "1"
+                              }}></div>
+                            </div>
                             <div className="duration text-center mt-2">
                               <span className="badge bg-light text-dark px-3 py-2" style={{boxShadow: "0 2px 4px rgba(0,0,0,0.1)"}}>
                                 12hr 40min
