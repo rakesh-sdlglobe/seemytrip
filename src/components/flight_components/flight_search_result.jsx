@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { indigo } from '../../assets/images';
+import {indigo1} from '../../assets/images';
 
 const FlightSearchResult = ({ flightData, filters }) => {
     const navigate = useNavigate();
@@ -32,7 +33,7 @@ const FlightSearchResult = ({ flightData, filters }) => {
     return (
         <div className="row align-items-center g-4 mt-2">
             <style>
-            {`
+                {`
                 .no-flight-found-wrapper {
                     display: flex;
                     flex-direction: column;
@@ -57,6 +58,92 @@ const FlightSearchResult = ({ flightData, filters }) => {
                     font-size: 16px;
                     color: #6c757d;
                 }
+                    .flights-list-item {
+        padding: 1.25rem 1.5rem;
+        margin: 0.75rem 0;
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #eaeaea;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .flights-list-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        border-color: #fff;
+    }
+
+    .airline-section {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        width: 120px;
+    }
+
+    .flight-info-section {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex: 1;
+    }
+
+    .time-airport-group {
+        text-align: center;
+        min-width: 100px;
+    }
+
+    .flight-duration-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 150px;
+    }
+
+    .flightLine {
+        position: relative;
+        width: 100px;
+        height: 2px;
+        background: #e5e7eb;
+        top:0px;
+    }
+
+    .flightLine::before,
+    .flightLine::after {
+        content: '';
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        background-color: #6b7280;
+        border-radius: 50%;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .flightLine::before {
+        left: -3px;
+    }
+
+    .flightLine::after {
+        right: -3px;
+    }
+
+    .price-section {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        min-width: 260px;
+        justify-content: flex-end;
+    }
+
+    .select-flight-btn {
+        padding: 0.5rem 1.5rem;
+        transition: all 0.2s ease;
+    }
+
+    .select-flight-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
             `}
             </style>
             {/* Offer Coupon Box */}
@@ -70,11 +157,11 @@ const FlightSearchResult = ({ flightData, filters }) => {
                         </div>
                         <div className="flx-caps-first ps-2">
                             <h6 className="fs-5 fw-medium text-light mb-0">Start Exploring The World</h6>
-                            <p className="text-light mb-0">Book Flights Effortlessly and Earn $50+ for each booking with Booking.com</p>
+                            <p className="text-light mb-0">Book Flights Effortlessly and Earn $50+ for each booking with SeeMyTrip.com</p>
                         </div>
                     </div>
                     <div className="flx-last text-md-end mt-md-0 mt-4">
-                        <button type="button" className="btn btn-white fw-medium full-width text-dark px-xl-4">Get Started</button>
+                        <button type="button" className="btn btn-white border fw-medium full-width text-dark px-xl-4">Get Started</button>
                     </div>
                 </div>
             </div>
@@ -83,50 +170,52 @@ const FlightSearchResult = ({ flightData, filters }) => {
             {filteredFlightData.length > 0 ? (
                 filteredFlightData.map(flight => (
                     <div key={flight.flightId} className="col-xl-12 col-lg-12 col-md-12">
-                        <div className="flights-list-item bg-white rounded-3 p-3">
-                            <div className="row gy-4 align-items-center justify-content-between">
-                                <div className="col">
-                                    <div className="d-flex align-items-center mb-2">
-                                        <span className="label bg-light-primary text-primary me-2">Departure</span>
-                                        <span className="text-muted text-sm">{flight.departureTime}</span>
-                                    </div>
-                                    <div className="row gx-lg-5 gx-3 gy-4 align-items-center">
-                                        <div className="col-sm-auto">
-                                            <div className="d-flex align-items-center justify-content-start">
-                                                <img className="img-fluid" src={indigo} width={45} alt="Airline Logo" /> 
-                                                <div className="ps-2">
-                                                    <div className="text-dark fw-medium">{flight.airline}</div>
-                                                    <div className="text-sm text-muted">{flight.classType}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col">
-                                            <div className="row gx-3 align-items-center">
-                                                <div className="col-auto">
-                                                    <div className="text-dark fw-bold">{flight.departureTime}</div>
-                                                    <div className="text-muted text-sm">{flight.fromAirportShort || flight.fromAirport}</div>
-                                                </div>
-                                                <div className="col text-center">
-                                                    <div className="flightLine">
-                                                        <div />
-                                                        <div />
-                                                    </div>
-                                                </div>
-                                                <div className="col-auto">
-                                                    <div className="text-dark fw-bold">{flight.arrivalTime}</div>
-                                                    <div className="text-muted text-sm">{flight.toAirportShort || flight.toAirport}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-auto">
-                                            <div className="text-dark fw-medium">{flight.duration}</div>
-                                            <div className="text-muted text-sm fw-medium">{flight.stopovers} Stop</div>
-                                        </div>
+                        <div className="flights-list-item">
+                            <div className="d-flex align-items-center justify-content-between">
+                                {/* Airline Info */}
+                                <div className="airline-section">
+                                    <img className="img-fluid" src={indigo} width={35} alt="Airline Logo" />
+                                    <div>
+                                        <div className="text-dark fw-medium"> Indigo{flight.airline}</div>
+                                        <div className="text-sm text-muted">1234{flight.classType}</div>
                                     </div>
                                 </div>
-                                <div className="col-md-auto">
-                                    <div className="text-dark fs-3 fw-bold lh-base">{flight.economyPrice}</div>
-                                    <button className="btn btn-primary btn-md fw-medium full-width" onClick={() => handleBooking(flight)}>Select Flight</button>
+
+                                {/* Flight Info */}
+                                <div className="flight-info-section">
+                                    {/* Departure */}
+                                    <div className="time-airport-group">
+                                        <div className="text-dark fw-bold">{flight.departureTime}</div>
+                                        <div className="text-muted text-sm">{flight.fromAirportShort || flight.fromAirport}</div>
+                                    </div>
+
+                                    {/* Duration & Stops */}
+                                    <div className="flight-duration-section">
+                                        <div className="text-dark small">{flight.duration}</div>
+                                        <div className="flightLine"></div>
+                                        <div className="text-muted small">
+                                            {flight.stopovers === 0 ? 'Direct' : 
+                                             flight.stopovers ? `${flight.stopovers} Stop${flight.stopovers > 1 ? 's' : ''}` : 
+                                             'Direct'}
+                                        </div>
+                                    </div>
+
+                                    {/* Arrival */}
+                                    <div className="time-airport-group">
+                                        <div className="text-dark fw-bold">{flight.arrivalTime}</div>
+                                        <div className="text-muted text-sm">{flight.toAirportShort || flight.toAirport}</div>
+                                    </div>
+                                </div>
+
+                                {/* Price & Action */}
+                                <div className="price-section">
+                                    <div className="text-dark fs-5 fw-bold">{flight.economyPrice}</div>
+                                    <button 
+                                        className="btn btn-primary select-flight-btn" 
+                                        onClick={() => handleBooking(flight)}
+                                    >
+                                        Select Flight
+                                    </button>
                                 </div>
                             </div>
                         </div>
