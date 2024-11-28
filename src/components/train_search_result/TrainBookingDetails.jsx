@@ -3,6 +3,8 @@ import { Edit2 } from 'lucide-react';
 import Header02 from '../header02';
 import FooterDark from '../footer-dark';
 import { Link } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const TrainBookingDetails = () => {
   // Add max travelers constant
@@ -44,7 +46,7 @@ const TrainBookingDetails = () => {
   // Handler functions
   const handleSave = () => {
     if (travelers.length >= MAX_TRAVELERS) {
-      alert('Maximum limit of 6 travelers reached.');
+      toast.error('Maximum limit of 6 travelers reached.');
       return;
     }
     
@@ -57,6 +59,7 @@ const TrainBookingDetails = () => {
         berth: '',
         country: '',
       });
+      toast.success('Traveler added successfully')
     }
   };
 
@@ -87,6 +90,7 @@ const TrainBookingDetails = () => {
 
   // Add delete handler
   const handleDeleteTraveler = (index) => {
+    toast.success('Traveler deleted successfully');
     const updatedTravelers = travelers.filter((_, i) => i !== index);
     setTravelers(updatedTravelers);
   };
@@ -206,6 +210,7 @@ const TrainBookingDetails = () => {
               id="berth"
               className="form-select"
               value={currentTraveler.berth}
+              style={{ height: '58px' }}
               onChange={(e) => setCurrentTraveler({ ...currentTraveler, berth: e.target.value })}
               required
             >
@@ -227,6 +232,7 @@ const TrainBookingDetails = () => {
               value={currentTraveler.country}
               onChange={(e) => setCurrentTraveler({ ...currentTraveler, country: e.target.value })}
               required
+              style={{ height: '58px' }}
             >
               <option value="">Select country</option>
               <option value="india">India</option>
@@ -244,7 +250,7 @@ const TrainBookingDetails = () => {
   );
   const renderSavedTravelers = () => (
     travelers.length > 0 && (
-      <div className="mt-4">
+      <div className="mt-4 mb-3">
         <h4 className="mb-3">Saved Travelers</h4>
         <div className="row g-3">
           {travelers.map((traveler, index) => (
@@ -456,6 +462,7 @@ const TrainBookingDetails = () => {
 
   return (
     <div id="main-wrapper">
+      <ToastContainer/>
       <Header02 />
       
       <section className="pt-4 gray-simple position-relative">
@@ -468,8 +475,8 @@ const TrainBookingDetails = () => {
             {/* Left Column - Traveler Form */}
             <div className="col-xl-8 col-lg-8 col-md-12">
               {renderTravelerForm()}
-              {renderContactDetails()}
               {renderSavedTravelers()}
+              {renderContactDetails()}
             </div>
 
             {/* Right Column - Booking Summary */}

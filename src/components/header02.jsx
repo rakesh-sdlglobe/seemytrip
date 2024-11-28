@@ -27,13 +27,6 @@ const Header02 = () => {
   const statdata = useSelector(statedata)
   const isLoggedIn = Boolean(user || googleUser || phoneNumber|| emailuser);
   const googleUserName = localStorage.googleUser || localStorage.googleUserName?.replace(/["']/g, '')
-
-  
-  console.log(googleUser);
-  console.log(isLoggedIn);
-  console.log(phoneNumber);
-  console.log(emailuser);
-  console.log(statdata);
   
   
   

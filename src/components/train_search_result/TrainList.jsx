@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Header02 from "../header02";
 import Footer from "../footer";
 import SearchComponent from "./search_component";
 import TrainSearchResultList from "./train_search-result";
 
 const TrainList01 = () => {
+  const location = useLocation();
+  const searchParams = location.state || {};
+
   const [filters, setFilters] = useState({
     ac: false,
     available: false,
@@ -76,10 +79,53 @@ const TrainList01 = () => {
           buttonBackgroundColor="#cd2c22"
           buttonTextColor="#ffffff"
           dropdownHindden='none'
-          checklabelColor ='#ffffff'
-          hindenswap = 'none'
-          highlightsContainer = 'none'
-          authorizedContainer = 'none'
+          checklabelColor='#ffffff'
+          highlightsContainer='none'
+          authorizedContainer='none'
+          initialValues={searchParams}
+          customStyles={{
+            swapIcon: `
+              .swap-icon-container {
+                display: flex;
+                position: absolute;
+                top: 18% !important;
+                left: 34.7% !important;
+                transform: translateY(-50%);
+                z-index: 2;
+                // background: white;
+                border-radius: 50%;
+                padding: 8px;
+                // box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                cursor: pointer;
+              }
+              
+              .swap-button {
+                background: none;
+                border: none;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              }
+
+              .swap-button i {
+                color: #17181c;
+                font-size: 16px;
+              }
+
+              @media (max-width: 768px) {
+                .swap-icon-container {
+                  left: 46% !important;
+                }
+              }
+
+              @media (max-width: 576px) {
+                .swap-icon-container {
+                  left: 44% !important;
+                }
+              }
+            `
+          }}
         />
         <section className="gray-simple" >
           <div className="container" >
