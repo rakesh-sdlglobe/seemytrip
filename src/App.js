@@ -128,103 +128,142 @@ function App() {
     <div className="App">
       <Router>
         <Routes>
-          {/* Core Pages */}
+          {/* Main/Home Routes */}
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/about-us" element={<About />} />
+          <Route path="/home2" element={<Home02 />} />
+          <Route path="/home3" element={<Home03 />} />
+          <Route path="/home4" element={<Home04 />} />
+          <Route path="/home5" element={<Home05 />} />
+          <Route path="/sliderhome" element={<SliderHome />} />
           
-          {/* Authentication & User Management */}
+          {/* Authentication Routes */}
+          <Route path="/login" element={<Login />} />
           <Route path="/sign-in" element={<Login />} />
+          <Route path='/register' element={<Register />} />
           <Route path="/sign-up" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/two-factor-auth" element={<TwofactorAuth />} />
-          <Route path="/otp-modal" element={<OTPModal />} />
-          
-          {/* User Profile & Settings */}
+          <Route path='/otp-modal' element={<OTPModal/>} />
+
+          {/* User Account Routes */}
           <Route path="/my-profile" element={<MyProfile />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/delete-account" element={<DeleteAccount />} />
-          <Route path="/my-booking" element={<MyBooking />} />
-          <Route path="/my-wishlists" element={<MyWishlists />} />
-          <Route path="/travelers" element={<Travelers />} />
-          
-          {/* Train Related Routes */}
+          <Route path="/my-booking" element={<MyBooking/>} />
+          <Route path="/travelers" element={<Travelers/>} />
+          <Route path="/payment-detail" element={<PaymentDetails/>} />
+          <Route path="/my-wishlists" element={<MyWishlists/>} />
+          <Route path="/settings" element={<Settings/>} />
+          <Route path="/delete-account" element={<DeleteAccount/>} />
+
+          {/* Train Routes */}
           <Route path="/Train-list-01" element={<TrainList01 />} />
-          <Route path="/train-result" element={<TrainSearchResultList />} />
+          <Route path="/booking-page" element={<BookingPage trainName="12976 JP MYSORE EXP" />} />
           <Route path="/booking-page/:trainName" element={<BookingPage />} />
-          <Route path="/booking-page-2" element={<BookingPage2 />} />
-          <Route path="/booking-page-3" element={<BookingPage3 />} />
-          <Route path="/booking-page-success" element={<BookingPageSuccess />} />
-          <Route path="/trainbookingdetails" element={<TrainBookingDetails />} />
-          <Route path="/train-card" element={<TrainBooking />} />
-          {/* Train Related Features */}
+          <Route path="/train-result" element={<TrainSearchResultList/>} />
+          <Route path="/trainbookingdetails" element={<TrainBookingDetails/>} />
+          <Route path="/train-card" element={<TrainBooking/>} />
+          
+          {/* Train Features Routes */}
           <Route path="/train-running-status" element={<TrainRunningStatus />} />
           <Route path="/pnr-status" element={<PNRStatusEnquiry />} />
           <Route path="/train-seat-availability" element={<TrainSeatAvailability />} />
           <Route path="/search-by-name" element={<Searchbyname />} />
           <Route path="/search-by-station" element={<SearchbyStation />} />
-          <Route path="/tatkal-railway-reservation" element={<TatkalRailwayreservation/>}/>
-          <Route path="/platform-locator" element={<Platformlocator/>}/>
-          {/* Flight Related Routes */}
-          <Route path="/flight-list" element={<FlightList />} />
-          <Route path="/flight-Bookingpage" element={<FlightBookingpage01 />} />
-          <Route path="/flight-Bookingpage02" element={<FlightBookingPage02 />} />
-          
-          {/* Hotel Related Routes */}
-          <Route path="/hotel-bookingpage" element={<HotelBookingPage />} />
-          <Route path="/hotel-bookingpage02" element={<HotelBookingpage02 />} />
-          
-          {/* Transportation Services */}
-          {/* Cab Routes */}
-          <Route path="/cabbookingpage" element={<CabBookingPage />} />
-          <Route path="/cab-list" element={<CabList />} />
-          <Route path="/cabBookingpayment" element={<Bookingpayment />} />
-          
+          <Route path="/tatkal-railway-reservation" element={<TatkalRailwayreservation/>} />
+
+          {/* Flight Routes */}
+          <Route path="/home-flight" element={<HomeFlight />} />
+          <Route path="/flight-list" element={<FlightList/>} />
+          <Route path="/flight-list-02" element={<FlightList02 />} />
+          <Route path="/flight-detail" element={<FlightDetail />} />
+          <Route path="/flight-Bookingpage" element={<FlightBookingpage01/>} />
+          <Route path="/flight-Bookingpage02" element={<FlightBookingPage02/>} />
+
+          {/* Hotel Routes */}
+          <Route path="/home-hotel" element={<HomeHotel />} />
+          <Route path="/hotel-list-01" element={<HotelList01 />} />
+          <Route path="/hotel-list-02" element={<HotelList02 />} />
+          <Route path="/hotel-list-03" element={<HotelList03 />} />
+          <Route path="/hotel-detail-01" element={<HotelDetail01 />} />
+          <Route path="/hotel-detail-02" element={<HotelDetail02 />} />
+          <Route path="/hotel-bookingpage" element={<HotelBookingPage/>} />
+          <Route path="/hotel-bookingpage02" element={<HotelBookingpage02/>} />
+
+          {/* Car & Cab Routes */}
+          <Route path="/home-car" element={<HomeCar />} />
+          <Route path="/car-list-01" element={<CarList01 />} />
+          <Route path="/car-list-02" element={<CarList02 />} />
+          <Route path="/car-list-03" element={<CarList03 />} />
+          <Route path="/car-detail" element={<CarDetails />} />
+          <Route path="/cabbookingpage" element={<CabBookingPage/>} />
+          <Route path="/cab-list" element={<CabList/>} />
+          <Route path="/cabBookingpayment" element={<Bookingpayment/>} />
+
           {/* Bus Routes */}
-          <Route path="/busbookingpage" element={<BusBookingPage />} />
-          <Route path="/bus-list" element={<BusList />} />
-          <Route path="/busBookingpayment" element={<BusBookingPayment />} />
-          
+          <Route path="/home-bus" element={<HomeBus/>} />
+          <Route path="/busbookingpage" element={<BusBookingPage/>} />
+          <Route path="/bus-list" element={<BusList/>} />
+          <Route path="/busBookingpayment" element={<BusBookingPayment/>} />
+
           {/* Cruise Routes */}
-          <Route path="/home-cruise" element={<HomeCruise />} />
-          <Route path="/cruisebookingpage" element={<CruiseBookingPage />} />
-          <Route path="/cruise-list" element={<CruiseList />} />
-          
-          {/* Tourism Services */}
-          {/* Business Tourism */}
-          <Route path="/home-businesstourism" element={<BusinessTrourism />} />
-          <Route path="/btbookingpage" element={<BtBookingPage />} />
-          <Route path="/bt-list" element={<BtList />} />
-          <Route path="/btBookingPayment" element={<BtBookingPayment />} />
-          
-          {/* Medical Tourism */}
-          <Route path="/home-medicaltourism" element={<MedicalTrourism />} />
-          <Route path="/mtbookingpage" element={<MtBookingPage />} />
-          <Route path="/mt-list" element={<MtList />} />
-          <Route path="/mtBookingPayment" element={<MtBookingPayment />} />
-          
-          {/* Additional Services */}
-          <Route path="/offers" element={<CardOffers />} />
-          <Route path="/guides" element={<TourGuides />} />
-          <Route path="/selfdrivecars" element={<SelfDriveCars />} />
-          <Route path="/photographers" element={<Photographers />} />
-          <Route path="/homestaysvillas" element={<HomeStaysVillas />} />
-          <Route path="/travelinsurance" element={<TravelInsurance />} />
-          <Route path="/packages" element={<Packages />} />
-          <Route path="/giftcards" element={<GiftCards />} />
-          
-          {/* Support & Help */}
-          <Route path="/support" element={<SupportPage />} />
+          <Route path="/home-cruise" element={<HomeCruise/>} />
+          <Route path="/cruisebookingpage" element={<CruiseBookingPage/>} />
+          <Route path="/cruise-list" element={<CruiseList/>} />
+          <Route path="/cruiseBookingPayment" element={<CruiseBookingPayment/>} />
+
+          {/* Tourism Routes */}
+          <Route path="/home-businesstourism" element={<BusinessTrourism/>} />
+          <Route path="/btbookingpage" element={<BtBookingPage/>} />
+          <Route path="/bt-list" element={<BtList/>} />
+          <Route path="/btBookingPayment" element={<BtBookingPayment/>} />
+          <Route path="/home-medicaltourism" element={<MedicalTrourism/>} />
+          <Route path="/mtbookingpage" element={<MtBookingPage/>} />
+          <Route path="/mt-list" element={<MtList/>} />
+          <Route path="/mtBookingPayment" element={<MtBookingPayment/>} />
+
+          {/* Property & Rental Routes */}
+          <Route path="/home-rental" element={<HomeRental />} />
+          <Route path="/rental-list-01" element={<PropertyList />} />
+          <Route path="/rental-list-02" element={<PropertyList2 />} />
+          <Route path="/rental-list-03" element={<PropertyList3 />} />
+          <Route path="/rental-detail" element={<RentalDetail />} />
+          <Route path="/home-stay" element={<HomeStay />} />
+
+          {/* Destination Routes */}
+          <Route path="/destination-list-01" element={<Destination01 />} />
+          <Route path="/destination-list-02" element={<Destination02 />} />
+          <Route path="/destination-list-03" element={<Destination03 />} />
+          <Route path="/destination-detail" element={<DestinationDetail />} />
+          <Route path="/home-destination" element={<HomeStay />} />
+
+          {/* Blog Routes */}
+          <Route path="/classic-blog" element={<ClassicBlog />} />
+          <Route path="/blog-grid" element={<Blog />} />
+          <Route path="/single-blog" element={<Blogdetail />} />
+
+          {/* Additional Services Routes */}
+          <Route path="/offers" element={<CardOffers/>} />
+          <Route path="/guides" element={<TourGuides/>} />
+          <Route path="/selfdrivecars" element={<SelfDriveCars/>} />
+          <Route path="/photographers" element={<Photographers/>} />
+          <Route path="/homestaysvillas" element={<HomeStaysVillas/>} />
+          <Route path="/travelinsurance" element={<TravelInsurance/>} />
+          <Route path="/packages" element={<Packages/>} />
+          <Route path="/giftcards" element={<GiftCards/>} />
+
+          {/* Miscellaneous Routes */}
+          <Route path="/about-us" element={<About />} />
+          <Route path="/career-page" element={<CareerPage />} />
           <Route path="/help-center" element={<HelpCenter />} />
           <Route path="/faq" element={<Faq />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          
-          {/* Misc Pages */}
           <Route path="/error-page" element={<PageNotFound />} />
           <Route path="/pricing" element={<Pricing />} />
-          
-          {/* ... remaining routes ... */}
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/contact-v1" element={<ContactV1 />} />
+          <Route path="/contact-v2" element={<ContactV2 />} />
+          <Route path="/join-us" element={<JoinUs />} />
+          <Route path="/add-listing" element={<AddListing />} />
+          <Route path="/compare-listing" element={<CompareListing />} />
+          <Route path="/support" element={<SupportPage/>} />
         </Routes>
       </Router>
     </div>
