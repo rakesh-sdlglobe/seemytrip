@@ -8,6 +8,7 @@ import { airportData } from "./model/airportData";
 import { flightData } from "./model/flightData";
 import { seatData } from "./model/seatData";
 import { format, parse } from "date-fns";
+import { Weight } from "lucide-react";
 
 // Utility function to calculate duration
 const calculateDuration = (departureTime, arrivalTime) => {
@@ -167,15 +168,66 @@ const FlightSearch = ({
   const customSelectStyles = {
     control: (provided) => ({
       ...provided,
-
       border: "none",
       borderRadius: "4px",
       padding: "8px",
       backgroundColor: "transparent",
+      width: "100%",
+      boxShadow: "none",
+      "&:hover": {
+        border: "none",
+       
+      },
+      
     }),
-    menu: (provided) => ({ ...provided, borderRadius: "4px" }),
+    menu: (provided) => ({ 
+      ...provided, 
+      borderRadius: "12px",
+      width: "100%",
+      marginTop:'10px',
+      backgroundColor: 'white',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+    }),
+    menuList: (provided) => ({
+      ...provided,
+      fontWeight: 500,
+      padding:'16px 0px',
+
+      
+      
+    
+    }),
     placeholder: (provided) => ({ ...provided, color: "#999" }),
     singleValue: (provided) => ({ ...provided, color: "#333" }),
+    container: (provided) => ({
+      ...provided,
+      width: "100%",
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: 'white',
+      color: state.isSelected ? 'white' : '#333',
+      backgroundColor: state.isSelected ? '#d20000' : 'white',
+      '&:hover': {
+        backgroundColor: '#e5e8e8',
+        color:'#17181c',
+        cursor: 'pointer'
+      },
+      fontWeight: 500,
+      fontSize: '14px',
+      padding: '8px 12px',
+    }),
+    singleValue: (provided) => ({ 
+      ...provided, 
+      color: "#333",
+     
+    }),
+    placeholder: (provided) => ({ 
+      ...provided, 
+      color: "#999",
+      
+    }),
+    
   };
 
   useEffect(() => {
@@ -247,7 +299,7 @@ const FlightSearch = ({
             font-weight: 500;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             border: none;
-            padding: 12px;
+            
           }
             .btn.full-width:hover {
     background-color: #cd2c22 !important;
@@ -263,21 +315,26 @@ const FlightSearch = ({
           }
             .calendar-popup {
               position: absolute;
-              bottom: 40%;
-              transform: translateY(-10px);
               z-index: 1000;
               box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
               border-radius: 8px;
               padding: 10px;
               background-color: white;
+              transform: translate(-100px, 365px);
             }
 
             .form-control {
               width: 100%;
               max-width: 100%; /* Keeps width responsive without affecting other elements */
-              padding: 12px;
-              background:transparent;
+              padding: 34px 0px;
+              padding-left:20px;
+              background:white;
               box-shadow:none;
+              border-radius:12px;
+              border:1px solid #e0e0e0;
+              font-size:16px;
+
+
               
             }
               .search-wrap .form-control{
@@ -293,10 +350,10 @@ const FlightSearch = ({
               margin: 4px; /* Spacing between tiles */
             }
           .form-control:focus {
-            /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); Keep shadow on focus */
-            background:transparent;
-            outline: 1px solid #2684FF;
-            
+            background: transparent;
+            outline: none !important;
+            box-shadow: none !important;
+            border-color: #e0e0e0 !important;
           }
 
 
@@ -315,9 +372,10 @@ const FlightSearch = ({
     border: 1px solid #a0a096;
     font-family: 'Arial', 'Helvetica', sans-serif;
     line-height: 1.125em;
+    
 }
     .calendar-popup { 
-    transform: translate(-100px, 355px);
+
 }
 
 
@@ -326,10 +384,11 @@ display: none;
 }
 
 .search-wrap .btn{
-height:50px;
+height:60px;
 }
 .airport_input{
 font-weight:bold;
+width: 100%;
 }
 
 .swap-button{
@@ -344,6 +403,46 @@ color:gray;
     background-color: transparent;
     opacity: 1;
 }
+
+.css-1s2u09g-control {
+  width: 100% !important;
+}
+
+.css-1s2u09g-control:focus {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+@media (min-width: 992px) {
+  .col-lg-3 {
+    flex: 0 0 auto;
+    width: 28%;
+  }
+  
+  .col-lg-2 {
+    flex: 0 0 auto;
+    width: 18%;
+  }
+  
+  .col-lg-1 {
+    flex: 0 0 auto;
+    width: 10%;
+  }
+}
+
+.form-group {
+  width: 100%;
+}
+
+.airport_input {
+  width: 100% !important;
+}
+
+.btn-danger:hover {
+  background-color: #cd2c22 !important;
+  border-color: #cd2c22 !important;
+}
+  
         `}
       </style>
 
@@ -402,197 +501,157 @@ color:gray;
                     </div>
                   </div>
 
-                  <div className="swap-icon-container">
-                    <button
-                      type="button"
-                      className="btn swap-button"
-                      onClick={handleSwapLocations}
-                    >
-                      <i class="fa-solid fa-arrow-right-arrow-left"></i>{" "}
-                      {/* Swap icon */}
-                    </button>
-                  </div>
+                
 
                   {/* Select Fields */}
                   <div className="position-relative new-wrap">
-                    <div className="row align-items-end gy-3 gx-md-3 gx-sm-2">
-                      <div className="col-xl-8 col-lg-7 col-md-12">
-                        <div className="row gy-3 gx-md-3 gx-sm-2">
-                          <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
-                            <div className="form-group hdd-arrow mb-0 d-flex align-items-center me-2 position-relative">
-                            <i class="fa-solid fa-plane-departure"></i>
-                              {leavingLabel && (
-                                <label className="text-light text-uppercase opacity-75">
-                                  {leavingLabel}
-                                </label>
-                              )}
-                             
-                              <Select
-                                value={fromAirport}
-                                onChange={handleFromAirportChange}
-                                options={airportOptions}
-                                styles={customSelectStyles}
-                                placeholder="From"
-                                className="airport_input"
-                              />
-                            </div>
-                          </div>
-                          {/* <div
-                            className="highlights-container"
-                            style={{ display: highlightsContainer }}
-                          >
-                            <div
-                              className="highlight-item"
-                              key={currentHighlightIndex}
-                            >
-                              <i
-                                className={
-                                  highlights[currentHighlightIndex].icon
-                                }
-                              ></i>
-                              <span>
-                                {highlights[currentHighlightIndex].text}
-                              </span>
-                            </div>
-                          </div> */}
-                          <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6  position-relative">
-                         
-                            <div className=" hdd-arrow mb-0 ms-4 d-flex align-items-center position-relative">
-                            <span><i class="fa-solid fa-plane-arrival"></i></span>
-                              {goingLabel && (
-                                <label className="text-light text-uppercase opacity-75">
-                                  {goingLabel}
-                                </label>
-                              )}
-                               
-                              <Select
-                                value={toAirport}
-                                onChange={handleToAirportChange}
-                                options={airportOptions}
-                                styles={customSelectStyles}
-                                placeholder="To"
-                                className="airport_input"
-                              />
-                            </div>
-                          </div>
+                    <div className="row g-2 align-items-center">
+                      {/* From Airport */}
+                      <div className="col-lg-3 col-md-6 col-12">
+                        <div className="form-group form-control mb-0 d-flex align-items-center position-relative">
+                       
+                          <i className="fa-solid fa-plane-departure position-absolute" style={{ left: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 100 }}></i>
+                          {/* {leavingLabel && (
+                            <label className="text-light text-uppercase opacity-75">
+                              {leavingLabel}
+                            </label>
+                          )} */}
+                          <Select
+                            value={fromAirport}
+                            onChange={handleFromAirportChange}
+                            options={airportOptions}
+                            styles={customSelectStyles}
+                            placeholder="From"
+                            className="airport_input"
+                          />
                         </div>
                       </div>
-                      {/* Date Pickers */}
-                      <div className="col-xl-4 col-lg-4 col-md-12">
-                        <div className="row align-items-end gy-3 gx-md-3 gx-sm-2">
-                          <div className="col-xl-4 col-lg-4 col-md-4 col-sm-4">
-                            <div className=" mb-0 ">
-                              {/* <label>{dateLabel}</label> */}
-                              <input
-                                type="text"
-                                className="form-control"
-                                placeholder="Journey Date"
-                                value={
-                                  journeyDate
-                                    ? format(journeyDate, "dd/MM/yyyy")
-                                    : ""
-                                }
-                                readOnly
-                                onClick={() =>
-                                  setShowJourneyCalendar(!showJourneyCalendar)
-                                }
-                              />
-                              {showJourneyCalendar && (
-                                <Calendar
-                                  onChange={(date) => {
-                                    handleJourneyDateChange(date);
-                                    setShowJourneyCalendar(false);
-                                  }}
-                                  value={journeyDate}
-                                  className="calendar-popup"
-                                />
-                              )}
-                            </div>
-                          </div>
 
-                          {tripType === "one-way" ? (
-                            <div className="col-xl-4 col-lg-4 col-md-4 col-sm-4">
-                              <div className="form-group mb-0 position-relative">
-                                <input
-                                  type="text"
-                                  className={`form-control ${
-                                    tripType === "one-way"
-                                      ? "disabled-input"
-                                      : ""
-                                  }`}
-                                  placeholder="Return Date"
-                                  value={
-                                    returnDate
-                                      ? format(returnDate, "dd/MM/yyyy")
-                                      : ""
-                                  }
-                                  readOnly
-                                  onClick={(e) => {
-                                    e.stopPropagation(); // Prevent event bubbling
-                                    if (tripType === "one-way") {
-                                      setTripType("round-trip");
-                                    }
-                                    // Toggle the calendar
-                                    setShowReturnCalendar(
-                                      (prevState) => !prevState
-                                    );
-                                  }}
-                                />
-                                {showReturnCalendar && (
-                                  <Calendar
-                                    onChange={(date) => {
-                                      handleReturnDateChange(date);
-                                      setShowReturnCalendar(false); // Close the calendar after selecting a date
-                                    }}
-                                    value={returnDate}
-                                    className="calendar-popup"
-                                  />
-                                )}
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="col-xl-4 col-lg-4 col-md-4 col-sm-4">
-                              <div className="form-group mb-0 position-relative">
-                                <input
-                                  type="text"
-                                  className="form-control"
-                                  placeholder="Return Date"
-                                  value={
-                                    returnDate
-                                      ? format(returnDate, "dd/MM/yyyy")
-                                      : ""
-                                  }
-                                  readOnly
-                                  onClick={() => setShowReturnCalendar(true)}
-                                />
-                                {showReturnCalendar && (
-                                  <Calendar
-                                    onChange={(date) => {
-                                      handleReturnDateChange(date);
-                                      setShowReturnCalendar(false);
-                                    }}
-                                    value={returnDate}
-                                    className="calendar-popup"
-                                  />
-                                )}
-                              </div>
-                            </div>
+                      {/* Swap Button */}
+                      <div className="col-auto d-none d-md-block">
+                        <button
+                          type="button"
+                          className="btn swap-button"
+                          onClick={handleSwapLocations}
+                          style={{ padding: '10px' }}
+                        >
+                          <i className="fa-solid fa-arrow-right-arrow-left text-black"></i>
+                        </button>
+                      </div>
+
+                      {/* To Airport */}
+                      <div className="col-lg-3 col-md-6 col-12">
+                        <div className="form-group form-control  mb-0 d-flex align-items-center position-relative">
+                          <i className="fa-solid fa-plane-arrival position-absolute" style={{ left: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 100 }}></i>
+                          {goingLabel && (
+                            <label className="text-light text-uppercase opacity-75">
+                              {goingLabel}
+                            </label>
                           )}
-
-                          {/* Search Button */}
-                          <div className="col-xl-4 col-lg-4 col-md-4 col-sm-4">
-                            <button
-                              className="btn btn-danger full-width"
-                              onClick={handleSearch}
-                              style={{
-                                backgroundColor: buttonBackgroundColor,
-                                color: buttonTextColor,
-                              }}
-                            >
-                              {buttonText}
-                            </button>
-                          </div>
+                          <Select
+                            value={toAirport}
+                            onChange={handleToAirportChange}
+                            options={airportOptions}
+                            styles={customSelectStyles}
+                            placeholder="To"
+                            className="airport_input"
+                          />
                         </div>
+                      </div>
+
+                      {/* Journey Date */}
+                      <div className="col-lg-2 col-md-6 col-12" style={{width:'14%'}}>
+                        <div className="form-group  mb-0 position-relative">
+                          <i className="fa-regular fa-calendar position-absolute" style={{ left: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}></i>
+                          <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Journey Date"
+                            value={journeyDate ? format(journeyDate, "dd/MM/yyyy") : ""}
+                            readOnly
+                            onClick={() => setShowJourneyCalendar(!showJourneyCalendar)}
+                            style={{paddingLeft:"30px"}}
+                          />
+                          {showJourneyCalendar && (
+                            <Calendar
+                              onChange={(date) => {
+                                handleJourneyDateChange(date);
+                                setShowJourneyCalendar(false);
+                              }}
+                              value={journeyDate}
+                              className="calendar-popup"
+                            />
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Return Date */}
+                      <div className="col-lg-1 col-md-6 col-12" style={{width:'16%'}}>
+                        <div className="form-group mb-0 position-relative">
+                          <i className="fa-regular fa-calendar position-absolute" style={{ left: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}></i>
+                          <input
+                            type="text"
+                            className={`form-control ${tripType === "one-way" ? "disabled-input" : ""}`}
+                            placeholder="Return Date"
+                            value={returnDate ? format(returnDate, "dd/MM/yyyy") : ""}
+                            readOnly
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (tripType === "one-way") {
+                                setTripType("round-trip");
+                              }
+                              setShowReturnCalendar((prevState) => !prevState);
+                            }}
+                            style={{paddingLeft:"30px"}}
+                          />
+                          {returnDate && (
+                            <i 
+                              className="fa-solid fa-times position-absolute" 
+                              style={{ 
+                                right: '10px', 
+                                top: '50%', 
+                                transform: 'translateY(-50%)', 
+                                cursor: 'pointer',
+                                fontSize:'18px',
+                                zIndex: 1 
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setReturnDate(null);
+                                setTripType("one-way");
+                              }}
+                            />
+                          )}
+                          {showReturnCalendar && (
+                            <Calendar
+                              onChange={(date) => {
+                                handleReturnDateChange(date);
+                                setShowReturnCalendar(false);
+                              }}
+                              value={returnDate}
+                              className="calendar-popup"
+                            />
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Search Button */}
+                      <div className="col-lg-1 col-12">
+                        <button
+                          className="btn btn-danger form-center   w-100"
+                          onClick={handleSearch}
+                          style={{
+                            backgroundColor: buttonBackgroundColor,
+                            color: buttonTextColor,
+                            height: '100%',
+                            height:'62px',
+                            borderRadius:'12px',
+                          
+                          }}
+                        >
+                           <i className="fa-solid fa-magnifying-glass me-2" />
+                          {buttonText}
+                        </button>
                       </div>
                     </div>
                   </div>
