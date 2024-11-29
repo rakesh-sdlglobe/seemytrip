@@ -127,7 +127,7 @@ const Login = () => {
                                 </div>
                               </div>
                               <div className="modal-flex-last">
-                                <Link to="/forgot-password" className="text-primary fw-medium">Forget Password?</Link>
+                                <Link to="/forgot-password" className="text-primary fw-medium">Forgot Password?</Link>
                               </div>
                             </div>
                           </div>

@@ -162,9 +162,6 @@ const SearchComponent = ({
       padding: '12px 15px', // Increased padding
       backgroundColor: state.isSelected ? '#d20000' : state.isFocused ? '#f5f5f5' : '#fff',
       color: state.isSelected ? '#fff' : '#333',
-      '&:hover': {
-        backgroundColor: '#f5f5f5'
-      }
     }),
     placeholder: (provided) => ({
       ...provided,
@@ -196,23 +193,16 @@ const SearchComponent = ({
           ${customStyles.swapIcon || ''}
           .search-component {
             background-color: ${backgroundColor};
-            height: 100px;
-            padding: 15px;
+            height: auto !important;
+            min-height: 150px;
+            padding: 20px 0;
             background-size: cover;
             background-position: center;
           }
 
-           @media (max-width: 1024px) {
-            .search-component {
-              height: 320px;
-              padding: 15px;å
-            }
-          }
-
           @media (max-width: 768px) {
             .search-component {
-              height: 320px;
-              padding: 15px;
+              min-height: 200px;
             }
             .swap-icon-container {
               top: 52%; 
@@ -258,34 +248,9 @@ const SearchComponent = ({
           .btn.full-width {
             width: 100%;
             font-weight: 500;
-            //  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Button shadow */
-             border-radius:10px !important;
+            border-radius:10px !important;
           }
             
-          .dropdown-container {
-            display: ${dropdownHindden}; 
-            align-items: center;
-            margin-bottom: 20px;
-            gap: 20px; // Added gap between dropdowns
-          }
-
-          .dropdown-container > div {
-            margin-right: 15px;
-          }
-
-          .checkbox-group {
-          margin-top: 10px;
-            margin-bottom: 20px;
-          }
-
-          .checkbox-group label {
-            color: ${checklabelColor};
-            margin-right: 30px;
-          }
-          .checkbox{
-            margin-right: 10px; 
-            accent-color: #cd2c22;
-          }
           .swap-icon-container {
             display: ${hindenswap};
             position: absolute; 
@@ -376,7 +341,12 @@ const SearchComponent = ({
                 margin: 4px;
                 font-weight: 500;
               }
-
+              .calendar-popup .react-calendar__tile:disabled {
+                background: transparent !important;
+                color: #ccc !important;
+                cursor: not-allowed;
+                opacity: 0.5;
+          }
               // .react-calendar__tile:enabled:hover,
               // .react-calendar__tile:enabled:focus {
               //   background-color: #f8f8f8;
@@ -594,7 +564,7 @@ const SearchComponent = ({
             }
               .new-wrap{
               background:#f4f5f5;
-               padding: 14px;
+               padding: 20px;
               border-radius: 12px;
               box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.1);
               
@@ -645,6 +615,11 @@ const SearchComponent = ({
             border: 1px solid #ced4da;
             border-radius: 0.375rem;
           }
+
+          .row {
+            --bs-gutter-x: 1rem;
+            --bs-gutter-y: 1rem;
+          }
         `}
       </style>
       <div className="search-component" style={{ height:"150px" }}>
@@ -673,22 +648,19 @@ const SearchComponent = ({
                   />
                 </div>
               </div> */}
-              <div className="swap-icon-container">
-                <button
-                  type="button"
-                  className="btn swap-button"
-                  onClick={handleSwapLocations}
-                >
-                  <i class="fa-solid fa-arrow-right-arrow-left"></i> {/* Swap icon */}
-                </button>
-              </div>
-
+              
+              <div className="highlights-container" style={{display:highlightsContainer}} >
+                            <div className="highlight-item" key={currentHighlightIndex}>
+                              <i className={highlights[currentHighlightIndex].icon}></i>
+                              <span>{highlights[currentHighlightIndex].text}</span>
+                            </div>
+                      </div>
               <div className="position-relative new-wrap">
-                <div className="row align-items-end gy-3 gx-md-3 gx-sm-2" >
-                  <div className="col-xl-8 col-lg-7 col-md-12" >
-                    <div className="row gy-3 gx-md-3 gx-sm-2">
-                      <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
-                        <div className="form-group hdd-arrow mb-0 me-2 position-relative">
+                <div className="row g-3">
+                  <div className="col-xl-8 col-lg-7 col-md-12">
+                    <div className="row g-3 align-items-center">
+                      <div className="col">
+                        <div className="form-group mb-0 position-relative">
                           <div className="input-icon">
                             <img src={Entering} alt="From" style={{width:'30px'}}/>
                           </div>
@@ -709,16 +681,20 @@ const SearchComponent = ({
                             }}
                           />
                         </div>
-                        
                       </div>
-                      <div className="highlights-container" style={{display:highlightsContainer}} >
-                            <div className="highlight-item" key={currentHighlightIndex}>
-                              <i className={highlights[currentHighlightIndex].icon}></i>
-                              <span>{highlights[currentHighlightIndex].text}</span>
-                            </div>
+                      
+                      <div className="col-auto">
+                        <button
+                          type="button"
+                          className="btn swap-button"
+                          onClick={handleSwapLocations}
+                        >
+                          <i className="fa-solid fa-arrow-right-arrow-left"></i>
+                        </button>
                       </div>
-                      <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
-                        <div className="form-group hdd-arrow mb-0 ms-2 position-relative">
+
+                      <div className="col">
+                        <div className="form-group mb-0 position-relative">
                           <div className="input-icon">
                             <img src={Leaving} alt="To" style={{width:'30px'}} />
                           </div>
@@ -739,7 +715,6 @@ const SearchComponent = ({
                             }}
                           />
                         </div>
-                        <div className="field-separator"></div>
                       </div>
                     </div>
                   </div>
@@ -770,9 +745,11 @@ const SearchComponent = ({
                                     setCalendarOpen(false);
                                   }}
                                   value={journeyDate}
+                                  minDate={new Date()}
                                   selectRange={false}
                                   showNeighboringMonth={true}
                                   showFixedNumberOfWeeks={false}
+                                  minDetail="month"
                                 />
                               </div>
                             )}

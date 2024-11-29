@@ -158,9 +158,13 @@ function App() {
           <Route path="/Train-list-01" element={<TrainList01 />} />
           <Route path="/booking-page" element={<BookingPage trainName="12976 JP MYSORE EXP" />} />
           <Route path="/booking-page/:trainName" element={<BookingPage />} />
+          <Route path="/booking-page-2" element={<BookingPage2/>} />
+          <Route path="/booking-page-3" element={<BookingPage3/>} />
+          <Route path="/booking-page-success" element={<BookingPageSuccess/>} />
           <Route path="/train-result" element={<TrainSearchResultList/>} />
           <Route path="/trainbookingdetails" element={<TrainBookingDetails/>} />
           <Route path="/train-card" element={<TrainBooking/>} />
+          
           
           {/* Train Features Routes */}
           <Route path="/train-running-status" element={<TrainRunningStatus />} />
@@ -169,6 +173,7 @@ function App() {
           <Route path="/search-by-name" element={<Searchbyname />} />
           <Route path="/search-by-station" element={<SearchbyStation />} />
           <Route path="/tatkal-railway-reservation" element={<TatkalRailwayreservation/>} />
+          <Route path="/platform-locator" element={<Platformlocator/>} />
 
           {/* Flight Routes */}
           <Route path="/home-flight" element={<HomeFlight />} />
