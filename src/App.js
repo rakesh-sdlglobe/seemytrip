@@ -169,6 +169,7 @@ function App() {
           <Route path="/search-by-name" element={<Searchbyname />} />
           <Route path="/search-by-station" element={<SearchbyStation />} />
           <Route path="/tatkal-railway-reservation" element={<TatkalRailwayreservation/>} />
+          <Route path="/platform-locator" element={<Platformlocator/>} />
 
           {/* Flight Routes */}
           <Route path="/home-flight" element={<HomeFlight />} />
