@@ -7,7 +7,7 @@ import 'react-calendar/dist/Calendar.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import { fetchStations, fetchTrains } from '../../store/Actions/filterActions';
 import { selectStations } from '../../store/Selectors/filterSelectors';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Entering, IRCTC_Logo, Leaving, Calendar1 } from '../../assets/images';
 
 const SearchComponent = ({
@@ -25,14 +25,17 @@ const SearchComponent = ({
   dropdownHindden = 'auto',
   checklabelColor = 'auto',
   hindenswap = 'auto',
+  initialValues = null,
+  customStyles = {},
 }) => {
   const dispatch = useDispatch();
   const stations = useSelector(selectStations);
   const navigate = useNavigate()
+  const location = useLocation();
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const [leavingFrom, setLeavingFrom] = useState('');
-  const [goingTo, setGoingTo] = useState('');
-  const [journeyDate, setJourneyDate] = useState(null);
+  const [leavingFrom, setLeavingFrom] = useState(initialValues?.from || '');
+  const [goingTo, setGoingTo] = useState(initialValues?.to || '');
+  const [journeyDate, setJourneyDate] = useState(initialValues?.date ? new Date(initialValues?.date) : null);
   const [disabilityConcession, setDisabilityConcession] = useState(false);
   const [flexibleDate, setFlexibleDate] = useState(false);
   const [availableBerth, setAvailableBerth] = useState(false);
@@ -110,7 +113,13 @@ const SearchComponent = ({
   const handleSearch = () => {
     if (leavingFrom && goingTo && journeyDate) {
       dispatch(fetchTrains(leavingFrom.value, journeyDate));
-      navigate('/Train-list-01')
+      navigate('/Train-list-01', {
+        state: {
+          from: leavingFrom,
+          to: goingTo,
+          date: journeyDate
+        }
+      });
     } else {
       alert('Please select all fields.');
     }
@@ -137,6 +146,7 @@ const SearchComponent = ({
       '&:hover': {
         // borderColor: '#d20000',
         paddingLeft: '50px',
+        backgroundColor:'none'
       }
     }),
     menu: (provided) => ({
@@ -183,6 +193,7 @@ const SearchComponent = ({
     <>
       <style>
         {`
+          ${customStyles.swapIcon || ''}
           .search-component {
             background-color: ${backgroundColor};
             height: 100px;
@@ -223,6 +234,7 @@ const SearchComponent = ({
 
           .form-control {
             font-weight: bold;
+            height:60px;
             color: #333;
             border: none;
             border-radius: 12px;
@@ -278,8 +290,8 @@ const SearchComponent = ({
             display: ${hindenswap};
             position: absolute; 
             top: 20%; 
-            left: calc(34% - 12px); 
-            z-index: 1; 
+            left: calc(34% - 10px); 
+            z-index: 1;
           }
 
           .swap-button {
@@ -595,6 +607,44 @@ const SearchComponent = ({
             box-shadow: none;
             outline: none;
           }
+
+          .form-floating {
+            position: relative;
+          }
+
+          .form-floating > .form-control,
+          .form-floating > .floating-select {
+            height: calc(3.5rem + 2px);
+            padding: 1rem 0.75rem;
+          }
+
+          .form-floating > label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            padding: 1rem 0.75rem;
+            pointer-events: none;
+            border: 1px solid transparent;
+            transform-origin: 0 0;
+            transition: opacity .1s ease-in-out,transform .1s ease-in-out;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+          }
+
+          .form-floating > .form-control:focus ~ label,
+          .form-floating > .form-control:not(:placeholder-shown) ~ label,
+          .form-floating > .floating-select:focus ~ label,
+          .form-floating > .floating-select .select__single-value ~ label {
+            opacity: .65;
+            transform: scale(.85) translateY(-0.5rem) translateX(0.15rem);
+          }
+
+          .floating-select .select__control {
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+          }
         `}
       </style>
       <div className="search-component" style={{ height:"150px" }}>
@@ -659,7 +709,7 @@ const SearchComponent = ({
                             }}
                           />
                         </div>
-                        {/* <div className="field-separator"></div> */}
+                        
                       </div>
                       <div className="highlights-container" style={{display:highlightsContainer}} >
                             <div className="highlight-item" key={currentHighlightIndex}>
@@ -699,7 +749,7 @@ const SearchComponent = ({
                         <div className="form-group mb-0 position-relative">
                           <div className="input-icon">
                             <img src={Calendar1} alt="Calendar" />
-                          </div>
+                          </div> 
                           {dateLabel && (
                             <label className="text-light text-uppercase opacity-75">{dateLabel}</label>
                           )}
