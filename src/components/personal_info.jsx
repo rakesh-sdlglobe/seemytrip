@@ -37,6 +37,7 @@ const PersonalInfo = () => {
         gender: 'Male',
         email: '',
         isEmailVerified : 0,
+        isMobileVerified: 0,
     });
 
     useEffect(() => {
@@ -52,6 +53,8 @@ const PersonalInfo = () => {
                 dob: userProfile.dob ? new Date(userProfile.dob).toISOString().split('T')[0] : null,
                 gender: userProfile.gender || 'Male',
                 email: userProfile.email || '',
+                isEmailVerified : userProfile.isEmailVerified || 0,
+                isMobileVerified: userProfile.isMobileVerified || 0,
             });
         }
     }, [userProfile]);
@@ -214,16 +217,18 @@ const PersonalInfo = () => {
                                     onChange={handleChange}
                                     disabled={!isEditable || googleUser} />
                                 {isEditable && (
-                                    userProfile?.isEmailVerified ? (
-                                        <i className="fa fa-check text-success verify-tick" aria-hidden="true"></i>
-                                    ) : (
-                                        <button
-                                            className="btn btn-text-secondary btn-sm verify-button"
-                                            onClick={handleVerifyClick}
-                                        >
-                                            Verify
-                                        </button>
-                                    )
+                                    <div className="email-verification-message">
+                                        {userProfile?.isEmailVerified ? (
+                                            <small className="text-success">Your email is verified</small>
+                                        ) : (
+                                            <small className="text-danger">
+                                                Please verify your email{' '}
+                                                <span className="text-primary verify-link" onClick={handleVerifyClick}>
+                                                    Click here to verify
+                                                </span>
+                                            </small>
+                                        )}
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -236,7 +241,18 @@ const PersonalInfo = () => {
                                     onChange={handleChange}
                                     disabled={!isEditable} />
                                 {isEditable && (
-                                    <button className="btn btn-text-secondary btn-sm verify-button" onClick={handleVerifyClick}>Verify</button>
+                                    <div className="email-verification-message">
+                                        {formData.isMobileVerified ? (
+                                            <small className="text-success">Your mobile number is verified</small>
+                                        ) : (
+                                            <small className="text-danger">
+                                                Please verify your mobile{' '}
+                                                <span className="text-primary verify-link" onClick={handleVerifyClick}>
+                                                    Click here to verify
+                                                </span>
+                                            </small>
+                                        )}
+                                    </div>
                                 )}
                             </div>
                         </div>
@@ -255,7 +271,7 @@ const PersonalInfo = () => {
                                     onChange={handleChange}
                                     disabled={!isEditable}>
                                     <option value="Male">Male</option>
-                                    {/* <option value="Female">Female</option> */}
+                                    <option value="Female">Female</option>
                                     <option value="Other">Other</option>
                                 </select>
                                 <i className="fa fa-chevron-down select-icon"></i>
@@ -364,6 +380,19 @@ const PersonalInfo = () => {
                     font-size: 1.2rem;
                 }
 
+                .email-verification-message {
+                    margin-top: 0.25rem;
+                    font-size: 0.875rem;
+                }
+                
+                .verify-link {
+                    cursor: pointer;
+                    text-decoration: underline;
+                }
+                
+                .verify-link:hover {
+                    opacity: 0.8;
+                }
             `}</style>
             <OTPModal
                 showModal={showModal}
