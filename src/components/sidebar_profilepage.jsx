@@ -20,31 +20,41 @@ const SideBarProfilePage = () => {
                 <div className="card-top bg-primary position-relative">
                     <div className="py-5 px-3">
                         <div className="crd-thumbimg text-center">
-                            <div className="p-2 d-flex align-items-center justify-content-center brd">
-                                <img
-                                    src={uploadedImage || "https://placehold.co/500x500"}
-                                    className="img-fluid circle"
-                                    width={120}
-                                    alt="Profile"
-                                />
-                            </div>
-                            <div className="mt-3">
-                                <label className="btn btn-light mb-3">
-                                    <i className="fa-solid fa-pen-to-square"></i>
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={handleImageUpload}
-                                        style={{ display: 'none' }}
+                            <div className="p-2 d-flex align-items-center justify-content-center brd position-relative">
+                                <div className="d-flex flex-column align-items-end">
+                                    <img
+                                        src={uploadedImage || "https://placehold.co/500x500"}
+                                        className="img-fluid circle"
+                                        width={120}
+                                        alt="Profile"
                                     />
-                                </label>
+                                    <label style={{ 
+                                        cursor: 'pointer', 
+                                        marginTop: '-30px',
+                                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                                        border: '3px solid white',
+                                        borderRadius: '50%',
+                                        padding: '8px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}>
+                                        <i className="fa-solid fa-pen-to-square text-light"></i>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleImageUpload}
+                                            style={{ display: 'none' }}
+                                        />
+                                    </label>
+                                </div>
                             </div>
                         </div>
-                        <div className="crd-capser text-center">
+                        <div className="crd-capser text-center mt-4">
                             <h5 className="mb-0 text-light fw-semibold">{userProfile?.name || "Guest User"}</h5>
-                            <span className="text-light opacity-75 fw-medium text-md">
+                            {/* <span className="text-light opacity-75 fw-medium text-md">
                                 <i className="fa-solid fa-location-dot me-2" />Karnataka, India
-                            </span>
+                            </span> */}
                         </div>
                     </div>
                 </div>

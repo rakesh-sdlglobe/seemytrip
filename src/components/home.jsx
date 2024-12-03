@@ -11,6 +11,7 @@ import "../assets/css/prism.css";
 import "../assets/css/bootstrap-icons.css";
 import "../assets/css/fontawesome.css";
 import "../assets/css/style.css";
+
 import {
   charminar,
   benglore,
@@ -20,70 +21,54 @@ import {
   kerla,
   delhi,
   chennai,
-  youngIndianCouple,
-  team1,
-  team2,
-  team3,
-  team4,
-  team5,
 } from "../assets/images";
+
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+
+// Components
 import Header02 from "./header02";
 import Footer from "./footer";
 import SearchComponent from "./train_search_result/search_component";
-
-import { useState } from "react";
-import FlightSearch from "./flight_components/flight_search";
 import HorizontalContainer from "./train_search_result/HorizontalContainer";
-import { HotelSearchbar } from "./hotel_components/HotelSearchbar";
-import CabSearch from "./cab_components/cab_search_componets";
-import BusSearch from "./bus_components/bus_search_page";
-import CruiseSearch from "./cruise_components/Cruise_search_page";
-import BtSearch from "./business_tourism/bt_search_componets";
-import MtSearch from "./medical_tourism/mt_search_componets";
-import AppApk from "./App_apk_promotion";
-import WelcomePopup from "./WelcomePopup";
-import ChatBot from "./ChatBot";
-import OffersSection from "./Offers";
-import GiftSearch from "./medical_tourism/mt_search_componets";
 import { Features } from "./medical_tourism/Features";
+import WelcomePopup from "./WelcomePopup";
+import AppApk from "./App_apk_promotion";
 import Whyseemytrip from "./Whyseemytrip";
 import TrainRoutesTabs from "./Trainroutestabs";
+
 const Home = () => {
-  const [results, setResults] = useState([]);
-  const [flightResults, setFlightResults] = useState([]);
   const [activeTab, setActiveTab] = useState("Trains");
   const navigate = useNavigate();
 
-  const handleSearchResults = (data) => {
-    console.log("Search results:", data); // Check if flight results are coming
-    setFlightResults(data);
-    navigate("/flight-list", { state: { flightResults: data } });
-  };
-
   return (
     <div>
+      {/* ============================================
+          Preloader Section
+      ============================================ */}
       <div id="preloader">
         <div className="preloader">
           <span />
           <span />
         </div>
       </div>
-      {/* Main wrapper - style you can find in pages.scss */}
+
       <div id="main-wrapper">
-        {/* Top header  */}
+        {/* ============================================
+            Header & Navigation
+        ============================================ */}
         <Header02 />
         <div className="clearfix" />
-        {/* Top header  */}
-        {/*  Hero Banner  Start */}
-        <div
-          className="image-cover hero-header bg-white"
-          style={{ background: "url(../images/indian_train.png)no-repeat" }}
-          data-overlay={5}
-        >
+
+        {/* ============================================
+            Hero Banner with Search Form
+        ============================================ */}
+        <div className="image-cover hero-header bg-white" 
+             style={{ background: "url(../images/indian_train.png)no-repeat" }} 
+             data-overlay={5}>
           <div className="container">
-            {/* Search Form */}
             <div className="row justify-content-center align-items-center">
+              {/* Hero Title */}
               <div className="col-xl-9 col-lg-10 col-md-12 col-sm-12">
                 <div className="position-relative text-center mb-5">
                   <h1>
@@ -92,10 +77,7 @@ const Home = () => {
                       See My Trip
                       <span className="position-absolute top-50 start-50 translate-middle d-none d-md-block mt-4">
                         <svg width="185px" height="23px" viewBox="0 0 445.5 23">
-                          <path
-                            className="fill-white opacity-7"
-                            d="M409.9,2.6c-9.7-0.6-19.5-1-29.2-1.5c-3.2-0.2-6.4-0.2-9.7-0.3c-7-0.2-14-0.4-20.9-0.5 c-3.9-0.1-7.8-0.2-11.7-0.3c-1.1,0-2.3,0-3.4,0c-2.5,0-5.1,0-7.6,0c-11.5,0-23,0-34.5,0c-2.7,0-5.5,0.1-8.2,0.1 c-6.8,0.1-13.6,0.2-20.3,0.3c-7.7,0.1-15.3,0.1-23,0.3c-12.4,0.3-24.8,0.6-37.1,0.9c-7.2,0.2-14.3,0.3-21.5,0.6 c-12.3,0.5-24.7,1-37,1.5c-6.7,0.3-13.5,0.5-20.2,0.9C112.7,5.3,99.9,6,87.1,6.7C80.3,7.1,73.5,7.4,66.7,8 C54,9.1,41.3,10.1,28.5,11.2c-2.7,0.2-5.5,0.5-8.2,0.7c-5.5,0.5-11,1.2-16.4,1.8c-0.3,0-0.7,0.1-1,0.1c-0.7,0.2-1.2,0.5-1.7,1 C0.4,15.6,0,16.6,0,17.6c0,1,0.4,2,1.1,2.7c0.7,0.7,1.8,1.2,2.7,1.1c6.6-0.7,13.2-1.5,19.8-2.1c6.1-0.5,12.3-1,18.4-1.6 c6.7-0.6,13.4-1.1,20.1-1.7c2.7-0.2,5.4-0.5,8.1-0.7c10.4-0.6,20.9-1.1,31.3-1.7c6.5-0.4,13-0.7,19.5-1.1c2.7-0.1,5.4-0.3,8.1-0.4 c10.3-0.4,20.7-0.8,31-1.2c6.3-0.2,12.5-0.5,18.8-0.7c2.1-0.1,4.2-0.2,6.3-0.2c11.2-0.3,22.3-0.5,33.5-0.8 c6.2-0.1,12.5-0.3,18.7-0.4c2.2-0.1,4.4-0.1,6.7-0.1c11.5-0.1,23-0.2,34.6-0.4c7.2-0.1,14.4-0.1,21.6-0.1c12.2,0,24.5,0.1,36.7,0.1 c2.4,0,4.8,0.1,7.2,0.2c6.8,0.2,13.5,0.4,20.3,0.6c5.1,0.2,10.1,0.3,15.2,0.4c3.6,0.1,7.2,0.4,10.8,0.6c10.6,0.6,21.1,1.2,31.7,1.8 c2.7,0.2,5.4,0.4,8,0.6c2.9,0.2,5.8,0.4,8.6,0.7c0.4,0.1,0.9,0.2,1.3,0.3c1.1,0.2,2.2,0.2,3.2-0.4c0.9-0.5,1.6-1.5,1.9-2.5 c0.6-2.2-0.7-4.5-2.9-5.2c-1.9-0.5-3.9-0.7-5.9-0.9c-1.4-0.1-2.7-0.3-4.1-0.4c-2.6-0.3-5.2-0.4-7.9-0.6 C419.7,3.1,414.8,2.9,409.9,2.6z"
-                          ></path>
+                          <path className="fill-white opacity-7" d="M409.9,2.6c-9.7-0.6-19.5-1-29.2-1.5c-3.2-0.2-6.4-0.2-9.7-0.3c-7-0.2-14-0.4-20.9-0.5 c-3.9-0.1-7.8-0.2-11.7-0.3c-1.1,0-2.3,0-3.4,0c-2.5,0-5.1,0-7.6,0c-11.5,0-23,0-34.5,0c-2.7,0-5.5,0.1-8.2,0.1 c-6.8,0.1-13.6,0.2-20.3,0.3c-7.7,0.1-15.3,0.1-23,0.3c-12.4,0.3-24.8,0.6-37.1,0.9c-7.2,0.2-14.3,0.3-21.5,0.6 c-12.3,0.5-24.7,1-37,1.5c-6.7,0.3-13.5,0.5-20.2,0.9C112.7,5.3,99.9,6,87.1,6.7C80.3,7.1,73.5,7.4,66.7,8 C54,9.1,41.3,10.1,28.5,11.2c-2.7,0.2-5.5,0.5-8.2,0.7c-5.5,0.5-11,1.2-16.4,1.8c-0.3,0-0.7,0.1-1,0.1c-0.7,0.2-1.2,0.5-1.7,1 C0.4,15.6,0,16.6,0,17.6c0,1,0.4,2,1.1,2.7c0.7,0.7,1.8,1.2,2.7,1.1c6.6-0.7,13.2-1.5,19.8-2.1c6.1-0.5,12.3-1,18.4-1.6 c6.7-0.6,13.4-1.1,20.1-1.7c2.7-0.2,5.4-0.5,8.1-0.7c10.4-0.6,20.9-1.1,31.3-1.7c6.5-0.4,13-0.7,19.5-1.1c2.7-0.1,5.4-0.3,8.1-0.4 c10.3-0.4,20.7-0.8,31-1.2c6.3-0.2,12.5-0.5,18.8-0.7c2.1-0.1,4.2-0.2,6.3-0.2c11.2-0.3,22.3-0.5,33.5-0.8 c6.2-0.1,12.5-0.3,18.7-0.4c2.2-0.1,4.4-0.1,6.7-0.1c11.5-0.1,23-0.2,34.6-0.4c7.2-0.1,14.4-0.1,21.6-0.1c12.2,0,24.5,0.1,36.7,0.1 c2.4,0,4.8,0.1,7.2,0.2c6.8,0.2,13.5,0.4,20.3,0.6c5.1,0.2,10.1,0.3,15.2,0.4c3.6,0.1,7.2,0.4,10.8,0.6c10.6,0.6,21.1,1.2,31.7,1.8 c2.7,0.2,5.4,0.4,8,0.6c2.9,0.2,5.8,0.4,8.6,0.7c0.4,0.1,0.9,0.2,1.3,0.3c1.1,0.2,2.2,0.2,3.2-0.4c0.9-0.5,1.6-1.5,1.9-2.5 c0.6-2.2-0.7-4.5-2.9-5.2c-1.9-0.5-3.9-0.7-5.9-0.9c-1.4-0.1-2.7-0.3-4.1-0.4c-2.6-0.3-5.2-0.4-7.9-0.6 C419.7,3.1,414.8,2.9,409.9,2.6z"></path>
                         </svg>
                       </span>
                     </span>
@@ -106,10 +88,10 @@ const Home = () => {
                   </p>
                 </div>
               </div>
+
+              {/* Search Form */}
               <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                <div
-                  className="search-wrap bg-white rounded-3 p-3"
-                >
+                <div className="search-wrap bg-white rounded-3 p-3">
                   <Features />
                   {/* <div>
                     <h2 className='text-black text-center fs-5 fw-light'>Welcome to Seemytrip</h2>
@@ -130,112 +112,25 @@ const Home = () => {
                           />
                         </div>
                       )}
-                      {/* {activeTab === 'Flights' && (
-                        <div className="tab-pane" id="Flights">
-                          <FlightSearch
-                            onSearchResults={handleSearchResults}
-                            backgroundColor="#ffffff"
-                            buttonBackgroundColor="#cd2c22"
-                            buttonTextColor="#ffffff"
-                            height="160px"
-                            leavingLabel={null}
-                            goingLabel={null}
-                            dateLabel={null}
-                            ReturnLable={null}
-                            dropdownHindden="flex"
-                          />
-                        </div>
-                      )}
-                      {activeTab === 'tours' && (
-                        <div className="tab-pane" id="tours">
-                          <HotelSearchbar/>
-                        </div>
-                      )}
-                      {activeTab === 'cabs' && (
-                        <div className="tab-pane" id="cabs">
-                           <CabSearch/>
-                        </div>
-                      )}
-                      {activeTab === 'Cruises' && (
-                        <div className="tab-pane" id="Cruises">
-                         <CruiseSearch/>
-                        </div>
-                      )}
-                       {activeTab === 'bus' && (
-                        <div className="tab-pane" id="bus">
-                          <BusSearch/>
-                        </div>
-                      )}
-                      
-                      {activeTab === 'Businesstourism' && (
-                        <div className="tab-pane" id="Businesstourism">
-                         <BtSearch/>
-                        </div>
-                      )}
-                      {activeTab === 'Medicaltourism' && (
-                        <div className="tab-pane" id="Medicaltourism">
-                        <MtSearch/>
-                        </div>
-                      )}
-                      {activeTab === 'Offers' && (
-                        <div className="tab-pane" id="Offers">
-                        <MtSearch/>
-                        </div>
-                      )}
-                      {activeTab === 'Guides' && (
-                        <div className="tab-pane" id="Guides">
-                        <MtSearch/>
-                        </div>
-                      )}
-                      {activeTab === 'Self Drive' && (
-                        <div className="tab-pane" id="Self Drive">
-                        <MtSearch/>
-                        </div>
-                      )}
-                      {activeTab === 'Photographer' && (
-                        <div className="tab-pane" id="Photographer">
-                        <MtSearch/>
-                        </div>
-                      )}
-                      {activeTab === 'HomeStaysVillas' && (
-                        <div className="tab-pane" id="HomeStaysVillas">
-                        <MtSearch/>
-                        </div>
-                      )}
-                      {activeTab === 'TravelInsurance' && (
-                        <div className="tab-pane" id="TravelInsurance">
-                        <MtSearch/>
-                        </div>
-                      )}
-                      {activeTab === 'Packages' && (
-                        <div className="tab-pane" id="Packages">
-                        <MtSearch/>
-                        </div>
-                      )}
-                      {activeTab === 'GiftCards' && (
-                        <div className="tab-pane" id="GiftCards">
-                        <GiftSearch/>
-                        </div>
-                      )} */}
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            {/* </row> */}
           </div>
         </div>
-        {/*  Hero Banner End  */}
 
-        {/* Train Status start */}
+        {/* ============================================
+            Train Status & Welcome Section
+        ============================================ */}
         <HorizontalContainer />
-        {/* Train Status End  */}
         <WelcomePopup />
-        {/*  Features Start  */}
-        {/* <OffersSection/> */}
+
+        {/* ============================================
+            Features & Benefits Section
+        ============================================ */}
         <section className="border-bottom py-5">
           <div className="container">
-            {/* Section Heading */}
             <div className="row justify-content-center mb-4">
               <div className="col-lg-8 text-center">
                 <h2 className="fw-bold fs-2">
@@ -248,78 +143,13 @@ const Home = () => {
               </div>
             </div>
             <Whyseemytrip />
-            {/* <div className="row align-items-center justify-content-between g-4">
-      
-      <div className="col-xl-3 col-lg-3 col-md-6 col-sm-5">
-        <div className="featuresBox-wrap">
-          <div className="featuresBox-icons mb-3">
-            <i className="fa-solid fa-train-subway fs-1 text-primary" />
-          </div>
-          <div className="featuresBox-captions">
-            <h4 className="fw-bold fs-5 lh-base mb-0">Easy Train Booking</h4>
-            <p className="m-0">Book your train tickets in just 2 minutes on our user-friendly platform, making your travel planning quick and stress-free.</p>
-          </div>
-        </div>
-      </div>
-
-      
-      <div className="col-xl-3 col-lg-3 col-md-6 col-sm-5">
-        <div className="featuresBox-wrap">
-          <div className="featuresBox-icons mb-3">
-            <i className="fa-solid fa-route fs-1 text-primary" />
-          </div>
-          <div className="featuresBox-captions">
-            <h4 className="fw-bold fs-5 lh-base mb-0">Wide Route Network</h4>
-            <p className="m-0">Access an extensive network of train routes across India, connecting every city, town, and region with ease.</p>
-          </div>
-        </div>
-      </div>
-
-      
-      <div className="col-xl-3 col-lg-3 col-md-6 col-sm-5">
-        <div className="featuresBox-wrap">
-          <div className="featuresBox-icons mb-3">
-            <i className="fa-solid fa-clock fs-1 text-primary" />
-          </div>
-          <div className="featuresBox-captions">
-            <h4 className="fw-bold fs-5 lh-base mb-0">Live Train Status</h4>
-            <p className="m-0">Check live train status anytime for real-time updates on arrival, delays, and schedules for a hassle-free journey.</p>
-          </div>
-        </div>
-      </div>
-
-      
-       <div className="col-xl-3 col-lg-3 col-md-6 col-sm-5">
-        <div className="featuresBox-wrap">
-          <div className="featuresBox-icons mb-3">
-            <i className="fa-solid fa-lock fs-1 text-primary" />
-          </div>
-          <div className="featuresBox-captions">
-            <h4 className="fw-bold fs-5 lh-base mb-0">Secure Payment Gateway</h4>
-            <p className="m-0">Enjoy peace of mind with our secure payment gateway, ensuring safe and encrypted transactions for your bookings.</p>
-          </div>
-        </div>
-      </div> 
-      
-      
-      <div className="col-xl-3 col-lg-3 col-md-6 col-sm-5">
-        <div className="featuresBox-wrap">
-          <div className="featuresBox-icons mb-3">
-            <i className="fa-solid fa-headset fs-1 text-primary" />
-          </div>
-          <div className="featuresBox-captions">
-            <h4 className="fw-bold fs-5 lh-base mb-0">Reliable Support</h4>
-            <p className="m-0">Our dedicated support team is available 24/7 to assist with booking queries and travel needs for a smooth experience.</p>
-          </div>
-        </div>
-      </div>
-    </div> */}
           </div>
         </section>
 
-        {/*  Features End  */}
-        {/*  Best Locations Design Start  */}
-        <section>
+        {/* ============================================
+            Top Train Routes Section
+        ============================================ */}
+        <section className="gray-simple">
           <div className="container">
             <div className="row align-items-center justify-content-center">
               <div className="col-xl-8 col-lg-9 col-md-11 col-sm-12">
@@ -332,8 +162,10 @@ const Home = () => {
                 </div>
               </div>
             </div>
+
+            {/* Train Route Cards */}
             <div className="row justify-content-center gy-4 gx-3">
-              <Link to="./" />
+              {/* Hyderabad Card */}
               <div className="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                 <div className="destination-blocks bg-white p-2 rounded border br-dashed h-100">
                   <div className="destination-blocks-pics p-1">
@@ -344,20 +176,22 @@ const Home = () => {
                         </div>
                       </div>
                     </Link>
-                    {/* <Link to="#"><img src="./assets/images/charminar.png" class="img-fluid " alt=""></Link> */}
                   </div>
                   <div className="destination-blocks-captions">
                     <div className="touritem-flexxer text-center p-3">
-                      <h4 className="city fs-5 m-0 fw-bold">
+                      <h4 className="city fs-5 m-0 fw-bold mb-3">
                         <span>Hyderabad</span>
                       </h4>
-                      <p className="detail ellipsis-container m-0">
-                        <span className="ellipsis-item__normal">
-                          10 Destinations
-                        </span>
-                        <span className="separate ellipsis-item__normal" />
-                        <span className="ellipsis-item">5 Hotels</span>
-                      </p>
+                      <div className="cities-list">
+                        <span className="text-muted mb-2 d-block">from:</span>
+                        <div className="d-flex flex-wrap justify-content-center gap-2">
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Mumbai</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Chennai</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Pune</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Delhi</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Bangalore</Link>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -372,20 +206,22 @@ const Home = () => {
                         </div>
                       </div>
                     </Link>
-                    {/* <Link to="#"><img src="./assets/images/Bangalore.png" class="img-fluid rounded" alt=""></Link> */}
                   </div>
                   <div className="destination-blocks-captions">
                     <div className="touritem-flexxer text-center p-3">
-                      <h4 className="city fs-5 m-0 fw-bold">
+                      <h4 className="city fs-5 m-0 fw-bold mb-3">
                         <span>Bangalore</span>
                       </h4>
-                      <p className="detail ellipsis-container m-0">
-                        <span className="ellipsis-item__normal">
-                          06 Destinations
-                        </span>
-                        <span className="separate ellipsis-item__normal" />
-                        <span className="ellipsis-item">14 Hotels</span>
-                      </p>
+                      <div className="cities-list">
+                      <span className="text-muted mb-2 d-block">from:</span>
+                        <div className="d-flex flex-wrap justify-content-center gap-2">
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Mumbai</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Hyderabad</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Chennai</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Pune</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Delhi</Link>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -400,20 +236,23 @@ const Home = () => {
                         </div>
                       </div>
                     </Link>
-                    {/* <Link to="#"><img src="./assets/images/kolkata.png" class="img-fluid rounded" alt=""></Link> */}
                   </div>
                   <div className="destination-blocks-captions">
                     <div className="touritem-flexxer text-center p-3">
-                      <h4 className="city fs-5 m-0 fw-bold">
+                      <h4 className="city fs-5 m-0 fw-bold mb-3">
                         <span>Kolkata</span>
                       </h4>
-                      <p className="detail ellipsis-container m-0">
-                        <span className="ellipsis-item__normal">
-                          09 Destinations
-                        </span>
-                        <span className="separate ellipsis-item__normal" />
-                        <span className="ellipsis-item">16 Hotels</span>
-                      </p>
+                      <div className="cities-list">
+                      <span className="text-muted mb-2 d-block">from:</span>
+                        <div className="d-flex flex-wrap justify-content-center gap-2">
+                        <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Mumbai</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Hyderabad</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Bangalore</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Pune</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Delhi</Link>
+                          
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -428,20 +267,22 @@ const Home = () => {
                         </div>
                       </div>
                     </Link>
-                    {/* <Link to="#"><img src="./assets/images/mumbai.png" class="img-fluid rounded" alt=""></Link> */}
                   </div>
                   <div className="destination-blocks-captions">
                     <div className="touritem-flexxer text-center p-3">
-                      <h4 className="city fs-5 m-0 fw-bold">
+                      <h4 className="city fs-5 m-0 fw-bold mb-3">
                         <span>Mumbai</span>
                       </h4>
-                      <p className="detail ellipsis-container m-0">
-                        <span className="ellipsis-item__normal">
-                          07 Destinations
-                        </span>
-                        <span className="separate ellipsis-item__normal" />
-                        <span className="ellipsis-item">18 Hotels</span>
-                      </p>
+                      <div className="cities-list">
+                      <span className="text-muted mb-2 d-block">from:</span>
+                        <div className="d-flex flex-wrap justify-content-center gap-2">
+                        <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Mumbai</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Hyderabad</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Bangalore</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Pune</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Delhi</Link>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -460,20 +301,22 @@ const Home = () => {
                         </div>
                       </div>
                     </Link>
-                    {/* <Link to="#"><img src="./assets/images/Uttrapradesh.png" class="img-fluid rounded" alt=""></Link> */}
                   </div>
                   <div className="destination-blocks-captions">
                     <div className="touritem-flexxer text-center p-3">
-                      <h4 className="city fs-5 m-0 fw-bold">
+                      <h4 className="city fs-5 m-0 fw-bold mb-3">
                         <span>Uttar Pradesh</span>
                       </h4>
-                      <p className="detail ellipsis-container m-0">
-                        <span className="ellipsis-item__normal">
-                          4 Destinations
-                        </span>
-                        <span className="separate ellipsis-item__normal" />
-                        <span className="ellipsis-item">12 Hotels</span>
-                      </p>
+                      <div className="cities-list">
+                      <span className="text-muted mb-2 d-block">from:</span>
+                          <div className="d-flex flex-wrap justify-content-center gap-2">
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Mumbai</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Hyderabad</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Chennai</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Pune</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Delhi</Link>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -488,20 +331,22 @@ const Home = () => {
                         </div>
                       </div>
                     </Link>
-                    {/* <Link to="#"><img src="./assets/images/kerala.png" class="img-fluid rounded" alt=""></Link> */}
                   </div>
                   <div className="destination-blocks-captions">
                     <div className="touritem-flexxer text-center p-3">
-                      <h4 className="city fs-5 m-0 fw-bold">
+                      <h4 className="city fs-5 m-0 fw-bold mb-3">
                         <span>Kerala</span>
                       </h4>
-                      <p className="detail ellipsis-container m-0">
-                        <span className="ellipsis-item__normal">
-                          16 Destinations
-                        </span>
-                        <span className="separate ellipsis-item__normal" />
-                        <span className="ellipsis-item">7 Hotels</span>
-                      </p>
+                      <div className="cities-list">
+                      <span className="text-muted mb-2 d-block">from:</span>
+                          <div className="d-flex flex-wrap justify-content-center gap-2">
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Mumbai</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Hyderabad</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Chennai</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Pune</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Delhi</Link>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -516,20 +361,22 @@ const Home = () => {
                         </div>
                       </div>
                     </Link>
-                    {/* <Link to="#"><img src="./assets/images/delhi.png" class="img-fluid rounded" alt=""></Link> */}
                   </div>
                   <div className="destination-blocks-captions">
                     <div className="touritem-flexxer text-center p-3">
-                      <h4 className="city fs-5 m-0 fw-bold">
+                      <h4 className="city fs-5 m-0 fw-bold mb-3">
                         <span>Delhi</span>
                       </h4>
-                      <p className="detail ellipsis-container m-0">
-                        <span className="ellipsis-item__normal">
-                          14 Destinations
-                        </span>
-                        <span className="separate ellipsis-item__normal" />
-                        <span className="ellipsis-item">10 Hotels</span>
-                      </p>
+                      <div className="cities-list">
+                      <span className="text-muted mb-2 d-block">from:</span>
+                        <div className="d-flex flex-wrap justify-content-center gap-2">
+                        <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Mumbai</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Hyderabad</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Chennai</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Pune</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Bangalore</Link>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -544,20 +391,22 @@ const Home = () => {
                         </div>
                       </div>
                     </Link>
-                    {/* <Link to="#"><img src="./assets/images/chennai.png" class="img-fluid rounded" alt=""></Link> */}
                   </div>
                   <div className="destination-blocks-captions">
                     <div className="touritem-flexxer text-center p-3">
-                      <h4 className="city fs-5 m-0 fw-bold">
+                      <h4 className="city fs-5 m-0 fw-bold mb-3">
                         <span>Chennai</span>
                       </h4>
-                      <p className="detail ellipsis-container m-0">
-                        <span className="ellipsis-item__normal">
-                          12 Destinations
-                        </span>
-                        <span className="separate ellipsis-item__normal" />
-                        <span className="ellipsis-item">32 Hotels</span>
-                      </p>
+                      <div className="cities-list">
+                      <span className="text-muted mb-2 d-block">from:</span>
+                        <div className="d-flex flex-wrap justify-content-center gap-2">
+                        <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Mumbai</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Hyderabad</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Bangalore</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Pune</Link>
+                          <Link to="#" className="badge bg-primary-subtle text-primary hover-badge">Delhi</Link>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -565,538 +414,17 @@ const Home = () => {
             </div>
           </div>
         </section>
-        {/*  Best Locations Design Start  */}
-        {/*  Popular Routes Design Start  */}
-        {/* <section class="gray-simple">
-      <div class="container">
-        <div class="row align-items-center justify-content-center">
-          <div class="col-xl-8 col-lg-9 col-md-11 col-sm-12">
-            <div class="secHeading-wrap text-center mb-5">
-              <h2>Explore Popular Routes</h2>
-              <p>Cicero famously orated against his political opponent Lucius Sergius Catilina.</p>
-            </div>
-          </div>
-        </div>
-        <div class="row justify-content-center gy-4 gx-3">
-          <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
-            <div class="pop-touritem">
-              <Link to="#" class="card rounded-3 shadow-wrap h-100 m-0">
-                <div class="flight-thumb-wrapper">
-                  <div class=" position-absolute top-0 left-0 ms-3 mt-3 z-1">
-                    <div class="label bg-success text-light d-inline-flex align-items-center justify-content-center">
-                      <span class="svg-icon text-light svg-icon-2hx me-1">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path opacity="0.3"
-                            d="M20.5543 4.37824L12.1798 2.02473C12.0626 1.99176 11.9376 1.99176 11.8203 2.02473L3.44572 4.37824C3.18118 4.45258 3 4.6807 3 4.93945V13.569C3 14.6914 3.48509 15.8404 4.4417 16.984C5.17231 17.8575 6.18314 18.7345 7.446 19.5909C9.56752 21.0295 11.6566 21.912 11.7445 21.9488C11.8258 21.9829 11.9129 22 12.0001 22C12.0872 22 12.1744 21.983 12.2557 21.9488C12.3435 21.912 14.4326 21.0295 16.5541 19.5909C17.8169 18.7345 18.8277 17.8575 19.5584 16.984C20.515 15.8404 21 14.6914 21 13.569V4.93945C21 4.6807 20.8189 4.45258 20.5543 4.37824Z"
-                            fill="currentColor"></path>
-                          <path
-                            d="M14.854 11.321C14.7568 11.2282 14.6388 11.1818 14.4998 11.1818H14.3333V10.2272C14.3333 9.61741 14.1041 9.09378 13.6458 8.65628C13.1875 8.21876 12.639 8 12 8C11.361 8 10.8124 8.21876 10.3541 8.65626C9.89574 9.09378 9.66663 9.61739 9.66663 10.2272V11.1818H9.49999C9.36115 11.1818 9.24306 11.2282 9.14583 11.321C9.0486 11.4138 9 11.5265 9 11.6591V14.5227C9 14.6553 9.04862 14.768 9.14583 14.8609C9.24306 14.9536 9.36115 15 9.49999 15H14.5C14.6389 15 14.7569 14.9536 14.8542 14.8609C14.9513 14.768 15 14.6553 15 14.5227V11.6591C15.0001 11.5265 14.9513 11.4138 14.854 11.321ZM13.3333 11.1818H10.6666V10.2272C10.6666 9.87594 10.7969 9.57597 11.0573 9.32743C11.3177 9.07886 11.6319 8.9546 12 8.9546C12.3681 8.9546 12.6823 9.07884 12.9427 9.32743C13.2031 9.57595 13.3333 9.87594 13.3333 10.2272V11.1818Z"
-                            fill="currentColor"></path>
-                        </svg>
-                      </span>Featured
-                    </div>
-                  </div>
-                  <div class="popFlights-item-overHidden">
-                    <img src="https://placehold.co/1200x800" class="img-fluid" alt="">
-                  </div>
-                </div>
-                <div class="touritem-middle position-relative p-3">
-                  <div class="touritem-flexxer">
-                    <h4 class="city fs-6 m-0 fw-bold">
-                      <span>New York</span>
-                      <span class="svg-icon svg-icon-muted svg-icon-2hx px-1">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path
-                            d="M17.4 7H4C3.4 7 3 7.4 3 8C3 8.6 3.4 9 4 9H17.4V7ZM6.60001 15H20C20.6 15 21 15.4 21 16C21 16.6 20.6 17 20 17H6.60001V15Z"
-                            fill="currentColor" />
-                          <path opacity="0.3"
-                            d="M17.4 3V13L21.7 8.70001C22.1 8.30001 22.1 7.69999 21.7 7.29999L17.4 3ZM6.6 11V21L2.3 16.7C1.9 16.3 1.9 15.7 2.3 15.3L6.6 11Z"
-                            fill="currentColor" />
-                        </svg>
-                      </span>
-                      <span>Los Angeles</span>
-                    </h4>
-                    <p class="detail ellipsis-container">
-                      <span class="ellipsis-item__normal">Round-trip</span>
-                      <span class="separate ellipsis-item__normal"></span>
-                      <span class="ellipsis-item">3 days</span>
-                    </p>
-                  </div>
-                  <div class="flight-foots">
-                    <h5 class="fs-5 low-price m-0"><span class="tag-span">From</span> <span class="price">US$492</span>
-                    </h5>
-                  </div>
-                </div>
-              </Link>
-            </div>
-          </div>
-          <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
-            <div class="pop-touritem">
-              <Link to="#" class="card rounded-3 shadow-wrap h-100 m-0">
-                <div class="flight-thumb-wrapper">
-                  <div class="popFlights-item-overHidden">
-                    <img src="https://placehold.co/1200x800" class="img-fluid" alt="">
-                  </div>
-                </div>
-                <div class="touritem-middle position-relative p-3">
-                  <div class="touritem-flexxer">
-                    <h4 class="city fs-6 m-0 fw-bold">
-                      <span>San Diego</span>
-                      <span class="svg-icon svg-icon-muted svg-icon-2hx px-1">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path
-                            d="M17.4 7H4C3.4 7 3 7.4 3 8C3 8.6 3.4 9 4 9H17.4V7ZM6.60001 15H20C20.6 15 21 15.4 21 16C21 16.6 20.6 17 20 17H6.60001V15Z"
-                            fill="currentColor" />
-                          <path opacity="0.3"
-                            d="M17.4 3V13L21.7 8.70001C22.1 8.30001 22.1 7.69999 21.7 7.29999L17.4 3ZM6.6 11V21L2.3 16.7C1.9 16.3 1.9 15.7 2.3 15.3L6.6 11Z"
-                            fill="currentColor" />
-                        </svg>
-                      </span>
-                      <span>San Jose</span>
-                    </h4>
-                    <p class="detail ellipsis-container">
-                      <span class="ellipsis-item__normal">Round-trip</span>
-                      <span class="separate ellipsis-item__normal"></span>
-                      <span class="ellipsis-item">3 days</span>
-                    </p>
-                  </div>
-                  <div class="flight-foots">
-                    <h5 class="fs-5 low-price m-0"><span class="tag-span">From</span> <span class="price">US$492</span>
-                    </h5>
-                  </div>
-                </div>
-              </Link>
-            </div>
-          </div>
-          <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
-            <div class="pop-touritem">
-              <Link to="#" class="card rounded-3 shadow-wrap h-100 m-0">
-                <div class="flight-thumb-wrapper">
-                  <div class=" position-absolute top-0 left-0 ms-3 mt-3 z-1">
-                    <div class="label bg-success text-light d-inline-flex align-items-center justify-content-center">
-                      <span class="svg-icon text-light svg-icon-2hx me-1">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path opacity="0.3"
-                            d="M20.5543 4.37824L12.1798 2.02473C12.0626 1.99176 11.9376 1.99176 11.8203 2.02473L3.44572 4.37824C3.18118 4.45258 3 4.6807 3 4.93945V13.569C3 14.6914 3.48509 15.8404 4.4417 16.984C5.17231 17.8575 6.18314 18.7345 7.446 19.5909C9.56752 21.0295 11.6566 21.912 11.7445 21.9488C11.8258 21.9829 11.9129 22 12.0001 22C12.0872 22 12.1744 21.983 12.2557 21.9488C12.3435 21.912 14.4326 21.0295 16.5541 19.5909C17.8169 18.7345 18.8277 17.8575 19.5584 16.984C20.515 15.8404 21 14.6914 21 13.569V4.93945C21 4.6807 20.8189 4.45258 20.5543 4.37824Z"
-                            fill="currentColor"></path>
-                          <path
-                            d="M14.854 11.321C14.7568 11.2282 14.6388 11.1818 14.4998 11.1818H14.3333V10.2272C14.3333 9.61741 14.1041 9.09378 13.6458 8.65628C13.1875 8.21876 12.639 8 12 8C11.361 8 10.8124 8.21876 10.3541 8.65626C9.89574 9.09378 9.66663 9.61739 9.66663 10.2272V11.1818H9.49999C9.36115 11.1818 9.24306 11.2282 9.14583 11.321C9.0486 11.4138 9 11.5265 9 11.6591V14.5227C9 14.6553 9.04862 14.768 9.14583 14.8609C9.24306 14.9536 9.36115 15 9.49999 15H14.5C14.6389 15 14.7569 14.9536 14.8542 14.8609C14.9513 14.768 15 14.6553 15 14.5227V11.6591C15.0001 11.5265 14.9513 11.4138 14.854 11.321ZM13.3333 11.1818H10.6666V10.2272C10.6666 9.87594 10.7969 9.57597 11.0573 9.32743C11.3177 9.07886 11.6319 8.9546 12 8.9546C12.3681 8.9546 12.6823 9.07884 12.9427 9.32743C13.2031 9.57595 13.3333 9.87594 13.3333 10.2272V11.1818Z"
-                            fill="currentColor"></path>
-                        </svg>
-                      </span>Featured
-                    </div>
-                  </div>
-                  <div class="popFlights-item-overHidden">
-                    <img src="https://placehold.co/1200x800" class="img-fluid" alt="">
-                  </div>
-                </div>
-                <div class="touritem-middle position-relative p-3">
-                  <div class="touritem-flexxer">
-                    <h4 class="city fs-6 m-0 fw-bold">
-                      <span>Dallas</span>
-                      <span class="svg-icon svg-icon-muted svg-icon-2hx px-1">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path
-                            d="M17.4 7H4C3.4 7 3 7.4 3 8C3 8.6 3.4 9 4 9H17.4V7ZM6.60001 15H20C20.6 15 21 15.4 21 16C21 16.6 20.6 17 20 17H6.60001V15Z"
-                            fill="currentColor" />
-                          <path opacity="0.3"
-                            d="M17.4 3V13L21.7 8.70001C22.1 8.30001 22.1 7.69999 21.7 7.29999L17.4 3ZM6.6 11V21L2.3 16.7C1.9 16.3 1.9 15.7 2.3 15.3L6.6 11Z"
-                            fill="currentColor" />
-                        </svg>
-                      </span>
-                      <span>Philadelphia</span>
-                    </h4>
-                    <p class="detail ellipsis-container">
-                      <span class="ellipsis-item__normal">Round-trip</span>
-                      <span class="separate ellipsis-item__normal"></span>
-                      <span class="ellipsis-item">3 days</span>
-                    </p>
-                  </div>
-                  <div class="flight-foots">
-                    <h5 class="fs-5 low-price m-0"><span class="tag-span">From</span> <span class="price">US$492</span>
-                    </h5>
-                  </div>
-                </div>
-              </Link>
-            </div>
-          </div>
-          <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
-            <div class="pop-touritem">
-              <Link to="#" class="card rounded-3 shadow-wrap h-100 m-0">
-                <div class="flight-thumb-wrapper">
-                  <div class="popFlights-item-overHidden">
-                    <img src="https://placehold.co/1200x800" class="img-fluid" alt="">
-                  </div>
-                </div>
-                <div class="touritem-middle position-relative p-3">
-                  <div class="touritem-flexxer">
-                    <h4 class="city fs-6 m-0 fw-bold">
-                      <span>Denver</span>
-                      <span class="svg-icon svg-icon-muted svg-icon-2hx px-1">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path
-                            d="M17.4 7H4C3.4 7 3 7.4 3 8C3 8.6 3.4 9 4 9H17.4V7ZM6.60001 15H20C20.6 15 21 15.4 21 16C21 16.6 20.6 17 20 17H6.60001V15Z"
-                            fill="currentColor" />
-                          <path opacity="0.3"
-                            d="M17.4 3V13L21.7 8.70001C22.1 8.30001 22.1 7.69999 21.7 7.29999L17.4 3ZM6.6 11V21L2.3 16.7C1.9 16.3 1.9 15.7 2.3 15.3L6.6 11Z"
-                            fill="currentColor" />
-                        </svg>
-                      </span>
-                      <span>Nashville</span>
-                    </h4>
-                    <p class="detail ellipsis-container">
-                      <span class="ellipsis-item__normal">Round-trip</span>
-                      <span class="separate ellipsis-item__normal"></span>
-                      <span class="ellipsis-item">3 days</span>
-                    </p>
-                  </div>
-                  <div class="flight-foots">
-                    <h5 class="fs-5 low-price m-0"><span class="tag-span">From</span> <span class="price">US$492</span>
-                    </h5>
-                  </div>
-                </div>
-              </Link>
-            </div>
-          </div>
-          <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
-            <div class="pop-touritem">
-              <Link to="#" class="card rounded-3 shadow-wrap h-100 m-0">
-                <div class="flight-thumb-wrapper">
-                  <div class="popFlights-item-overHidden">
-                    <img src="https://placehold.co/1200x800" class="img-fluid" alt="">
-                  </div>
-                </div>
-                <div class="touritem-middle position-relative p-3">
-                  <div class="touritem-flexxer">
-                    <h4 class="city fs-6 m-0 fw-bold">
-                      <span>Chicago</span>
-                      <span class="svg-icon svg-icon-muted svg-icon-2hx px-1">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path
-                            d="M17.4 7H4C3.4 7 3 7.4 3 8C3 8.6 3.4 9 4 9H17.4V7ZM6.60001 15H20C20.6 15 21 15.4 21 16C21 16.6 20.6 17 20 17H6.60001V15Z"
-                            fill="currentColor" />
-                          <path opacity="0.3"
-                            d="M17.4 3V13L21.7 8.70001C22.1 8.30001 22.1 7.69999 21.7 7.29999L17.4 3ZM6.6 11V21L2.3 16.7C1.9 16.3 1.9 15.7 2.3 15.3L6.6 11Z"
-                            fill="currentColor" />
-                        </svg>
-                      </span>
-                      <span>San Francisco</span>
-                    </h4>
-                    <p class="detail ellipsis-container">
-                      <span class="ellipsis-item__normal">Round-trip</span>
-                      <span class="separate ellipsis-item__normal"></span>
-                      <span class="ellipsis-item">3 days</span>
-                    </p>
-                  </div>
-                  <div class="flight-foots">
-                    <h5 class="fs-5 low-price m-0"><span class="tag-span">From</span> <span class="price">US$492</span>
-                    </h5>
-                  </div>
-                </div>
-              </Link>
-            </div>
-          </div>
-          <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
-            <div class="pop-touritem">
-              <Link to="#" class="card rounded-3 shadow-wrap h-100 m-0">
-                <div class="flight-thumb-wrapper">
-                  <div class=" position-absolute top-0 left-0 ms-3 mt-3 z-1">
-                    <div class="label bg-success text-light d-inline-flex align-items-center justify-content-center">
-                      <span class="svg-icon text-light svg-icon-2hx me-1">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path opacity="0.3"
-                            d="M20.5543 4.37824L12.1798 2.02473C12.0626 1.99176 11.9376 1.99176 11.8203 2.02473L3.44572 4.37824C3.18118 4.45258 3 4.6807 3 4.93945V13.569C3 14.6914 3.48509 15.8404 4.4417 16.984C5.17231 17.8575 6.18314 18.7345 7.446 19.5909C9.56752 21.0295 11.6566 21.912 11.7445 21.9488C11.8258 21.9829 11.9129 22 12.0001 22C12.0872 22 12.1744 21.983 12.2557 21.9488C12.3435 21.912 14.4326 21.0295 16.5541 19.5909C17.8169 18.7345 18.8277 17.8575 19.5584 16.984C20.515 15.8404 21 14.6914 21 13.569V4.93945C21 4.6807 20.8189 4.45258 20.5543 4.37824Z"
-                            fill="currentColor"></path>
-                          <path
-                            d="M14.854 11.321C14.7568 11.2282 14.6388 11.1818 14.4998 11.1818H14.3333V10.2272C14.3333 9.61741 14.1041 9.09378 13.6458 8.65628C13.1875 8.21876 12.639 8 12 8C11.361 8 10.8124 8.21876 10.3541 8.65626C9.89574 9.09378 9.66663 9.61739 9.66663 10.2272V11.1818H9.49999C9.36115 11.1818 9.24306 11.2282 9.14583 11.321C9.0486 11.4138 9 11.5265 9 11.6591V14.5227C9 14.6553 9.04862 14.768 9.14583 14.8609C9.24306 14.9536 9.36115 15 9.49999 15H14.5C14.6389 15 14.7569 14.9536 14.8542 14.8609C14.9513 14.768 15 14.6553 15 14.5227V11.6591C15.0001 11.5265 14.9513 11.4138 14.854 11.321ZM13.3333 11.1818H10.6666V10.2272C10.6666 9.87594 10.7969 9.57597 11.0573 9.32743C11.3177 9.07886 11.6319 8.9546 12 8.9546C12.3681 8.9546 12.6823 9.07884 12.9427 9.32743C13.2031 9.57595 13.3333 9.87594 13.3333 10.2272V11.1818Z"
-                            fill="currentColor"></path>
-                        </svg>
-                      </span>Featured
-                    </div>
-                  </div>
-                  <div class="popFlights-item-overHidden">
-                    <img src="https://placehold.co/1200x800" class="img-fluid" alt="">
-                  </div>
-                </div>
-                <div class="touritem-middle position-relative p-3">
-                  <div class="touritem-flexxer">
-                    <h4 class="city fs-6 m-0 fw-bold">
-                      <span>Houston</span>
-                      <span class="svg-icon svg-icon-muted svg-icon-2hx px-1">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path
-                            d="M17.4 7H4C3.4 7 3 7.4 3 8C3 8.6 3.4 9 4 9H17.4V7ZM6.60001 15H20C20.6 15 21 15.4 21 16C21 16.6 20.6 17 20 17H6.60001V15Z"
-                            fill="currentColor" />
-                          <path opacity="0.3"
-                            d="M17.4 3V13L21.7 8.70001C22.1 8.30001 22.1 7.69999 21.7 7.29999L17.4 3ZM6.6 11V21L2.3 16.7C1.9 16.3 1.9 15.7 2.3 15.3L6.6 11Z"
-                            fill="currentColor" />
-                        </svg>
-                      </span>
-                      <span>Los Angeles</span>
-                    </h4>
-                    <p class="detail ellipsis-container">
-                      <span class="ellipsis-item__normal">Round-trip</span>
-                      <span class="separate ellipsis-item__normal"></span>
-                      <span class="ellipsis-item">3 days</span>
-                    </p>
-                  </div>
-                  <div class="flight-foots">
-                    <h5 class="fs-5 low-price m-0"><span class="tag-span">From</span> <span class="price">US$492</span>
-                    </h5>
-                  </div>
-                </div>
-              </Link>
-            </div>
-          </div>
-          <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
-            <div class="pop-touritem">
-              <Link to="#" class="card rounded-3 shadow-wrap h-100 m-0">
-                <div class="flight-thumb-wrapper">
-                  <div class="popFlights-item-overHidden">
-                    <img src="https://placehold.co/1200x800" class="img-fluid" alt="">
-                  </div>
-                </div>
-                <div class="touritem-middle position-relative p-3">
-                  <div class="touritem-flexxer">
-                    <h4 class="city fs-6 m-0 fw-bold">
-                      <span>San Antonio</span>
-                      <span class="svg-icon svg-icon-muted svg-icon-2hx px-1">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path
-                            d="M17.4 7H4C3.4 7 3 7.4 3 8C3 8.6 3.4 9 4 9H17.4V7ZM6.60001 15H20C20.6 15 21 15.4 21 16C21 16.6 20.6 17 20 17H6.60001V15Z"
-                            fill="currentColor" />
-                          <path opacity="0.3"
-                            d="M17.4 3V13L21.7 8.70001C22.1 8.30001 22.1 7.69999 21.7 7.29999L17.4 3ZM6.6 11V21L2.3 16.7C1.9 16.3 1.9 15.7 2.3 15.3L6.6 11Z"
-                            fill="currentColor" />
-                        </svg>
-                      </span>
-                      <span>Columbus</span>
-                    </h4>
-                    <p class="detail ellipsis-container">
-                      <span class="ellipsis-item__normal">Round-trip</span>
-                      <span class="separate ellipsis-item__normal"></span>
-                      <span class="ellipsis-item">3 days</span>
-                    </p>
-                  </div>
-                  <div class="flight-foots">
-                    <h5 class="fs-5 low-price m-0"><span class="tag-span">From</span> <span class="price">US$492</span>
-                    </h5>
-                  </div>
-                </div>
-              </Link>
-            </div>
-          </div>
-          <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
-            <div class="pop-touritem">
-              <Link to="#" class="card rounded-3 shadow-wrap h-100 m-0">
-                <div class="flight-thumb-wrapper">
-                  <div class="popFlights-item-overHidden">
-                    <img src="https://placehold.co/1200x800" class="img-fluid" alt="">
-                  </div>
-                </div>
-                <div class="touritem-middle position-relative p-3">
-                  <div class="touritem-flexxer">
-                    <h4 class="city fs-6 m-0 fw-bold">
-                      <span>Los Angeles</span>
-                      <span class="svg-icon svg-icon-muted svg-icon-2hx px-1">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path
-                            d="M17.4 7H4C3.4 7 3 7.4 3 8C3 8.6 3.4 9 4 9H17.4V7ZM6.60001 15H20C20.6 15 21 15.4 21 16C21 16.6 20.6 17 20 17H6.60001V15Z"
-                            fill="currentColor" />
-                          <path opacity="0.3"
-                            d="M17.4 3V13L21.7 8.70001C22.1 8.30001 22.1 7.69999 21.7 7.29999L17.4 3ZM6.6 11V21L2.3 16.7C1.9 16.3 1.9 15.7 2.3 15.3L6.6 11Z"
-                            fill="currentColor" />
-                        </svg>
-                      </span>
-                      <span>Canada</span>
-                    </h4>
-                    <p class="detail ellipsis-container">
-                      <span class="ellipsis-item__normal">Round-trip</span>
-                      <span class="separate ellipsis-item__normal"></span>
-                      <span class="ellipsis-item">3 days</span>
-                    </p>
-                  </div>
-                  <div class="flight-foots">
-                    <h5 class="fs-5 low-price m-0"><span class="tag-span">From</span> <span class="price">US$492</span>
-                    </h5>
-                  </div>
-                </div>
-              </Link>
-            </div>
-          </div>
-        </div>
-        <div class="row align-items-center justify-content-center">
-          <div class="col-xl-12 col-lg-12 col-md-12">
-            <div class="text-center position-relative mt-5">
-              <button type="button" class="btn btn-light-primary fw-medium px-5">Explore More<i
-                  class="fa-solid fa-arrow-trend-up ms-2"></i></button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section> */}
-        {/*  Popular Routes Design Start  */}
-        {/*  Flexible features End  */}
 
-        {/*  Flexible features End  */}
-        {/*  Google & IOS App Start  */}
-
+        {/* ============================================
+            App Download Promotion
+        ============================================ */}
         <section className="py-5">
           <AppApk />
         </section>
-        {/*  Google & IOS App End  */}
-        {/*  Video Helps End  */}
-        {/* <section class="bg-cover" style="background:url(https://placehold.co/2200x800)no-repeat;" data-overlay="5">
-      <div class="ht-150"></div>
-      <div class="container">
-        <div class="row align-items-center justify-content-center">
-          <div class="col-xl-12 col-lg-12 col-md-12">
-            <div class="video-play-wrap text-center">
-              <div class="video-play-btn d-flex align-items-center justify-content-center">
-                <Link to="https://www.youtube.com/watch?v=A8EI6JaFbv4" data-bs-toggle="modal" data-bs-target="#popup-video" class="square--90 circle bg-white fs-2 text-primary"><i class="fa-solid fa-play"></i></Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="ht-150"></div>
-    </section> */}
-        {/*  Video Helps End  */}
-        {/*  Our Reviews Start  */}
-        {/* <section className="gray">
-          <div className="container">
-            <div className="row align-items-center justify-content-center">
-              <div className="col-xl-8 col-lg-9 col-md-11 col-sm-12">
-                <div className="secHeading-wrap text-center mb-5">
-                  <h2>Loving Reviews By Our Customers</h2>
-                  <p>Traveling by train opened up a world of experiences and unforgettable moments!.</p>
-                </div>
-              </div>
-            </div>
-            <div className="row align-items-center justify-content-center g-xl-4 g-lg-4 g-md-4 g-3">
-              <div className="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                <div className="card border-0 rounded-3">
-                  <div className="card-body">
-                    <div className="position-absolute top-0 end-0 mt-3 me-3"><span className="square--40 circle text-primary bg-light-primary"><i className="fa-solid fa-quote-right" /></span></div>
-                    <div className="d-flex align-items-center flex-thumbes">
-                      <div className="revws-pic"><img src={team1} className="img-fluid rounded-2" width={80} alt="" />
-                      </div>
-                      <div className="revws-caps ps-3">
-                        <h6 className="fw-bold fs-6 m-0">Aman Diwakar</h6>
-                        <p className="text-muted-2 text-md m-0">Delhi, India</p>
-                        <div className="d-flex align-items-center justify-content-start">
-                          <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
-                          <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
-                          <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
-                          <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="revws-desc mt-3">
-                      <p className="m-0 text-md">The journey was smooth and comfortable! The scenic views made it unforgettable.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                <div className="card border-0 rounded-3">
-                  <div className="card-body">
-                    <div className="position-absolute top-0 end-0 mt-3 me-3"><span className="square--40 circle text-primary bg-light-primary"><i className="fa-solid fa-quote-right" /></span></div>
-                    <div className="d-flex align-items-center flex-thumbes">
-                      <div className="revws-pic"><img src={team2} className="img-fluid rounded-2" width={80} alt="" />
-                      </div>
-                      <div className="revws-caps ps-3">
-                        <h6 className="fw-bold fs-6 m-0">Kunal M. Thakur</h6>
-                        <p className="text-muted-2 text-md m-0">Mumbai, India</p>
-                        <div className="d-flex align-items-center justify-content-start">
-                          <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
-                          <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
-                          <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
-                          <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="revws-desc mt-3">
-                      <p className="m-0 text-md">I had a fantastic experience. The booking process was easy, and the train was on time!</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                <div className="card border-0 rounded-3">
-                  <div className="card-body">
-                    <div className="position-absolute top-0 end-0 mt-3 me-3"><span className="square--40 circle text-primary bg-light-primary"><i className="fa-solid fa-quote-right" /></span></div>
-                    <div className="d-flex align-items-center flex-thumbes">
-                      <div className="revws-pic"><img src={team3} className="img-fluid rounded-2" width={80} alt="" />
-                      </div>
-                      <div className="revws-caps ps-3">
-                        <h6 className="fw-bold fs-6 m-0">Divya Talwar</h6>
-                        <p className="text-muted-2 text-md m-0">Bengaluru, India</p>
-                        <div className="d-flex align-items-center justify-content-start">
-                          <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
-                          <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
-                          <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
-                          <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="revws-desc mt-3">
-                      <p className="m-0 text-md">The service was excellent! I loved the cleanliness and the friendly staff on board.</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                <div className="card border-0 rounded-3">
-                  <div className="card-body">
-                    <div className="position-absolute top-0 end-0 mt-3 me-3"><span className="square--40 circle text-primary bg-light-primary"><i className="fa-solid fa-quote-right" /></span></div>
-                    <div className="d-flex align-items-center flex-thumbes">
-                      <div className="revws-pic"><img src={team4} className="img-fluid rounded-2" width={80} alt="" />
-                      </div>
-                      <div className="revws-caps ps-3">
-                        <h6 className="fw-bold fs-6 m-0">Karan Maheshwari</h6>
-                        <p className="text-muted-2 text-md m-0">Chennai, India</p>
-                        <div className="d-flex align-items-center justify-content-start">
-                          <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
-                          <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
-                          <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
-                          <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="revws-desc mt-3">
-                      <p className="m-0 text-md">Traveling by train was a breeze. I enjoyed every moment of my trip!</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                <div className="card border-0 rounded-3">
-                  <div className="card-body">
-                    <div className="position-absolute top-0 end-0 mt-3 me-3"><span className="square--40 circle text-primary bg-light-primary"><i className="fa-solid fa-quote-right" /></span></div>
-                    <div className="d-flex align-items-center flex-thumbes">
-                      <div className="revws-pic"><img src={team5} className="img-fluid rounded-2" width={80} alt="" />
-                      </div>
-                      <div className="revws-caps ps-3">
-                        <h6 className="fw-bold fs-6 m-0">Ritika Mathur</h6>
-                        <p className="text-muted-2 text-md m-0">Kolkata, India</p>
-                        <div className="d-flex align-items-center justify-content-start">
-                          <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
-                          <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
-                          <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
-                          <span className="me-1 text-xs text-warning"><i className="fa-solid fa-star" /></span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="revws-desc mt-3">
-                      <p className="m-0 text-md">I highly recommend this service. The journey was delightful and hassle-free!</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section> */}
+         {/* ============================================
+            Frequently Asked Questions Section
+        ============================================ */}
+         
        <section style={{ backgroundColor: "#f6f6f6" }}>
   <div className="container">
     <h3>Frequently Asked Questions (FAQs)</h3>
@@ -1113,7 +441,7 @@ const Home = () => {
                 aria-expanded="false"
                 aria-controls="flush-collapseOne"
               >
-                Why book train tickets online with See My Trip?
+                How do I book train tickets online through See My Trip?
               </button>
             </h2>
             <div
@@ -1122,13 +450,16 @@ const Home = () => {
               data-bs-parent="#accordionFlushExample"
             >
               <div className="accordion-body">
-                Through See My Trip’s train ticket booking platform, traveling
-                to your favorite destination has never been easier. Now, with
-                our seamless mobile app, you can quickly search and book trains
-                to your desired location. Our platform also offers a host of
-                features to enhance your travel experience, like checking
-                PNR status, tracking live running status (even offline),
-                viewing coach positions, and more.
+                Booking through See My Trip is quick and simple:
+                <ul className="ps-3" style={{ listStyleType: "disc", paddingLeft: "20px" }}>
+                  <li>Enter source and destination stations</li>
+                  <li>Select your travel date</li>
+                  <li>Choose from available trains and classes</li>
+                  <li>Enter passenger details</li>
+                  <li>Select your preferred payment method</li>
+                  <li>Complete secure payment</li>
+                </ul>
+                Your e-ticket will be sent instantly via email and SMS. You can also download it from your See My Trip account.
               </div>
             </div>
           </div>
@@ -1143,7 +474,7 @@ const Home = () => {
                 aria-expanded="false"
                 aria-controls="flush-collapseTwo"
               >
-                How do I book train tickets online through See My Trip?
+                What are the cancellation and refund policies?
               </button>
             </h2>
             <div
@@ -1152,20 +483,14 @@ const Home = () => {
               data-bs-parent="#accordionFlushExample"
             >
               <div className="accordion-body">
-                Using See My Trip for online ticket booking is straightforward.
-                Just follow these steps:
+                Our cancellation process is hassle-free:
                 <ul className="ps-3" style={{ listStyleType: "disc", paddingLeft: "20px" }}>
-                  <li>Visit the See My Trip website or mobile app.</li>
-                  <li>Enter your departure and arrival destinations.</li>
-                  <li>Choose your preferred train.</li>
-                  <li>Fill in the traveler's details.</li>
-                  <li>Proceed to our secure payment gateway.</li>
-                  <li>Log in with your IRCTC username and password.</li>
+                  <li>Cancel up to 4 hours before departure</li>
+                  <li>Cancellation charges vary by class and timing</li>
+                  <li>Refunds processed within 3-5 working days</li>
+                  <li>Full refund on train cancellation by railways</li>
                 </ul>
-                You’ll receive booking confirmation via Email and SMS. Check
-                your confirmed tickets anytime under "My Trips" on our app or
-                website. That's it! Booking Indian railway tickets online has
-                never been simpler.
+                For specific cancellation charges, check the fare rules during booking.
               </div>
             </div>
           </div>
@@ -1180,7 +505,7 @@ const Home = () => {
                 aria-expanded="false"
                 aria-controls="flush-collapseThree"
               >
-                What is the maximum number of people I can book in a single train ticket booking?
+                What payment options are available?
               </button>
             </h2>
             <div
@@ -1189,12 +514,15 @@ const Home = () => {
               data-bs-parent="#accordionFlushExample"
             >
               <div className="accordion-body">
-                As per booking guidelines, you can add up to 6 passengers per ticket booking. Here’s how to proceed:
+                We offer multiple secure payment options:
                 <ul className="ps-3" style={{ listStyleType: "disc", paddingLeft: "20px" }}>
-                  <li>Enter the names and ages of all travelers.</li>
-                  <li>Specify berth preferences and meal options, if available.</li>
+                  <li>All major credit & debit cards</li>
+                  <li>Net banking</li>
+                  <li>UPI payments (PhonePe, Google Pay, BHIM)</li>
+                  <li>Mobile wallets</li>
+                  <li>EMI options for eligible cards</li>
                 </ul>
-                For tatkal bookings, you can add up to 4 passengers per booking. You may also add details for two children below 5 years (who won’t need a ticket), and can choose to only book if all berths are confirmed, all berths are in the same coach, or if lower berths are available.
+                All transactions are protected with bank-grade security.
               </div>
             </div>
           </div>
@@ -1209,7 +537,7 @@ const Home = () => {
                 aria-expanded="false"
                 aria-controls="flush-collapseFour"
               >
-                I don't have an IRCTC username or password. What should I do?
+                How can I get support for my booking?
               </button>
             </h2>
             <div
@@ -1218,9 +546,14 @@ const Home = () => {
               data-bs-parent="#accordionFlushExample"
             >
               <div className="accordion-body">
-                An IRCTC username and password are required for online bookings.
-                If you don’t have one, don’t worry! See My Trip can guide you through creating
-                your username and password so you can easily complete your train ticket booking.
+                We're here to help 24/7:
+                <ul className="ps-3" style={{ listStyleType: "disc", paddingLeft: "20px" }}>
+                  <li>Call our helpline: 1800-XXX-XXXX</li>
+                  <li>Email: support@seemytrip.com</li>
+                  <li>Live chat on our website/app</li>
+                  <li>Visit our help center for instant solutions</li>
+                </ul>
+                Our support team typically responds within 30 minutes for urgent queries.
               </div>
             </div>
           </div>
@@ -1230,1014 +563,13 @@ const Home = () => {
   </div>
 </section>
 
-
-        <section>
-          <TrainRoutesTabs />
-        </section>
-        {/*  Our Reviews End  */}
-        {/* ==== Article Section Start ===== */}
-        {/* <section>
-      <div class="container">
-        <div class="row align-items-center justify-content-center">
-          <div class="col-xl-8 col-lg-9 col-md-11 col-sm-12">
-            <div class="secHeading-wrap text-center mb-5">
-              <h2>Trending & Popular Articles</h2>
-              <p>Cicero famously orated against his political opponent Lucius Sergius Catilina.</p>
-            </div>
-          </div>
-        </div>
-        <div class="row justify-content-center g-4">
-          <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
-            <div class="blogGrid-wrap d-flex flex-column h-100">
-              <div class="blogGrid-pics">
-                <Link to="#" class="d-block"><img src="https://placehold.co/1200x800" class="img-fluid rounded"
-                    alt="Blog image"></Link>
-              </div>
-              <div class="blogGrid-caps pt-3">
-                <div class="d-flex align-items-center mb-1"><span
-                    class="label text-success bg-light-success">Destination</span></div>
-                <h4 class="fw-bold fs-6 lh-base"><Link to="#" class="text-dark">Make Your Next Journey Delhi To Paris in
-                    Comfirtable And Best Price</Link></h4>
-                <p class="mb-3">Think of a news blog that's filled with content hourly on the Besides, random text risks
-                  to be unintendedly humorous or offensive day of going live.</p>
-                <Link class="text-primary fw-medium" to="#">Read More<i class="fa-solid fa-arrow-trend-up ms-2"></i></Link>
-              </div>
-            </div>
-          </div>
-          <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
-            <div class="blogGrid-wrap d-flex flex-column h-100">
-              <div class="blogGrid-pics">
-                <Link to="#" class="d-block"><img src="https://placehold.co/1200x800" class="img-fluid rounded"
-                    alt="Blog image"></Link>
-              </div>
-              <div class="blogGrid-caps pt-3">
-                <div class="d-flex align-items-center mb-1"><span
-                    class="label text-success bg-light-success">Journey</span></div>
-                <h4 class="fw-bold fs-6 lh-base"><Link to="#" class="text-dark">Make Your Next Journey Delhi To Paris in
-                    Comfirtable And Best Price</Link></h4>
-                <p class="mb-3">Think of a news blog that's filled with content hourly on the Besides, random text risks
-                  to be unintendedly humorous or offensive day of going live.</p>
-                <Link class="text-primary fw-medium" to="#">Read More<i class="fa-solid fa-arrow-trend-up ms-2"></i></Link>
-              </div>
-            </div>
-          </div>
-          <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
-            <div class="blogGrid-wrap d-flex flex-column h-100">
-              <div class="blogGrid-pics">
-                <Link to="#" class="d-block"><img src="https://placehold.co/1200x800" class="img-fluid rounded"
-                    alt="Blog image"></Link>
-              </div>
-              <div class="blogGrid-caps pt-3">
-                <div class="d-flex align-items-center mb-1"><span
-                    class="label text-success bg-light-success">Business</span></div>
-                <h4 class="fw-bold fs-6 lh-base"><Link to="#" class="text-dark">Make Your Next Journey Delhi To Paris in
-                    Comfirtable And Best Price</Link></h4>
-                <p class="mb-3">Think of a news blog that's filled with content hourly on the Besides, random text risks
-                  to be unintendedly humorous or offensive day of going live.</p>
-                <Link class="text-primary fw-medium" to="#">Read More<i class="fa-solid fa-arrow-trend-up ms-2"></i></Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section> */}
-        {/* ==== Article Section Start ===== */}
-        {/*  Call To Action Start  */}
-        {/* <div className="py-5 bg-primary">
-          <div className="container">
-            <div className="row align-items-center justify-content-between">
-              <div className="col-xl-4 col-lg-4 col-md-6">
-                <h4 className="text-light fw-bold lh-base m-0">Join our Newsletter to Stay Up to Date with Us!</h4>
-              </div>
-              <div className="col-xl-5 col-lg-5 col-md-6">
-                <div className="newsletter-forms mt-md-0 mt-4">
-                  <form>
-                    <div className="row align-items-center justify-content-between bg-white rounded-3 p-2 gx-0">
-                      <div className="col-xl-9 col-lg-8 col-md-8">
-                        <div className="form-group m-0">
-                          <input type="text" className="form-control bold ps-1 border-0" placeholder="Enter Your Email!" />
-                        </div>
-                      </div>
-                      <div className="col-xl-3 col-lg-4 col-md-4">
-                        <div className="form-group m-0">
-                          <button type="button" className="btn btn-dark fw-medium full-width">Submit<i className="fa-solid fa-arrow-trend-up ms-2" /></button>
-                        </div>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
-        {/*  Call To Action Start  */}
-        {/*  Footer Start  */}
+        {/* ============================================
+            Footer Section
+        ============================================ */}
         <Footer />
-        {/*  Footer End  */}
-        {/* Log In Modal */}
-        <div
-          className="modal fade"
-          id="login"
-          tabIndex={-1}
-          role="dialog"
-          aria-labelledby="loginmodal"
-          aria-hidden="true"
-        >
-          <div
-            className="modal-dialog modal-dialog-centered login-pop-form"
-            role="document"
-          >
-            <div className="modal-content" id="loginmodal">
-              <div className="modal-header bg-primary">
-                <h4 className="modal-title fs-6">Sign In / Register</h4>
-                <Link
-                  to="#"
-                  className="text-muted fs-4"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <i className="fa-solid fa-square-xmark" />
-                </Link>
-              </div>
-              <div className="modal-body">
-                <div className="modal-login-form py-4 px-md-3 px-0">
-                  <form>
-                    <div className="form-floating mb-4">
-                      <input
-                        type="email"
-                        className="form-control"
-                        placeholder="name@example.com"
-                      />
-                      <label>User Name</label>
-                    </div>
-                    <div className="form-floating mb-4">
-                      <input
-                        type="password"
-                        className="form-control"
-                        placeholder="Password"
-                      />
-                      <label>Password</label>
-                    </div>
-                    <div className="form-group">
-                      <button
-                        type="submit"
-                        className="btn btn-primary full-width font--bold btn-lg"
-                      >
-                        Log In
-                      </button>
-                    </div>
-                    <div className="modal-flex-item d-flex align-items-center justify-content-between mb-3">
-                      <div className="modal-flex-first">
-                        <div className="form-check form-check-inline">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id="savepassword"
-                            defaultValue="option1"
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="savepassword"
-                          >
-                            Save Password
-                          </label>
-                        </div>
-                      </div>
-                      <div className="modal-flex-last">
-                        <Link
-                          to="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                          }}
-                          className="text-primary fw-medium"
-                        >
-                          Forget Password?
-                        </Link>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-                <div className="prixer px-3">
-                  <div className="devider-wraps position-relative">
-                    <div className="devider-text text-muted-2 text-md">
-                      Sign In with More Methods
-                    </div>
-                  </div>
-                </div>
-                <div className="social-login py-4 px-2">
-                  <ul className="row align-items-center justify-content-between g-3 p-0 m-0">
-                    <li className="col">
-                      <Link
-                        to="#"
-                        className="square--60 border br-dashed rounded-2 full-width"
-                      >
-                        <i className="fa-brands fa-facebook color--facebook fs-2" />
-                      </Link>
-                    </li>
-                    <li className="col">
-                      <Link
-                        to="#"
-                        className="square--60 border br-dashed rounded-2"
-                      >
-                        <i className="fa-brands fa-whatsapp color--whatsapp fs-2" />
-                      </Link>
-                    </li>
-                    <li className="col">
-                      <Link
-                        to="#"
-                        className="square--60 border br-dashed rounded-2"
-                      >
-                        <i className="fa-brands fa-linkedin color--linkedin fs-2" />
-                      </Link>
-                    </li>
-                    <li className="col">
-                      <Link
-                        to="#"
-                        className="square--60 border br-dashed rounded-2"
-                      >
-                        <i className="fa-brands fa-dribbble color--dribbble fs-2" />
-                      </Link>
-                    </li>
-                    <li className="col">
-                      <Link
-                        to="#"
-                        className="square--60 border br-dashed rounded-2"
-                      >
-                        <i className="fa-brands fa-twitter color--twitter fs-2" />
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <div className="modal-footer align-items-center justify-content-center">
-                <p>
-                  Don't have an account yet?
-                  <Link to="/signup" className="text-primary fw-medium ms-1">
-                    Sign Up
-                  </Link>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* End Modal */}
-        {/* Choose Currency Modal */}
-        <div
-          className="modal modal-lg fade"
-          id="currencyModal"
-          tabIndex={-1}
-          aria-labelledby="currenyModalLabel"
-          aria-hidden="true"
-        >
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h4 className="modal-title fs-6" id="currenyModalLabel">
-                  Select Your Currency
-                </h4>
-                <Link
-                  to="#"
-                  className="text-muted fs-4"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <i className="fa-solid fa-square-xmark" />
-                </Link>
-              </div>
-              <div className="modal-body">
-                <div className="allCurrencylist">
-                  <div className="suggestedCurrencylist-wrap mb-4">
-                    <div className="d-inline-block mb-0 ps-3">
-                      <h5 className="fs-6 fw-bold">
-                        Suggested Currency For you
-                      </h5>
-                    </div>
-                    <div className="suggestedCurrencylists">
-                      <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-md-2 row-cols-2 gy-2 gx-3 m-0 p-0">
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              United State Dollar
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              USD
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              Pound Sterling
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              GBP
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCurrency active" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              Indian Rupees
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              Inr
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              Euro
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              EUR
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              Australian Dollar
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              aud
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              Thai Baht
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              thb
-                            </div>
-                          </Link>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div className="suggestedCurrencylist-wrap">
-                    <div className="d-inline-block mb-0 ps-3">
-                      <h5 className="fs-6 fw-bold">All Currencies</h5>
-                    </div>
-                    <div className="suggestedCurrencylists">
-                      <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-md-2 row-cols-2 gy-2 gx-3 m-0 p-0">
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              United State Dollar
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              USD
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              Property currency
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              GBP
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              Argentine Peso
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              EUR
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              Azerbaijani Manat
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              Inr
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              Australian Dollar
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              aud
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              Bahraini Dinar
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              thb
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              Brazilian Real
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              USD
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              Bulgarian Lev
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              GBP
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              Canadian Dollar
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              EUR
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              Chilean Peso
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              Inr
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              Colombian Peso
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              aud
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              Danish Krone
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              thb
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              Egyptian Pound
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              USD
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              Hungarian Forint
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              GBP
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              Japanese Yen
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              EUR
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              Jordanian Dinar
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              Inr
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              Kuwaiti Dinar
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              aud
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              Malaysian Ringgit
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              thb
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCurrency" to="#">
-                            <div className="text-dark text-md fw-medium">
-                              Singapore Dollar
-                            </div>
-                            <div className="text-muted-2 text-md text-uppercase">
-                              thb
-                            </div>
-                          </Link>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* Choose Countries Modal */}
-        <div
-          className="modal modal-lg fade"
-          id="countryModal"
-          tabIndex={-1}
-          aria-labelledby="countryModalLabel"
-          aria-hidden="true"
-        >
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h4 className="modal-title fs-6" id="countryModalLabel">
-                  Select Your Country
-                </h4>
-                <Link
-                  to="#"
-                  className="text-muted fs-4"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                >
-                  <i className="fa-solid fa-square-xmark" />
-                </Link>
-              </div>
-              <div className="modal-body">
-                <div className="allCountrieslist">
-                  <div className="suggestedCurrencylist-wrap mb-4">
-                    <div className="d-inline-block mb-0 ps-3">
-                      <h5 className="fs-6 fw-bold">
-                        Suggested Countries For you
-                      </h5>
-                    </div>
-                    <div className="suggestedCurrencylists">
-                      <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-2 gy-2 gx-3 m-0 p-0">
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              United State Dollar
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              Pound Sterling
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCountry active" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="./assets/images/flags/Indian_flag.png"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              Indian Rupees
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              Euro
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              Australian Dollar
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              Thai Baht
-                            </div>
-                          </Link>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div className="suggestedCurrencylist-wrap">
-                    <div className="d-inline-block mb-0 ps-3">
-                      <h5 className="fs-6 fw-bold">All Countries</h5>
-                    </div>
-                    <div className="suggestedCurrencylists">
-                      <ul className="row align-items-center justify-content-start row-cols-xl-4 row-cols-lg-3 row-cols-2 gy-2 gx-3 m-0 p-0">
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              United State Dollar
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              Property currency
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              Argentine Peso
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              Azerbaijani Manat
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              Australian Dollar
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              Bahraini Dinar
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              Brazilian Real
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              Bulgarian Lev
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              Canadian Dollar
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              Chilean Peso
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              Colombian Peso
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              Danish Krone
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              Egyptian Pound
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              Hungarian Forint
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              Japanese Yen
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              Jordanian Dinar
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              Kuwaiti Dinar
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              Malaysian Ringgit
-                            </div>
-                          </Link>
-                        </li>
-                        <li className="col">
-                          <Link className="selectCountry" to="#">
-                            <div className="d-inline-block">
-                              <img
-                                src="https://placehold.co/100x100"
-                                className="img-fluid circle"
-                                width={35}
-                                alt=""
-                              />
-                            </div>
-                            <div className="text-dark text-md fw-medium ps-2">
-                              Singapore Dollar
-                            </div>
-                          </Link>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* Video Modal */}
-        <ChatBot />
-        <div
-          className="modal fade"
-          id="popup-video"
-          tabIndex={-1}
-          role="dialog"
-          aria-labelledby="popupvideo"
-          aria-hidden="true"
-        >
-          <div className="modal-dialog modal-dialog-centered" role="document">
-            <div className="modal-content" id="popupvideo">
-              <iframe
-                className="embed-responsive-item full-width"
-                title="YouTube video: Example Title"
-                height={480}
-                src="https://www.youtube.com/embed/qN3OueBm9F4?rel=0"
-                frameBorder={0}
-                allowFullScreen
-              />
-            </div>
-          </div>
-        </div>
-        {/* End Video Modal */}
-        <Link id="back2Top" className="top-scroll" title="Back to top" to="#">
-          <i className="fa-solid fa-sort-up" />
-        </Link>
       </div>
-      {/* End Wrapper */}
-      {/* All Jquery */}
-      {/* This page plugins */}
     </div>
   );
 };
+
 export default Home;
