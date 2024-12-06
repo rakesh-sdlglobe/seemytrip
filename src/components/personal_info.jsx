@@ -77,7 +77,13 @@ const PersonalInfo = () => {
     };
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        if (e.target.name === 'mobile') {
+            // Only allow numbers
+            const value = e.target.value.replace(/[^0-9]/g, '');
+            setFormData({ ...formData, mobile: value });
+        } else {
+            setFormData({ ...formData, [e.target.name]: e.target.value });
+        }
     };
 
 
@@ -235,11 +241,16 @@ const PersonalInfo = () => {
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">Mobile</label>
-                                <input type="text" className="form-control"
+                                <input 
+                                    type="tel"
+                                    className="form-control"
                                     name="mobile"
                                     value={formData.mobile}
                                     onChange={handleChange}
-                                    disabled={!isEditable} />
+                                    pattern="[0-9]*"
+                                    inputMode="numeric"
+                                    disabled={!isEditable} 
+                                />
                                 {isEditable && (
                                     <div className="email-verification-message">
                                         {formData.isMobileVerified ? (

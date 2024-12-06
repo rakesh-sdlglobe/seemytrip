@@ -154,7 +154,7 @@ const Header02 = () => {
                         <Link className="dropdown-item" to="/support">support</Link>
                       </li>
                       <li>
-                        <Link className="dropdown-item" to="#">Settings</Link>
+                        <Link className="dropdown-item" to="/settings">Settings</Link>
                       </li>
                       <li><hr className="dropdown-divider" /></li>
                       <li>
