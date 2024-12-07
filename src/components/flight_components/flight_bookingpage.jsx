@@ -666,7 +666,7 @@ export const FlightBookingpage01 = () => {
           </div>
         </div>
       </div>
-      <Link id="back2Top" className="top-scroll" title="Back to top" to="#"><i className="fa-solid fa-sort-up" /></Link>
+      {/**/}
     </div>
     {/* ============================================================== */}
     {/* End Wrapper */}

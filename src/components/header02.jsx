@@ -238,7 +238,6 @@ const Header02 = () => {
       {/* Choose Currency Modal */}
       {/* Choose Countries Modal */}
    
-      <Link id="back2Top" className="top-scroll" title="Back to top" to="#"><i className="fa-solid fa-sort-up" /></Link>
     </>
   );
 };
