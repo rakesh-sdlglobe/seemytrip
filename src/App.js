@@ -110,6 +110,7 @@ import Searchbyname from './components/Features/Searchbyname.jsx';
 import SearchbyStation from './components/Features/SearchbyStation.jsx';
 import TatkalRailwayreservation from './components/Features/TatkalRailwayreservation.jsx';
 import Platformlocator from './components/Features/Platformlocator.jsx';
+import BackToTop from './components/BackToTop';
 
 
 function App() {
@@ -270,6 +271,7 @@ function App() {
           <Route path="/compare-listing" element={<CompareListing />} />
           <Route path="/support" element={<SupportPage/>} />
         </Routes>
+        <BackToTop />
       </Router>
     </div>
   );
