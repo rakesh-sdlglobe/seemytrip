@@ -1,18 +1,36 @@
 import { useSelector } from 'react-redux';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { selectUserProfile } from '../store/Selectors/userSelector';
+import { imageUpload } from '../store/Actions/userActions';
 
 const SideBarProfilePage = () => {
     const userProfile = useSelector(selectUserProfile);
     const [uploadedImage, setUploadedImage] = useState(null);
 
+    // if(userProfile){
+    //     const imageUrl = userProfile?.filepath.replace(/\\/g, "/");
+    //     setUploadedImage(imageUrl);
+    // }
+
+    
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
             setUploadedImage(URL.createObjectURL(file));
+            imageUpload(file);
         }
     };
-    console.log(userProfile)
+    console.log("17 from sidebar profilepage ",userProfile)
+
+    useEffect(() => {
+        if (userProfile && userProfile.filepath) {
+            const imageUrl = `${process.env.REACT_APP_API_URL}/uploads/${userProfile.filepath.split("uploads\\")[1] || userProfile.filepath.split("uploads/")[1]}`;
+            console.log(imageUrl);
+            
+            setUploadedImage(imageUrl);
+
+        }
+    }, [userProfile]);
 
     return (
         <div className="col-xl-4 col-lg-4 col-md-12">
@@ -42,6 +60,7 @@ const SideBarProfilePage = () => {
                                         <i className="fa-solid fa-pen-to-square text-light"></i>
                                         <input
                                             type="file"
+                                            name="file"
                                             accept="image/*"
                                             onChange={handleImageUpload}
                                             style={{ display: 'none' }}
