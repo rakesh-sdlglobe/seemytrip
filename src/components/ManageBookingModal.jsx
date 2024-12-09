@@ -8,6 +8,7 @@ export default function ManageBookingModal({ booking, onClose, onCancel }) {
   const [showContactForm, setShowContactForm] = useState(false);
   const [contactMessage, setContactMessage] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
+  const [activeSection, setActiveSection] = useState(null);
 
   const generatePDF = () => {
     // Create new PDF document with A4 format
@@ -120,6 +121,7 @@ export default function ManageBookingModal({ booking, onClose, onCancel }) {
   };
 
   const handlePrint = () => {
+    setActiveSection('print');
     const doc = generatePDF();
     const pdfBlob = doc.output('blob');
     const pdfUrl = URL.createObjectURL(pdfBlob);
@@ -133,6 +135,7 @@ export default function ManageBookingModal({ booking, onClose, onCancel }) {
   };
 
   const handleDownload = () => {
+    setActiveSection('download');
     const doc = generatePDF();
     const pdfBlob = doc.output('blob');
     const pdfUrl = URL.createObjectURL(pdfBlob);
@@ -318,38 +321,81 @@ export default function ManageBookingModal({ booking, onClose, onCancel }) {
             </div>
 
             <div className="action-buttons d-flex gap-3 mb-4">
-              <button onClick={handlePrint} className="btn btn-outline-primary">
+              <button 
+                onClick={handlePrint} 
+                className={`btn ${activeSection === 'print' ? 'btn-primary' : 'btn-outline-primary'}`}
+              >
                 <Printer size={30} className="me-1" /> Print&nbsp;Ticket
               </button>
-              <button onClick={handleDownload} className="btn btn-outline-success">
+              <button 
+                onClick={handleDownload}
+                className={`btn ${activeSection === 'download' ? 'btn-success' : 'btn-outline-success'}`}
+              >
                 <Download className="me-1" /> Download&nbsp;Ticket
               </button>
-              <button onClick={() => setShowContactForm(true)} className="btn btn-outline-info">
+              <button 
+                onClick={() => {
+                  setActiveSection('contact');
+                  setShowContactForm(true);
+                }}
+                className={`btn ${activeSection === 'contact' ? 'btn-info' : 'btn-outline-info'}`}
+              >
                 <MessageCircle className="me-1" /> Contact&nbsp;Support
               </button>
               {booking.status !== 'Cancelled' && (
                 <button
-                  onClick={() => setShowCancelConfirm(true)}
-                  className="btn btn-danger ms-auto cancel-booking-btn"
+                  onClick={() => {
+                    setActiveSection('cancel');
+                    setShowCancelConfirm(true);
+                  }}
+                  className={`btn ${activeSection === 'cancel' ? 'btn-danger' : 'btn-outline-danger'}`}
                 >
                   <X className="me-1" /> Cancel&nbsp;Booking
                 </button>
               )}
             </div>
 
-            <div className="alert alert-warning d-flex align-items-center">
-              <AlertTriangle className="me-2" /> 
-              <div>
-                <strong>Cancellation Policy:</strong>
-                <ul className="mb-0">
-                  <li>Free cancellation up to 24 hours before departure</li>
-                  <li>50% refund 12-24 hours before departure</li>
-                  <li>No refund less than 12 hours before departure</li>
-                </ul>
+            {activeSection === 'print' && (
+              <div className="alert alert-info">
+                <h6 className="fw-bold mb-2">Print Preview</h6>
+                <p>Your ticket is being prepared for printing. The print dialog will open automatically.</p>
               </div>
-            </div>
+            )}
 
-            {showCancelConfirm && (
+            {activeSection === 'download' && (
+              <div className="alert alert-success">
+                <h6 className="fw-bold mb-2">Download Started</h6>
+                <p>Your ticket is being downloaded. Check your downloads folder for the PDF file.</p>
+              </div>
+            )}
+
+            {activeSection === 'contact' && showContactForm && (
+              <div className="alert alert-info">
+                <form onSubmit={handleSubmitContact}>
+                  <textarea
+                    value={contactMessage}
+                    onChange={(e) => setContactMessage(e.target.value)}
+                    placeholder="Describe your issue..."
+                    className="form-control mb-2"
+                    rows="4"
+                    required
+                  />
+                  <div className="d-flex gap-2">
+                    <button type="submit" className="btn btn-primary">Send Message</button>
+                    <button type="button" onClick={() => setShowContactForm(false)} className="btn btn-secondary">
+                      Cancel
+                    </button>
+                  </div>
+                  {showSuccess && (
+                    <div className="mt-2 text-success d-flex align-items-center">
+                      <Check className="me-1" /> Message sent successfully!
+                    </div>
+                  )}
+                </form>
+              </div>
+            )}
+
+            {activeSection === 'cancel' && showCancelConfirm && (
               <div className="alert alert-danger">
                 <h6 className="fw-bold mb-3">Cancel Booking Confirmation</h6>
                 <p className="mb-3">Are you sure you want to cancel this booking? This action cannot be undone.</p>
@@ -370,28 +416,18 @@ export default function ManageBookingModal({ booking, onClose, onCancel }) {
               </div>
             )}
 
-            {showContactForm && (
-              <form onSubmit={handleSubmitContact}>
-                <textarea
-                  value={contactMessage}
-                  onChange={(e) => setContactMessage(e.target.value)}
-                  placeholder="Describe your issue..."
-                  className="form-control mb-2"
-                  rows="4"
-                  required
-                />
-                <div className="d-flex gap-2">
-                  <button type="submit" className="btn btn-primary">Send Message</button>
-                  <button type="button" onClick={() => setShowContactForm(false)} className="btn btn-secondary">
-                    Cancel
-                  </button>
+            {!activeSection && (
+              <div className="alert alert-warning d-flex align-items-center">
+                <AlertTriangle className="me-2" /> 
+                <div>
+                  <strong>Cancellation Policy:</strong>
+                  <ul className="mb-0">
+                    <li>Free cancellation up to 24 hours before departure</li>
+                    <li>50% refund 12-24 hours before departure</li>
+                    <li>No refund less than 12 hours before departure</li>
+                  </ul>
                 </div>
-                {showSuccess && (
-                  <div className="mt-2 text-success d-flex align-items-center">
-                    <Check className="me-1" /> Message sent successfully!
-                  </div>
-                )}
-              </form>
+              </div>
             )}
           </div>
         </div>

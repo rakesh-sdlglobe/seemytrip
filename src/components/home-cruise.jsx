@@ -1342,9 +1342,9 @@ const HomeCruise = () => {
         {/* ============================ Footer Start ================================== */}
         <Footer />
         {/* ============================ Footer End ================================== */}
-        <Link id="back2Top" className="top-scroll" title="Back to top" to="#">
+        {/* <Link id="back2Top" className="top-scroll" title="Back to top" to="#">
           <i className="fa-solid fa-sort-up" />
-        </Link>
+        </Link> */}
       </div>
     </div>
   );

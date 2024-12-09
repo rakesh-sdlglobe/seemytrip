@@ -95,6 +95,13 @@ const TrainBookingDetails = () => {
     setTravelers(updatedTravelers);
   };
 
+  // Add new handler function near other handlers
+  const handleEditTraveler = (index) => {
+    setCurrentTraveler(travelers[index]);
+    handleDeleteTraveler(index);
+    toast.info('Edit traveler details');
+  };
+
   // Render functions
   const renderBookingStepper = () => (
     <div className="col-xl-12 col-lg-12 col-md-12">
@@ -260,7 +267,10 @@ const TrainBookingDetails = () => {
                   <div className="d-flex justify-content-between align-items-center mb-2">
                     <p className="fw-bold mb-0">{traveler.name}</p>
                     <div>
-                      <button className="btn btn-sm btn-outline-primary me-2">
+                      <button 
+                        className="btn btn-sm btn-outline-primary me-2"
+                        onClick={() => handleEditTraveler(index)}
+                      >
                         <Edit2 size={16} />
                       </button>
                       <button 

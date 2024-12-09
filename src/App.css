@@ -36,3 +36,30 @@
     transform: rotate(360deg);
   }
 }
+
+#back2Top {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+#back2Top.visible {
+  opacity: 1;
+}
+
+.top-scroll {
+  background-color: #cd2c22;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.top-scroll:hover {
+  background-color: #a52219;
+  transform: translateY(-2px);
+}
+
+.top-scroll i {
+  font-size: 20px;
+  line-height: 1;
+}
