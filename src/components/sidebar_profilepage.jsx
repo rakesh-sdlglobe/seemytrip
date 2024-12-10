@@ -43,7 +43,11 @@ const SideBarProfilePage = () => {
                                     <img
                                         src={uploadedImage || "https://placehold.co/500x500"}
                                         className="img-fluid circle"
-                                        width={120}
+                                        style={{ 
+                                            width:'120px',
+                                            height:'120px',
+                                            objectFit:'cover'
+                                         }}
                                         alt="Profile"
                                     />
                                     <label style={{ 

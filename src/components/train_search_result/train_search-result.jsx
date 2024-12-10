@@ -113,6 +113,7 @@ const TrainSearchResultList = ({ filters }) => {
                         Runs on: 
                         <span className="mx-1"> S </span>
                         <span className="mx-1">M</span>
+                        <span className="mx-1">T</span>
                         <span className="mx-1" style={{ fontWeight: 'bold', color: '#d20000' }}>W</span>
                         <span className="mx-1"> T </span>
                         <span className="mx-1">F</span>
