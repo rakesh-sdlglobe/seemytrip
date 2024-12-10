@@ -2,11 +2,11 @@ import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { selectTrains } from '../../store/Selectors/filterSelectors';
 import { useNavigate } from 'react-router-dom';
-import {selectIsAuthenticated} from'../../store/Selectors/authSelectors';
+import {selectUser} from'../../store/Selectors/authSelectors';
 
 const TrainSearchResultList = ({ filters }) => {
     const navigate = useNavigate();
-    const isAuthenticated = useSelector(selectIsAuthenticated);
+    const isAuthenticated = useSelector(selectUser);
 
   const trainData = useSelector(selectTrains) || [];
 
@@ -69,6 +69,7 @@ const TrainSearchResultList = ({ filters }) => {
   }, [trainData, filters]);
   
 const handleBooking = (train) =>{
+  console.log('Auth status:', isAuthenticated)
   if(isAuthenticated){
     navigate('/trainbookingdetails',{state:{ trainData: train}})
   }
