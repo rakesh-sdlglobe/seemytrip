@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { API_URL } from './authActions';
 
 // Action types
 export const SET_OTP_SENT = 'SET_OTP_SENT';
@@ -8,7 +9,7 @@ export const SET_EMAIL_USER = 'SET_EMAIL_USER';
 export const LOGOUT_EMAIL_USER = 'LOGOUT_EMAIL_USER';
 
 // Base API URL
-const API_BASE_URL = 'https://tripadmin.onrender.com/api'; // Adjust if needed
+// const API_BASE_URL = 'https://tripadmin.onrender.com/api'; // Adjust if needed
 
 // Action to set OTP sent status
 export const setOTPSent = (status) => ({
@@ -38,7 +39,7 @@ export const setEmailUser = (user, token) => ({
 export const sendVerificationOTP = (email) => async (dispatch) => {
   try {
     dispatch(setOTPError('')); // Clear previous error
-    const response = await axios.post(`${API_BASE_URL}/send-otp-auth`, { email });
+    const response = await axios.post(`${API_URL}/send-otp-auth`, { email });
     if (response.data) {
       dispatch(setOTPSent(true)); // OTP sent successfully
     }
@@ -53,7 +54,7 @@ export const verifyEmailOTP = (email, otp, navigate) => async (dispatch) => {
   try {
     dispatch(setOTPError('')); // Clear previous error
 
-    const response = await axios.post(`${API_BASE_URL}/verify-otp-auth`, { email, otp });
+    const response = await axios.post(`${API_URL}/verify-otp-auth`, { email, otp });
 
     if (response.data) {
       const { token, user } = response.data;
@@ -76,7 +77,7 @@ export const verifyEmailOTPForgot = (email, otp, navigate) => async (dispatch) =
   try {
     dispatch(setOTPError('')); // Clear previous error
 
-    const response = await axios.post(`${API_BASE_URL}/verify-otp-auth`, { email, otp });
+    const response = await axios.post(`${API_URL}/verify-otp-auth`, { email, otp });
 
     if (response.data) {
       const { token, user } = response.data;

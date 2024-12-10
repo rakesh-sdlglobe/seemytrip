@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { json } from 'react-router-dom';
+import { API_URL } from './authActions';
 
 export const FETCH_USER_PROFILE_SUCCESS = 'FETCH_USER_PROFILE_SUCCESS';
 export const FETCH_USER_PROFILE_FAILURE = 'FETCH_USER_PROFILE_FAILURE';
@@ -21,7 +22,7 @@ export const REMOVE_TRAVELER_FAILURE = 'REMOVE_TRAVELER_FAILURE';
 
 
 // Fetch user profile
-const API_URL = process.env.REACT_APP_API_URL || 'https://tripadmin.onrender.com/api';
+// const API_URL = process.env.REACT_APP_API_URL || 'https://tripadmin.onrender.com/api';
 
 
 export const getUserProfile = () => {
@@ -81,7 +82,7 @@ export const editUserEmail = (userData) => {
     const authToken = localStorage.authToken; 
 
     try {
-      const response = await axios.post('https://tripadmin.onrender.com/api/users/editEmail', userData, {
+      const response = await axios.post(`${API_URL}/users/editEmail`, userData, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -100,7 +101,7 @@ export const myBookings = () => {
     const authToken = localStorage.getItem('authToken'); 
     
     try {
-      const response = await axios.get('https://tripadmin.onrender.com/api/users/myBookings', {
+      const response = await axios.get(`${API_URL}users/myBookings`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -120,7 +121,7 @@ export const addTraveler = (travelerData,navigate) => async (dispatch) => {
     
     dispatch({ type: ADD_TRAVELER_REQUEST });
       const authToken = localStorage.getItem('authToken'); 
-      const response = await axios.post('https://tripadmin.onrender.com/api/users/addTraveler', travelerData,{
+      const response = await axios.post(`${API_URL}/users/addTraveler`, travelerData,{
         
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -148,7 +149,7 @@ export const fetchTravelers = () => {
     const authToken = localStorage.getItem('authToken'); 
     
     try {
-      const response = await axios.get('https://tripadmin.onrender.com/api/users/getTravelers', {
+      const response = await axios.get(`${API_URL}/users/getTravelers`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -164,7 +165,7 @@ export const removeTraveler = (id, navigate) => async (dispatch) => {
   try {
     dispatch({ type: REMOVE_TRAVELER_REQUEST });
     const authToken = localStorage.getItem("authToken");
-    await axios.delete(`https://tripadmin.onrender.com/api/users/traveller/${id}`, {
+    await axios.delete(`${API_URL}/users/traveller/${id}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -180,5 +181,33 @@ export const removeTraveler = (id, navigate) => async (dispatch) => {
       type: REMOVE_TRAVELER_FAILURE,
       payload: error.message || "Failed to add traveler",
     });
+  }
+};
+
+export const imageUpload = async (file) => {
+  if (!file) {
+    console.error("No file provided for upload.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const authToken = localStorage.authToken; 
+
+  try {
+    const response = await axios.post(`${API_URL}/users/imageUpload`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${authToken}`,
+      
+      },
+    });
+
+    console.log('Image uploaded successfully:', response.data);
+    return response.data; // Optionally return the API response
+  } catch (error) {
+    console.error('Error uploading image:', error.message);
+    throw error; // Rethrow the error for further handling if needed
   }
 };
