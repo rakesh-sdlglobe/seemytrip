@@ -2,9 +2,11 @@ import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { selectTrains } from '../../store/Selectors/filterSelectors';
 import { useNavigate } from 'react-router-dom';
+import {selectIsAuthenticated} from'../../store/Selectors/authSelectors';
 
 const TrainSearchResultList = ({ filters }) => {
     const navigate = useNavigate();
+    const isAuthenticated = useSelector(selectIsAuthenticated);
 
   const trainData = useSelector(selectTrains) || [];
 
@@ -66,10 +68,19 @@ const TrainSearchResultList = ({ filters }) => {
     return applyFilters(trainData, filters);
   }, [trainData, filters]);
   
-  const handleBooking = (train) => {
-    // navigate('/booking-page', { state: { trainData: train } });
-    navigate('/trainbookingdetails', { state: { trainData: train } });
-};
+const handleBooking = (train) =>{
+  if(isAuthenticated){
+    navigate('/trainbookingdetails',{state:{ trainData: train}})
+  }
+  else{
+    navigate('/login',{
+      state:{
+        redirectTo:'/trainbookingdetails',
+        trainData:train,
+      }
+    });
+  }
+}
 
   return (
     <div className="row align-items-center g-4 mt-0">
