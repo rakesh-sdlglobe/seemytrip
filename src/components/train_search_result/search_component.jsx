@@ -9,6 +9,8 @@ import { fetchStations, fetchTrains } from '../../store/Actions/filterActions';
 import { selectStations } from '../../store/Selectors/filterSelectors';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Entering, IRCTC_Logo, Leaving, Calendar1 } from '../../assets/images';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const SearchComponent = ({
   onSearchResults = () => { },
@@ -41,6 +43,9 @@ const SearchComponent = ({
   const [availableBerth, setAvailableBerth] = useState(false);
   const [railwayPassConcession, setRailwayPassConcession] = useState(false);
   const [currentHighlightIndex, setCurrentHighlightIndex] = useState(0);
+  const [warningMessage,setWarningMessage] = useState('')
+  const [lastToastTime, setLastToastTime] = useState(0);  
+  const toastDelay = 5000; 
 
   const highlights = [
     {
@@ -66,39 +71,62 @@ const SearchComponent = ({
 
   // Other existing state and handlers...
 
-  const generalOptions = [
-    { value: 'general', label: 'GENERAL' },
-    { value: 'ladies', label: 'LADIES' },
-    { value: 'lower_berth_sr_citizen', label: 'LOWER BERTH/SR.CITIZEN' },
-    { value: 'person_with_disability', label: 'PERSON WITH DISABILITY' },
-    { value: 'duty_pass', label: 'DUTY PASS' },
-    { value: 'tatkal', label: 'TATKAL' },
-    { value: 'premium_tatkal', label: 'PREMIUM TATKAL' },
-    // Add more options as needed
-  ];
+  // const generalOptions = [
+  //   { value: 'general', label: 'GENERAL' },
+  //   { value: 'ladies', label: 'LADIES' },
+  //   { value: 'lower_berth_sr_citizen', label: 'LOWER BERTH/SR.CITIZEN' },
+  //   { value: 'person_with_disability', label: 'PERSON WITH DISABILITY' },
+  //   { value: 'duty_pass', label: 'DUTY PASS' },
+  //   { value: 'tatkal', label: 'TATKAL' },
+  //   { value: 'premium_tatkal', label: 'PREMIUM TATKAL' },
+  //   // Add more options as needed
+  // ];
 
 
-  const classOptions = [
-    { value: 'all', label: 'All Classes' },
-    { value: 'anubhuti', label: 'Anubhuti Class (EA)' },
-    { value: 'ac_first_class', label: 'AC First Class (1A)' },
-    { value: 'vistadome_ac', label: 'Vistadome AC (EV)' },
-    { value: 'exec_chair_car', label: 'Exec. Chair Car (EC)' },
-    { value: 'ac_2_tier', label: 'AC 2 Tier (2A)' },
-    { value: 'ac_3_economy', label: 'AC 3 Economy' },
-    { value: 'vistadome_chair_car', label: 'Vistadome Chair Car (VC)' },
-    { value: 'ac_chair', label: 'AC Chair (CC)' },
-    { value: 'sleeper', label: 'Sleeper (SL)' },
-  ];
+  // const classOptions = [
+  //   { value: 'all', label: 'All Classes' },
+  //   { value: 'anubhuti', label: 'Anubhuti Class (EA)' },
+  //   { value: 'ac_first_class', label: 'AC First Class (1A)' },
+  //   { value: 'vistadome_ac', label: 'Vistadome AC (EV)' },
+  //   { value: 'exec_chair_car', label: 'Exec. Chair Car (EC)' },
+  //   { value: 'ac_2_tier', label: 'AC 2 Tier (2A)' },
+  //   { value: 'ac_3_economy', label: 'AC 3 Economy' },
+  //   { value: 'vistadome_chair_car', label: 'Vistadome Chair Car (VC)' },
+  //   { value: 'ac_chair', label: 'AC Chair (CC)' },
+  //   { value: 'sleeper', label: 'Sleeper (SL)' },
+  // ];
 
 
   const handleFromStationChange = (selectedOption) => {
     setLeavingFrom(selectedOption);
+    validateStations(selectedOption,goingTo );
   };
 
   const handleToStationChange = (selectedOption) => {
     setGoingTo(selectedOption);
+    validateStations( selectedOption,leavingFrom);
   };
+
+  const validateStations = (from, to) => {
+    if (from && to && from.value === to.value) {
+      setWarningMessage("From and To stations shouldn't be the same");
+    } else {
+      setWarningMessage(''); // Clear the warning if stations are valid
+    }
+  };
+
+  const showErrorMessage = () => {
+    toast.error('Something went wrong!', {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+  };
+  
 
   const handleJourneyDateChange = (date) => {
     setJourneyDate(date);
@@ -110,8 +138,26 @@ const SearchComponent = ({
     setGoingTo(temp);
   };
 
+
+  const showToast = (message, type) => {
+    const currentTime = Date.now();
+
+    if (currentTime - lastToastTime > toastDelay) {
+      toast[type](message); 
+      setLastToastTime(currentTime);  
+    }
+  };
+
   const handleSearch = () => {
-    if (leavingFrom && goingTo && journeyDate) {
+    if (!leavingFrom || !goingTo || !journeyDate) {
+      showToast('Please fill all the fields !', 'warn');
+      return;
+    }
+
+    else if (leavingFrom.value === goingTo.value) {
+      showToast('Stations should not be the same !', 'error');
+      return;
+    }else{
       dispatch(fetchTrains(leavingFrom.value, journeyDate));
       navigate('/Train-list-01', {
         state: {
@@ -120,10 +166,45 @@ const SearchComponent = ({
           date: journeyDate
         }
       });
-    } else {
-      alert('Please select all fields.');
     }
   };
+
+  // const handleSearch = () => {
+  //   if (!leavingFrom || !goingTo || !journeyDate) {
+  //     // Show warning toast if any field is missing
+  //     toast.warn('Please select all fields!', {
+  //       position: "top-right",
+  //       autoClose: 5000,
+  //       hideProgressBar: false,
+  //       closeOnClick: true,
+  //       pauseOnHover: true,
+  //       draggable: true,
+  //       progress: undefined,
+  //     });
+  //   } else if (leavingFrom.value === goingTo.value) {
+  //     // Show error toast if both stations are the same
+  //     toast.error('stations should not be the same!', {
+  //       position: "top-right",
+  //       autoClose: 5000,
+  //       hideProgressBar: false,
+  //       closeOnClick: true,
+  //       pauseOnHover: true,
+  //       draggable: true,
+  //       progress: undefined,
+  //     });
+  //   } else {
+  //     // Proceed with fetching the train data
+  //     dispatch(fetchTrains(leavingFrom.value, journeyDate));
+  //     navigate('/Train-list-01', {
+  //       state: {
+  //         from: leavingFrom,
+  //         to: goingTo,
+  //         date: journeyDate
+  //       }
+  //     });
+  //   }
+  // };
+  
 
 
   const stationOptions = stations.map((station) => ({
@@ -623,6 +704,17 @@ const SearchComponent = ({
         `}
       </style>
       <div className="search-component" style={{ height:"150px" }}>
+      <ToastContainer 
+        position="top-right" 
+        autoClose={5000} 
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        
+        progress={undefined} 
+        limit={1}
+      />
         <div className="container">
           <div className="row justify-content-center align-items-center">
 
@@ -716,6 +808,24 @@ const SearchComponent = ({
                           />
                         </div>
                       </div>
+                      
+                      {warningMessage && (
+                        <div
+                          className="text-danger mt-2 d-flex align-items-center justify-content-end">
+                          <div style={{ 
+                            fontWeight: "500",
+                            backgroundColor: "#ffeeee", 
+                            padding: "10px 15px", 
+                            borderRadius: "8px",
+                            boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" 
+                          }}>
+                            <i className="fa fa-exclamation-circle me-2"></i>
+                            <span >{warningMessage}</span>
+                          </div>
+                        </div>
+                      )}
+
+
                     </div>
                   </div>
                   <div className="col-xl-4 col-lg-5 col-md-12">
@@ -739,7 +849,7 @@ const SearchComponent = ({
                             />
                             {calendarOpen && (
                               <div className="calendar-popup">
-                               <Calendar
+                              <Calendar
                                   onChange={(date) => {
                                     setJourneyDate(date);
                                     setCalendarOpen(false);

@@ -100,6 +100,7 @@ export const logoutEmailUser = (navigate) => (dispatch) => {
   localStorage.removeItem('googleUserName')
   dispatch({ type: LOGOUT_EMAIL_USER });
   if (navigate) {
-    navigate('/login');
+    navigate('/');
+    window.location.reload();
   }
 };
