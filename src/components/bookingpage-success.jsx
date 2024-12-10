@@ -17,14 +17,18 @@ import FooterDark from './footer-dark';
 import { useSelector } from 'react-redux';
 import { selectUserProfile } from '../store/Selectors/userSelector';
 import { selectGoogleUser } from '../store/Selectors/authSelectors';
+import { selectEmail } from '../store/Selectors/emailSelector';
 
 
 const BookingPageSuccess =() =>{
   const userProfile = useSelector(selectUserProfile);
   const googleUser = useSelector(selectGoogleUser);
+  const emailuser = useSelector(selectEmail);
   
-  // Get email from either Google user or user profile
-  const userEmail = googleUser?.email || userProfile.email || 'No email available';
+  const emailData1 = JSON.parse(emailuser);
+
+// Now we can access the email
+const userEmail = googleUser?.email || emailData1.email || 'No email available';
 
   return (
     <div>
