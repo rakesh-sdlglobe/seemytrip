@@ -137,7 +137,7 @@ const FlightList = () => {
 
               {/* Flight Search Results */}
               <div className="col-xl-9 col-lg-8 col-md-12">
-                <TopFilter />
+                {/* <TopFilter /> */}
                 <FlightSearchResult flightData={filteredFlights} filters={filters} />
               </div>
             </div>
