@@ -24,7 +24,7 @@ const BookingPageSuccess =() =>{
   const googleUser = useSelector(selectGoogleUser);
   
   // Get email from either Google user or user profile
-  const userEmail = googleUser?.email || userProfile?.email || '';
+  const userEmail = googleUser?.email || userProfile.email || 'No email available';
 
   return (
     <div>
@@ -113,7 +113,7 @@ const BookingPageSuccess =() =>{
                           <li className="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-6">
                             <div className="d-block">
                               <p className="text-dark fw-medium lh-2 mb-0">Email</p>
-                              <p className="text-muted mb-0 lh-2">paythemezhub@gmail.com</p>
+                              <p className="text-muted mb-0 lh-2">{userEmail}</p>
                             </div>
                           </li>
                         </ul>
