@@ -217,56 +217,90 @@ const PersonalInfo = () => {
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">Email ID</label>
-                                <input type="text" className="form-control"
+                                <div style={{ position: 'relative' }}>
+                                <input
+                                    type="text"
+                                    className="form-control"
                                     name="email"
                                     value={formData.email}
-                                    onChange={handleChange}
-                                    disabled={!isEditable || googleUser} />
-                                {isEditable && (
-                                    <div className="email-verification-message">
-                                        {userProfile?.isEmailVerified ? (
-                                            <small className="text-success">Your email is verified</small>
-                                        ) : (
-                                            <small className="text-danger">
-                                                Please verify your email{' '}
-                                                <span className="text-primary verify-link" onClick={handleVerifyClick}>
-                                                    Click here to verify
-                                                </span>
-                                            </small>
-                                        )}
-                                    </div>
+                                    style={{
+                                    backgroundColor: '#e0e0e0', // Cement color for disabled input
+                                    paddingRight: '50px', // Add space for the tick mark
+                                    }}
+                                    disabled={true}
+                                />
+                                {userProfile?.isEmailVerified && (
+                                    <span
+                                    style={{
+                                        position: 'absolute',
+                                        right: '10px',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '5px',
+                                        color: '#28a745', // Green color for text and tick
+                                        fontWeight: 'bold',
+                                    }}
+                                    >
+                                    <span
+                                        style={{
+                                        display: 'inline-flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        width: '20px',
+                                        height: '20px',
+                                        borderRadius: '50%',
+                                        backgroundColor: '#28a745', // Green background for the tick
+                                        color: 'white', // White tick mark
+                                        fontSize: '14px',
+                                        }}
+                                    >
+                                        ✓
+                                    </span>
+                                    Verified
+                                    </span>
                                 )}
+                                </div>
                             </div>
                         </div>
+
+
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">Mobile</label>
-                                <input 
+                                <div style={{ position: 'relative' }}>
+                                <input
                                     type="tel"
                                     className="form-control"
                                     name="mobile"
                                     value={formData.mobile}
-                                    onChange={handleChange}
                                     pattern="[0-9]*"
                                     inputMode="numeric"
-                                    disabled={!isEditable} 
+                                    disabled={!isEditable}
+                                    style={{
+                                    backgroundColor: !isEditable ? '#e0e0e0' : 'white', // Cement color for disabled input
+                                    paddingRight: '70px', // Add space for the verification text
+                                    }}
                                 />
-                                {isEditable && (
-                                    <div className="email-verification-message">
-                                        {formData.isMobileVerified ? (
-                                            <small className="text-success">Your mobile number is verified</small>
-                                        ) : (
-                                            <small className="text-danger">
-                                                Please verify your mobile{' '}
-                                                <span className="text-primary verify-link" onClick={handleVerifyClick}>
-                                                    Click here to verify
-                                                </span>
-                                            </small>
-                                        )}
-                                    </div>
-                                )}
+                                <button
+                                    style={{
+                                    position: 'absolute',
+                                    background:"none",
+                                    border:"none",
+                                    right: '10px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    color: formData.isMobileVerified ? '#28a745' : '#dc3545', // Green if verified, Red if not
+                                    fontWeight: 'bold',
+                                    }}
+                                >
+                                    {formData.isMobileVerified ? 'Verified' : 'Verify'}
+                                </button>
+                                </div>
                             </div>
                         </div>
+
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">Date of Birth</label>
