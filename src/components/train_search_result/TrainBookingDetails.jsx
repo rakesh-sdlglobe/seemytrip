@@ -5,8 +5,11 @@ import FooterDark from '../footer-dark';
 import { Link } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {useLocation} from 'react-router-dom';
 
 const TrainBookingDetails = () => {
+const location = useLocation();
+const trainData = location.state?.trainData;
   // Add max travelers constant
   const MAX_TRAVELERS = 6;
 
@@ -69,16 +72,16 @@ const TrainBookingDetails = () => {
 
   // Train details object
   const trainDetails = {
-    trainNumber: '11006',
-    trainName: 'CHALUKYA EXP',
-    from: 'Krishnarajapuram',
-    to: 'Mumbai Dadar Central',
-    class: 'Second AC • General',
-    departureTime: '04:40 AM',
+    trainNumber: trainData?.trainNumber ||'11006',
+    trainName: trainData?.trainName ||'CHALUKYA EXP',
+    from: trainData?.startStation ||'Krishnarajapuram',
+    to: trainData?.endStation ||'Mumbai Dadar Central',
+    class: trainData?.seatClass ||'Second AC • General',
+    departureTime: trainData?.departureTime ||'04:40 AM',
     departureDate: 'Thu, 14 Nov 24',
-    arrivalTime: '05:35 AM',
+    arrivalTime: trainData?.arrival_time ||'05:35 AM',
     arrivalDate: 'Fri, 15 Nov 24',
-    duration: '24h 55m',
+    duration: trainData?.duration ||'24h 55m',
   };
 
   // Handler functions
