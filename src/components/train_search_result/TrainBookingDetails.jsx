@@ -6,10 +6,12 @@ import { Link } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {useLocation} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const TrainBookingDetails = () => {
 const location = useLocation();
 const trainData = location.state?.trainData;
+const navigate = useNavigate();
   // Add max travelers constant
   const MAX_TRAVELERS = 6;
 
@@ -104,6 +106,25 @@ const trainData = location.state?.trainData;
     }
   };
 
+  //validate before payment
+  const validateBeforePayment = () => {
+    if(travelers.length === 0){
+      toast.error('please add at least one traveler')
+      return false;
+    }
+    if(!contactDetails.irctcUsername || !contactDetails.email || !contactDetails.phone || ! contactDetails.state){
+      toast.error('please fill all the required fields')
+      return false;
+    }
+    return true;
+  }
+// handle proceed to payment
+const handleProceedToPayment = (e)=>{
+  e.preventDefault();
+  if(validateBeforePayment()){
+    navigate('/booking-page-3')
+  }
+}
   // Update validateForm function
   const validateForm = () => {
     const errors = {};
@@ -448,7 +469,7 @@ const trainData = location.state?.trainData;
             </li>
           </ul>
 
-          <Link to="/booking-page-3" className="btn btn-primary w-100 mt-3">
+          <Link onClick={handleProceedToPayment} className="btn btn-primary w-100 mt-3">
             Proceed to Payment
           </Link>
         </div>
