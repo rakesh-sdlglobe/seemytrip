@@ -77,14 +77,22 @@ const PersonalInfo = () => {
     };
 
     const handleChange = (e) => {
-        if (e.target.name === 'mobile') {
-            // Only allow numbers
-            const value = e.target.value.replace(/[^0-9]/g, '');
-            setFormData({ ...formData, mobile: value });
+        const { name, value } = e.target;
+    
+        if (name === 'mobile') {
+            let formattedValue = value.replace(/[^0-9]/g, ''); 
+            if (formattedValue.length > 10) {
+                formattedValue = formattedValue.slice(0, 10);
+            }
+            if (formattedValue === '' || /^[6-9]/.test(formattedValue)) {
+                setFormData({ ...formData, mobile: formattedValue });
+            }
         } else {
-            setFormData({ ...formData, [e.target.name]: e.target.value });
+            setFormData({ ...formData, [name]: value });
         }
     };
+    
+    
 
 
     const handleSave = () => {
@@ -92,7 +100,7 @@ const PersonalInfo = () => {
         const userData = {
             name: formData.name,
             lastname: formData.lastname,
-            mobile: formData.mobile,
+            mobile: formData.mobile.length === 10 ? formData.mobile : "",
             dob: formData.dob,
             gender: formData.gender,
             email: formData.email,
@@ -103,6 +111,7 @@ const PersonalInfo = () => {
         
         dispatch(editUserProfile(userData));
         setIsEditable(false);
+        window.location.reload();
     };
 
     const handlePasswordChange = () => {
@@ -129,6 +138,12 @@ const PersonalInfo = () => {
         console.log(formData.email, newPassword);
         
     };
+
+    const handleMobileVerifyClick = () => {
+        if(formData.mobile){
+            alert("We will send the OTP later");
+        }
+    }
     
 
     const handleVerifyClick = () => {
@@ -229,7 +244,7 @@ const PersonalInfo = () => {
                                     }}
                                     disabled={true}
                                 />
-                                {userProfile?.isEmailVerified && (
+                                {formData?.isEmailVerified && (
                                     <span
                                     style={{
                                         position: 'absolute',
@@ -271,18 +286,20 @@ const PersonalInfo = () => {
                                 <label className="form-label">Mobile</label>
                                 <div style={{ position: 'relative' }}>
                                 <input
-                                    type="tel"
+                                    type="text"
                                     className="form-control"
                                     name="mobile"
                                     value={formData.mobile}
                                     pattern="[0-9]*"
                                     inputMode="numeric"
                                     disabled={!isEditable}
+                                    onChange={handleChange}
                                     style={{
-                                    backgroundColor: !isEditable ? '#e0e0e0' : 'white', // Cement color for disabled input
-                                    paddingRight: '70px', // Add space for the verification text
+                                        backgroundColor: !isEditable ? "#e0e0e0" : "white", // Cement color for disabled input
+                                        paddingRight: "70px", 
                                     }}
                                 />
+
                                 <button
                                     style={{
                                     position: 'absolute',
@@ -293,9 +310,10 @@ const PersonalInfo = () => {
                                     transform: 'translateY(-50%)',
                                     color: formData.isMobileVerified ? '#28a745' : '#dc3545', // Green if verified, Red if not
                                     fontWeight: 'bold',
-                                    }}
+                                }}
+                                onClick = {handleMobileVerifyClick}
                                 >
-                                    {formData.isMobileVerified ? 'Verified' : 'Verify'}
+                                    {formData.isMobileVerified ? 'Verified' : (formData.mobile && formData.mobile.length === 10) ?  'Verify' : null }
                                 </button>
                                 </div>
                             </div>

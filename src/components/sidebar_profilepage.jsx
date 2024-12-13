@@ -41,7 +41,7 @@ const SideBarProfilePage = () => {
                             <div className="p-2 d-flex align-items-center justify-content-center brd position-relative">
                                 <div className="d-flex flex-column align-items-end">
                                     <img
-                                        src={uploadedImage || "https://placehold.co/500x500"}
+                                        src={ "https://placehold.co/500x500"}
                                         className="img-fluid circle"
                                         style={{ 
                                             width:'120px',
