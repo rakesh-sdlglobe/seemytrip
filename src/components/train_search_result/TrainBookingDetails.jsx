@@ -27,12 +27,50 @@ const navigate = useNavigate();
 
   // Add new state for form validation and contact details
   const [formErrors, setFormErrors] = useState({});
+  const [errors, setErrors] = useState({ email: '', phone: '' });
   const [contactDetails, setContactDetails] = useState({
     irctcUsername: '',
     email: '',
     phone: '',
     state: '',
   });
+
+
+  const handleEmailChange = (e) => {
+    const email = e.target.value;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      email: emailRegex.test(email) || email === '' ? '' : 'Invalid email format',
+    }));
+    setContactDetails((prev) => ({ ...prev, email }));
+  };
+
+
+  const handlePhoneChange = (e) => {
+    const phone = e.target.value.replace(/\D/g, ''); // Remove non-digit characters
+    const maxPhoneLength = 10;
+    const phoneRegex = /^[6-9]\d{9}$/;
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      phone:
+        phone.length > maxPhoneLength
+          ? 'Phone number must be exactly 10 digits'
+          : phone === ''
+          ? 'Phone number is required'
+          : !phoneRegex.test(phone) 
+          ? "Invalid phone number " 
+          : '',
+    }));
+
+
+    setContactDetails((prev) => ({
+      ...prev,
+      phone: phone.slice(0, maxPhoneLength),
+    }));
+  };
 
   // Train details object
   const trainDetails = {
@@ -93,6 +131,8 @@ const handleProceedToPayment = (e)=>{
     
     if (!currentTraveler.name.trim()) {
       errors.name = 'Name is required';
+    } else if (!/^[a-zA-Z\s]+$/.test(currentTraveler.name.trim())) {
+      errors.name = 'Name should only contain letters and spaces';
     }
     if (!currentTraveler.age) {
       errors.age = 'Age is required';
@@ -456,7 +496,7 @@ const handleProceedToPayment = (e)=>{
           The IRCTC ID and Password will be required after payment to complete your booking.
         </small>
       </div>
-
+{/* 
       <div className="mb-3">
         <label htmlFor="email" className="form-label">Email ID*</label>
         <input
@@ -466,9 +506,9 @@ const handleProceedToPayment = (e)=>{
           value={contactDetails.email}
           onChange={(e) => setContactDetails({...contactDetails, email: e.target.value})}
         />
-      </div>
+      </div> */}
 
-      <div className="mb-3">
+      {/* <div className="mb-3">
         <label htmlFor="phone" className="form-label">Phone Number*</label>
         <input
           type="tel"
@@ -477,6 +517,36 @@ const handleProceedToPayment = (e)=>{
           value={contactDetails.phone}
           onChange={(e) => setContactDetails({...contactDetails, phone: e.target.value})}
         />
+      </div> */}
+
+      <div className="mb-3">
+        <label htmlFor="email" className="form-label">
+          Email ID*
+        </label>
+        <input
+          type="email"
+          className="form-control"
+          id="email"
+          value={contactDetails.email}
+          onChange={handleEmailChange}
+          required
+        />
+        {errors.email && <small className="text-danger">{errors.email}</small>}
+      </div>
+
+      <div className="mb-3">
+        <label htmlFor="phone" className="form-label">
+          Phone Number*
+        </label>
+        <input
+          type="tel"
+          className="form-control"
+          id="phone"
+          value={contactDetails.phone}
+          onChange={handlePhoneChange}
+          required
+        />
+        {errors.phone && <small className="text-danger">{errors.phone}</small>}
       </div>
 
       <div className="mb-3">
