@@ -121,10 +121,10 @@ const Login = () => {
                             </div>
                             <div className="modal-flex-item d-flex align-items-center justify-content-between mb-3">
                               <div className="modal-flex-first">
-                                <div className="form-check form-check-inline">
+                                {/* <div className="form-check form-check-inline">
                                   <input className="form-check-input" type="checkbox" id="savepassword" defaultValue="option1" />
                                   <label className="form-check-label" htmlFor="savepassword">Save Password</label>
-                                </div>
+                                </div> */}
                               </div>
                               <div className="modal-flex-last">
                                 <Link to="/forgot-password" className="text-primary fw-medium">Forgot Password?</Link>

@@ -349,6 +349,70 @@ const TrainList01 = () => {
                         </li>
                       </ul>
 
+                      {/* Quota  */}
+                      <div className="searchBar-single-title d-flex mb-1 mt-3">
+                        <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
+                          Quota
+                        </h6>
+                      </div>
+                      <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2">
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="1A"
+                              checked={filters["1A"]}
+                              onChange={onFilterChange}
+                            />
+                            <label className="form-check-label" htmlFor="1A">
+                              General
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="2A"
+                              checked={filters["2A"]}
+                              onChange={onFilterChange}
+                            />
+                            <label className="form-check-label" htmlFor="2A">
+                              Tatkal
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="3A"
+                              checked={filters["3A"]}
+                              onChange={onFilterChange}
+                            />
+                            <label className="form-check-label" htmlFor="3A">
+                              Lower Berth
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="SL"
+                              checked={filters.SL}
+                              onChange={onFilterChange}
+                            />
+                            <label className="form-check-label" htmlFor="SL">
+                             Ladies
+                            </label>
+                          </div>
+                        </li>
+                      </ul>
                       {/* Journey Class */}
                       <div className="searchBar-single-title d-flex mb-1 mt-3">
                         <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
