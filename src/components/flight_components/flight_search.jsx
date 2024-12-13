@@ -287,6 +287,20 @@ const FlightSearch = ({
     };
   }, [isGuestInputOpen]);
 
+  const handleJourneyCalendarClick = () => {
+    setShowReturnCalendar(false);
+    setShowJourneyCalendar(!showJourneyCalendar);
+  };
+
+  const handleReturnCalendarClick = (e) => {
+    e.stopPropagation();
+    setShowJourneyCalendar(false);
+    if (tripType === "one-way") {
+      setTripType("round-trip");
+    }
+    setShowReturnCalendar(!showReturnCalendar);
+  };
+
   return (
     <>
       <style>
@@ -765,7 +779,7 @@ color:gray;
 
                       {/* Journey Date */}
                       <div className="col-lg-2 col-md-6 col-12" style={{width:'14%'}}>
-                        <div className="form-group  mb-0 position-relative">
+                        <div className="form-group mb-0 position-relative">
                           <i className="fa-regular fa-calendar position-absolute" style={{ left: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}></i>
                           <input
                             type="text"
@@ -773,7 +787,7 @@ color:gray;
                             placeholder="Journey Date"
                             value={journeyDate ? format(journeyDate, "dd/MM/yyyy") : ""}
                             readOnly
-                            onClick={() => setShowJourneyCalendar(!showJourneyCalendar)}
+                            onClick={handleJourneyCalendarClick}
                             style={{paddingLeft:"30px"}}
                           />
                           {showJourneyCalendar && (
@@ -784,6 +798,7 @@ color:gray;
                               }}
                               value={journeyDate}
                               className="calendar-popup"
+                              minDate={new Date()}
                             />
                           )}
                         </div>
@@ -800,13 +815,7 @@ color:gray;
                             placeholder="Return Date"
                             value={returnDate ? format(returnDate, "dd/MM/yyyy") : ""}
                             readOnly
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (tripType === "one-way") {
-                                setTripType("round-trip");
-                              }
-                              setShowReturnCalendar((prevState) => !prevState);
-                            }}
+                            onClick={handleReturnCalendarClick}
                             style={{paddingLeft:"30px"}}
                           />
                           {returnDate && (
@@ -835,6 +844,7 @@ color:gray;
                               }}
                               value={returnDate}
                               className="calendar-popup"
+                              minDate={journeyDate || new Date()}
                             />
                           )}
                         </div>
