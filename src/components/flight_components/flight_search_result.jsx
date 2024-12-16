@@ -27,7 +27,7 @@ const FlightSearchResult = ({ flightData, filters }) => {
     }, [flightData, filters]);
 
     const handleBooking = (flight) => {
-        navigate('/flight-Bookingpage', { state: { flightData: flight } });
+        navigate('/flight-bookingpage01', { state: { flightData: flight } });
     };
 
     return (
