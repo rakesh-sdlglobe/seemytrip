@@ -219,6 +219,7 @@ const FlightSearchResult = ({ flightData, filters }) => {
                                 </div>
                             </div>
                         </div>
+                        
                     </div>
                 ))
             ) : (
