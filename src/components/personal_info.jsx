@@ -111,7 +111,7 @@ const PersonalInfo = () => {
         
         dispatch(editUserProfile(userData));
         setIsEditable(false);
-        window.location.reload();
+        // window.location.reload();
     };
 
     const handlePasswordChange = () => {
