@@ -1,36 +1,35 @@
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { selectUserProfile } from '../store/Selectors/userSelector';
-import { imageUpload } from '../store/Actions/userActions';
+// import { imageUpload } from '../store/Actions/userActions';
 
 const SideBarProfilePage = () => {
     const userProfile = useSelector(selectUserProfile);
     const [uploadedImage, setUploadedImage] = useState(null);
 
-    // if(userProfile){
-    //     const imageUrl = userProfile?.filepath.replace(/\\/g, "/");
-    //     setUploadedImage(imageUrl);
-    // }
-
-    
-    const handleImageUpload = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            setUploadedImage(URL.createObjectURL(file));
-            imageUpload(file);
-        }
-    };
-    console.log("17 from sidebar profilepage ",userProfile)
+    // Handle image upload functionality (commented out for now)
+    // const handleImageUpload = (event) => {
+    //     const file = event.target.files[0];
+    //     if (file) {
+    //         setUploadedImage(URL.createObjectURL(file));
+    //         imageUpload(file);
+    //     }
+    // };
 
     useEffect(() => {
         if (userProfile && userProfile.filepath) {
             const imageUrl = `${process.env.REACT_APP_API_URL}/uploads/${userProfile.filepath.split("uploads\\")[1] || userProfile.filepath.split("uploads/")[1]}`;
-            console.log(imageUrl);
-            
             setUploadedImage(imageUrl);
-
         }
     }, [userProfile]);
+
+    // Function to render the first letter of the user's name
+    const renderInitial = () => {
+        if (userProfile?.name) {
+            return userProfile.name.charAt(0).toUpperCase();
+        }
+        return "G"; // Default for "Guest User"
+    };
 
     return (
         <div className="col-xl-4 col-lg-4 col-md-12">
@@ -39,15 +38,27 @@ const SideBarProfilePage = () => {
                     <div className="py-5 px-3">
                         <div className="crd-thumbimg text-center">
                             <div className="p-2 d-flex align-items-center justify-content-center brd position-relative">
-                                <div className="d-flex flex-column align-items-end">
+                                <div 
+                                    className="circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                                    style={{
+                                        width: '120px',
+                                        height: '120px',
+                                        fontSize: '3rem',
+                                        fontWeight: 'bold',
+                                    }}
+                                >
+                                    {renderInitial()}
+                                </div>
+                                {/* Display user image functionality commented out */}
+                                {/* <div className="d-flex flex-column align-items-end">
                                     <img
                                         src={ "https://placehold.co/500x500"}
                                         className="img-fluid circle"
                                         style={{ 
-                                            width:'120px',
-                                            height:'120px',
-                                            objectFit:'cover'
-                                         }}
+                                            width: '120px',
+                                            height: '120px',
+                                            objectFit: 'cover'
+                                        }}
                                         alt="Profile"
                                     />
                                     <label style={{ 
@@ -70,7 +81,7 @@ const SideBarProfilePage = () => {
                                             style={{ display: 'none' }}
                                         />
                                     </label>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                         <div className="crd-capser text-center mt-4">
@@ -81,6 +92,7 @@ const SideBarProfilePage = () => {
                         </div>
                     </div>
                 </div>
+                {/* Other card middle functionality */}
                 {/* <div className="card-middle mt-5 mb-4 px-4">
                     <div className="revs-wraps mb-3">
                         <div className="revs-wraps-flex d-flex align-items-center justify-content-between mb-1">

@@ -444,6 +444,9 @@ const HomeFlight = () => {
             </div>
           </div>
         </section>
+        <section className="py-5">
+          <AppApk />
+        </section>
         {/* ============================ Popular Domestic Routes End ================================== */}
         {/* ============================ Popular Destination Start ================================== */}
         {/* <section className="pt-0 pb-5">
@@ -558,9 +561,7 @@ const HomeFlight = () => {
         </section> */}
         {/* ============================ Popular Destination End ================================== */}
         {/* ============================ Google & IOS App Start ================================== */}
-        <section className="py-5">
-           <AppApk/>
-        </section>
+        
         {/* ============================ Google & IOS App End ================================== */}
         {/* ============================ Featured Rental Property Start ================================== */}
         {/* <section className="py-0">
