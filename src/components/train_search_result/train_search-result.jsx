@@ -213,7 +213,7 @@ const handleBooking = (train) =>{
                     {train.seats.map((cls, index) => (
                       <div key={index} className="col-auto">
                         <div
-                          className="availability-card p-3"
+                          className="availability-card p-3 position-relative"
                           style={{
                             minWidth: "180px",
                             background: cls.availableSeats ? "linear-gradient(145deg, #e8f5e9, #f1f8e9)" : "linear-gradient(145deg, #ffebee, #fce4ec)",
@@ -225,6 +225,18 @@ const handleBooking = (train) =>{
                           }}
                           onClick={() => handleBooking(train)}
                         >
+                          <div 
+                            className="position-absolute badge bg-danger"
+                            style={{
+                              top: "-10px",
+                              right: "10px",
+                              fontSize: "0.7rem",
+                              padding: "4px 8px",
+                              zIndex: "1"
+                            }}
+                          >
+                            Tatkal
+                          </div>
                           <div className="d-flex justify-content-between align-items-center mb-2">
                             <h6 className="mb-0 fw-bold" style={{color: cls.availableSeats ? "#2e7d32" : "#c62828"}}>{cls.seatClass}</h6>
                             <div className="price fw-bold">₹{cls.price}</div>

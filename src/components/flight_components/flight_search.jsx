@@ -247,6 +247,60 @@ const FlightSearch = ({
     };
   }, []);
 
+  const [isGuestInputOpen, setIsGuestInputOpen] = useState(false);
+  const [adultsCount, setAdultsCount] = useState(1);
+  const [childrenCount, setChildrenCount] = useState(0);
+  const [infantsCount, setInfantsCount] = useState(0);
+
+  const updateCount = (type, operation) => {
+    const maxGuests = 9; // Maximum total guests allowed
+    const totalGuests = adultsCount + childrenCount + infantsCount;
+
+    if (operation === 'add' && totalGuests >= maxGuests) return;
+
+    switch (type) {
+      case 'adults':
+        if (operation === 'add') setAdultsCount(prev => prev + 1);
+        else if (operation === 'subtract' && adultsCount > 1) setAdultsCount(prev => prev - 1);
+        break;
+      case 'children':
+        if (operation === 'add') setChildrenCount(prev => prev + 1);
+        else if (operation === 'subtract' && childrenCount > 0) setChildrenCount(prev => prev - 1);
+        break;
+      case 'infants':
+        if (operation === 'add') setInfantsCount(prev => prev + 1);
+        else if (operation === 'subtract' && infantsCount > 0) setInfantsCount(prev => prev - 1);
+        break;
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isGuestInputOpen && !event.target.closest('.guests-dropdown') && !event.target.closest('.guest-selector-btn')) {
+        setIsGuestInputOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isGuestInputOpen]);
+
+  const handleJourneyCalendarClick = () => {
+    setShowReturnCalendar(false);
+    setShowJourneyCalendar(!showJourneyCalendar);
+  };
+
+  const handleReturnCalendarClick = (e) => {
+    e.stopPropagation();
+    setShowJourneyCalendar(false);
+    if (tripType === "one-way") {
+      setTripType("round-trip");
+    }
+    setShowReturnCalendar(!showReturnCalendar);
+  };
+
   return (
     <>
       <style>
@@ -374,9 +428,7 @@ const FlightSearch = ({
     line-height: 1.125em;
     
 }
-    .calendar-popup { 
 
-}
 
 
 .css-1wy0on6{
@@ -442,6 +494,110 @@ color:gray;
   background-color: #cd2c22 !important;
   border-color: #cd2c22 !important;
 }
+
+.guest-selector-btn {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 15px 20px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  min-width: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.guest-selector-btn:hover {
+  border-color: #d20000;
+}
+
+.guests-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 16px;
+  min-width: 280px;
+  z-index: 1000;
+}
+
+.guest-type-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.guest-type-row:last-child {
+  border-bottom: none;
+}
+
+.counter-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ctrl-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #e0e0e0;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ctrl-btn:hover:not(.disabled) {
+  background: #f5f5f5;
+  border-color: #d20000;
+  color: #d20000;
+}
+
+.ctrl-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f5f5f5;
+}
+
+.class-selector {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 15px 20px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  min-width: 160px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 40px;
+}
+
+.class-selector:hover {
+  border-color: #d20000;
+}
+
+/* Add click-outside handling for the guests dropdown */
+.dropdown-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+}
   
         `}
       </style>
@@ -476,27 +632,89 @@ color:gray;
                           Round Trip
                         </label>
                       </div>
-                      <div className="dropdown-container">
-                        <select
-                          value={travellers}
-                          onChange={handleTravellersChange}
-                          className="form-select"
-                        >
-                          <option value={1}>Adults(12Y+)</option>
-                          <option value={2}>Children(2Y-12Y)</option>
-                          <option value={3}>Infants(below 2y)</option>
-                          {/* Add more options as needed */}
-                        </select>
-                        &nbsp;&nbsp;
-                        <select
-                          value={travelClass}
-                          onChange={handleTravelClassChange}
-                          className="form-select"
-                        >
-                          <option value="Economy">Economy</option>
-                          <option value="Business">Business</option>
-                          <option value="First">First Class</option>
-                        </select>
+                      <div className="dropdown-container d-flex gap-2">
+                        <div className="position-relative">
+                          <button 
+                            className="guest-selector-btn d-flex align-items-center gap-2"
+                            onClick={() => setIsGuestInputOpen(!isGuestInputOpen)}
+                          >
+                            <i className="fa-solid fa-user"></i>
+                            <span>{`${adultsCount + childrenCount + infantsCount} Traveller(s)`}</span>
+                          </button>
+                          
+                          {isGuestInputOpen && (
+                            <div className="guests-dropdown">
+                              <div className="guest-type-row">
+                                <span>Adults (12y+)</span>
+                                <div className="counter-controls">
+                                  <button 
+                                    className={`ctrl-btn ${adultsCount <= 1 ? 'disabled' : ''}`}
+                                    onClick={() => updateCount('adults', 'subtract')}
+                                  >
+                                    <i className="fa-solid fa-minus"></i>
+                                  </button>
+                                  <span>{adultsCount}</span>
+                                  <button 
+                                    className="ctrl-btn"
+                                    onClick={() => updateCount('adults', 'add')}
+                                  >
+                                    <i className="fa-solid fa-plus"></i>
+                                  </button>
+                                </div>
+                              </div>
+
+                              <div className="guest-type-row">
+                                <span>Children (2-12y)</span>
+                                <div className="counter-controls">
+                                  <button 
+                                    className={`ctrl-btn ${childrenCount <= 0 ? 'disabled' : ''}`}
+                                    onClick={() => updateCount('children', 'subtract')}
+                                  >
+                                    <i className="fa-solid fa-minus"></i>
+                                  </button>
+                                  <span>{childrenCount}</span>
+                                  <button 
+                                    className="ctrl-btn"
+                                    onClick={() => updateCount('children', 'add')}
+                                  >
+                                    <i className="fa-solid fa-plus"></i>
+                                  </button>
+                                </div>
+                              </div>
+
+                              <div className="guest-type-row">
+                                <span>Infants (below 2y)</span>
+                                <div className="counter-controls">
+                                  <button 
+                                    className={`ctrl-btn ${infantsCount <= 0 ? 'disabled' : ''}`}
+                                    onClick={() => updateCount('infants', 'subtract')}
+                                  >
+                                    <i className="fa-solid fa-minus"></i>
+                                  </button>
+                                  <span>{infantsCount}</span>
+                                  <button 
+                                    className="ctrl-btn"
+                                    onClick={() => updateCount('infants', 'add')}
+                                  >
+                                    <i className="fa-solid fa-plus"></i>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="position-relative">
+                          <select
+                            value={travelClass}
+                            onChange={handleTravelClassChange}
+                            className="class-selector"
+                          >
+                            <option value="Economy">Economy</option>
+                            <option value="Business">Business</option>
+                            <option value="First">First Class</option>
+                          </select>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -561,7 +779,7 @@ color:gray;
 
                       {/* Journey Date */}
                       <div className="col-lg-2 col-md-6 col-12" style={{width:'14%'}}>
-                        <div className="form-group  mb-0 position-relative">
+                        <div className="form-group mb-0 position-relative">
                           <i className="fa-regular fa-calendar position-absolute" style={{ left: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}></i>
                           <input
                             type="text"
@@ -569,7 +787,7 @@ color:gray;
                             placeholder="Journey Date"
                             value={journeyDate ? format(journeyDate, "dd/MM/yyyy") : ""}
                             readOnly
-                            onClick={() => setShowJourneyCalendar(!showJourneyCalendar)}
+                            onClick={handleJourneyCalendarClick}
                             style={{paddingLeft:"30px"}}
                           />
                           {showJourneyCalendar && (
@@ -580,10 +798,12 @@ color:gray;
                               }}
                               value={journeyDate}
                               className="calendar-popup"
+                              minDate={new Date()}
                             />
                           )}
                         </div>
                       </div>
+                      
 
                       {/* Return Date */}
                       <div className="col-lg-1 col-md-6 col-12" style={{width:'16%'}}>
@@ -595,13 +815,7 @@ color:gray;
                             placeholder="Return Date"
                             value={returnDate ? format(returnDate, "dd/MM/yyyy") : ""}
                             readOnly
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (tripType === "one-way") {
-                                setTripType("round-trip");
-                              }
-                              setShowReturnCalendar((prevState) => !prevState);
-                            }}
+                            onClick={handleReturnCalendarClick}
                             style={{paddingLeft:"30px"}}
                           />
                           {returnDate && (
@@ -630,6 +844,7 @@ color:gray;
                               }}
                               value={returnDate}
                               className="calendar-popup"
+                              minDate={journeyDate || new Date()}
                             />
                           )}
                         </div>

@@ -52,7 +52,7 @@ const SideBarProfilePage = () => {
                                 {/* Display user image functionality commented out */}
                                 {/* <div className="d-flex flex-column align-items-end">
                                     <img
-                                        src={uploadedImage || "https://placehold.co/500x500"}
+                                        src={ "https://placehold.co/500x500"}
                                         className="img-fluid circle"
                                         style={{ 
                                             width: '120px',
