@@ -77,22 +77,14 @@ const PersonalInfo = () => {
     };
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-    
-        if (name === 'mobile') {
-            let formattedValue = value.replace(/[^0-9]/g, ''); 
-            if (formattedValue.length > 10) {
-                formattedValue = formattedValue.slice(0, 10);
-            }
-            if (formattedValue === '' || /^[6-9]/.test(formattedValue)) {
-                setFormData({ ...formData, mobile: formattedValue });
-            }
+        if (e.target.name === 'mobile') {
+            // Only allow numbers
+            const value = e.target.value.replace(/[^0-9]/g, '');
+            setFormData({ ...formData, mobile: value });
         } else {
-            setFormData({ ...formData, [name]: value });
+            setFormData({ ...formData, [e.target.name]: e.target.value });
         }
     };
-    
-    
 
 
     const handleSave = () => {
@@ -100,7 +92,7 @@ const PersonalInfo = () => {
         const userData = {
             name: formData.name,
             lastname: formData.lastname,
-            mobile: formData.mobile.length === 10 ? formData.mobile : "",
+            mobile: formData.mobile,
             dob: formData.dob,
             gender: formData.gender,
             email: formData.email,
@@ -111,7 +103,6 @@ const PersonalInfo = () => {
         
         dispatch(editUserProfile(userData, navigate));
         setIsEditable(false);
-        window.location.reload();
     };
 
     const handlePasswordChange = () => {
@@ -138,12 +129,6 @@ const PersonalInfo = () => {
         console.log(formData.email, newPassword);
         
     };
-
-    const handleMobileVerifyClick = () => {
-        if(formData.mobile){
-            alert("We will send the OTP later");
-        }
-    }
     
 
     const handleVerifyClick = () => {
@@ -232,93 +217,56 @@ const PersonalInfo = () => {
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">Email ID</label>
-                                <div style={{ position: 'relative' }}>
-                                <input
-                                    type="text"
-                                    className="form-control"
+                                <input type="text" className="form-control"
                                     name="email"
                                     value={formData.email}
-                                    style={{
-                                    backgroundColor: '#e0e0e0', // Cement color for disabled input
-                                    paddingRight: '50px', // Add space for the tick mark
-                                    }}
-                                    disabled={true}
-                                />
-                                {formData?.isEmailVerified && (
-                                    <span
-                                    style={{
-                                        position: 'absolute',
-                                        right: '10px',
-                                        top: '50%',
-                                        transform: 'translateY(-50%)',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '5px',
-                                        color: '#28a745', // Green color for text and tick
-                                        fontWeight: 'bold',
-                                    }}
-                                    >
-                                    <span
-                                        style={{
-                                        display: 'inline-flex',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        width: '20px',
-                                        height: '20px',
-                                        borderRadius: '50%',
-                                        backgroundColor: '#28a745', // Green background for the tick
-                                        color: 'white', // White tick mark
-                                        fontSize: '14px',
-                                        }}
-                                    >
-                                        ✓
-                                    </span>
-                                    Verified
-                                    </span>
+                                    onChange={handleChange}
+                                    disabled={!isEditable || googleUser} />
+                                {isEditable && (
+                                    <div className="email-verification-message">
+                                        {userProfile?.isEmailVerified ? (
+                                            <small className="text-success">Your email is verified</small>
+                                        ) : (
+                                            <small className="text-danger">
+                                                Please verify your email{' '}
+                                                <span className="text-primary verify-link" onClick={handleVerifyClick}>
+                                                    Click here to verify
+                                                </span>
+                                            </small>
+                                        )}
+                                    </div>
                                 )}
-                                </div>
                             </div>
                         </div>
-
-
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">Mobile</label>
-                                <div style={{ position: 'relative' }}>
-                                <input
-                                    type="text"
+                                <input 
+                                    type="tel"
                                     className="form-control"
                                     name="mobile"
                                     value={formData.mobile}
+                                    onChange={handleChange}
                                     pattern="[0-9]*"
                                     inputMode="numeric"
-                                    disabled={!isEditable}
-                                    onChange={handleChange}
-                                    style={{
-                                        backgroundColor: !isEditable ? "#e0e0e0" : "white", // Cement color for disabled input
-                                        paddingRight: "70px", 
-                                    }}
+                                    disabled={!isEditable} 
                                 />
-
-                                <button
-                                    style={{
-                                    position: 'absolute',
-                                    background:"none",
-                                    border:"none",
-                                    right: '10px',
-                                    top: '50%',
-                                    transform: 'translateY(-50%)',
-                                    color: formData.isMobileVerified ? '#28a745' : '#dc3545', // Green if verified, Red if not
-                                    fontWeight: 'bold',
-                                }}
-                                onClick = {handleMobileVerifyClick}
-                                >
-                                    {formData.isMobileVerified ? 'Verified' : (formData.mobile && formData.mobile.length === 10) ?  'Verify' : null }
-                                </button>
-                                </div>
+                                {isEditable && (
+                                    <div className="email-verification-message">
+                                        {formData.isMobileVerified ? (
+                                            <small className="text-success">Your mobile number is verified</small>
+                                        ) : (
+                                            <small className="text-danger">
+                                                Please verify your mobile{' '}
+                                                <span className="text-primary verify-link" onClick={handleVerifyClick}>
+                                                    Click here to verify
+                                                </span>
+                                            </small>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
-
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">Date of Birth</label>
