@@ -101,7 +101,7 @@ const PersonalInfo = () => {
         setIsEditable(userData.isEmailVerified ? true : false)
         console.log("93 the userData is ",userData);
         
-        dispatch(editUserProfile(userData));
+        dispatch(editUserProfile(userData, navigate));
         setIsEditable(false);
     };
 

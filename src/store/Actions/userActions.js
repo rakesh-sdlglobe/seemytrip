@@ -53,7 +53,7 @@ export const getUserProfile = () => {
   };
 };
 // Edit user profile
-export const editUserProfile = (userData) => {
+export const editUserProfile = (userData,navigate) => {
   return async (dispatch) => {
     const authToken = localStorage.authToken; 
     console.log("57 YEs ");
@@ -71,6 +71,8 @@ export const editUserProfile = (userData) => {
       
       
       dispatch({ type: EDIT_USER_PROFILE_SUCCESS, payload: response.data.user });
+       // Navigate to home page
+      navigate('/');  // This will redirect to the home page
     } catch (error) {    
       dispatch({ type: EDIT_USER_PROFILE_FAILURE, payload: error.response.data.message });
     }
