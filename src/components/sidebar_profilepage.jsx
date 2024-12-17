@@ -1,11 +1,11 @@
 import { useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
+// import { useEffect, useState } from 'react';
 import { selectUserProfile } from '../store/Selectors/userSelector';
 // import { imageUpload } from '../store/Actions/userActions';
 
 const SideBarProfilePage = () => {
     const userProfile = useSelector(selectUserProfile);
-    const [uploadedImage, setUploadedImage] = useState(null);
+    // const [uploadedImage, setUploadedImage] = useState(null);
 
     // Handle image upload functionality (commented out for now)
     // const handleImageUpload = (event) => {
@@ -16,12 +16,12 @@ const SideBarProfilePage = () => {
     //     }
     // };
 
-    useEffect(() => {
-        if (userProfile && userProfile.filepath) {
-            const imageUrl = `${process.env.REACT_APP_API_URL}/uploads/${userProfile.filepath.split("uploads\\")[1] || userProfile.filepath.split("uploads/")[1]}`;
-            setUploadedImage(imageUrl);
-        }
-    }, [userProfile]);
+    // useEffect(() => {
+    //     if (userProfile && userProfile.filepath) {
+    //         const imageUrl = `${process.env.REACT_APP_API_URL}/uploads/${userProfile.filepath.split("uploads\\")[1] || userProfile.filepath.split("uploads/")[1]}`;
+    //         setUploadedImage(imageUrl);
+    //     }
+    // }, [userProfile]);
 
     // Function to render the first letter of the user's name
     const renderInitial = () => {

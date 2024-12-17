@@ -143,6 +143,9 @@ const PersonalInfo = () => {
         if(formData.mobile){
             alert("We will send the OTP later");
         }
+        else if(formData.email){
+            alert("SS email")
+        }
     }
     
 
@@ -216,7 +219,7 @@ const PersonalInfo = () => {
                                     name="name"
                                     value={formData.name}
                                     onChange={handleChange}
-                                    disabled={!isEditable || googleUser} />
+                                    disabled={!isEditable} />
                             </div>
                         </div>
                         <div className="col-xl-6 col-lg-6 col-md-6">
@@ -238,13 +241,14 @@ const PersonalInfo = () => {
                                     className="form-control"
                                     name="email"
                                     value={formData.email}
+                                    onChange={handleChange}
                                     style={{
-                                    backgroundColor: '#e0e0e0', // Cement color for disabled input
+                                    backgroundColor: formData.isEmailVerified === 0 && !isEditable ?"#e0e0e0" : "white", 
                                     paddingRight: '50px', // Add space for the tick mark
                                     }}
-                                    disabled={true}
+                                    disabled={ formData.isEmailVerified || !isEditable }
                                 />
-                                {formData?.isEmailVerified && (
+                                {formData?.isEmailVerified ? (
                                     <span
                                     style={{
                                         position: 'absolute',
@@ -275,6 +279,22 @@ const PersonalInfo = () => {
                                     </span>
                                     Verified
                                     </span>
+                                ) : (
+                                    <button
+                                    style={{
+                                    position: 'absolute',
+                                    background:"none",
+                                    border:"none",
+                                    right: '10px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    color: formData.isEmailVerified ? '#28a745' : '#dc3545', // Green if verified, Red if not
+                                    fontWeight: 'bold',
+                                }}
+                                onClick = {handleVerifyClick}
+                                >
+                                    Verify
+                                </button>
                                 )}
                                 </div>
                             </div>
@@ -313,7 +333,7 @@ const PersonalInfo = () => {
                                 }}
                                 onClick = {handleMobileVerifyClick}
                                 >
-                                    {formData.isMobileVerified ? 'Verified' : (formData.mobile && formData.mobile.length === 10) ?  'Verify' : null }
+                                    {formData.isMobileVerified === 1 ? 'Verified' : (formData.mobile && formData.mobile.length === 10) ?  'Verify' : null }
                                 </button>
                                 </div>
                             </div>
@@ -332,7 +352,7 @@ const PersonalInfo = () => {
                                     name="gender"
                                     value={formData.gender}
                                     onChange={handleChange}
-                                    disabled={!isEditable}>
+                                    disabled={!isEditable }>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
                                     <option value="Other">Other</option>
