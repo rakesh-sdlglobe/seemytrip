@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
 import Calendar from 'react-calendar';
@@ -41,10 +41,15 @@ const SearchComponent = ({
   // const [availableBerth, setAvailableBerth] = useState(false);
   // const [railwayPassConcession, setRailwayPassConcession] = useState(false);
   const [currentHighlightIndex, setCurrentHighlightIndex] = useState(0);
+  
   const [warningMessage,setWarningMessage] = useState('')
   const [lastToastTime, setLastToastTime] = useState(0);  
   const toastDelay = 5000; 
 
+  const fromStationRef = useRef(null);
+  const toStationRef = useRef(null);
+  const journeyDateRef = useRef(null);
+  
   const highlights = [
     {
       text: "Free cancellation and get a full refund",
@@ -97,12 +102,13 @@ const SearchComponent = ({
 
   const handleFromStationChange = (selectedOption) => {
     setLeavingFrom(selectedOption);
-    validateStations(selectedOption,goingTo );
+    validateStations(selectedOption,goingTo,journeyDate);
+    
   };
 
   const handleToStationChange = (selectedOption) => {
     setGoingTo(selectedOption);
-    validateStations( selectedOption,leavingFrom);
+    validateStations( selectedOption,leavingFrom,journeyDate);
   };
 
   
@@ -112,8 +118,14 @@ const SearchComponent = ({
     setGoingTo(temp);
   };
 
-  const validateStations = (from, to) => {
-    if (from && to && from.value === to.value) {
+  const validateStations = (from, to, date ) => {
+    if(from && !to){
+      toStationRef.current.focus();
+      toStationRef.current.onMenuOpen();
+    }else if(to && !date) {
+      journeyDateRef.current.focus();
+      setCalendarOpen(true)
+    }else if (from && to && from.value === to.value) {
       setWarningMessage("From and To stations shouldn't be the same");
     } else {
       setWarningMessage(''); // Clear the warning if stations are valid
@@ -131,10 +143,17 @@ const SearchComponent = ({
   const handleSearch = () => {
     if (!leavingFrom || !goingTo || !journeyDate) {
       showToast('Please fill all the fields !', 'warn');
-      return;
-    }
-
-    else if (leavingFrom.value === goingTo.value) {
+      if(!leavingFrom){
+        fromStationRef.current.focus();
+        fromStationRef.current.onMenuOpen();
+      }else if(!goingTo){
+        toStationRef.current.focus();
+        toStationRef.current.onMenuOpen();
+      }else if(!journeyDate){
+        journeyDateRef.current.focus();
+        setCalendarOpen(true)
+      }
+    }else if (leavingFrom.value === goingTo.value) {
       showToast('Stations should not be the same !', 'error');
       return;
     }else{
@@ -706,6 +725,7 @@ const SearchComponent = ({
                             id="fromStation"
                             options={stationOptions}
                             value={leavingFrom}
+                            ref={fromStationRef}
                             onChange={handleFromStationChange}
                             placeholder="From"
                             styles={customSelectStyles}
@@ -738,6 +758,7 @@ const SearchComponent = ({
                           <Select
                             className="icon-select"
                             id="toStation"
+                            ref={toStationRef}
                             options={stationOptions}
                             value={goingTo}
                             onChange={handleToStationChange}
@@ -785,6 +806,7 @@ const SearchComponent = ({
                               type="text"
                               readOnly
                               className="form-control"
+                              ref={journeyDateRef}
                               value={journeyDate ? journeyDate.toLocaleDateString() : ''}
                               onClick={() => setCalendarOpen(!calendarOpen)}
                               placeholder="Date"

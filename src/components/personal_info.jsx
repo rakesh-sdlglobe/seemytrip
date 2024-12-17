@@ -243,7 +243,7 @@ const PersonalInfo = () => {
                                     value={formData.email}
                                     onChange={handleChange}
                                     style={{
-                                    backgroundColor: formData.isEmailVerified === 0 && !isEditable ?"#e0e0e0" : "white", 
+                                    backgroundColor: formData.isEmailVerified && isEditable ? "#e0e0e0" : formData.isEmailVerified === 0 && isEditable ? "white" : "#e0e0e0" , 
                                     paddingRight: '50px', // Add space for the tick mark
                                     }}
                                     disabled={ formData.isEmailVerified || !isEditable }

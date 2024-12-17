@@ -11,6 +11,8 @@ import '../assets/css/prism.css';
 import '../assets/css/bootstrap-icons.css';
 import '../assets/css/fontawesome.css';
 import '../assets/css/style.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { trainImage, login } from '../assets/images';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -54,12 +56,18 @@ const Login = () => {
       console.log('Credential Response:', credentialResponse);
       console.log('Access Token:', credentialResponse.access_token);
       dispatch(handleGoogleLogin(credentialResponse.access_token, navigate));
+      toast.success("Google Logged In Sucessfully")
+
     },
-    onError: () => console.error('Google Login Failed'),
+    onError: () => {
+      console.error('Google Login Failed');
+      toast.error("Google Login Failed");
+    }
   });
 
   return (
     <div>
+      <ToastContainer />
       <div id="preloader">
         <div className="preloader"><span /><span /></div>
       </div>
