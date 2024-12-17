@@ -11,7 +11,40 @@ const FlightSeatSelection = () => {
   const navigate = useNavigate();
   const flightData = location.state?.flightData;
   const travelers = location.state?.travelers || [];
-
+ const renderBookingStepper = () => (
+    <div className="col-xl-12 col-lg-12 col-md-12">
+      <div id="stepper" className="bs-stepper stepper-outline mb-5">
+        <div className="bs-stepper-header">
+          <div className="step completed" data-target="#step-1">
+            <div className="text-center">
+              <button className="step-trigger mb-0" id="steppertrigger1">
+                <span className="bs-stepper-circle">1</span>
+              </button>
+              <h6 className="bs-stepper-label d-none d-md-block">Flight Review</h6>
+            </div>
+          </div>
+          <div className="line" />
+          <div className="step active" data-target="#step-2">
+            <div className="text-center">
+              <button className="step-trigger mb-0" id="steppertrigger2">
+                <span className="bs-stepper-circle">2</span>
+              </button>
+              <h6 className="bs-stepper-label d-none d-md-block">Select Seats</h6>
+            </div>
+          </div>
+          <div className="line" />
+          <div className="step" data-target="#step-3">
+            <div className="text-center">
+              <button className="step-trigger mb-0" id="steppertrigger3">
+                <span className="bs-stepper-circle">3</span>
+              </button>
+              <h6 className="bs-stepper-label d-none d-md-block">Make Payment</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
   // State for selected seats
   const [selectedSeats, setSelectedSeats] = useState({});
 
@@ -108,6 +141,10 @@ const FlightSeatSelection = () => {
 
       <section className="pt-4 pb-4 gray-simple position-relative">
         <div className="container">
+          <div className="row">
+            {renderBookingStepper()}
+          </div>
+
           <div className="row">
             <div className="col-12">
               <div className="card p-4">
