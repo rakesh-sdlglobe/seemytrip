@@ -111,6 +111,7 @@ import SearchbyStation from './components/Features/SearchbyStation.jsx';
 import TatkalRailwayreservation from './components/Features/TatkalRailwayreservation.jsx';
 import Platformlocator from './components/Features/Platformlocator.jsx';
 import BackToTop from './components/BackToTop';
+import FlightSeatSelection from './components/flight_components/FlightSeatSelection.jsx';
 
 
 function App() {
@@ -182,8 +183,9 @@ function App() {
           <Route path="/flight-list-02" element={<FlightList02 />} />
           <Route path="/flight-detail" element={<FlightDetail />} />
           <Route path="/flight-Bookingpage" element={<FlightBookingpage01/>} />
+          <Route path="/flight-seat-selection" element={<FlightSeatSelection />} />
           <Route path="/flight-Bookingpage02" element={<FlightBookingPage02/>} />
-
+          
           {/* Hotel Routes */}
           <Route path="/home-hotel" element={<HomeHotel />} />
           <Route path="/hotel-list-01" element={<HotelList01 />} />
