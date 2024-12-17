@@ -85,10 +85,37 @@ const FlightSearch = ({
       sessionStorage.setItem("journeyDate", format(journeyDate, "dd/MM/yyyy"));
   }, [fromAirport, toAirport, journeyDate]);
 
-  const handleFromAirportChange = (selectedOption) =>
+
+  const [warningMessage, setWarningMessage] = useState('');
+  const [lastToastTime, setLastToastTime] = useState(0);
+  const toastDelay = 3000;
+
+  const validateAirports = (from, to) => {
+    if (from && to && from.value === to.value) {
+      setWarningMessage("Both airports shouldn't be the same.");
+    } else {
+      setWarningMessage(''); // Clear the warning if valid
+    }
+  };
+
+  const handleFromAirportChange = (selectedOption) => {
     setFromAirport(selectedOption);
-  const handleToAirportChange = (selectedOption) =>
+    validateAirports(selectedOption, toAirport); 
+
+  }
+  const handleToAirportChange = (selectedOption) => {
     setToAirport(selectedOption);
+    validateAirports(fromAirport,selectedOption);
+  }
+
+
+  
+  
+  
+  
+  
+  
+  
   const handleJourneyDateChange = (date) => setJourneyDate(date);
 
   const handleSwapLocations = () => {
@@ -271,6 +298,8 @@ const FlightSearch = ({
         if (operation === 'add') setInfantsCount(prev => prev + 1);
         else if (operation === 'subtract' && infantsCount > 0) setInfantsCount(prev => prev - 1);
         break;
+      default : 
+        console.log("");
     }
   };
 
@@ -727,7 +756,6 @@ color:gray;
                       {/* From Airport */}
                       <div className="col-lg-3 col-md-6 col-12">
                         <div className="form-group form-control mb-0 d-flex align-items-center position-relative">
-                       
                           <i className="fa-solid fa-plane-departure position-absolute" style={{ left: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 100 }}></i>
                           {/* {leavingLabel && (
                             <label className="text-light text-uppercase opacity-75">
@@ -759,21 +787,44 @@ color:gray;
 
                       {/* To Airport */}
                       <div className="col-lg-3 col-md-6 col-12">
-                        <div className="form-group form-control  mb-0 d-flex align-items-center position-relative">
-                          <i className="fa-solid fa-plane-arrival position-absolute" style={{ left: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 100 }}></i>
-                          {goingLabel && (
-                            <label className="text-light text-uppercase opacity-75">
-                              {goingLabel}
-                            </label>
+                        <div>
+                          <div className="form-group form-control mb-0 d-flex align-items-center position-relative">
+                            <i
+                              className="fa-solid fa-plane-arrival position-absolute"
+                              style={{
+                                left: '10px',
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                zIndex: 100,
+                              }}
+                            ></i>
+                            {goingLabel && (
+                              <label className="text-light text-uppercase opacity-75">
+                                {goingLabel}
+                              </label>
+                            )}
+                            <Select
+                              value={toAirport}
+                              onChange={handleToAirportChange}
+                              options={airportOptions}
+                              styles={customSelectStyles}
+                              placeholder="To"
+                              className="airport_input"
+                            />
+                          </div>
+                          {warningMessage && (
+                            <div style={{ 
+                              fontWeight: "500",
+                              marginTop: "8px",
+                              backgroundColor: "#ffeeee", 
+                              padding: "8px 12px", 
+                              borderRadius: "6px",
+                              fontSize: "12px",
+                              color: "#dc3545"
+                            }}>
+                              <span>{warningMessage}</span>
+                            </div>
                           )}
-                          <Select
-                            value={toAirport}
-                            onChange={handleToAirportChange}
-                            options={airportOptions}
-                            styles={customSelectStyles}
-                            placeholder="To"
-                            className="airport_input"
-                          />
                         </div>
                       </div>
 

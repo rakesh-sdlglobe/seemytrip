@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { json } from 'react-router-dom';
 import { API_URL } from './authActions';
 
 export const FETCH_USER_PROFILE_SUCCESS = 'FETCH_USER_PROFILE_SUCCESS';
@@ -89,7 +88,7 @@ export const editUserEmail = (userData) => {
           Authorization: `Bearer ${authToken}`,
         },
       });
-      console.log(response.data.user);
+      console.log("Response from 92 after edituser API call: ",response.data.user);
       
       dispatch({ type: EDIT_USER_EMAIL_SUCCESS, payload: response.data.user });
     } catch (error) {    

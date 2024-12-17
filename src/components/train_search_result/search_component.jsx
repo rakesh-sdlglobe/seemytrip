@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
-import DatePicker from 'react-datepicker';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import { fetchStations, fetchTrains } from '../../store/Actions/filterActions';
 import { selectStations } from '../../store/Selectors/filterSelectors';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Entering, IRCTC_Logo, Leaving, Calendar1 } from '../../assets/images';
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import 'react-toastify/dist/ReactToastify.css'; 
 
 const SearchComponent = ({
   onSearchResults = () => { },
@@ -33,15 +32,14 @@ const SearchComponent = ({
   const dispatch = useDispatch();
   const stations = useSelector(selectStations);
   const navigate = useNavigate()
-  const location = useLocation();
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [leavingFrom, setLeavingFrom] = useState(initialValues?.from || '');
   const [goingTo, setGoingTo] = useState(initialValues?.to || '');
   const [journeyDate, setJourneyDate] = useState(initialValues?.date ? new Date(initialValues?.date) : null);
-  const [disabilityConcession, setDisabilityConcession] = useState(false);
-  const [flexibleDate, setFlexibleDate] = useState(false);
-  const [availableBerth, setAvailableBerth] = useState(false);
-  const [railwayPassConcession, setRailwayPassConcession] = useState(false);
+  // const [disabilityConcession, setDisabilityConcession] = useState(false);
+  // const [flexibleDate, setFlexibleDate] = useState(false);
+  // const [availableBerth, setAvailableBerth] = useState(false);
+  // const [railwayPassConcession, setRailwayPassConcession] = useState(false);
   const [currentHighlightIndex, setCurrentHighlightIndex] = useState(0);
   const [warningMessage,setWarningMessage] = useState('')
   const [lastToastTime, setLastToastTime] = useState(0);  
@@ -66,8 +64,8 @@ const SearchComponent = ({
     dispatch(fetchStations());
   }, [dispatch]);
 
-  const [generalSelection, setGeneralSelection] = useState(null);
-  const [classSelection, setClassSelection] = useState(null);
+  // const [generalSelection, setGeneralSelection] = useState(null);
+  // const [classSelection, setClassSelection] = useState(null);
 
   // Other existing state and handlers...
 
@@ -107,6 +105,13 @@ const SearchComponent = ({
     validateStations( selectedOption,leavingFrom);
   };
 
+  
+  const handleSwapLocations = () => {
+    const temp = leavingFrom;
+    setLeavingFrom(goingTo);
+    setGoingTo(temp);
+  };
+
   const validateStations = (from, to) => {
     if (from && to && from.value === to.value) {
       setWarningMessage("From and To stations shouldn't be the same");
@@ -114,31 +119,6 @@ const SearchComponent = ({
       setWarningMessage(''); // Clear the warning if stations are valid
     }
   };
-
-  const showErrorMessage = () => {
-    toast.error('Something went wrong!', {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-  };
-  
-
-  const handleJourneyDateChange = (date) => {
-    setJourneyDate(date);
-  };
-
-  const handleSwapLocations = () => {
-    const temp = leavingFrom;
-    setLeavingFrom(goingTo);
-    setGoingTo(temp);
-  };
-
-
   const showToast = (message, type) => {
     const currentTime = Date.now();
 
@@ -168,44 +148,6 @@ const SearchComponent = ({
       });
     }
   };
-
-  // const handleSearch = () => {
-  //   if (!leavingFrom || !goingTo || !journeyDate) {
-  //     // Show warning toast if any field is missing
-  //     toast.warn('Please select all fields!', {
-  //       position: "top-right",
-  //       autoClose: 5000,
-  //       hideProgressBar: false,
-  //       closeOnClick: true,
-  //       pauseOnHover: true,
-  //       draggable: true,
-  //       progress: undefined,
-  //     });
-  //   } else if (leavingFrom.value === goingTo.value) {
-  //     // Show error toast if both stations are the same
-  //     toast.error('stations should not be the same!', {
-  //       position: "top-right",
-  //       autoClose: 5000,
-  //       hideProgressBar: false,
-  //       closeOnClick: true,
-  //       pauseOnHover: true,
-  //       draggable: true,
-  //       progress: undefined,
-  //     });
-  //   } else {
-  //     // Proceed with fetching the train data
-  //     dispatch(fetchTrains(leavingFrom.value, journeyDate));
-  //     navigate('/Train-list-01', {
-  //       state: {
-  //         from: leavingFrom,
-  //         to: goingTo,
-  //         date: journeyDate
-  //       }
-  //     });
-  //   }
-  // };
-  
-
 
   const stationOptions = stations.map((station) => ({
     value: station.id,
@@ -265,7 +207,7 @@ const SearchComponent = ({
     }, 3000); // Change message every 3 seconds
 
     return () => clearInterval(timer);
-  }, []);
+  }, [highlights.length]);
 
   return (
     <>
@@ -742,14 +684,14 @@ const SearchComponent = ({
               </div> */}
               
               <div className="highlights-container" style={{display:highlightsContainer}} >
-                            <div className="highlight-item" key={currentHighlightIndex}>
-                              <i className={highlights[currentHighlightIndex].icon}></i>
-                              <span>{highlights[currentHighlightIndex].text}</span>
-                            </div>
+                <div className="highlight-item" key={currentHighlightIndex}>
+                  <i className={highlights[currentHighlightIndex].icon}></i>
+                    <span>{highlights[currentHighlightIndex].text}</span>
+                      </div>
                       </div>
               <div className="position-relative new-wrap">
                 <div className="row g-3">
-                  <div className="col-xl-8 col-lg-7 col-md-12">
+                  <div className="col-xl-8 col-lg-7 col-md-12 ">
                     <div className="row g-3 align-items-center">
                       <div className="col">
                         <div className="form-group mb-0 position-relative">
