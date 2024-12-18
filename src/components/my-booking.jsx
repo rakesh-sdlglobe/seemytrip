@@ -136,7 +136,7 @@ const MyBooking = () => {
                                 </div>
                               </div>
                               <div className="mt-2 mt-md-0">
-                                <a href="#" className="btn btn-md btn-light-seegreen fw-medium mb-0" onClick={() => handleOpenModal({ 
+                                <a href="##" className="btn btn-md btn-light-seegreen fw-medium mb-0" onClick={() => handleOpenModal({ 
                                   id: 'BKR24530',
                                   from: 'Mumbai',
                                   to: 'Delhi',
