@@ -24,6 +24,7 @@ const navigate = useNavigate();
     berth: '',
     country: '',
   });
+  const [selectedTravelers, setSelectedTravelers] = useState([]);
 
   // Add new state for form validation and contact details
   const [formErrors, setFormErrors] = useState({});
@@ -108,12 +109,12 @@ const navigate = useNavigate();
 
   //validate before payment
   const validateBeforePayment = () => {
-    if(travelers.length === 0){
-      toast.error('please add at least one traveler')
+    if(selectedTravelers.length === 0){
+      toast.error('Please select at least one traveler')
       return false;
     }
-    if(!contactDetails.irctcUsername || !contactDetails.email || !contactDetails.phone || ! contactDetails.state){
-      toast.error('please fill all the required fields')
+    if(!contactDetails.irctcUsername || !contactDetails.email || !contactDetails.phone || !contactDetails.state){
+      toast.error('Please fill all the required fields')
       return false;
     }
     return true;
@@ -166,6 +167,17 @@ const handleProceedToPayment = (e)=>{
     const updateTravelers = travelers.filter((_, i) => i !==index);
     setTravelers(updateTravelers);
     toast.info('Edit traveler details');
+  };
+
+  // Add this function near other handler functions
+  const handleTravelerSelection = (index) => {
+    setSelectedTravelers(prev => {
+      if (prev.includes(index)) {
+        return prev.filter(i => i !== index);
+      } else {
+        return [...prev, index];
+      }
+    });
   };
 
   // Render functions
@@ -324,14 +336,28 @@ const handleProceedToPayment = (e)=>{
   const renderSavedTravelers = () => (
     travelers.length > 0 && (
       <div className="mt-4 mb-3">
-        <h4 className="mb-3">Saved Travelers</h4>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h4 className="mb-0">Saved Travelers</h4>
+          <div className="text-muted small">
+            {selectedTravelers.length} selected
+          </div>
+        </div>
         <div className="row g-3">
           {travelers.map((traveler, index) => (
             <div key={index} className="col-md-6">
-              <div className="card shadow-sm">
+              <div className={`card shadow-sm ${selectedTravelers.includes(index) ? 'border-primary' : ''}`}>
                 <div className="card-body">
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <p className="fw-bold mb-0">{traveler.name}</p>
+                  <div className="d-flex align-items-center mb-2">
+                    <div className="form-check me-2">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        checked={selectedTravelers.includes(index)}
+                        onChange={() => handleTravelerSelection(index)}
+                        id={`traveler-${index}`}
+                      />
+                    </div>
+                    <p className="fw-bold mb-0 flex-grow-1">{traveler.name}</p>
                     <div>
                       <button 
                         className="btn btn-sm btn-outline-primary me-2"
@@ -456,16 +482,16 @@ const handleProceedToPayment = (e)=>{
           <h5 className="mb-3">Price Details</h5>
           <ul className="list-unstyled">
             <li className="d-flex justify-content-between mb-2">
-              <span>Base Fare ({travelers.length} traveler{travelers.length !== 1 ? 's' : ''})</span>
-              <span>₹{1200 * (travelers.length || 1)}</span>
+              <span>Base Fare ({selectedTravelers.length} traveler{selectedTravelers.length !== 1 ? 's' : ''})</span>
+              <span>₹{1200 * (selectedTravelers.length || 1)}</span>
             </li>
             <li className="d-flex justify-content-between mb-2">
               <span>Taxes & Fees</span>
-              <span>₹{150 * (travelers.length || 1)}</span>
+              <span>₹{150 * (selectedTravelers.length || 1)}</span>
             </li>
             <li className="d-flex justify-content-between border-top pt-2 mt-2">
               <strong>Total Amount</strong>
-              <strong>₹{(1350 * (travelers.length || 1))}</strong>
+              <strong>₹{(1350 * (selectedTravelers.length || 1))}</strong>
             </li>
           </ul>
 
@@ -654,6 +680,15 @@ const handleProceedToPayment = (e)=>{
             position: relative;
             top: 0;
           }
+        }
+
+        .card.border-primary {
+          border: 1px solid #0d6efd !important;
+        }
+
+        .form-check-input:checked {
+          background-color: #0d6efd;
+          border-color: #0d6efd;
         }
       `}</style>
     </div>
