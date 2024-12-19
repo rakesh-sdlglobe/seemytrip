@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
+import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -7,8 +8,10 @@ import { airportData } from "./model/airportData";
 import { flightData } from "./model/flightData";
 import { seatData } from "./model/seatData";
 import { format, parse } from "date-fns";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; 
+import { Weight } from "lucide-react";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 // Utility function to calculate duration
 const calculateDuration = (departureTime, arrivalTime) => {
   const dep = new Date(`1970-01-01T${departureTime}:00Z`);
@@ -82,68 +85,51 @@ const FlightSearch = ({
     if (toAirport) sessionStorage.setItem("toAirport", toAirport.label);
     if (journeyDate)
       sessionStorage.setItem("journeyDate", format(journeyDate, "dd/MM/yyyy"));
-    if(fromAirport && toAirport){
-      validateAirports(fromAirport,toAirport);
-    }
   }, [fromAirport, toAirport, journeyDate]);
 
-
   const [warningMessage, setWarningMessage] = useState('');
-  const [lastToastTime, setLastToastTime] = useState(0);
-  const toastDelay = 3000;
-
-  const validateAirports = (from, to) => {
-    if (from && to && from.value === to.value) {
-      setWarningMessage("From & to airports can't be same");
-    } else {
-      setWarningMessage(''); // Clear the warning if valid
-    }
-  };
 
   const handleFromAirportChange = (selectedOption) => {
     setFromAirport(selectedOption);
-    validateAirports(selectedOption, toAirport); 
+    if (toAirport && selectedOption?.value === toAirport.value) {
+      setWarningMessage("Source and destination airports can't be the same");
+      toast.error("Source and destination airports can't be the same");
+    } else {
+      setWarningMessage('');
+    }
+  };
 
-  }
   const handleToAirportChange = (selectedOption) => {
     setToAirport(selectedOption);
-    validateAirports(fromAirport,selectedOption);
-  }
+    if (fromAirport && selectedOption?.value === fromAirport.value) {
+      setWarningMessage("Source and destination airports can't be the same");
+      toast.error("Source and destination airports can't be the same");
+    } else {
+      setWarningMessage('');
+    }
+  };
 
-
-  
-  
-  
-  
-  
-  
-  
   const handleJourneyDateChange = (date) => setJourneyDate(date);
 
   const handleSwapLocations = () => {
     const temp = fromAirport;
     setFromAirport(toAirport);
     setToAirport(temp);
+    setWarningMessage('');
   };
-
-
-    const showToast = (message, type) => {
-      const currentTime = Date.now();
-  
-      if (currentTime - lastToastTime > toastDelay) {
-        toast[type](message); 
-        setLastToastTime(currentTime);  
-      }
-    };
 
   const handleSearch = () => {
     if (!fromAirport || !toAirport || !journeyDate) {
-      showToast('Please fill all the fields !', 'warn');
-      return;
-    } else if (fromAirport.value === toAirport.value) {
-      showToast('Airports can not be the same ', 'error');
+      toast.warning("Please select both airports and journey date.");
       return;
     }
+    
+    if (fromAirport.value === toAirport.value) {
+      setWarningMessage("Source and destination airports can't be the same");
+      toast.error("Source and destination airports can't be the same");
+      return;
+    }
+
     const results = findFlightsBetweenAirports(
       fromAirport.value,
       toAirport.value,
@@ -218,7 +204,7 @@ const FlightSearch = ({
       boxShadow: "none",
       "&:hover": {
         border: "none",
-      
+       
       },
       
     }),
@@ -247,6 +233,7 @@ const FlightSearch = ({
     }),
     option: (provided, state) => ({
       ...provided,
+      backgroundColor: 'white',
       color: state.isSelected ? 'white' : '#333',
       backgroundColor: state.isSelected ? '#d20000' : 'white',
       '&:hover': {
@@ -257,6 +244,16 @@ const FlightSearch = ({
       fontWeight: 500,
       fontSize: '14px',
       padding: '8px 12px',
+    }),
+    singleValue: (provided) => ({ 
+      ...provided, 
+      color: "#333",
+     
+    }),
+    placeholder: (provided) => ({ 
+      ...provided, 
+      color: "#999",
+      
     }),
     
   };
@@ -302,8 +299,6 @@ const FlightSearch = ({
         if (operation === 'add') setInfantsCount(prev => prev + 1);
         else if (operation === 'subtract' && infantsCount > 0) setInfantsCount(prev => prev - 1);
         break;
-      default : 
-        console.log("");
     }
   };
 
@@ -336,11 +331,23 @@ const FlightSearch = ({
 
   return (
     <>
+      <ToastContainer 
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       <style>
         {`
-        .search-component {
+         .search-component {
             background-color: ${backgroundColor};
-            height: 15vw;
+            height: 200px;
             padding: 15px;
             background-size: cover;
             background-position: center;
@@ -634,7 +641,7 @@ color:gray;
   
         `}
       </style>
-      <ToastContainer />
+
       <div className="search-component">
         <div className="container">
           <div className="row justify-content-center align-items-center">
@@ -756,10 +763,11 @@ color:gray;
 
                   {/* Select Fields */}
                   <div className="position-relative new-wrap">
-                    <div className="row g-2">
+                    <div className="row g-2 align-items-center">
                       {/* From Airport */}
-                      <div className="col-xl-3 col-lg-6 col-md-6 col-12">
+                      <div className="col-lg-3 col-md-6 col-12">
                         <div className="form-group form-control mb-0 d-flex align-items-center position-relative">
+                       
                           <i className="fa-solid fa-plane-departure position-absolute" style={{ left: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 100 }}></i>
                           {/* {leavingLabel && (
                             <label className="text-light text-uppercase opacity-75">
@@ -778,65 +786,64 @@ color:gray;
                       </div>
 
                       {/* Swap Button */}
-                      <div className="col-xl-1 col-md-1 d-none d-md-block">
+                      <div className="col-auto d-none d-md-block">
                         <button
                           type="button"
                           className="btn swap-button"
                           onClick={handleSwapLocations}
-                          style={{ paddingRight: '1vw', marginLeft : '1vw' }}
+                          style={{ padding: '10px' }}
                         >
                           <i className="fa-solid fa-arrow-right-arrow-left text-black"></i>
                         </button>
                       </div>
 
                       {/* To Airport */}
-                      <div className="col-xl-3 col-lg-5 col-md-5 col-12">
-                        <div>
-                          <div className="form-group form-control mb-0 d-flex align-items-center position-relative">
-                            <i
-                              className="fa-solid fa-plane-arrival position-absolute"
+                      <div className="col-lg-3 col-md-6 col-12">
+                        <div className="form-group form-control  mb-0 d-flex align-items-center position-relative">
+                          <i className="fa-solid fa-plane-arrival position-absolute" style={{ left: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 100 }}></i>
+                          {goingLabel && (
+                            <label className="text-light text-uppercase opacity-75">
+                              {goingLabel}
+                            </label>
+                          )}
+                          <Select
+                            value={toAirport}
+                            onChange={handleToAirportChange}
+                            options={airportOptions}
+                            styles={customSelectStyles}
+                            placeholder="To"
+                            className="airport_input"
+                          />
+                          {warningMessage && (
+                            <div 
+                              className="text-danger mt-2 d-flex align-items-center justify-content-end"
                               style={{
-                                left: '10px',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                zIndex: 100,
+                                position: 'absolute',
+                                bottom: '-45px',
+                                right: '0',
+                                zIndex: 1000,
+                                width: '100%'
                               }}
-                            ></i>
-                            {goingLabel && (
-                              <label className="text-light text-uppercase opacity-75">
-                                {goingLabel}
-                              </label>
-                            )}
-                            <Select
-                              value={toAirport}
-                              onChange={handleToAirportChange}
-                              options={airportOptions}
-                              styles={customSelectStyles}
-                              placeholder="To"
-                              className="airport_input"
-                            />
-                          </div>
+                            >
+                              <div style={{ 
+                                fontWeight: "500",
+                                backgroundColor: "#ffeeee", 
+                                padding: "10px 15px", 
+                                borderRadius: "8px",
+                                boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                                marginTop: "8px"
+                              }}>
+                                <i className="fa fa-exclamation-circle me-2"></i>
+                                <span>{warningMessage}</span>
+                              </div>
+                            </div>
+                          )}
                         </div>
-                      {warningMessage && (
-                                <div
-                                  className="text-danger mt-2 d-flex align-items-center justify-content-end ">
-                                  <div style={{ 
-                                    fontWeight: "500",
-                                    backgroundColor: "#ffeeee", 
-                                    padding: "5px 7px", 
-                                    borderRadius: "8px",
-                                    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" 
-                                  }}>
-                                    <i className="fa fa-exclamation-circle me-2"></i>
-                                    <span >{warningMessage}</span>
-                                  </div>
-                                </div>
-                              )}
                       </div>
 
                       {/* Journey Date */}
-                      <div className="col-xl-2 col-lg-4 col-md-6 col-sm-6 " >
-                        <div className="form-group mb-0 position-relative w-100">
+                      <div className="col-lg-2 col-md-6 col-12" style={{width:'14%'}}>
+                        <div className="form-group mb-0 position-relative">
                           <i className="fa-regular fa-calendar position-absolute" style={{ left: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}></i>
                           <input
                             type="text"
@@ -863,8 +870,8 @@ color:gray;
                       
 
                       {/* Return Date */}
-                      <div className="col-xl-2 col-lg-4 col-md-6 col-sm-6 " >
-                        <div className="form-group mb-0 position-relative w-100">
+                      <div className="col-lg-1 col-md-6 col-12" style={{width:'16%'}}>
+                        <div className="form-group mb-0 position-relative">
                           <i className="fa-regular fa-calendar position-absolute" style={{ left: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}></i>
                           <input
                             type="text"
@@ -908,23 +915,23 @@ color:gray;
                       </div>
 
                       {/* Search Button */}
-                      <div className="col-xl-1 col-lg-4 col-12 col-md-6 col-sm-6 mt-2.5 pt-1">
+                      <div className="col-lg-1 col-12">
                         <button
                           className="btn btn-danger form-center   w-100"
                           onClick={handleSearch}
                           style={{
                             backgroundColor: buttonBackgroundColor,
                             color: buttonTextColor,
-                            // height: '95%',
+                            height: '100%',
+                            height:'62px',
                             borderRadius:'12px',
                           
                           }}
                         >
-                          <i className="fa-solid fa-magnifying-glass me-2" />
+                           <i className="fa-solid fa-magnifying-glass me-2" />
                           {buttonText}
                         </button>
                       </div>
-                      
                     </div>
                   </div>
                 </div>

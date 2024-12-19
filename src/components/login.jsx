@@ -41,6 +41,7 @@ const Login = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false); // For phone OTP modal
   const [showEmailOtpModal, setShowEmailOtpModal] = useState(false); // For email OTP modal
+  const [isLoading, setIsLoading] = useState(false);
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -48,7 +49,12 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(Loginn(email, password, navigate));
+    setIsLoading(true);
+    try {
+      await dispatch(Loginn(email, password, navigate));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const loginWithGoogle = useGoogleLogin({
@@ -125,7 +131,17 @@ const Login = () => {
                               </div>
                             </div>
                             <div className="form-group">
-                              <button type="submit" className="btn btn-primary full-width font--bold btn-lg">Log In</button>
+                              <button 
+                                type="submit" 
+                                className={`btn btn-primary full-width font--bold btn-lg ${isLoading ? 'loading' : ''}`}
+                                disabled={isLoading}
+                              >
+                                {isLoading ? (
+                                  <div className="spinner">
+                                    <div className="spinner-inner"></div>
+                                  </div>
+                                ) : 'Log In'}
+                              </button>
                             </div>
                             <div className="modal-flex-item d-flex align-items-center justify-content-between mb-3">
                               <div className="modal-flex-first">
@@ -142,26 +158,26 @@ const Login = () => {
                           <div className="prixer px-3">
                             <div className="devider-wraps position-relative">
                               <div className="devider-text text-muted-2 text-md">Sign In with Socials</div>
-                            </div>
+                             </div>
                           </div>
                           <div className="social-login py-4 px-md-2">
                             <ul className="row align-items-center justify-content-center g-3 p-0 m-0">
-                              <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-facebook color--google fs-2" /></Link></li>
-                              <li className="col">
+                              {/* <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-facebook color--google fs-2" /></Link></li> */}
+                              <li className="col-2">
                                 <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto" onClick={() => loginWithGoogle()}>
                                   <i className="fa-brands fa-google color--google fs-2" />
                                 </Link>
                               </li>
-                              <li className="col">
+                              <li className="col-2">
                                 <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto" onClick={() => setShowEmailOtpModal(true)}>
                                   <i className="fa-regular fa-envelope color--black fs-2" />
                                 </Link>
                               </li>
-                              <li className="col">
+                              {/* <li className="col">
                                 <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto" onClick={() => setShowOtpModal(true)}>
                                   <i className="fa fa-phone" aria-hidden="true"></i>
                                 </Link>
-                              </li>
+                              </li> */}
                             </ul>
                           </div>
                         </form>
@@ -180,6 +196,82 @@ const Login = () => {
 
       {/* Phone OTP Modal */}
       <OTPModal show={showOtpModal} handleClose={() => setShowOtpModal(false)} navigate={navigate} />
+
+      <style jsx>{`
+        .btn.loading {
+          position: relative;
+          color: transparent;
+          pointer-events: none;
+        }
+
+        .spinner {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
+
+        .spinner-inner {
+          width: 20px;
+          height: 20px;
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          border-top-color: #fff;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+        .btn-primary {
+          background-color: #d20000;
+          border-color: #d20000;
+          transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+          background-color: #b31b1b;
+          border-color: #b31b1b;
+          transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+          background-color: #d20000;
+          border-color: #d20000;
+          opacity: 0.7;
+        }
+
+        .btn-primary.loading:before {
+          content: '';
+          position: absolute;
+          top: -1px;
+          left: -1px;
+          right: -1px;
+          bottom: -1px;
+          background: linear-gradient(90deg, #d20000, #ff1a1a);
+          border-radius: inherit;
+          animation: pulse 1.5s ease infinite;
+          z-index: -1;
+        }
+
+        @keyframes pulse {
+          0% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.5;
+            transform: scale(1.02);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+      `}</style>
     </div>
   );
 };
