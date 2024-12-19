@@ -209,22 +209,22 @@ const Register = () => {
                           {/* Google and facebook button */}
                           <div className="social-login py-4 px-md-2">
                           <ul className="row align-items-center justify-content-center g-3 p-0 m-0">
-                              <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-facebook color--google fs-2" /></Link></li>
-                              <li className="col">
+                              {/* <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-facebook color--google fs-2" /></Link></li> */}
+                              <li className="col-2">
                                 <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto" onClick={() => loginWithGoogle()}>
                                   <i className="fa-brands fa-google color--google fs-2" />
                                 </Link>
                               </li>
-                              <li className="col">
+                              <li className="col-2">
                                 <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto" onClick={() => setShowEmailOtpModal(true)}>
                                   <i className="fa-regular fa-envelope color--black fs-2" />
                                 </Link>
                               </li>
-                              <li className="col">
+                              {/* <li className="col">
                                 <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto" onClick={() => setShowOtpModal(true)}>
                                   <i className="fa fa-phone" aria-hidden="true"></i>
                                 </Link>
-                              </li>
+                              </li> */}
                             </ul>
                           </div>
                           {/* Copyright */}
