@@ -41,8 +41,8 @@ const PersonalInfo = () => {
     });
 
     useEffect(() => {
-        dispatch(getUserProfile());
-    }, [dispatch]);
+        dispatch(getUserProfile(navigate));
+    }, [dispatch,navigate]);
 
     useEffect(() => {
         if (userProfile) {
@@ -237,7 +237,7 @@ const PersonalInfo = () => {
                                 <label className="form-label">Email ID</label>
                                 <div style={{ position: 'relative' }}>
                                 <input
-                                    type="text"
+                                    type="email"
                                     className="form-control"
                                     name="email"
                                     value={formData.email}
@@ -279,23 +279,21 @@ const PersonalInfo = () => {
                                     </span>
                                     Verified
                                     </span>
-                                ) : (
-                                    <button
-                                    style={{
-                                    position: 'absolute',
-                                    background:"none",
-                                    border:"none",
-                                    right: '10px',
-                                    top: '50%',
-                                    transform: 'translateY(-50%)',
-                                    color: formData.isEmailVerified ? '#28a745' : '#dc3545', // Green if verified, Red if not
-                                    fontWeight: 'bold',
-                                }}
-                                onClick = {handleVerifyClick}
-                                >
-                                    Verify
-                                </button>
-                                )}
+                                    ) : formData?.email ? (
+                                            <button style={{
+                                                position: 'absolute',
+                                                background:"none",
+                                                border:"none",
+                                                right: '10px',
+                                                top: '50%',
+                                                transform: 'translateY(-50%)',
+                                                color: formData.isEmailVerified ? '#28a745' : '#dc3545', // Green if verified, Red if not
+                                                fontWeight: 'bold',
+                                                }}
+                                                onClick = {handleVerifyClick}
+                                            > Verify </button>
+                                        ) : ""
+                                }
                                 </div>
                             </div>
                         </div>
@@ -306,7 +304,7 @@ const PersonalInfo = () => {
                                 <label className="form-label">Mobile</label>
                                 <div style={{ position: 'relative' }}>
                                 <input
-                                    type="text"
+                                    type="number"
                                     className="form-control"
                                     name="mobile"
                                     value={formData.mobile}
