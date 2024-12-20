@@ -146,7 +146,8 @@ const FlightSeatSelection = () => {
           </div>
 
           <div className="row">
-            <div className="col-12">
+            {/* Left Column - Seat Selection */}
+            <div className="col-lg-8">
               <div className="card p-4">
                 <div className="d-flex justify-content-between align-items-center mb-4">
                   <h3>Select Your Seats</h3>
@@ -156,71 +157,68 @@ const FlightSeatSelection = () => {
                   </div>
                 </div>
 
-                <div className="row">
-                  <div className="col-lg-8">
-                    <div className="seat-map-container">
-                      <div className="plane-nose mb-4"></div>
-                      {renderCabin('business')}
-                      <div className="cabin-separator mb-4">
-                        <div className="line"></div>
-                        <span>Economy Class</span>
-                        <div className="line"></div>
-                      </div>
-                      {renderCabin('economy')}
-                    </div>
+                <div className="seat-map-container">
+                  <div className="plane-nose mb-4"></div>
+                  {renderCabin('business')}
+                  <div className="cabin-separator mb-4">
+                    <div className="line"></div>
+                    <span>Economy Class</span>
+                    <div className="line"></div>
                   </div>
+                  {renderCabin('economy')}
+                </div>
+              </div>
+            </div>
 
-                  <div className="col-lg-4">
-                    <div className="seat-selection-summary card p-3">
-                      <h4 className="mb-3">Your Selection</h4>
-                      <div className="selected-seats mb-3">
-                        {travelers.map((traveler, index) => (
-                          <div key={index} className="selected-seat-item mb-2">
-                            <div className="d-flex justify-content-between align-items-center">
-                              <span className="traveler-name">{traveler.name}</span>
-                              <span className="seat-number">
-                                {Object.keys(selectedSeats)[index] || 'Not selected'}
-                              </span>
-                            </div>
-                          </div>
-                        ))}
+            {/* Right Column - Price Summary */}
+            <div className="col-lg-4">
+              <div className="card p-4 sticky-summary">
+                <h4 className="mb-3">Your Selection</h4>
+                <div className="selected-seats mb-3">
+                  {travelers.map((traveler, index) => (
+                    <div key={index} className="selected-seat-item mb-2">
+                      <div className="d-flex justify-content-between align-items-center">
+                        <span className="traveler-name">{traveler.name}</span>
+                        <span className="seat-number">
+                          {Object.keys(selectedSeats)[index] || 'Not selected'}
+                        </span>
                       </div>
-
-                      <div className="seat-legend mb-3">
-                        <div className="legend-item">
-                          <div className="seat-demo available"></div>
-                          <span>Available</span>
-                        </div>
-                        <div className="legend-item">
-                          <div className="seat-demo selected"></div>
-                          <span>Selected</span>
-                        </div>
-                        <div className="legend-item">
-                          <div className="seat-demo occupied"></div>
-                          <span>Occupied</span>
-                        </div>
-                      </div>
-
-                      <div className="price-summary">
-                        <div className="d-flex justify-content-between mb-2">
-                          <span>Selected Seats</span>
-                          <span>{Object.keys(selectedSeats).length}</span>
-                        </div>
-                        <div className="d-flex justify-content-between mb-2">
-                          <span>Total Price</span>
-                          <span>₹{Object.values(selectedSeats).reduce((acc, seat) => acc + seat.price, 0)}</span>
-                        </div>
-                      </div>
-
-                      <button 
-                        className="btn btn-primary w-100 mt-3"
-                        onClick={handleProceedToPayment}
-                      >
-                        Proceed to Payment
-                      </button>
                     </div>
+                  ))}
+                </div>
+
+                <div className="seat-legend mb-3">
+                  <div className="legend-item">
+                    <div className="seat-demo available"></div>
+                    <span>Available</span>
+                  </div>
+                  <div className="legend-item">
+                    <div className="seat-demo selected"></div>
+                    <span>Selected</span>
+                  </div>
+                  <div className="legend-item">
+                    <div className="seat-demo occupied"></div>
+                    <span>Occupied</span>
                   </div>
                 </div>
+
+                <div className="price-summary mt-4">
+                  <div className="d-flex justify-content-between mb-2">
+                    <span>Selected Seats</span>
+                    <span>{Object.keys(selectedSeats).length}</span>
+                  </div>
+                  <div className="d-flex justify-content-between mb-2">
+                    <span>Total Price</span>
+                    <span>₹{Object.values(selectedSeats).reduce((acc, seat) => acc + seat.price, 0)}</span>
+                  </div>
+                </div>
+
+                <button 
+                  className="btn btn-primary w-100 mt-3"
+                  onClick={handleProceedToPayment}
+                >
+                  Proceed to Payment
+                </button>
               </div>
             </div>
           </div>
@@ -383,6 +381,60 @@ const FlightSeatSelection = () => {
 
           .seats {
             gap: 5px;
+          }
+        }
+
+        .sticky-summary {
+          position: sticky;
+          top: 50px;
+          margin-bottom: 20px;
+          background: #fff;
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          transition: all 0.3s ease;
+        }
+
+        .sticky-summary:hover {
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .selected-seat-item {
+          padding: 10px;
+          background: #f8f9fa;
+          border-radius: 6px;
+          margin-bottom: 8px;
+        }
+
+        .seat-legend {
+          display: flex;
+          justify-content: space-between;
+          padding: 15px 0;
+          border-top: 1px solid #eee;
+          border-bottom: 1px solid #eee;
+        }
+
+        .legend-item {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .seat-demo {
+          width: 20px;
+          height: 20px;
+          border-radius: 4px;
+        }
+
+        .price-summary {
+          padding-top: 15px;
+          border-top: 1px dashed #dee2e6;
+        }
+
+        @media (max-width: 991px) {
+          .sticky-summary {
+            position: relative;
+            top: 0;
+            margin-top: 20px;
           }
         }
       `}</style>

@@ -48,7 +48,7 @@ const FlightBookingPage02 = () => {
       <ToastContainer />
       <Header02 />
       
-      <section className="pt-4 gray-simple position-relative">
+      <section className="pt-4 gray-simple position-relative" style={{ minHeight: '100vh' }}>
         <div className="container">
           {/* Booking Stepper */}
           <div className="row mb-4">
@@ -126,46 +126,50 @@ const FlightBookingPage02 = () => {
 
             {/* Right Column - Fare Summary */}
             <div className="col-xl-4 col-lg-4 col-md-12">
-              <div className="card p-4">
-                <div className="d-flex justify-content-between align-items-center mb-4">
-                  <h4 className="mb-0">Fare Summary</h4>
-                  <button className="btn btn-link">Details</button>
-                </div>
-
-                <div className="fare-details">
-                  <div className="d-flex justify-content-between mb-2">
-                    <span>Base Fare ({travelers?.length || 1} Traveler{(travelers?.length || 1) > 1 ? 's' : ''})</span>
-                    <span>₹{fares.baseFare.toFixed(2)}</span>
-                  </div>
-                  <div className="d-flex justify-content-between mb-2">
-                    <span>Taxes & Fees</span>
-                    <span>₹{fares.taxes.toFixed(2)}</span>
-                  </div>
-                  {fares.seatCharges > 0 && (
-                    <div className="d-flex justify-content-between mb-2">
-                      <span>Seat Charges</span>
-                      <span>₹{fares.seatCharges.toFixed(2)}</span>
+              <div className="sticky-wrapper">
+                <div className="fare-summary-wrapper sticky-summary">
+                  <div className="card p-4">
+                    <div className="d-flex justify-content-between align-items-center mb-4">
+                      <h4 className="mb-0">Fare Summary</h4>
+                      <button className="btn btn-link">Details</button>
                     </div>
-                  )}
 
-                  <div className="d-flex justify-content-between mt-3 pt-3 border-top">
-                    <strong>Total Amount</strong>
-                    <strong>₹{fares.total.toFixed(2)}</strong>
+                    <div className="fare-details">
+                      <div className="d-flex justify-content-between mb-2">
+                        <span>Base Fare ({travelers?.length || 1} Traveler{(travelers?.length || 1) > 1 ? 's' : ''})</span>
+                        <span>₹{fares.baseFare.toFixed(2)}</span>
+                      </div>
+                      <div className="d-flex justify-content-between mb-2">
+                        <span>Taxes & Fees</span>
+                        <span>₹{fares.taxes.toFixed(2)}</span>
+                      </div>
+                      {fares.seatCharges > 0 && (
+                        <div className="d-flex justify-content-between mb-2">
+                          <span>Seat Charges</span>
+                          <span>₹{fares.seatCharges.toFixed(2)}</span>
+                        </div>
+                      )}
+
+                      <div className="d-flex justify-content-between mt-3 pt-3 border-top">
+                        <strong>Total Amount</strong>
+                        <strong>₹{fares.total.toFixed(2)}</strong>
+                      </div>
+                    </div>
+
+                    <button 
+                      className="btn btn-primary w-100 mt-4"
+                      onClick={handleProceedToPay}
+                    >
+                      Proceed to Pay
+                    </button>
+
+                    <div className="text-center mt-3">
+                      <small className="text-muted">
+                        By clicking on 'Proceed to Pay', I agree to the
+                        <Link to="#" className="ms-1">Terms & Conditions</Link>
+                      </small>
+                    </div>
                   </div>
-                </div>
-
-                <button 
-                  className="btn btn-primary w-100 mt-4"
-                  onClick={handleProceedToPay}
-                >
-                  Proceed to Pay
-                </button>
-
-                <div className="text-center mt-3">
-                  <small className="text-muted">
-                    By clicking on 'Proceed to Pay', I agree to the
-                    <Link to="#" className="ms-1">Terms & Conditions</Link>
-                  </small>
                 </div>
               </div>
             </div>
@@ -398,6 +402,73 @@ const FlightBookingPage02 = () => {
             opacity: 1;
             transform: translate(-50%, -8px);
           }
+        }
+
+        .sticky-wrapper {
+          position: relative;
+          height: 100%;
+        }
+
+        .sticky-summary {
+          position: sticky;
+          top: 100px;
+          z-index: 10;
+          transition: all 0.3s ease;
+        }
+
+        .sticky-summary .card {
+          margin-bottom: 0;
+          background: #fff;
+          height: auto;
+          max-height: calc(100vh - 120px);
+          overflow-y: auto;
+        }
+
+        /* Custom scrollbar */
+        .sticky-summary .card::-webkit-scrollbar {
+          width: 6px;
+        }
+
+        .sticky-summary .card::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 10px;
+        }
+
+        .sticky-summary .card::-webkit-scrollbar-thumb {
+          background: #d20000;
+          border-radius: 10px;
+        }
+
+        .sticky-summary .card::-webkit-scrollbar-thumb:hover {
+          background: #b31b1b;
+        }
+
+        /* Responsive design */
+        @media (max-width: 991px) {
+          .sticky-wrapper {
+            height: auto;
+          }
+          
+          .sticky-summary {
+            position: relative;
+            top: 0;
+          }
+
+          .sticky-summary .card {
+            max-height: none;
+          }
+        }
+
+        /* Enhanced shadow effect */
+        .sticky-summary .card {
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          border-radius: 12px;
+          background: linear-gradient(to bottom, #ffffff, #fafafa);
+        }
+
+        .sticky-summary:hover .card {
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+          transform: translateY(-2px);
         }
       `}</style>
     </div>

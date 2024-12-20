@@ -18,6 +18,9 @@ export const FETCH_TRAVELERS_FAILURE = 'FETCH_TRAVELERS_FAILURE';
 export const REMOVE_TRAVELER_REQUEST = 'REMOVE_TRAVELER_REQUEST';
 export const REMOVE_TRAVELER_SUCCESS = 'REMOVE_TRAVELER_SUCCESS';
 export const REMOVE_TRAVELER_FAILURE = 'REMOVE_TRAVELER_FAILURE';
+export const UPDATE_TRAVELER_REQUEST = 'UPDATE_TRAVELER_REQUEST';
+export const UPDATE_TRAVELER_SUCCESS = 'UPDATE_TRAVELER_SUCCESS';
+export const UPDATE_TRAVELER_FAILURE = 'UPDATE_TRAVELER_FAILURE';
 
 
 // Fetch user profile
@@ -212,3 +215,8 @@ export const imageUpload = async (file) => {
     throw error; // Rethrow the error for further handling if needed
   }
 };
+
+export const updateTraveler = (travelerData) => ({
+  type: 'UPDATE_TRAVELER',
+  payload: travelerData
+});
