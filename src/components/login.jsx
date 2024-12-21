@@ -26,7 +26,7 @@ import {
   selectPassword,
   selectError,
 } from "../store/Selectors/authSelectors";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
 import { useState } from 'react';
 import OTPModal from './otp-modal'; // Make sure this is correctly implemented
@@ -35,6 +35,7 @@ import EmailOtpModal from './email-otpmodal'; // This should be the email OTP mo
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const email = useSelector(selectEmail);
   const password = useSelector(selectPassword);
   const error = useSelector(selectError);
@@ -52,6 +53,23 @@ const Login = () => {
     setIsLoading(true);
     try {
       await dispatch(Loginn(email, password, navigate));
+      // After successful login, handle the redirection
+      const selectedFlight = sessionStorage.getItem('selectedFlight');
+      if (selectedFlight) {
+        const flight = JSON.parse(selectedFlight);
+        // Clear the stored data
+        sessionStorage.removeItem('selectedFlight');
+        sessionStorage.removeItem('redirectPath');
+        // Navigate to flight booking
+        navigate('/flight-bookingPage', { 
+          state: { flightData: flight } 
+        });
+      } else {
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      toast.error('Login failed. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -60,16 +78,49 @@ const Login = () => {
   const loginWithGoogle = useGoogleLogin({
     onSuccess: (credentialResponse) => {
       console.log('Credential Response:', credentialResponse);
-      console.log('Access Token:', credentialResponse.access_token);
       dispatch(handleGoogleLogin(credentialResponse.access_token, navigate));
-      toast.success("Google Logged In Sucessfully")
-
+      toast.success("Google Logged In Successfully");
+      
+      // Handle redirection after Google login
+      const selectedFlight = sessionStorage.getItem('selectedFlight');
+      if (selectedFlight) {
+        const flight = JSON.parse(selectedFlight);
+        // Clear the stored data
+        sessionStorage.removeItem('selectedFlight');
+        sessionStorage.removeItem('redirectPath');
+        // Navigate to flight booking
+        navigate('/flight-bookingPage', { 
+          state: { flightData: flight } 
+        });
+      }
     },
     onError: () => {
       console.error('Google Login Failed');
       toast.error("Google Login Failed");
     }
   });
+
+  const handleSuccessfulLogin = () => {
+    // After successful login...
+    
+    // Get the stored flight data and redirect path
+    const selectedFlight = JSON.parse(sessionStorage.getItem('selectedFlight'));
+    const redirectPath = sessionStorage.getItem('redirectPath');
+
+    // Clear the stored data
+    sessionStorage.removeItem('selectedFlight');
+    sessionStorage.removeItem('redirectPath');
+
+    if (selectedFlight && redirectPath) {
+      // Redirect back to flight booking
+      navigate('/flight-bookingPage', { 
+        state: { flightData: selectedFlight } 
+      });
+    } else {
+      // Default redirect if no stored flight
+      navigate('/');
+    }
+  };
 
   return (
     <div>
