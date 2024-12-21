@@ -158,9 +158,11 @@ const Login = () => {
                                 type="email"
                                 className="form-control"
                                 placeholder="name@example.com"
+                                name='email'
                                 value={email}
                                 onChange={(e) => dispatch(setEmail(e.target.value))}
                                 required
+                                autoComplete='email'
                               />
                             </div>
                             <div className="form-group">
@@ -174,6 +176,7 @@ const Login = () => {
                                   value={password}
                                   onChange={(e) => dispatch(setPassword(e.target.value))}
                                   required
+                                  autoComplete='current-password'
                                 />
                                 <span
                                   className={`fa-solid ${passwordVisible ? "fa-eye-slash" : "fa-eye"} toggle-password position-absolute top-50 end-0 translate-middle-y me-3`}
