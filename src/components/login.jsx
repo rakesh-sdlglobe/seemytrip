@@ -53,23 +53,39 @@ const Login = () => {
     setIsLoading(true);
     try {
       await dispatch(Loginn(email, password, navigate));
-      // After successful login, handle the redirection
-      const selectedFlight = sessionStorage.getItem('selectedFlight');
-      if (selectedFlight) {
-        const flight = JSON.parse(selectedFlight);
+      
+      toast.success('Login successful!', {
+        position: "top-center",
+        autoClose: 2000,
+        theme: "colored"
+      });
+
+      // Check for stored train booking data
+      const selectedTrain = sessionStorage.getItem('selectedTrain');
+      if (selectedTrain) {
+        const train = JSON.parse(selectedTrain);
         // Clear the stored data
-        sessionStorage.removeItem('selectedFlight');
+        sessionStorage.removeItem('selectedTrain');
         sessionStorage.removeItem('redirectPath');
-        // Navigate to flight booking
-        navigate('/flight-bookingPage', { 
-          state: { flightData: flight } 
-        });
+        
+        // Redirect to train booking page after a short delay
+        setTimeout(() => {
+          navigate('/trainbookingdetails', { 
+            state: { trainData: train } 
+          });
+        }, 2000);
       } else {
-        navigate('/');
+        setTimeout(() => {
+          navigate('/');
+        }, 2000);
       }
     } catch (error) {
       console.error('Login error:', error);
-      toast.error('Login failed. Please try again.');
+      toast.error('Login failed. Please try again.', {
+        position: "top-center",
+        autoClose: 3000,
+        theme: "colored"
+      });
     } finally {
       setIsLoading(false);
     }
@@ -77,26 +93,35 @@ const Login = () => {
 
   const loginWithGoogle = useGoogleLogin({
     onSuccess: (credentialResponse) => {
-      console.log('Credential Response:', credentialResponse);
       dispatch(handleGoogleLogin(credentialResponse.access_token, navigate));
-      toast.success("Google Logged In Successfully");
+      toast.success('Google Login Successful!', {
+        position: "top-center",
+        autoClose: 2000,
+        theme: "colored"
+      });
       
-      // Handle redirection after Google login
-      const selectedFlight = sessionStorage.getItem('selectedFlight');
-      if (selectedFlight) {
-        const flight = JSON.parse(selectedFlight);
+      // Check for stored train booking data
+      const selectedTrain = sessionStorage.getItem('selectedTrain');
+      if (selectedTrain) {
+        const train = JSON.parse(selectedTrain);
         // Clear the stored data
-        sessionStorage.removeItem('selectedFlight');
+        sessionStorage.removeItem('selectedTrain');
         sessionStorage.removeItem('redirectPath');
-        // Navigate to flight booking
-        navigate('/flight-bookingPage', { 
-          state: { flightData: flight } 
-        });
+        
+        setTimeout(() => {
+          navigate('/trainbookingdetails', { 
+            state: { trainData: train } 
+          });
+        }, 2000);
       }
     },
     onError: () => {
       console.error('Google Login Failed');
-      toast.error("Google Login Failed");
+      toast.error('Google Login Failed', {
+        position: "top-center",
+        autoClose: 3000,
+        theme: "colored"
+      });
     }
   });
 

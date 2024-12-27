@@ -1,11 +1,14 @@
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { selectTrains } from '../../store/Selectors/filterSelectors';
-import { useNavigate } from 'react-router-dom';
-import {selectUser} from'../../store/Selectors/authSelectors';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { selectUser } from '../../store/Selectors/authSelectors';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const TrainSearchResultList = ({ filters }) => {
     const navigate = useNavigate();
+    const location = useLocation();
     const isAuthenticated = useSelector(selectUser);
 
   const trainData = useSelector(selectTrains) || [];
@@ -69,206 +72,229 @@ const TrainSearchResultList = ({ filters }) => {
   }, [trainData, filters]);
   
 const handleBooking = (train) =>{
-  console.log('Auth status:', isAuthenticated)
-  if(isAuthenticated){
-    navigate('/trainbookingdetails',{state:{ trainData: train}})
-  }
-  else{
-    navigate('/login',{
-      state:{
-        redirectTo:'/trainbookingdetails',
-        trainData:train,
-      }
+  if (!isAuthenticated) {
+    sessionStorage.setItem('selectedTrain', JSON.stringify(train));
+    sessionStorage.setItem('redirectPath', '/trainbookingdetails');
+
+    toast.warn('Please login to continue booking', {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      theme: "colored"
     });
+
+    setTimeout(() => {
+      navigate('/login');
+    }, 1000);
+    return;
   }
+
+  navigate('/trainbookingdetails',{state:{ trainData: train}})
 }
 
   return (
-    <div className="row align-items-center g-4 mt-0">
-      {/* Offer Coupon Box */}
-      <div className="col-xl-12 col-lg-12 col-md-12">
-        <div className="d-md-flex bg-success rounded-2 align-items-center justify-content-between px-3 py-3">
-          <div className="d-md-flex align-items-center justify-content-start">
-            <div className="mb-md-0 mb-3">
-              <div className="square--60 circle bg-white">
-                <i className="fa-solid fa-gift fs-3 text-success" />
+    <>
+      <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
+      <div className="row align-items-center g-4 mt-0">
+        {/* Offer Coupon Box */}
+        <div className="col-xl-12 col-lg-12 col-md-12">
+          <div className="d-md-flex bg-success rounded-2 align-items-center justify-content-between px-3 py-3">
+            <div className="d-md-flex align-items-center justify-content-start">
+              <div className="mb-md-0 mb-3">
+                <div className="square--60 circle bg-white">
+                  <i className="fa-solid fa-gift fs-3 text-success" />
+                </div>
+              </div>
+              <div className="ps-2">
+                <h6 className="fs-5 fw-medium text-light mb-0">Start Your Train Journey</h6>
+                <p className="text-light mb-0">Book Train Tickets Easily and Enjoy Special Discounts with Our Platform</p>
               </div>
             </div>
-            <div className="ps-2">
-              <h6 className="fs-5 fw-medium text-light mb-0">Start Your Train Journey</h6>
-              <p className="text-light mb-0">Book Train Tickets Easily and Enjoy Special Discounts with Our Platform</p>
+            <div className="text-md-end mt-md-0 mt-4">
+              <button type="button" className="btn btn-white fw-medium full-width text-dark px-xl-4">Get Started</button>
             </div>
           </div>
-          <div className="text-md-end mt-md-0 mt-4">
-            <button type="button" className="btn btn-white fw-medium full-width text-dark px-xl-4">Get Started</button>
-          </div>
         </div>
-      </div>
 
-      {/* Train list */}
-      {filteredTrainData.length > 0 ? (
-        filteredTrainData.map(train => (
-          <div key={train.id} className="col-xl-12 col-lg-12 col-md-12">
-            <div className="train-availability-card bg-white rounded-3 p-4 hover-shadow" style={{ 
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
-              transition: "all 0.3s ease",
-              border: "1px solid #eee"
-            }}>
-              <div className="row gy-4 align-items-center justify-content-between">
-                {/* Train Info Header */}
-                <div className="col-xl-12 col-lg-12 col-md-12">
-                  <div className="d-flex align-items-center justify-content-between">
-                    <div className="train-name me-4">
-                      <h5 className="mb-2 fw-bold" style={{color: "#2c3e50"}}>{train.trainName}</h5>
-                      <div className="text-muted small d-flex align-items-center">
-                        <i className="fas fa-calendar-alt me-2"></i>
-                        Runs on: 
-                        <span className="mx-1"> S </span>
-                        <span className="mx-1">M</span>
-                        <span className="mx-1">T</span>
-                        <span className="mx-1" style={{ fontWeight: 'bold', color: '#d20000' }}>W</span>
-                        <span className="mx-1"> T </span>
-                        <span className="mx-1">F</span>
-                        <span className="mx-1" style={{ fontWeight: 'bold', color: '#d20000' }}>S</span>
+        {/* Train list */}
+        {filteredTrainData.length > 0 ? (
+          filteredTrainData.map(train => (
+            <div key={train.id} className="col-xl-12 col-lg-12 col-md-12">
+              <div className="train-availability-card bg-white rounded-3 p-4 hover-shadow" style={{ 
+                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
+                transition: "all 0.3s ease",
+                border: "1px solid #eee"
+              }}>
+                <div className="row gy-4 align-items-center justify-content-between">
+                  {/* Train Info Header */}
+                  <div className="col-xl-12 col-lg-12 col-md-12">
+                    <div className="d-flex align-items-center justify-content-between">
+                      <div className="train-name me-4">
+                        <h5 className="mb-2 fw-bold" style={{color: "#2c3e50"}}>{train.trainName}</h5>
+                        <div className="text-muted small d-flex align-items-center">
+                          <i className="fas fa-calendar-alt me-2"></i>
+                          Runs on: 
+                          <span className="mx-1"> S </span>
+                          <span className="mx-1">M</span>
+                          <span className="mx-1">T</span>
+                          <span className="mx-1" style={{ fontWeight: 'bold', color: '#d20000' }}>W</span>
+                          <span className="mx-1"> T </span>
+                          <span className="mx-1">F</span>
+                          <span className="mx-1" style={{ fontWeight: 'bold', color: '#d20000' }}>S</span>
 
-                      </div>
-                    </div>
-
-                    <div className="journey-details flex-grow-1 mx-4 p-3" style={{
-                      background: "linear-gradient(to right, #f8f9fa, #ffffff, #f8f9fa)",
-                      borderRadius: "12px"
-                    }}>
-                      <div className="d-flex align-items-center justify-content-between">
-                        <div className="text-center">
-                          <div className="text-primary fw-bold" style={{fontSize: "0.9rem"}}>{train.startStation}</div>
-                          <div className="h4 mb-0 fw-bold">4:20 PM</div>
-                          <div className="text-muted small">Tue, 12 NOV</div>
                         </div>
+                      </div>
 
-                        <div className="flex-grow-1 px-4">
-                          <div className="journey-line position-relative">
-                            <div className="line d-flex align-items-center" style={{
-                              height: "2px",
-                              position: "relative"
-                            }}>
-                              {/* Start dot */}
-                              <div style={{
-                                width: "8px",
-                                height: "8px",
-                                backgroundColor: "#333333",
-                                borderRadius: "50%",
-                                position: "absolute",
-                                left: "-4px",
-                                zIndex: "1"
-                              }}></div>
-                              {/* Connecting line */}
-                              <div style={{
+                      <div className="journey-details flex-grow-1 mx-4 p-3" style={{
+                        background: "linear-gradient(to right, #f8f9fa, #ffffff, #f8f9fa)",
+                        borderRadius: "12px"
+                      }}>
+                        <div className="d-flex align-items-center justify-content-between">
+                          <div className="text-center">
+                            <div className="text-primary fw-bold" style={{fontSize: "0.9rem"}}>{train.startStation}</div>
+                            <div className="h4 mb-0 fw-bold">4:20 PM</div>
+                            <div className="text-muted small">Tue, 12 NOV</div>
+                          </div>
+
+                          <div className="flex-grow-1 px-4">
+                            <div className="journey-line position-relative">
+                              <div className="line d-flex align-items-center" style={{
                                 height: "2px",
-                                flex: "1",
-                                backgroundColor: "#e0e0e0"
-                              }}></div>
-                              {/* End dot */}
-                              <div style={{
-                                width: "8px",
-                                height: "8px",
-                                backgroundColor: "#333333",
-                                borderRadius: "50%",
-                                position: "absolute",
-                                right: "-4px",
-                                zIndex: "1"
-                              }}></div>
-                            </div>
-                            <div className="duration text-center mt-2">
-                              <span className="badge bg-light text-dark px-3 py-2" style={{boxShadow: "0 2px 4px rgba(0,0,0,0.1)"}}>
-                                12hr 40min
-                              </span>
+                                position: "relative"
+                              }}>
+                                {/* Start dot */}
+                                <div style={{
+                                  width: "8px",
+                                  height: "8px",
+                                  backgroundColor: "#333333",
+                                  borderRadius: "50%",
+                                  position: "absolute",
+                                  left: "-4px",
+                                  zIndex: "1"
+                                }}></div>
+                                {/* Connecting line */}
+                                <div style={{
+                                  height: "2px",
+                                  flex: "1",
+                                  backgroundColor: "#e0e0e0"
+                                }}></div>
+                                {/* End dot */}
+                                <div style={{
+                                  width: "8px",
+                                  height: "8px",
+                                  backgroundColor: "#333333",
+                                  borderRadius: "50%",
+                                  position: "absolute",
+                                  right: "-4px",
+                                  zIndex: "1"
+                                }}></div>
+                              </div>
+                              <div className="duration text-center mt-2">
+                                <span className="badge bg-light text-dark px-3 py-2" style={{boxShadow: "0 2px 4px rgba(0,0,0,0.1)"}}>
+                                  12hr 40min
+                                </span>
+                              </div>
                             </div>
                           </div>
-                        </div>
 
-                        <div className="text-center">
-                          <div className="text-primary fw-bold" style={{fontSize: "0.9rem"}}>{train.endStation}</div>
-                          <div className="h4 mb-0 fw-bold">5:30 AM</div>
-                          <div className="text-muted small">Wed, 13 NOV</div>
+                          <div className="text-center">
+                            <div className="text-primary fw-bold" style={{fontSize: "0.9rem"}}>{train.endStation}</div>
+                            <div className="h4 mb-0 fw-bold">5:30 AM</div>
+                            <div className="text-muted small">Wed, 13 NOV</div>
+                          </div>
                         </div>
                       </div>
+
+                      {/* <button className="btn btn-primary px-4 py-2" style={{
+                        background: "linear-gradient(45deg, #2196F3, #1976D2)",
+                        border: "none",
+                        borderRadius: "8px",
+                        boxShadow: "0 4px 6px rgba(33, 150, 243, 0.3)"
+                      }}>
+                        <i className="fas fa-ticket-alt me-2"></i>
+                        Availability
+                      </button> */}
                     </div>
-
-                    {/* <button className="btn btn-primary px-4 py-2" style={{
-                      background: "linear-gradient(45deg, #2196F3, #1976D2)",
-                      border: "none",
-                      borderRadius: "8px",
-                      boxShadow: "0 4px 6px rgba(33, 150, 243, 0.3)"
-                    }}>
-                      <i className="fas fa-ticket-alt me-2"></i>
-                      Availability
-                    </button> */}
                   </div>
-                </div>
 
-                <div className="w-100 border-top my-2 opacity-25"></div>
+                  <div className="w-100 border-top my-2 opacity-25"></div>
 
-                <div className="col-xl-12 col-lg-12 col-md-12">
-                  <div className="row text-center g-3 justify-content-start">
-                    {train.seats.map((cls, index) => (
-                      <div key={index} className="col-auto">
-                        <div
-                          className="availability-card p-3 position-relative"
-                          style={{
-                            minWidth: "180px",
-                            background: cls.availableSeats ? "linear-gradient(145deg, #e8f5e9, #f1f8e9)" : "linear-gradient(145deg, #ffebee, #fce4ec)",
-                            border: `1px solid ${cls.availableSeats ? '#81c784' : '#e57373'}`,
-                            borderRadius: "10px",
-                            cursor: "pointer",
-                            transition: "transform 0.2s ease",
-                            boxShadow: "0 2px 8px rgba(0,0,0,0.05)"
-                          }}
-                          onClick={() => handleBooking(train)}
-                        >
-                          <div 
-                            className="position-absolute badge bg-danger"
+                  <div className="col-xl-12 col-lg-12 col-md-12">
+                    <div className="row text-center g-3 justify-content-start">
+                      {train.seats.map((cls, index) => (
+                        <div key={index} className="col-auto">
+                          <div
+                            className="availability-card p-3 position-relative"
                             style={{
-                              top: "-10px",
-                              right: "10px",
-                              fontSize: "0.7rem",
-                              padding: "4px 8px",
-                              zIndex: "1"
+                              minWidth: "180px",
+                              background: cls.availableSeats ? "linear-gradient(145deg, #e8f5e9, #f1f8e9)" : "linear-gradient(145deg, #ffebee, #fce4ec)",
+                              border: `1px solid ${cls.availableSeats ? '#81c784' : '#e57373'}`,
+                              borderRadius: "10px",
+                              cursor: "pointer",
+                              transition: "transform 0.2s ease",
+                              boxShadow: "0 2px 8px rgba(0,0,0,0.05)"
                             }}
+                            onClick={() => handleBooking(train)}
                           >
-                            Tatkal
-                          </div>
-                          <div className="d-flex justify-content-between align-items-center mb-2">
-                            <h6 className="mb-0 fw-bold" style={{color: cls.availableSeats ? "#2e7d32" : "#c62828"}}>{cls.seatClass}</h6>
-                            <div className="price fw-bold">₹{cls.price}</div>
-                          </div>
-                          <div className="status-badge mb-1" style={{
-                            color: cls.availableSeats ? "#2e7d32" : "#c62828",
-                            fontSize: "0.9rem"
-                          }}>
-                            {cls.status}
-                          </div>
-                          <div className="availability small" style={{color: "#666"}}>
-                            {cls.availableSeats} available
+                            <div 
+                              className="position-absolute badge bg-danger"
+                              style={{
+                                top: "-10px",
+                                right: "10px",
+                                fontSize: "0.7rem",
+                                padding: "4px 8px",
+                                zIndex: "1"
+                              }}
+                            >
+                              Tatkal
+                            </div>
+                            <div className="d-flex justify-content-between align-items-center mb-2">
+                              <h6 className="mb-0 fw-bold" style={{color: cls.availableSeats ? "#2e7d32" : "#c62828"}}>{cls.seatClass}</h6>
+                              <div className="price fw-bold">₹{cls.price}</div>
+                            </div>
+                            <div className="status-badge mb-1" style={{
+                              color: cls.availableSeats ? "#2e7d32" : "#c62828",
+                              fontSize: "0.9rem"
+                            }}>
+                              {cls.status}
+                            </div>
+                            <div className="availability small" style={{color: "#666"}}>
+                              {cls.availableSeats} available
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+          ))
+        ) : (
+          <div className="col-12 text-center mt-5">
+            <div className="no-train-found-wrapper">
+              <i className="fas fa-train fa-5x text-muted mb-3"></i>
+              <h3 className="text-muted">No Trains Found Between These Stations</h3>
+              <p className="text-muted">Please try adjusting your search filters or check back later for updated results.</p>
+            </div>
           </div>
-        ))
-      ) : (
-        <div className="col-12 text-center mt-5">
-          <div className="no-train-found-wrapper">
-            <i className="fas fa-train fa-5x text-muted mb-3"></i>
-            <h3 className="text-muted">No Trains Found Between These Stations</h3>
-            <p className="text-muted">Please try adjusting your search filters or check back later for updated results.</p>
-          </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 };
 
