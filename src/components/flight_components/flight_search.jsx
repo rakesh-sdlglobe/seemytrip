@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
@@ -8,7 +7,6 @@ import { airportData } from "./model/airportData";
 import { flightData } from "./model/flightData";
 import { seatData } from "./model/seatData";
 import { format, parse } from "date-fns";
-import { Weight } from "lucide-react";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
