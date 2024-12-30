@@ -12,7 +12,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; 
 
 const SearchComponent = ({
-  onSearchResults = () => { },
+  // onSearchResults = () => { },
   buttonText = 'Search',
   backgroundColor = '#FFFFFFFF',
   highlightsContainer= "display:visible",
@@ -30,8 +30,10 @@ const SearchComponent = ({
   customStyles = {},
 }) => {
   const dispatch = useDispatch();
-  const stations = useSelector(selectStations);
   const navigate = useNavigate()
+  const stations = useSelector(selectStations);
+
+  const [filteredStations, setFilteredStations] = useState([]);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [leavingFrom, setLeavingFrom] = useState(initialValues?.from || '');
   const [goingTo, setGoingTo] = useState(initialValues?.to || '');
@@ -45,6 +47,8 @@ const SearchComponent = ({
   const [warningMessage,setWarningMessage] = useState('')
   const [lastToastTime, setLastToastTime] = useState(0);  
   const toastDelay = 5000; 
+  const [searchTerm, setSearchTerm] = useState('');
+  
 
   const fromStationRef = useRef(null);
   const toStationRef = useRef(null);
@@ -65,40 +69,39 @@ const SearchComponent = ({
     }
   ];
 
+  // useEffect(() => {
+  //   const storedStations = JSON.parse(localStorage.getItem('stations'));
+  
+  //   if (storedStations && storedStations.length > 0) {
+  //     setFilteredStations(storedStations);
+  //   } else {
+  //     dispatch(fetchStations()).then((response) => {
+  //       if (response && response.data) {
+  //         console.log(" YEs setting into local Stations Data: ", response.data.stations);
+          
+  //         localStorage.setItem('stations', JSON.stringify(response.data.stations));
+  //       }
+  //     });
+  //   }
+  // }, [dispatch]);
+
+    useEffect(() => {
+      dispatch(fetchStations());
+    },[dispatch]);
+
+
+  
+  // Filter stations based on user input
   useEffect(() => {
-    dispatch(fetchStations());
-  }, [dispatch]);
-
-  // const [generalSelection, setGeneralSelection] = useState(null);
-  // const [classSelection, setClassSelection] = useState(null);
-
-  // Other existing state and handlers...
-
-  // const generalOptions = [
-  //   { value: 'general', label: 'GENERAL' },
-  //   { value: 'ladies', label: 'LADIES' },
-  //   { value: 'lower_berth_sr_citizen', label: 'LOWER BERTH/SR.CITIZEN' },
-  //   { value: 'person_with_disability', label: 'PERSON WITH DISABILITY' },
-  //   { value: 'duty_pass', label: 'DUTY PASS' },
-  //   { value: 'tatkal', label: 'TATKAL' },
-  //   { value: 'premium_tatkal', label: 'PREMIUM TATKAL' },
-  //   // Add more options as needed
-  // ];
-
-
-  // const classOptions = [
-  //   { value: 'all', label: 'All Classes' },
-  //   { value: 'anubhuti', label: 'Anubhuti Class (EA)' },
-  //   { value: 'ac_first_class', label: 'AC First Class (1A)' },
-  //   { value: 'vistadome_ac', label: 'Vistadome AC (EV)' },
-  //   { value: 'exec_chair_car', label: 'Exec. Chair Car (EC)' },
-  //   { value: 'ac_2_tier', label: 'AC 2 Tier (2A)' },
-  //   { value: 'ac_3_economy', label: 'AC 3 Economy' },
-  //   { value: 'vistadome_chair_car', label: 'Vistadome Chair Car (VC)' },
-  //   { value: 'ac_chair', label: 'AC Chair (CC)' },
-  //   { value: 'sleeper', label: 'Sleeper (SL)' },
-  // ];
-
+    if (searchTerm.length > 0) {
+      const filtered = stations?.filter((station) =>
+        station.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredStations(filtered?.slice(0, 15)); // Limit results for performance
+    } else {
+      setFilteredStations(stations?.slice(0,10)); // Show the first station by default
+    }
+  }, [searchTerm, stations]);
 
   const handleFromStationChange = (selectedOption) => {
     setLeavingFrom(selectedOption);
@@ -108,7 +111,7 @@ const SearchComponent = ({
 
   const handleToStationChange = (selectedOption) => {
     setGoingTo(selectedOption);
-    validateStations( selectedOption,leavingFrom,journeyDate);
+    validateStations( leavingFrom,selectedOption,journeyDate);
   };
 
   
@@ -119,18 +122,25 @@ const SearchComponent = ({
   };
 
   const validateStations = (from, to, date ) => {
-    if(from && !to){
+    if(!from && to){
+      fromStationRef.current.focus();
+      fromStationRef.current.onMenuOpen();
+      setCalendarOpen(false);
+    }else if(from && !to ){
       toStationRef.current.focus();
       toStationRef.current.onMenuOpen();
-    }else if(to && !date) {
+      setCalendarOpen(false);
+    }else if(to && !date ) {
       journeyDateRef.current.focus();
       setCalendarOpen(true)
-    }else if (from && to && from.value === to.value) {
+    }
+    if (from && to && from.value === to.value ) {
       setWarningMessage("From and To stations shouldn't be the same");
     } else {
       setWarningMessage(''); // Clear the warning if stations are valid
     }
   };
+
   const showToast = (message, type) => {
     const currentTime = Date.now();
 
@@ -139,6 +149,31 @@ const SearchComponent = ({
       setLastToastTime(currentTime);  
     }
   };
+
+  const formatDateToYYYYMMDD = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}${month}${day}`;
+  };
+
+  const formatDateToDayDDMONTH = (dateString) => {
+    const date = new Date(dateString);
+  
+    // Get the day of the week
+    const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const dayName = dayNames[date.getDay()];
+  
+    // Get the day of the month
+    const dayOfMonth = date.getDate();
+  
+    // Get the month name
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const monthName = monthNames[date.getMonth()];
+  
+    // Combine into the desired format
+    return `${dayName}, ${dayOfMonth} ${monthName}`;
+  }
 
   const handleSearch = () => {
     if (!leavingFrom || !goingTo || !journeyDate) {
@@ -157,21 +192,28 @@ const SearchComponent = ({
       showToast('Stations should not be the same !', 'error');
       return;
     }else{
-      dispatch(fetchTrains(leavingFrom.value, journeyDate));
+      const [ fromStationName, fromStnCode ] = leavingFrom.value.split(' - ');
+      const [ toStationName, toStnCode] = goingTo.value.split(' - ');
+      const formattedJourneyDate = formatDateToYYYYMMDD(journeyDate);
+      const formattedTrainDate = formatDateToDayDDMONTH(journeyDate);
+      dispatch(fetchTrains(fromStnCode, toStnCode, formattedJourneyDate));
       navigate('/Train-list-01', {
         state: {
           from: leavingFrom,
           to: goingTo,
-          date: journeyDate
+          date: journeyDate,
+          fromStationName : fromStationName,
+          toStationName : toStationName,
+          formattedTrainDate: formattedTrainDate,
         }
       });
     }
   };
 
-  const stationOptions = stations.map((station) => ({
-    value: station.id,
-    label: station.name
-  }));
+  // const stationOptions = stations.map((station) => ({
+  //   value: station,
+  //   label: station
+  // }));
 
   const customSelectStyles = {
     control: (provided, state) => ({
@@ -723,12 +765,16 @@ const SearchComponent = ({
                           <Select
                             className="icon-select"
                             id="fromStation"
-                            options={stationOptions}
                             value={leavingFrom}
                             ref={fromStationRef}
+                            onInputChange={(input) => setSearchTerm(input)}
                             onChange={handleFromStationChange}
-                            placeholder="From"
+                            placeholder="From.."
                             styles={customSelectStyles}
+                            options={filteredStations?.map((station) => ({
+                              value: station,
+                              label: station,
+                            }))}
                             components={{
                               DropdownIndicator: () => null,
                               IndicatorSeparator: () => null
@@ -758,12 +804,16 @@ const SearchComponent = ({
                           <Select
                             className="icon-select"
                             id="toStation"
-                            ref={toStationRef}
-                            options={stationOptions}
                             value={goingTo}
+                            ref={toStationRef}
+                            onInputChange={(input) => setSearchTerm(input)}
                             onChange={handleToStationChange}
-                            placeholder="To"
+                            placeholder="..To"
                             styles={customSelectStyles}
+                            options={filteredStations?.map((station) => ({
+                              value: station,
+                              label: station,
+                            }))}
                             components={{
                               DropdownIndicator: () => null,
                               IndicatorSeparator: () => null

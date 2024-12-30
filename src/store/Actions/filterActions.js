@@ -1,5 +1,7 @@
 // actions/stationActions.js
 import { API_URL } from "./authActions";
+import axios from 'axios';
+
 // Action Types
 export const FETCH_STATIONS_REQUEST = 'FETCH_STATIONS_REQUEST';
 export const FETCH_STATIONS_SUCCESS = 'FETCH_STATIONS_SUCCESS';
@@ -52,8 +54,10 @@ export const fetchTrainsFailure = (error) => ({
   payload: error,
 });
 
+
 // Thunk action to fetch trains based on selected stations
-export const fetchTrains = (stationId, journeyDate) => async (dispatch) => {
+
+export const fetchTrains = (fromStnCode, toStnCode, journeyDate) => async (dispatch) => {
   dispatch(fetchTrainsRequest());
   try {
     const response = await fetch(`${API_URL}/trains/getTrains`, {
@@ -61,13 +65,20 @@ export const fetchTrains = (stationId, journeyDate) => async (dispatch) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ stationId, date: journeyDate }),
+      body: JSON.stringify({
+        fromStnCode,
+        toStnCode,
+        journeyDate,
+      }),
     });
-    const data = await response.json();  
-    
-    dispatch(fetchTrainsSuccess(data));
+
+    const data = await response.json();
+    console.log('Request Params:', { fromStnCode, toStnCode, journeyDate });
+    console.log('Response Data:', data);
+    dispatch(fetchTrainsSuccess(data?.trainBtwnStnsList));
   } catch (error) {
-    dispatch(fetchTrainsFailure(error.toString()));
+    console.error(error);
+    dispatch(fetchTrainsFailure(error.message));
   }
 };
 

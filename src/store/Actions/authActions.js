@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { success } from 'toastr';
 
 
 export const SET_NAME = 'SET_NAME';
@@ -58,8 +59,8 @@ export const googleLoginFailure = (error) => ({
   payload: error,
 });
 
-// export const API_URL = process.env.REACT_APP_API_URL ;
-export const API_URL = 'https://tripadmin.onrender.com/api';
+export const API_URL = process.env.REACT_APP_API_URL ;
+// export const API_URL = 'https://tripadmin.onrender.com/api';
 
 export const register = (name, email, password, navigate) => async (dispatch) => {
   try {
@@ -106,22 +107,27 @@ export const Loginn = (email, password, navigate) => async (dispatch) => {
       email,
       password,
     });
-
-    
-    const { user, token} = response.data;
-
-    localStorage.setItem('authToken', token);
-    localStorage.setItem('user', JSON.stringify(user));
-
-    dispatch(setUser(user));
-    dispatch(setName(user.name));
-    dispatch(setEmail(''));
-    dispatch(setPassword('')); 
-
-    navigate('/');
+    if(response.data){
+      const { user, token} = response.data;
+  
+      localStorage.setItem('authToken', token);
+      localStorage.setItem('user', JSON.stringify(user));
+  
+      dispatch(setUser(user));
+      dispatch(setName(user.name));
+      dispatch(setEmail(''));
+      dispatch(setPassword('')); 
+  
+      navigate('/');
+      return { success : true}
+    }
+    else{
+      return { error : response.data.message}
+    }    
   } catch (error) {
     const errorMessage = error.response?.data?.message || 'Login failed. Please check your credentials.';
     dispatch(setError(errorMessage));
+    return { error : errorMessage}
   }
 };
 
@@ -176,3 +182,7 @@ export const handleGoogleLogin = (accessToken, navigate) => async (dispatch) => 
   }
 };
 
+
+
+
+////

@@ -52,32 +52,39 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await dispatch(Loginn(email, password, navigate));
-      
-      toast.success('Login successful!', {
-        position: "top-center",
-        autoClose: 2000,
-        theme: "colored"
-      });
+      const response = await dispatch(Loginn(email, password, navigate));
+      if(response.success){
+        toast.success('Login successful!', {
+          position: "top-center",
+          autoClose: 2000,
+          theme: "colored"
+        });
 
-      // Check for stored train booking data
-      const selectedTrain = sessionStorage.getItem('selectedTrain');
-      if (selectedTrain) {
-        const train = JSON.parse(selectedTrain);
-        // Clear the stored data
-        sessionStorage.removeItem('selectedTrain');
-        sessionStorage.removeItem('redirectPath');
-        
-        // Redirect to train booking page after a short delay
-        setTimeout(() => {
-          navigate('/trainbookingdetails', { 
-            state: { trainData: train } 
-          });
-        }, 2000);
-      } else {
-        setTimeout(() => {
-          navigate('/');
-        }, 2000);
+        // Check for stored train booking data
+        const selectedTrain = sessionStorage.getItem('selectedTrain');
+        if (selectedTrain) {
+          const train = JSON.parse(selectedTrain);
+          // Clear the stored data
+          sessionStorage.removeItem('selectedTrain');
+          sessionStorage.removeItem('redirectPath');
+          
+          // Redirect to train booking page after a short delay
+          setTimeout(() => {
+            navigate('/trainbookingdetails', { 
+              state: { trainData: train } 
+            });
+          }, 2000);
+        } else {
+          setTimeout(() => {
+            navigate('/');
+          }, 2000);
+        }
+      }else {
+        toast.error(response.error, {
+          position: "top-center",
+          autoClose: 3000,
+          theme: "colored"
+        });
       }
     } catch (error) {
       console.error('Login error:', error);
