@@ -22,6 +22,7 @@ import ManageBookingModal from './ManageBookingModal'; // Import the modal
 const MyBooking = () => {
   const [showModal, setShowModal] = useState(false); // Manage modal visibility
   const [selectedBooking, setSelectedBooking] = useState(null); // Store selected booking
+  const [activeFilter, setActiveFilter] = useState('all'); // Add this state
 
   const handleOpenModal = (booking) => {
     setSelectedBooking(booking);
@@ -80,19 +81,39 @@ const MyBooking = () => {
                       <div className="col-xl-12 col-lg-12 col-md-12 mb-4">
                         <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2">
                           <li className="col-md-3 col-6">
-                            <input type="checkbox" className="btn-check" id="allbkk" defaultChecked />
-                            <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="allbkk">All Booking (24)</label>
+                            <input 
+                              type="radio" 
+                              className="btn-check" 
+                              id="allbkk" 
+                              checked={activeFilter === 'all'}
+                              onChange={() => setActiveFilter('all')}
+                              name="bookingFilter"
+                            />
+                            <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="allbkk">
+                              All Booking (24)
+                            </label>
                           </li>
                           <li className="col-md-3 col-6">
-                            <input type="checkbox" className="btn-check" id="processing" />
-                            <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="processing">Processing (02)</label>
+                            <input 
+                              type="radio" 
+                              className="btn-check" 
+                              id="processing"
+                              checked={activeFilter === 'processing'}
+                              onChange={() => setActiveFilter('processing')}
+                              name="bookingFilter"
+                            />
+                            <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="processing">
+                              Processing (02)
+                            </label>
                           </li>
                           <li className="col-md-3 col-6">
-                            <input type="checkbox" className="btn-check" id="cancelled" />
+                            <input type="checkbox" className="btn-check" id="cancelled"  checked={activeFilter === 'cancelled'}
+                              onChange={() => setActiveFilter('cancelled')}/>
                             <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="cancelled">Cancelled (04)</label>
                           </li>
                           <li className="col-md-3 col-6">
-                            <input type="checkbox" className="btn-check" id="completed" />
+                            <input type="checkbox" className="btn-check" id="completed" checked={activeFilter === 'completed'}
+                              onChange={() => setActiveFilter('completed')}/>
                             <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="completed">Completed (10)</label>
                           </li>
                         </ul>
@@ -100,57 +121,64 @@ const MyBooking = () => {
                     </div>
                     <div className="row align-items-center justify-content-start">
                       <div className="col-xl-12 col-lg-12 col-md-12">
-                        {/* Single Item */}
-                        <div className="card border br-dashed mb-4">
-                          <div className="card-header nds-block border-bottom flex-column flex-md-row justify-content-between align-items-center">
-                            <div className="d-flex align-items-center">
-                              <div className="square--50 circle bg-light-purple text-purple flex-shrink-0"><i className="fa-solid fa-train" /></div>
-                              <div className="ms-2">
-                                <h6 className="card-title text-dark fs-5 mb-1">Mumbai To Delhi</h6>
-                                <ul className="nav nav-divider small">
-                                  <li className="nav-item text-muted">Booking ID: BKR24530</li>
-                                  <li className="nav-item ms-2"><span className="label bg-light-success text-success">First class</span></li>
-                                </ul>
+                        {activeFilter === 'all' ? (
+                          // Your existing booking card code
+                          <div className="card border br-dashed mb-4">
+                            <div className="card-header nds-block border-bottom flex-column flex-md-row justify-content-between align-items-center">
+                              <div className="d-flex align-items-center">
+                                <div className="square--50 circle bg-light-purple text-purple flex-shrink-0"><i className="fa-solid fa-train" /></div>
+                                <div className="ms-2">
+                                  <h6 className="card-title text-dark fs-5 mb-1">Mumbai To Delhi</h6>
+                                  <ul className="nav nav-divider small">
+                                    <li className="nav-item text-muted">Booking ID: BKR24530</li>
+                                    <li className="nav-item ms-2"><span className="label bg-light-success text-success">First class</span></li>
+                                  </ul>
+                                </div>
+                              </div>
+                              <div className="mt-2 mt-md-0">
+                                <a href="##" className="btn btn-md btn-light-seegreen fw-medium mb-0" onClick={() => handleOpenModal({ 
+                                  id: 'BKR24530',
+                                  from: 'Mumbai',
+                                  to: 'Delhi',
+                                  departureTime: 'Fri 12 Aug 14:00 PM',
+                                  arrivalTime: 'Fri 12 Aug 18:00 PM',
+                                  operatorName: 'Rajesh Sharma',
+                                  vehicleNumber: '12345',
+                                  seatNumbers: ['1A', '1B'],
+                                  price: 100,
+                                  status: 'Processing',
+                                  travelDate: '2024-08-12',
+                                  bookingDate: '2024-08-01',
+                                  type: 'First class'
+                                })}>
+                                  Manage Booking
+                                </a>
                               </div>
                             </div>
-                            <div className="mt-2 mt-md-0">
-                              <a href="#" className="btn btn-md btn-light-seegreen fw-medium mb-0" onClick={() => handleOpenModal({ 
-                                id: 'BKR24530',
-                                from: 'Mumbai',
-                                to: 'Delhi',
-                                departureTime: 'Fri 12 Aug 14:00 PM',
-                                arrivalTime: 'Fri 12 Aug 18:00 PM',
-                                operatorName: 'Rajesh Sharma',
-                                vehicleNumber: '12345',
-                                seatNumbers: ['1A', '1B'],
-                                price: 100,
-                                status: 'Processing',
-                                travelDate: '2024-08-12',
-                                bookingDate: '2024-08-01',
-                                type: 'First class'
-                              })}>
-                                Manage Booking
-                              </a>
+                            <div className="card-body">
+                              <div className="row g-3">
+                                <div className="col-sm-6 col-md-4">
+                                  <span>Departure time</span>
+                                  <h6 className="mb-0">Fri 12 Aug 14:00 PM</h6>
+                                </div>
+                                <div className="col-sm-6 col-md-4">
+                                  <span>Arrival time</span>
+                                  <h6 className="mb-0">Fri 12 Aug 18:00 PM</h6>
+                                </div>
+                                <div className="col-md-4">
+                                  <span>Booked by</span>
+                                  <h6 className="mb-0">Rajesh Sharma</h6>
+                                </div>
+                              </div>
                             </div>
                           </div>
-                          <div className="card-body">
-                            <div className="row g-3">
-                              <div className="col-sm-6 col-md-4">
-                                <span>Departure time</span>
-                                <h6 className="mb-0">Fri 12 Aug 14:00 PM</h6>
-                              </div>
-                              <div className="col-sm-6 col-md-4">
-                                <span>Arrival time</span>
-                                <h6 className="mb-0">Fri 12 Aug 18:00 PM</h6>
-                              </div>
-                              <div className="col-md-4">
-                                <span>Booked by</span>
-                                <h6 className="mb-0">Rajesh Sharma</h6>
-                              </div>
-                            </div>
+                        ) : (
+                          <div className="text-center py-5">
+                            <i className="fa-solid fa-ticket-simple fs-1 text-muted mb-3"></i>
+                            <h5>No {activeFilter} bookings found</h5>
+                            <p className="text-muted">You don't have any {activeFilter} bookings at the moment.</p>
                           </div>
-                        </div>
-                        {/* Additional items */}
+                        )}
                       </div>
                     </div>
                   </div>

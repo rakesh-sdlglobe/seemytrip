@@ -37,11 +37,12 @@ const PersonalInfo = () => {
         gender: 'Male',
         email: '',
         isEmailVerified : 0,
+        isMobileVerified: 0,
     });
 
     useEffect(() => {
-        dispatch(getUserProfile());
-    }, [dispatch]);
+        dispatch(getUserProfile(navigate));
+    }, [dispatch,navigate]);
 
     useEffect(() => {
         if (userProfile) {
@@ -52,6 +53,8 @@ const PersonalInfo = () => {
                 dob: userProfile.dob ? new Date(userProfile.dob).toISOString().split('T')[0] : null,
                 gender: userProfile.gender || 'Male',
                 email: userProfile.email || '',
+                isEmailVerified : userProfile.isEmailVerified || 0,
+                isMobileVerified: userProfile.isMobileVerified || 0,
             });
         }
     }, [userProfile]);
@@ -74,8 +77,22 @@ const PersonalInfo = () => {
     };
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+    
+        if (name === 'mobile') {
+            let formattedValue = value.replace(/[^0-9]/g, ''); 
+            if (formattedValue.length > 10) {
+                formattedValue = formattedValue.slice(0, 10);
+            }
+            if (formattedValue === '' || /^[6-9]/.test(formattedValue)) {
+                setFormData({ ...formData, mobile: formattedValue });
+            }
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
     };
+    
+    
 
 
     const handleSave = () => {
@@ -83,7 +100,7 @@ const PersonalInfo = () => {
         const userData = {
             name: formData.name,
             lastname: formData.lastname,
-            mobile: formData.mobile,
+            mobile: formData.mobile.length === 10 ? formData.mobile : "",
             dob: formData.dob,
             gender: formData.gender,
             email: formData.email,
@@ -92,8 +109,9 @@ const PersonalInfo = () => {
         setIsEditable(userData.isEmailVerified ? true : false)
         console.log("93 the userData is ",userData);
         
-        dispatch(editUserProfile(userData));
+        dispatch(editUserProfile(userData, navigate));
         setIsEditable(false);
+        // window.location.reload();
     };
 
     const handlePasswordChange = () => {
@@ -120,6 +138,15 @@ const PersonalInfo = () => {
         console.log(formData.email, newPassword);
         
     };
+
+    const handleMobileVerifyClick = () => {
+        if(formData.mobile){
+            alert("We will send the OTP later");
+        }
+        else if(formData.email){
+            alert("SS email")
+        }
+    }
     
 
     const handleVerifyClick = () => {
@@ -192,7 +219,7 @@ const PersonalInfo = () => {
                                     name="name"
                                     value={formData.name}
                                     onChange={handleChange}
-                                    disabled={!isEditable || googleUser} />
+                                    disabled={!isEditable} />
                             </div>
                         </div>
                         <div className="col-xl-6 col-lg-6 col-md-6">
@@ -208,38 +235,108 @@ const PersonalInfo = () => {
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">Email ID</label>
-                                <input type="text" className="form-control"
+                                <div style={{ position: 'relative' }}>
+                                <input
+                                    type="email"
+                                    className="form-control"
                                     name="email"
                                     value={formData.email}
                                     onChange={handleChange}
-                                    disabled={!isEditable || googleUser} />
-                                {isEditable && (
-                                    userProfile?.isEmailVerified ? (
-                                        <i className="fa fa-check text-success verify-tick" aria-hidden="true"></i>
-                                    ) : (
-                                        <button
-                                            className="btn btn-text-secondary btn-sm verify-button"
-                                            onClick={handleVerifyClick}
-                                        >
-                                            Verify
-                                        </button>
-                                    )
-                                )}
+                                    style={{
+                                    backgroundColor: formData.isEmailVerified && isEditable ? "#e0e0e0" : formData.isEmailVerified === 0 && isEditable ? "white" : "#e0e0e0" , 
+                                    paddingRight: '50px', // Add space for the tick mark
+                                    }}
+                                    disabled={ formData.isEmailVerified || !isEditable }
+                                />
+                                {formData?.isEmailVerified ? (
+                                    <span
+                                    style={{
+                                        position: 'absolute',
+                                        right: '10px',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '5px',
+                                        color: '#28a745', // Green color for text and tick
+                                        fontWeight: 'bold',
+                                    }}
+                                    >
+                                    <span
+                                        style={{
+                                        display: 'inline-flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        width: '20px',
+                                        height: '20px',
+                                        borderRadius: '50%',
+                                        backgroundColor: '#28a745', // Green background for the tick
+                                        color: 'white', // White tick mark
+                                        fontSize: '14px',
+                                        }}
+                                    >
+                                        ✓
+                                    </span>
+                                    Verified
+                                    </span>
+                                    ) : formData?.email ? (
+                                            <button style={{
+                                                position: 'absolute',
+                                                background:"none",
+                                                border:"none",
+                                                right: '10px',
+                                                top: '50%',
+                                                transform: 'translateY(-50%)',
+                                                color: formData.isEmailVerified ? '#28a745' : '#dc3545', // Green if verified, Red if not
+                                                fontWeight: 'bold',
+                                                }}
+                                                onClick = {handleVerifyClick}
+                                            > Verify </button>
+                                        ) : ""
+                                }
+                                </div>
                             </div>
                         </div>
+
+
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">Mobile</label>
-                                <input type="text" className="form-control"
+                                <div style={{ position: 'relative' }}>
+                                <input
+                                    type="number"
+                                    className="form-control"
                                     name="mobile"
                                     value={formData.mobile}
+                                    pattern="[0-9]*"
+                                    inputMode="numeric"
+                                    disabled={!isEditable}
                                     onChange={handleChange}
-                                    disabled={!isEditable} />
-                                {isEditable && (
-                                    <button className="btn btn-text-secondary btn-sm verify-button" onClick={handleVerifyClick}>Verify</button>
-                                )}
+                                    style={{
+                                        backgroundColor: !isEditable ? "#e0e0e0" : "white", // Cement color for disabled input
+                                        paddingRight: "70px", 
+                                    }}
+                                />
+
+                                <button
+                                    style={{
+                                    position: 'absolute',
+                                    background:"none",
+                                    border:"none",
+                                    right: '10px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    color: formData.isMobileVerified ? '#28a745' : '#dc3545', // Green if verified, Red if not
+                                    fontWeight: 'bold',
+                                }}
+                                onClick = {handleMobileVerifyClick}
+                                >
+                                    {formData.isMobileVerified === 1 ? 'Verified' : (formData.mobile && formData.mobile.length === 10) ?  'Verify' : null }
+                                </button>
+                                </div>
                             </div>
                         </div>
+
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">Date of Birth</label>
@@ -253,9 +350,9 @@ const PersonalInfo = () => {
                                     name="gender"
                                     value={formData.gender}
                                     onChange={handleChange}
-                                    disabled={!isEditable}>
+                                    disabled={!isEditable }>
                                     <option value="Male">Male</option>
-                                    {/* <option value="Female">Female</option> */}
+                                    <option value="Female">Female</option>
                                     <option value="Other">Other</option>
                                 </select>
                                 <i className="fa fa-chevron-down select-icon"></i>
@@ -364,6 +461,19 @@ const PersonalInfo = () => {
                     font-size: 1.2rem;
                 }
 
+                .email-verification-message {
+                    margin-top: 0.25rem;
+                    font-size: 0.875rem;
+                }
+                
+                .verify-link {
+                    cursor: pointer;
+                    text-decoration: underline;
+                }
+                
+                .verify-link:hover {
+                    opacity: 0.8;
+                }
             `}</style>
             <OTPModal
                 showModal={showModal}

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { json } from 'react-router-dom';
+import { API_URL } from './authActions';
 
 export const FETCH_USER_PROFILE_SUCCESS = 'FETCH_USER_PROFILE_SUCCESS';
 export const FETCH_USER_PROFILE_FAILURE = 'FETCH_USER_PROFILE_FAILURE';
@@ -18,10 +18,13 @@ export const FETCH_TRAVELERS_FAILURE = 'FETCH_TRAVELERS_FAILURE';
 export const REMOVE_TRAVELER_REQUEST = 'REMOVE_TRAVELER_REQUEST';
 export const REMOVE_TRAVELER_SUCCESS = 'REMOVE_TRAVELER_SUCCESS';
 export const REMOVE_TRAVELER_FAILURE = 'REMOVE_TRAVELER_FAILURE';
+export const UPDATE_TRAVELER_REQUEST = 'UPDATE_TRAVELER_REQUEST';
+export const UPDATE_TRAVELER_SUCCESS = 'UPDATE_TRAVELER_SUCCESS';
+export const UPDATE_TRAVELER_FAILURE = 'UPDATE_TRAVELER_FAILURE';
 
 
 // Fetch user profile
-const API_URL = process.env.REACT_APP_API_URL || 'https://tripadmin.onrender.com/api';
+// const API_URL = process.env.REACT_APP_API_URL || 'https://tripadmin.onrender.com/api';
 
 
 export const getUserProfile = () => {
@@ -52,7 +55,7 @@ export const getUserProfile = () => {
   };
 };
 // Edit user profile
-export const editUserProfile = (userData) => {
+export const editUserProfile = (userData,navigate) => {
   return async (dispatch) => {
     const authToken = localStorage.authToken; 
     console.log("57 YEs ");
@@ -70,6 +73,8 @@ export const editUserProfile = (userData) => {
       
       
       dispatch({ type: EDIT_USER_PROFILE_SUCCESS, payload: response.data.user });
+       // Navigate to home page
+      navigate('/');  // This will redirect to the home page
     } catch (error) {    
       dispatch({ type: EDIT_USER_PROFILE_FAILURE, payload: error.response.data.message });
     }
@@ -81,12 +86,12 @@ export const editUserEmail = (userData) => {
     const authToken = localStorage.authToken; 
 
     try {
-      const response = await axios.post('https://tripadmin.onrender.com/api/users/editEmail', userData, {
+      const response = await axios.post(`${API_URL}/users/editEmail`, userData, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
       });
-      console.log(response.data.user);
+      console.log("Response from 92 after edituser API call: ",response.data.user);
       
       dispatch({ type: EDIT_USER_EMAIL_SUCCESS, payload: response.data.user });
     } catch (error) {    
@@ -100,7 +105,7 @@ export const myBookings = () => {
     const authToken = localStorage.getItem('authToken'); 
     
     try {
-      const response = await axios.get('https://tripadmin.onrender.com/api/users/myBookings', {
+      const response = await axios.get(`${API_URL}users/myBookings`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -120,7 +125,7 @@ export const addTraveler = (travelerData,navigate) => async (dispatch) => {
     
     dispatch({ type: ADD_TRAVELER_REQUEST });
       const authToken = localStorage.getItem('authToken'); 
-      const response = await axios.post('https://tripadmin.onrender.com/api/users/addTraveler', travelerData,{
+      const response = await axios.post(`${API_URL}/users/addTraveler`, travelerData,{
         
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -148,7 +153,7 @@ export const fetchTravelers = () => {
     const authToken = localStorage.getItem('authToken'); 
     
     try {
-      const response = await axios.get('https://tripadmin.onrender.com/api/users/getTravelers', {
+      const response = await axios.get(`${API_URL}/users/getTravelers`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -164,7 +169,7 @@ export const removeTraveler = (id, navigate) => async (dispatch) => {
   try {
     dispatch({ type: REMOVE_TRAVELER_REQUEST });
     const authToken = localStorage.getItem("authToken");
-    await axios.delete(`https://tripadmin.onrender.com/api/users/traveller/${id}`, {
+    await axios.delete(`${API_URL}/users/traveller/${id}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -182,3 +187,36 @@ export const removeTraveler = (id, navigate) => async (dispatch) => {
     });
   }
 };
+
+export const imageUpload = async (file) => {
+  if (!file) {
+    console.error("No file provided for upload.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const authToken = localStorage.authToken; 
+
+  try {
+    const response = await axios.post(`${API_URL}/users/imageUpload`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${authToken}`,
+      
+      },
+    });
+
+    console.log('Image uploaded successfully:', response.data);
+    return response.data; // Optionally return the API response
+  } catch (error) {
+    console.error('Error uploading image:', error.message);
+    throw error; // Rethrow the error for further handling if needed
+  }
+};
+
+export const updateTraveler = (travelerData) => ({
+  type: 'UPDATE_TRAVELER',
+  payload: travelerData
+});

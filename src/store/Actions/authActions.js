@@ -58,13 +58,16 @@ export const googleLoginFailure = (error) => ({
   payload: error,
 });
 
+// export const API_URL = process.env.REACT_APP_API_URL ;
+export const API_URL = 'https://tripadmin.onrender.com/api';
+
 export const register = (name, email, password, navigate) => async (dispatch) => {
   try {
 
     dispatch(setError(''));
 
 
-    const response = await axios.post('https://tripadmin.onrender.com/api/signup', {
+    const response = await axios.post(`${API_URL}/signup`, {
       name,
       email,
       password,
@@ -99,7 +102,7 @@ export const Loginn = (email, password, navigate) => async (dispatch) => {
     dispatch(setError(''));
 
 
-    const response = await axios.post('https://tripadmin.onrender.com/api/login', {
+    const response = await axios.post(`${API_URL}/login`, {
       email,
       password,
     });
@@ -141,7 +144,7 @@ export const handleGoogleLogin = (accessToken, navigate) => async (dispatch) => 
       console.log("Starting Google login process...");
 
       // Call the backend API with the Google token
-      const response = await axios.get('https://tripadmin.onrender.com/api/auth/google', {
+      const response = await axios.get(`${API_URL}/auth/google`, {
           headers: { Authorization: `Bearer ${accessToken}` },
       });
 
@@ -172,3 +175,4 @@ export const handleGoogleLogin = (accessToken, navigate) => async (dispatch) => 
       dispatch(googleLoginFailure(errorMessage));
   }
 };
+

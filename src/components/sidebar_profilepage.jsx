@@ -1,16 +1,34 @@
 import { useSelector } from 'react-redux';
-import { useState } from 'react';
+// import { useEffect, useState } from 'react';
 import { selectUserProfile } from '../store/Selectors/userSelector';
+// import { imageUpload } from '../store/Actions/userActions';
 
 const SideBarProfilePage = () => {
     const userProfile = useSelector(selectUserProfile);
-    const [uploadedImage, setUploadedImage] = useState(null);
+    // const [uploadedImage, setUploadedImage] = useState(null);
 
-    const handleImageUpload = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            setUploadedImage(URL.createObjectURL(file));
+    // Handle image upload functionality (commented out for now)
+    // const handleImageUpload = (event) => {
+    //     const file = event.target.files[0];
+    //     if (file) {
+    //         setUploadedImage(URL.createObjectURL(file));
+    //         imageUpload(file);
+    //     }
+    // };
+
+    // useEffect(() => {
+    //     if (userProfile && userProfile.filepath) {
+    //         const imageUrl = `${process.env.REACT_APP_API_URL}/uploads/${userProfile.filepath.split("uploads\\")[1] || userProfile.filepath.split("uploads/")[1]}`;
+    //         setUploadedImage(imageUrl);
+    //     }
+    // }, [userProfile]);
+
+    // Function to render the first letter of the user's name
+    const renderInitial = () => {
+        if (userProfile?.name) {
+            return userProfile.name.charAt(0).toUpperCase();
         }
+        return "G"; // Default for "Guest User"
     };
 
     return (
@@ -19,35 +37,63 @@ const SideBarProfilePage = () => {
                 <div className="card-top bg-primary position-relative">
                     <div className="py-5 px-3">
                         <div className="crd-thumbimg text-center">
-                            <div className="p-2 d-flex align-items-center justify-content-center brd">
-                                <img
-                                    src={uploadedImage || "https://placehold.co/500x500"}
-                                    className="img-fluid circle"
-                                    width={120}
-                                    alt="Profile"
-                                />
-                            </div>
-                            <div className="mt-3">
-                                <label className="btn btn-light mb-3">
-                                    <i className="fa-solid fa-upload me-2"></i> Upload Photo
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={handleImageUpload}
-                                        style={{ display: 'none' }}
+                            <div className="p-2 d-flex align-items-center justify-content-center brd position-relative">
+                                <div 
+                                    className="circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                                    style={{
+                                        width: '120px',
+                                        height: '120px',
+                                        fontSize: '3rem',
+                                        fontWeight: 'bold',
+                                    }}
+                                >
+                                    {renderInitial()}
+                                </div>
+                                {/* Display user image functionality commented out */}
+                                {/* <div className="d-flex flex-column align-items-end">
+                                    <img
+                                        src={ "https://placehold.co/500x500"}
+                                        className="img-fluid circle"
+                                        style={{ 
+                                            width: '120px',
+                                            height: '120px',
+                                            objectFit: 'cover'
+                                        }}
+                                        alt="Profile"
                                     />
-                                </label>
+                                    <label style={{ 
+                                        cursor: 'pointer', 
+                                        marginTop: '-30px',
+                                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                                        border: '3px solid white',
+                                        borderRadius: '50%',
+                                        padding: '8px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center'
+                                    }}>
+                                        <i className="fa-solid fa-pen-to-square text-light"></i>
+                                        <input
+                                            type="file"
+                                            name="file"
+                                            accept="image/*"
+                                            onChange={handleImageUpload}
+                                            style={{ display: 'none' }}
+                                        />
+                                    </label>
+                                </div> */}
                             </div>
                         </div>
-                        <div className="crd-capser text-center">
-                            <h5 className="mb-0 text-light fw-semibold">{userProfile?.name}</h5>
-                            <span className="text-light opacity-75 fw-medium text-md">
+                        <div className="crd-capser text-center mt-4">
+                            <h5 className="mb-0 text-light fw-semibold">{userProfile?.name || "Guest User"}</h5>
+                            {/* <span className="text-light opacity-75 fw-medium text-md">
                                 <i className="fa-solid fa-location-dot me-2" />Karnataka, India
-                            </span>
+                            </span> */}
                         </div>
                     </div>
                 </div>
-                <div className="card-middle mt-5 mb-4 px-4">
+                {/* Other card middle functionality */}
+                {/* <div className="card-middle mt-5 mb-4 px-4">
                     <div className="revs-wraps mb-3">
                         <div className="revs-wraps-flex d-flex align-items-center justify-content-between mb-1">
                             <span className="text-dark fw-semibold text-md">Complete Your Profile</span>
@@ -62,7 +108,7 @@ const SideBarProfilePage = () => {
                             <i className="fa-solid fa-sun me-2" />Upgrade Pro
                         </button>
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     );

@@ -3,8 +3,15 @@ import { Edit2 } from 'lucide-react';
 import Header02 from '../header02';
 import FooterDark from '../footer-dark';
 import { Link } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import {useLocation} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const TrainBookingDetails = () => {
+const location = useLocation();
+const trainData = location.state?.trainData;
+const navigate = useNavigate();
   // Add max travelers constant
   const MAX_TRAVELERS = 6;
 
@@ -17,9 +24,11 @@ const TrainBookingDetails = () => {
     berth: '',
     country: '',
   });
+  const [selectedTravelers, setSelectedTravelers] = useState([]);
 
   // Add new state for form validation and contact details
   const [formErrors, setFormErrors] = useState({});
+  const [errors, setErrors] = useState({ email: '', phone: '' });
   const [contactDetails, setContactDetails] = useState({
     irctcUsername: '',
     email: '',
@@ -27,24 +36,61 @@ const TrainBookingDetails = () => {
     state: '',
   });
 
+
+  const handleEmailChange = (e) => {
+    const email = e.target.value;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      email: emailRegex.test(email) || email === '' ? '' : 'Invalid email format',
+    }));
+    setContactDetails((prev) => ({ ...prev, email }));
+  };
+
+
+  const handlePhoneChange = (e) => {
+    const phone = e.target.value.replace(/\D/g, ''); // Remove non-digit characters
+    const maxPhoneLength = 10;
+    const phoneRegex = /^[6-9]\d{9}$/;
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      phone:
+        phone.length > maxPhoneLength
+          ? 'Phone number must be exactly 10 digits'
+          : phone === ''
+          ? 'Phone number is required'
+          : !phoneRegex.test(phone) 
+          ? "Invalid phone number " 
+          : '',
+    }));
+
+
+    setContactDetails((prev) => ({
+      ...prev,
+      phone: phone.slice(0, maxPhoneLength),
+    }));
+  };
+
   // Train details object
   const trainDetails = {
-    trainNumber: '11006',
-    trainName: 'CHALUKYA EXP',
-    from: 'Krishnarajapuram',
-    to: 'Mumbai Dadar Central',
-    class: 'Second AC • General',
-    departureTime: '04:40 AM',
+    trainNumber: trainData?.trainNumber ||'11006',
+    trainName: trainData?.trainName ||'CHALUKYA EXP',
+    from: trainData?.startStation ||'Krishnarajapuram',
+    to: trainData?.endStation ||'Mumbai Dadar Central',
+    class: trainData?.seatClass ||'Second AC • General',
+    departureTime: trainData?.departureTime ||'04:40 AM',
     departureDate: 'Thu, 14 Nov 24',
-    arrivalTime: '05:35 AM',
+    arrivalTime: trainData?.arrival_time ||'05:35 AM',
     arrivalDate: 'Fri, 15 Nov 24',
-    duration: '24h 55m',
+    duration: trainData?.duration ||'24h 55m',
   };
 
   // Handler functions
   const handleSave = () => {
     if (travelers.length >= MAX_TRAVELERS) {
-      alert('Maximum limit of 6 travelers reached.');
+      toast.error('Maximum limit of 6 travelers reached.');
       return;
     }
     
@@ -57,15 +103,37 @@ const TrainBookingDetails = () => {
         berth: '',
         country: '',
       });
+      toast.success('Traveler added successfully')
     }
   };
 
+  //validate before payment
+  const validateBeforePayment = () => {
+    if(selectedTravelers.length === 0){
+      toast.error('Please select at least one traveler')
+      return false;
+    }
+    if(!contactDetails.irctcUsername || !contactDetails.email || !contactDetails.phone || !contactDetails.state){
+      toast.error('Please fill all the required fields')
+      return false;
+    }
+    return true;
+  }
+// handle proceed to payment
+const handleProceedToPayment = (e)=>{
+  e.preventDefault();
+  if(validateBeforePayment()){
+    navigate('/booking-page-3')
+  }
+}
   // Update validateForm function
   const validateForm = () => {
     const errors = {};
     
     if (!currentTraveler.name.trim()) {
       errors.name = 'Name is required';
+    } else if (!/^[a-zA-Z\s]+$/.test(currentTraveler.name.trim())) {
+      errors.name = 'Name should only contain letters and spaces';
     }
     if (!currentTraveler.age) {
       errors.age = 'Age is required';
@@ -89,6 +157,27 @@ const TrainBookingDetails = () => {
   const handleDeleteTraveler = (index) => {
     const updatedTravelers = travelers.filter((_, i) => i !== index);
     setTravelers(updatedTravelers);
+    toast.error('Traveler deleted successfully');
+  };
+
+  // Add new handler function near other handlers
+  const handleEditTraveler = (index) => {
+    setCurrentTraveler(travelers[index]);
+    // handleDeleteTraveler(index);
+    const updateTravelers = travelers.filter((_, i) => i !==index);
+    setTravelers(updateTravelers);
+    toast.info('Edit traveler details');
+  };
+
+  // Add this function near other handler functions
+  const handleTravelerSelection = (index) => {
+    setSelectedTravelers(prev => {
+      if (prev.includes(index)) {
+        return prev.filter(i => i !== index);
+      } else {
+        return [...prev, index];
+      }
+    });
   };
 
   // Render functions
@@ -206,6 +295,7 @@ const TrainBookingDetails = () => {
               id="berth"
               className="form-select"
               value={currentTraveler.berth}
+              style={{ height: '58px' }}
               onChange={(e) => setCurrentTraveler({ ...currentTraveler, berth: e.target.value })}
               required
             >
@@ -227,6 +317,7 @@ const TrainBookingDetails = () => {
               value={currentTraveler.country}
               onChange={(e) => setCurrentTraveler({ ...currentTraveler, country: e.target.value })}
               required
+              style={{ height: '58px' }}
             >
               <option value="">Select country</option>
               <option value="india">India</option>
@@ -244,17 +335,34 @@ const TrainBookingDetails = () => {
   );
   const renderSavedTravelers = () => (
     travelers.length > 0 && (
-      <div className="mt-4">
-        <h4 className="mb-3">Saved Travelers</h4>
+      <div className="mt-4 mb-3">
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h4 className="mb-0">Saved Travelers</h4>
+          <div className="text-muted small">
+            {selectedTravelers.length} selected
+          </div>
+        </div>
         <div className="row g-3">
           {travelers.map((traveler, index) => (
             <div key={index} className="col-md-6">
-              <div className="card shadow-sm">
+              <div className={`card shadow-sm ${selectedTravelers.includes(index) ? 'border-primary' : ''}`}>
                 <div className="card-body">
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <p className="fw-bold mb-0">{traveler.name}</p>
+                  <div className="d-flex align-items-center mb-2">
+                    <div className="form-check me-2">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        checked={selectedTravelers.includes(index)}
+                        onChange={() => handleTravelerSelection(index)}
+                        id={`traveler-${index}`}
+                      />
+                    </div>
+                    <p className="fw-bold mb-0 flex-grow-1">{traveler.name}</p>
                     <div>
-                      <button className="btn btn-sm btn-outline-primary me-2">
+                      <button 
+                        className="btn btn-sm btn-outline-primary me-2"
+                        onClick={() => handleEditTraveler(index)}
+                      >
                         <Edit2 size={16} />
                       </button>
                       <button 
@@ -282,10 +390,10 @@ const TrainBookingDetails = () => {
       <div className="card p-4">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h4 className="mb-0">Booking Summary</h4>
-          <button className="btn btn-outline-primary btn-sm">
+          <Link to="/Train-list-01" className="btn btn-outline-primary btn-sm">
             <Edit2 size={16} className="me-2" />
             Edit
-          </button>
+          </Link>
         </div>
 
         {/* Train Details Card */}
@@ -374,20 +482,20 @@ const TrainBookingDetails = () => {
           <h5 className="mb-3">Price Details</h5>
           <ul className="list-unstyled">
             <li className="d-flex justify-content-between mb-2">
-              <span>Base Fare ({travelers.length} traveler{travelers.length !== 1 ? 's' : ''})</span>
-              <span>₹{1200 * (travelers.length || 1)}</span>
+              <span>Base Fare ({selectedTravelers.length} traveler{selectedTravelers.length !== 1 ? 's' : ''})</span>
+              <span>₹{1200 * (selectedTravelers.length || 1)}</span>
             </li>
             <li className="d-flex justify-content-between mb-2">
               <span>Taxes & Fees</span>
-              <span>₹{150 * (travelers.length || 1)}</span>
+              <span>₹{150 * (selectedTravelers.length || 1)}</span>
             </li>
             <li className="d-flex justify-content-between border-top pt-2 mt-2">
               <strong>Total Amount</strong>
-              <strong>₹{(1350 * (travelers.length || 1))}</strong>
+              <strong>₹{(1350 * (selectedTravelers.length || 1))}</strong>
             </li>
           </ul>
 
-          <Link to="/booking-page-3" className="btn btn-primary w-100 mt-3">
+          <Link onClick={handleProceedToPayment} className="btn btn-primary w-100 mt-3">
             Proceed to Payment
           </Link>
         </div>
@@ -414,7 +522,7 @@ const TrainBookingDetails = () => {
           The IRCTC ID and Password will be required after payment to complete your booking.
         </small>
       </div>
-
+{/* 
       <div className="mb-3">
         <label htmlFor="email" className="form-label">Email ID*</label>
         <input
@@ -424,9 +532,9 @@ const TrainBookingDetails = () => {
           value={contactDetails.email}
           onChange={(e) => setContactDetails({...contactDetails, email: e.target.value})}
         />
-      </div>
+      </div> */}
 
-      <div className="mb-3">
+      {/* <div className="mb-3">
         <label htmlFor="phone" className="form-label">Phone Number*</label>
         <input
           type="tel"
@@ -435,6 +543,36 @@ const TrainBookingDetails = () => {
           value={contactDetails.phone}
           onChange={(e) => setContactDetails({...contactDetails, phone: e.target.value})}
         />
+      </div> */}
+
+      <div className="mb-3">
+        <label htmlFor="email" className="form-label">
+          Email ID*
+        </label>
+        <input
+          type="email"
+          className="form-control"
+          id="email"
+          value={contactDetails.email}
+          onChange={handleEmailChange}
+          required
+        />
+        {errors.email && <small className="text-danger">{errors.email}</small>}
+      </div>
+
+      <div className="mb-3">
+        <label htmlFor="phone" className="form-label">
+          Phone Number*
+        </label>
+        <input
+          type="tel"
+          className="form-control"
+          id="phone"
+          value={contactDetails.phone}
+          onChange={handlePhoneChange}
+          required
+        />
+        {errors.phone && <small className="text-danger">{errors.phone}</small>}
       </div>
 
       <div className="mb-3">
@@ -456,6 +594,7 @@ const TrainBookingDetails = () => {
 
   return (
     <div id="main-wrapper">
+      <ToastContainer/>
       <Header02 />
       
       <section className="pt-4 gray-simple position-relative">
@@ -468,8 +607,8 @@ const TrainBookingDetails = () => {
             {/* Left Column - Traveler Form */}
             <div className="col-xl-8 col-lg-8 col-md-12">
               {renderTravelerForm()}
-              {renderContactDetails()}
               {renderSavedTravelers()}
+              {renderContactDetails()}
             </div>
 
             {/* Right Column - Booking Summary */}
@@ -541,6 +680,15 @@ const TrainBookingDetails = () => {
             position: relative;
             top: 0;
           }
+        }
+
+        .card.border-primary {
+          border: 1px solid #0d6efd !important;
+        }
+
+        .form-check-input:checked {
+          background-color: #0d6efd;
+          border-color: #0d6efd;
         }
       `}</style>
     </div>

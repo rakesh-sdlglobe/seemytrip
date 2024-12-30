@@ -1,8 +1,25 @@
 import React from 'react';
+import Header02 from './header02';
+import FooterDark from './footer-dark';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
 function SupportPage() {
+  const [showSuccessMessage, setShowSuccessMessage] = React.useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle form submission logic here
+    setShowSuccessMessage(true);
+    
+    // Hide the message after 5 seconds
+    setTimeout(() => {
+      setShowSuccessMessage(false);
+    }, 5000);
+  };
+
   return (
+    <>
+    <Header02/>
     <div className="container py-5">
       {/* Support Page Header */}
       <div className="text-center mb-5">
@@ -59,24 +76,36 @@ function SupportPage() {
         {/* Support Form */}
         <div className="col-lg-6 mb-5">
           <h2 className="fw-bold mb-4">Contact Our Support Team</h2>
-          <form>
-            <div className="mb-3">
-              <label htmlFor="name" className="form-label">Full Name</label>
-              <input type="text" className="form-control" id="name" placeholder="Enter your full name" required />
+          <form onSubmit={handleSubmit}>
+            <div className="row g-3">
+              <div className="col-md-6">
+                <label htmlFor="name" className="form-label">Full Name</label>
+                <input type="text" className="form-control" id="name" placeholder="Enter your full name" required />
+              </div>
+              <div className="col-md-6">
+                <label htmlFor="email" className="form-label">Email Address</label>
+                <input type="email" className="form-control" id="email" placeholder="Enter your email address" required />
+              </div>
+              <div className="col-12">
+                <label htmlFor="subject" className="form-label">Subject</label>
+                <input type="text" className="form-control" id="subject" placeholder="Enter your query subject" required />
+              </div>
+              <div className="col-12">
+                <label htmlFor="message" className="form-label">Message</label>
+                <textarea className="form-control" id="message" rows="5" placeholder="Describe your issue or inquiry" required></textarea>
+              </div>
+              <div className="col-12">
+                <button type="submit" className="btn btn-primary btn-lg w-100">Send Message</button>
+              </div>
+              {showSuccessMessage && (
+                <div className="col-12">
+                  <div className="alert alert-success text-center fade show" role="alert">
+                    <i className="fas fa-check-circle me-2"></i>
+                    Your message has been sent successfully!
+                  </div>
+                </div>
+              )}
             </div>
-            <div className="mb-3">
-              <label htmlFor="email" className="form-label">Email Address</label>
-              <input type="email" className="form-control" id="email" placeholder="Enter your email address" required />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="subject" className="form-label">Subject</label>
-              <input type="text" className="form-control" id="subject" placeholder="Enter your query subject" required />
-            </div>
-            <div className="mb-3">
-              <label htmlFor="message" className="form-label">Message</label>
-              <textarea className="form-control" id="message" rows="5" placeholder="Describe your issue or inquiry" required></textarea>
-            </div>
-            <button type="submit" className="btn btn-primary">Submit</button>
           </form>
         </div>
       </div>
@@ -91,6 +120,25 @@ function SupportPage() {
         </div>
       </div>
     </div>
+    <FooterDark/>
+    <style jsx>{`
+      .alert {
+        margin-top: 1rem;
+        animation: fadeIn 0.5s ease-in;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    `}</style>
+    </>
   );
 }
 

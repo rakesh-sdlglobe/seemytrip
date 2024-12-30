@@ -27,13 +27,6 @@ const Header02 = () => {
   const statdata = useSelector(statedata)
   const isLoggedIn = Boolean(user || googleUser || phoneNumber|| emailuser);
   const googleUserName = localStorage.googleUser || localStorage.googleUserName?.replace(/["']/g, '')
-
-  
-  console.log(googleUser);
-  console.log(isLoggedIn);
-  console.log(phoneNumber);
-  console.log(emailuser);
-  console.log(statdata);
   
   
   
@@ -161,7 +154,7 @@ const Header02 = () => {
                         <Link className="dropdown-item" to="/support">support</Link>
                       </li>
                       <li>
-                        <Link className="dropdown-item" to="#">Settings</Link>
+                        <Link className="dropdown-item" to="/settings">Settings</Link>
                       </li>
                       <li><hr className="dropdown-divider" /></li>
                       <li>
@@ -245,7 +238,6 @@ const Header02 = () => {
       {/* Choose Currency Modal */}
       {/* Choose Countries Modal */}
    
-      <Link id="back2Top" className="top-scroll" title="Back to top" to="#"><i className="fa-solid fa-sort-up" /></Link>
     </>
   );
 };

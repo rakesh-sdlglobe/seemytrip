@@ -1656,7 +1656,7 @@ const HomeRental = () => {
               </div>
             </div>
             {/* End Video Modal */}
-            <Link id="back2Top" className="top-scroll" title="Back to top" to="#"><i className="fa-solid fa-sort-up" /></Link>
+            
           </div>
           {/* ============================================================== */}
           {/* End Wrapper */}

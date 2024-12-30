@@ -1,5 +1,5 @@
 // actions/stationActions.js
-
+import { API_URL } from "./authActions";
 // Action Types
 export const FETCH_STATIONS_REQUEST = 'FETCH_STATIONS_REQUEST';
 export const FETCH_STATIONS_SUCCESS = 'FETCH_STATIONS_SUCCESS';
@@ -27,7 +27,7 @@ export const fetchStationsFailure = (error) => ({
 export const fetchStations = () => async (dispatch) => {
   dispatch(fetchStationsRequest());
   try {
-    const response = await fetch('https://tripadmin.onrender.com/api/trains/getStation');
+    const response = await fetch(`${API_URL}/trains/getStation`);
     const data = await response.json();
     console.log(data);
     console.log(`Station Data: ${data}`);
@@ -56,7 +56,7 @@ export const fetchTrainsFailure = (error) => ({
 export const fetchTrains = (stationId, journeyDate) => async (dispatch) => {
   dispatch(fetchTrainsRequest());
   try {
-    const response = await fetch('https://tripadmin.onrender.com/api/trains/getTrains', {
+    const response = await fetch(`${API_URL}/trains/getTrains`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

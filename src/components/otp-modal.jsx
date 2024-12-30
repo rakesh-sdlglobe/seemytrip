@@ -19,7 +19,7 @@ const OTPModal = ({ show, handleClose, navigate }) => {
   // Local state for phone number, OTP, and country code
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
-  const [countryCode, setCountryCode] = useState('91');
+  const [countryCode, setCountryCode] = useState('+91');
 
   // Effect to reset local state when modal is closed
   useEffect(() => {
@@ -32,7 +32,7 @@ const OTPModal = ({ show, handleClose, navigate }) => {
   const resetForm = () => {
     setPhoneNumber('');
     setOtp('');
-    setCountryCode('91');
+    setCountryCode('+91');
   };
 
   // Handler to send OTP
@@ -95,7 +95,7 @@ const SendOtpForm = ({ countryCode, setCountryCode, phoneNumber, setPhoneNumber,
         type="text"
         value={countryCode}
         onChange={(e) => setCountryCode(e.target.value)}
-        placeholder="Enter country code (e.g., 91)"
+        placeholder="Enter country code (e.g., +91)"
       />
     </Form.Group>
     <Form.Group controlId="formPhoneNumber">

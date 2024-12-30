@@ -55,7 +55,7 @@ const MtList = () => {
                 {/*  Footer Start  */}
                 <FooterDark />
                 {/*  Footer End  */}
-                <Link id="back2Top" className="top-scroll" title="Back to top" to="#"><i className="fa-solid fa-sort-up" /></Link>
+                {/**/}
             </div>
         </div>
     );

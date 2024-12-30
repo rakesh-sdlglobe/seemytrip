@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
-import DatePicker from 'react-datepicker';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -9,6 +8,8 @@ import { fetchStations, fetchTrains } from '../../store/Actions/filterActions';
 import { selectStations } from '../../store/Selectors/filterSelectors';
 import { useNavigate } from 'react-router-dom';
 import { Entering, IRCTC_Logo, Leaving, Calendar1 } from '../../assets/images';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; 
 
 const SearchComponent = ({
   onSearchResults = () => { },
@@ -25,20 +26,30 @@ const SearchComponent = ({
   dropdownHindden = 'auto',
   checklabelColor = 'auto',
   hindenswap = 'auto',
+  initialValues = null,
+  customStyles = {},
 }) => {
   const dispatch = useDispatch();
   const stations = useSelector(selectStations);
   const navigate = useNavigate()
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const [leavingFrom, setLeavingFrom] = useState('');
-  const [goingTo, setGoingTo] = useState('');
-  const [journeyDate, setJourneyDate] = useState(null);
-  const [disabilityConcession, setDisabilityConcession] = useState(false);
-  const [flexibleDate, setFlexibleDate] = useState(false);
-  const [availableBerth, setAvailableBerth] = useState(false);
-  const [railwayPassConcession, setRailwayPassConcession] = useState(false);
+  const [leavingFrom, setLeavingFrom] = useState(initialValues?.from || '');
+  const [goingTo, setGoingTo] = useState(initialValues?.to || '');
+  const [journeyDate, setJourneyDate] = useState(initialValues?.date ? new Date(initialValues?.date) : null);
+  // const [disabilityConcession, setDisabilityConcession] = useState(false);
+  // const [flexibleDate, setFlexibleDate] = useState(false);
+  // const [availableBerth, setAvailableBerth] = useState(false);
+  // const [railwayPassConcession, setRailwayPassConcession] = useState(false);
   const [currentHighlightIndex, setCurrentHighlightIndex] = useState(0);
+  
+  const [warningMessage,setWarningMessage] = useState('')
+  const [lastToastTime, setLastToastTime] = useState(0);  
+  const toastDelay = 5000; 
 
+  const fromStationRef = useRef(null);
+  const toStationRef = useRef(null);
+  const journeyDateRef = useRef(null);
+  
   const highlights = [
     {
       text: "Free cancellation and get a full refund",
@@ -58,64 +69,104 @@ const SearchComponent = ({
     dispatch(fetchStations());
   }, [dispatch]);
 
-  const [generalSelection, setGeneralSelection] = useState(null);
-  const [classSelection, setClassSelection] = useState(null);
+  // const [generalSelection, setGeneralSelection] = useState(null);
+  // const [classSelection, setClassSelection] = useState(null);
 
   // Other existing state and handlers...
 
-  const generalOptions = [
-    { value: 'general', label: 'GENERAL' },
-    { value: 'ladies', label: 'LADIES' },
-    { value: 'lower_berth_sr_citizen', label: 'LOWER BERTH/SR.CITIZEN' },
-    { value: 'person_with_disability', label: 'PERSON WITH DISABILITY' },
-    { value: 'duty_pass', label: 'DUTY PASS' },
-    { value: 'tatkal', label: 'TATKAL' },
-    { value: 'premium_tatkal', label: 'PREMIUM TATKAL' },
-    // Add more options as needed
-  ];
+  // const generalOptions = [
+  //   { value: 'general', label: 'GENERAL' },
+  //   { value: 'ladies', label: 'LADIES' },
+  //   { value: 'lower_berth_sr_citizen', label: 'LOWER BERTH/SR.CITIZEN' },
+  //   { value: 'person_with_disability', label: 'PERSON WITH DISABILITY' },
+  //   { value: 'duty_pass', label: 'DUTY PASS' },
+  //   { value: 'tatkal', label: 'TATKAL' },
+  //   { value: 'premium_tatkal', label: 'PREMIUM TATKAL' },
+  //   // Add more options as needed
+  // ];
 
 
-  const classOptions = [
-    { value: 'all', label: 'All Classes' },
-    { value: 'anubhuti', label: 'Anubhuti Class (EA)' },
-    { value: 'ac_first_class', label: 'AC First Class (1A)' },
-    { value: 'vistadome_ac', label: 'Vistadome AC (EV)' },
-    { value: 'exec_chair_car', label: 'Exec. Chair Car (EC)' },
-    { value: 'ac_2_tier', label: 'AC 2 Tier (2A)' },
-    { value: 'ac_3_economy', label: 'AC 3 Economy' },
-    { value: 'vistadome_chair_car', label: 'Vistadome Chair Car (VC)' },
-    { value: 'ac_chair', label: 'AC Chair (CC)' },
-    { value: 'sleeper', label: 'Sleeper (SL)' },
-  ];
+  // const classOptions = [
+  //   { value: 'all', label: 'All Classes' },
+  //   { value: 'anubhuti', label: 'Anubhuti Class (EA)' },
+  //   { value: 'ac_first_class', label: 'AC First Class (1A)' },
+  //   { value: 'vistadome_ac', label: 'Vistadome AC (EV)' },
+  //   { value: 'exec_chair_car', label: 'Exec. Chair Car (EC)' },
+  //   { value: 'ac_2_tier', label: 'AC 2 Tier (2A)' },
+  //   { value: 'ac_3_economy', label: 'AC 3 Economy' },
+  //   { value: 'vistadome_chair_car', label: 'Vistadome Chair Car (VC)' },
+  //   { value: 'ac_chair', label: 'AC Chair (CC)' },
+  //   { value: 'sleeper', label: 'Sleeper (SL)' },
+  // ];
 
 
   const handleFromStationChange = (selectedOption) => {
     setLeavingFrom(selectedOption);
+    validateStations(selectedOption,goingTo,journeyDate);
+    
   };
 
   const handleToStationChange = (selectedOption) => {
     setGoingTo(selectedOption);
+    validateStations( selectedOption,leavingFrom,journeyDate);
   };
 
-  const handleJourneyDateChange = (date) => {
-    setJourneyDate(date);
-  };
-
+  
   const handleSwapLocations = () => {
     const temp = leavingFrom;
     setLeavingFrom(goingTo);
     setGoingTo(temp);
   };
 
-  const handleSearch = () => {
-    if (leavingFrom && goingTo && journeyDate) {
-      dispatch(fetchTrains(leavingFrom.value, journeyDate));
-      navigate('/Train-list-01')
+  const validateStations = (from, to, date ) => {
+    if(from && !to){
+      toStationRef.current.focus();
+      toStationRef.current.onMenuOpen();
+    }else if(to && !date) {
+      journeyDateRef.current.focus();
+      setCalendarOpen(true)
+    }else if (from && to && from.value === to.value) {
+      setWarningMessage("From and To stations shouldn't be the same");
     } else {
-      alert('Please select all fields.');
+      setWarningMessage(''); // Clear the warning if stations are valid
+    }
+  };
+  const showToast = (message, type) => {
+    const currentTime = Date.now();
+
+    if (currentTime - lastToastTime > toastDelay) {
+      toast[type](message); 
+      setLastToastTime(currentTime);  
     }
   };
 
+  const handleSearch = () => {
+    if (!leavingFrom || !goingTo || !journeyDate) {
+      showToast('Please fill all the fields !', 'warn');
+      if(!leavingFrom){
+        fromStationRef.current.focus();
+        fromStationRef.current.onMenuOpen();
+      }else if(!goingTo){
+        toStationRef.current.focus();
+        toStationRef.current.onMenuOpen();
+      }else if(!journeyDate){
+        journeyDateRef.current.focus();
+        setCalendarOpen(true)
+      }
+    }else if (leavingFrom.value === goingTo.value) {
+      showToast('Stations should not be the same !', 'error');
+      return;
+    }else{
+      dispatch(fetchTrains(leavingFrom.value, journeyDate));
+      navigate('/Train-list-01', {
+        state: {
+          from: leavingFrom,
+          to: goingTo,
+          date: journeyDate
+        }
+      });
+    }
+  };
 
   const stationOptions = stations.map((station) => ({
     value: station.id,
@@ -137,6 +188,7 @@ const SearchComponent = ({
       '&:hover': {
         // borderColor: '#d20000',
         paddingLeft: '50px',
+        backgroundColor:'none'
       }
     }),
     menu: (provided) => ({
@@ -152,9 +204,6 @@ const SearchComponent = ({
       padding: '12px 15px', // Increased padding
       backgroundColor: state.isSelected ? '#d20000' : state.isFocused ? '#f5f5f5' : '#fff',
       color: state.isSelected ? '#fff' : '#333',
-      '&:hover': {
-        backgroundColor: '#f5f5f5'
-      }
     }),
     placeholder: (provided) => ({
       ...provided,
@@ -177,31 +226,25 @@ const SearchComponent = ({
     }, 3000); // Change message every 3 seconds
 
     return () => clearInterval(timer);
-  }, []);
+  }, [highlights.length]);
 
   return (
     <>
       <style>
         {`
+          ${customStyles.swapIcon || ''}
           .search-component {
             background-color: ${backgroundColor};
-            height: 100px;
-            padding: 15px;
+            height: auto !important;
+            min-height: 150px;
+            padding: 20px 0;
             background-size: cover;
             background-position: center;
           }
 
-           @media (max-width: 1024px) {
-            .search-component {
-              height: 320px;
-              padding: 15px;å
-            }
-          }
-
           @media (max-width: 768px) {
             .search-component {
-              height: 320px;
-              padding: 15px;
+              min-height: 200px;
             }
             .swap-icon-container {
               top: 52%; 
@@ -223,6 +266,7 @@ const SearchComponent = ({
 
           .form-control {
             font-weight: bold;
+            height:60px;
             color: #333;
             border: none;
             border-radius: 12px;
@@ -246,40 +290,15 @@ const SearchComponent = ({
           .btn.full-width {
             width: 100%;
             font-weight: 500;
-            //  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Button shadow */
-             border-radius:10px !important;
+            border-radius:10px !important;
           }
             
-          .dropdown-container {
-            display: ${dropdownHindden}; 
-            align-items: center;
-            margin-bottom: 20px;
-            gap: 20px; // Added gap between dropdowns
-          }
-
-          .dropdown-container > div {
-            margin-right: 15px;
-          }
-
-          .checkbox-group {
-          margin-top: 10px;
-            margin-bottom: 20px;
-          }
-
-          .checkbox-group label {
-            color: ${checklabelColor};
-            margin-right: 30px;
-          }
-          .checkbox{
-            margin-right: 10px; 
-            accent-color: #cd2c22;
-          }
           .swap-icon-container {
             display: ${hindenswap};
             position: absolute; 
             top: 20%; 
-            left: calc(34% - 12px); 
-            z-index: 1; 
+            left: calc(34% - 10px); 
+            z-index: 1;
           }
 
           .swap-button {
@@ -364,7 +383,12 @@ const SearchComponent = ({
                 margin: 4px;
                 font-weight: 500;
               }
-
+              .calendar-popup .react-calendar__tile:disabled {
+                background: transparent !important;
+                color: #ccc !important;
+                cursor: not-allowed;
+                opacity: 0.5;
+          }
               // .react-calendar__tile:enabled:hover,
               // .react-calendar__tile:enabled:focus {
               //   background-color: #f8f8f8;
@@ -582,7 +606,7 @@ const SearchComponent = ({
             }
               .new-wrap{
               background:#f4f5f5;
-               padding: 14px;
+               padding: 20px;
               border-radius: 12px;
               box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.1);
               
@@ -595,9 +619,63 @@ const SearchComponent = ({
             box-shadow: none;
             outline: none;
           }
+
+          .form-floating {
+            position: relative;
+          }
+
+          .form-floating > .form-control,
+          .form-floating > .floating-select {
+            height: calc(3.5rem + 2px);
+            padding: 1rem 0.75rem;
+          }
+
+          .form-floating > label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            padding: 1rem 0.75rem;
+            pointer-events: none;
+            border: 1px solid transparent;
+            transform-origin: 0 0;
+            transition: opacity .1s ease-in-out,transform .1s ease-in-out;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+          }
+
+          .form-floating > .form-control:focus ~ label,
+          .form-floating > .form-control:not(:placeholder-shown) ~ label,
+          .form-floating > .floating-select:focus ~ label,
+          .form-floating > .floating-select .select__single-value ~ label {
+            opacity: .65;
+            transform: scale(.85) translateY(-0.5rem) translateX(0.15rem);
+          }
+
+          .floating-select .select__control {
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+          }
+
+          .row {
+            --bs-gutter-x: 1rem;
+            --bs-gutter-y: 1rem;
+          }
         `}
       </style>
       <div className="search-component" style={{ height:"150px" }}>
+      <ToastContainer 
+        position="top-right" 
+        autoClose={5000} 
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        
+        progress={undefined} 
+        limit={1}
+      />
         <div className="container">
           <div className="row justify-content-center align-items-center">
 
@@ -623,22 +701,19 @@ const SearchComponent = ({
                   />
                 </div>
               </div> */}
-              <div className="swap-icon-container">
-                <button
-                  type="button"
-                  className="btn swap-button"
-                  onClick={handleSwapLocations}
-                >
-                  <i class="fa-solid fa-arrow-right-arrow-left"></i> {/* Swap icon */}
-                </button>
-              </div>
-
+              
+              <div className="highlights-container" style={{display:highlightsContainer}} >
+                <div className="highlight-item" key={currentHighlightIndex}>
+                  <i className={highlights[currentHighlightIndex].icon}></i>
+                    <span>{highlights[currentHighlightIndex].text}</span>
+                      </div>
+                      </div>
               <div className="position-relative new-wrap">
-                <div className="row align-items-end gy-3 gx-md-3 gx-sm-2" >
-                  <div className="col-xl-8 col-lg-7 col-md-12" >
-                    <div className="row gy-3 gx-md-3 gx-sm-2">
-                      <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
-                        <div className="form-group hdd-arrow mb-0 me-2 position-relative">
+                <div className="row g-3">
+                  <div className="col-xl-8 col-lg-7 col-md-12 ">
+                    <div className="row g-3 align-items-center">
+                      <div className="col">
+                        <div className="form-group mb-0 position-relative">
                           <div className="input-icon">
                             <img src={Entering} alt="From" style={{width:'30px'}}/>
                           </div>
@@ -650,6 +725,7 @@ const SearchComponent = ({
                             id="fromStation"
                             options={stationOptions}
                             value={leavingFrom}
+                            ref={fromStationRef}
                             onChange={handleFromStationChange}
                             placeholder="From"
                             styles={customSelectStyles}
@@ -659,16 +735,20 @@ const SearchComponent = ({
                             }}
                           />
                         </div>
-                        {/* <div className="field-separator"></div> */}
                       </div>
-                      <div className="highlights-container" style={{display:highlightsContainer}} >
-                            <div className="highlight-item" key={currentHighlightIndex}>
-                              <i className={highlights[currentHighlightIndex].icon}></i>
-                              <span>{highlights[currentHighlightIndex].text}</span>
-                            </div>
+                      
+                      <div className="col-auto">
+                        <button
+                          type="button"
+                          className="btn swap-button"
+                          onClick={handleSwapLocations}
+                        >
+                          <i className="fa-solid fa-arrow-right-arrow-left"></i>
+                        </button>
                       </div>
-                      <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
-                        <div className="form-group hdd-arrow mb-0 ms-2 position-relative">
+
+                      <div className="col">
+                        <div className="form-group mb-0 position-relative">
                           <div className="input-icon">
                             <img src={Leaving} alt="To" style={{width:'30px'}} />
                           </div>
@@ -678,6 +758,7 @@ const SearchComponent = ({
                           <Select
                             className="icon-select"
                             id="toStation"
+                            ref={toStationRef}
                             options={stationOptions}
                             value={goingTo}
                             onChange={handleToStationChange}
@@ -689,8 +770,25 @@ const SearchComponent = ({
                             }}
                           />
                         </div>
-                        <div className="field-separator"></div>
                       </div>
+                      
+                      {warningMessage && (
+                        <div
+                          className="text-danger mt-2 d-flex align-items-center justify-content-end">
+                          <div style={{ 
+                            fontWeight: "500",
+                            backgroundColor: "#ffeeee", 
+                            padding: "10px 15px", 
+                            borderRadius: "8px",
+                            boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" 
+                          }}>
+                            <i className="fa fa-exclamation-circle me-2"></i>
+                            <span >{warningMessage}</span>
+                          </div>
+                        </div>
+                      )}
+
+
                     </div>
                   </div>
                   <div className="col-xl-4 col-lg-5 col-md-12">
@@ -699,7 +797,7 @@ const SearchComponent = ({
                         <div className="form-group mb-0 position-relative">
                           <div className="input-icon">
                             <img src={Calendar1} alt="Calendar" />
-                          </div>
+                          </div> 
                           {dateLabel && (
                             <label className="text-light text-uppercase opacity-75">{dateLabel}</label>
                           )}
@@ -708,21 +806,24 @@ const SearchComponent = ({
                               type="text"
                               readOnly
                               className="form-control"
+                              ref={journeyDateRef}
                               value={journeyDate ? journeyDate.toLocaleDateString() : ''}
                               onClick={() => setCalendarOpen(!calendarOpen)}
                               placeholder="Date"
                             />
                             {calendarOpen && (
                               <div className="calendar-popup">
-                               <Calendar
+                              <Calendar
                                   onChange={(date) => {
                                     setJourneyDate(date);
                                     setCalendarOpen(false);
                                   }}
                                   value={journeyDate}
+                                  minDate={new Date()}
                                   selectRange={false}
                                   showNeighboringMonth={true}
                                   showFixedNumberOfWeeks={false}
+                                  minDetail="month"
                                 />
                               </div>
                             )}
