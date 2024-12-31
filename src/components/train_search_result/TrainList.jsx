@@ -26,8 +26,12 @@ const TrainList01 = () => {
     "1A": false,
     "2A": false,
     "3A": false,
+    "3E" : false,
     SL: false,
     GN: false,
+    TQ: false,
+    PT: false,
+    LD: false,
   });
 
   const onFilterChange = (e) => {
@@ -55,8 +59,12 @@ const TrainList01 = () => {
       "1A": false,
       "2A": false,
       "3A": false,
+      "3E" : false,
       SL: false,
       GN: false,
+      TQ: false,
+      PT: false,
+      LD: false,
     });
   };
 
@@ -395,7 +403,7 @@ const TrainList01 = () => {
                               onChange={onFilterChange}
                             />
                             <label className="form-check-label" htmlFor="3A">
-                              Lower Berth
+                              Premium Tatkal
                             </label>
                           </div>
                         </li>
@@ -409,7 +417,7 @@ const TrainList01 = () => {
                               onChange={onFilterChange}
                             />
                             <label className="form-check-label" htmlFor="SL">
-                             Ladies
+                              Ladies
                             </label>
                           </div>
                         </li>
@@ -483,11 +491,11 @@ const TrainList01 = () => {
                               className="form-check-input"
                               type="checkbox"
                               id="GN"
-                              checked={filters.GN}
+                              checked={filters["3E"]}
                               onChange={onFilterChange}
                             />
                             <label className="form-check-label" htmlFor="GN">
-                              GN (General Class)
+                              3E (AC 3 tier Economy)
                             </label>
                           </div>
                         </li>

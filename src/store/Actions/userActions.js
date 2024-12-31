@@ -57,9 +57,7 @@ export const getUserProfile = () => {
 // Edit user profile
 export const editUserProfile = (userData,navigate) => {
   return async (dispatch) => {
-    const authToken = localStorage.authToken; 
-    console.log("57 YEs ");
-    
+    const authToken = localStorage.authToken;     
     try {
       const response = await axios.post(`${API_URL}/users/editProfile`, userData, {
         headers: {
