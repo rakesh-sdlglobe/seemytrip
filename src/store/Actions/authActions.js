@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { success } from 'toastr';
 
 
 export const SET_NAME = 'SET_NAME';
@@ -59,8 +58,8 @@ export const googleLoginFailure = (error) => ({
   payload: error,
 });
 
-// export const API_URL = process.env.REACT_APP_API_URL ;
-export const API_URL = 'https://tripadmin.onrender.com/api';
+export const API_URL = process.env.REACT_APP_API_URL ;
+// export const API_URL = 'https://tripadmin.onrender.com/api';
 
 export const register = (name, email, password, navigate) => async (dispatch) => {
   try {

@@ -29,7 +29,6 @@ export const sendOTP = (email) => async (dispatch) => {
   try {
     dispatch(setOTPError('')); // Clear previous error
     const response = await axios.post(`${API_URL}/send-otp`, { email });
-   
     
     if (response.data.success) {
       dispatch({ type: SET_OTP_SENT, payload: true });

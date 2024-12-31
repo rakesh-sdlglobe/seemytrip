@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { selectTrains } from '../../store/Selectors/filterSelectors';
 import { useNavigate } from 'react-router-dom';
@@ -10,8 +10,13 @@ const TrainSearchResultList = ({ filters, searchParams }) => {
   const isAuthenticated = useSelector(selectUser);
   const  trainData = useSelector(selectTrains);
   const stationsList = useSelector(selectStations);
-  const {fromStationName, toStationName, formattedTrainDate, date} = searchParams;
+  const {formattedTrainDate, date} = searchParams;
+
+  localStorage.setItem('searchParams', JSON.stringify(searchParams));
+
+  
   console.log("searchParams",searchParams);
+
 
   const totalDuration = (duration) => {
     // Split the duration into hours and minutes
@@ -71,21 +76,25 @@ const TrainSearchResultList = ({ filters, searchParams }) => {
     const { formattedArrivalTime, formattedArrivalDate } = calculateArrival(train, date);
     return type === 'time' ? formattedArrivalTime : formattedArrivalDate;
   }
+
+  // let filteredTrainData = filteredTrainData ? [] : localStorage.getItem('trains')
   
   const filteredTrainData = useMemo(() => {
     const applyFilters = (trains, filters) => {
+      console.log('trains:', trains);
+      
       return trains?.filter(train => {
-        console.log('train:', train);
+        console.log('filters:', filters);
         
         let isMatch = true;
   
-        const departureHour = parseInt(train.departure_time?.split(':')[0], 10);
-        const arrivalHour = parseInt(train.arrival_time?.split(':')[0], 10);
+        const departureHour = parseInt(train?.departureTime?.split(':')[0], 10);
+        const arrivalHour = parseInt(train?.arrivalTime?.split(':')[0], 10);
   
-        const seatClassesArray = train.seatClasses?.split(',');
+        const seatClassesArray = train?.avlClasses;
   
         if (filters.ac) {
-          isMatch = isMatch && seatClassesArray.some(cls => ['1A', '2A', '3A'].includes(cls));
+          isMatch = isMatch && seatClassesArray.some(cls => ['1A', '2A', '3A', '3E', 'CC', 'EC'].includes(cls));
         }
         if (filters.departureEarlyMorning) {
           isMatch = isMatch && departureHour >= 0 && departureHour < 6;
@@ -129,28 +138,28 @@ const TrainSearchResultList = ({ filters, searchParams }) => {
       
     };
 
-
-
-  
+    
     return applyFilters(trainData, filters);
   }, [trainData, filters]);
-  console.log('Filtered Data:', filteredTrainData);
   
   
-const handleBooking = (train) =>{
-  console.log('Auth status:', isAuthenticated)
-  if(isAuthenticated){
-    navigate('/trainbookingdetails',{state:{ trainData: train}})
+  
+  
+  const handleBooking = (train) =>{
+    console.log('Auth status:', isAuthenticated)
+    if(isAuthenticated){
+      navigate('/trainbookingdetails',{state:{ trainData: train}})
+    }
+    else{
+      navigate('/login',{
+        state:{
+          redirectTo:'/trainbookingdetails',
+          trainData:train,
+        }
+      });
+    }
   }
-  else{
-    navigate('/login',{
-      state:{
-        redirectTo:'/trainbookingdetails',
-        trainData:train,
-      }
-    });
-  }
-}
+
 
   return (
     <div className="row align-items-center g-4 mt-0">
@@ -175,6 +184,7 @@ const handleBooking = (train) =>{
       </div>
 
       {/* Train list */}
+      
       {filteredTrainData?.length > 0 ? (
         filteredTrainData?.map(train => (
           <div key={train.id} className="col-xl-12 col-lg-12 col-md-12">
@@ -331,8 +341,9 @@ const handleBooking = (train) =>{
                         </div>
                       </div>
                     </div>
-
-                    {/* <button className="btn btn-primary px-4 py-2" style={{
+                  </div>
+                </div>
+                    {/* <button className="btn btn-primary px-1 py-1" style={{
                       background: "linear-gradient(45deg, #2196F3, #1976D2)",
                       border: "none",
                       borderRadius: "8px",
@@ -341,8 +352,6 @@ const handleBooking = (train) =>{
                       <i className="fas fa-ticket-alt me-2"></i>
                       Availability
                     </button> */}
-                  </div>
-                </div>
 
                 <div className="w-100 border-top my-2 opacity-25"></div>
 

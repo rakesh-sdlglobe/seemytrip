@@ -1,6 +1,5 @@
 // actions/stationActions.js
-import { API_URL } from "./authActions";
-import axios from 'axios';
+import { API_URL, Loginn } from "./authActions";
 
 // Action Types
 export const FETCH_STATIONS_REQUEST = 'FETCH_STATIONS_REQUEST';
@@ -75,6 +74,8 @@ export const fetchTrains = (fromStnCode, toStnCode, journeyDate) => async (dispa
     const data = await response.json();
     console.log('Request Params:', { fromStnCode, toStnCode, journeyDate });
     console.log('Response Data:', data);
+    
+    localStorage.setItem('trains', JSON.stringify(data?.trainBtwnStnsList));
     dispatch(fetchTrainsSuccess(data?.trainBtwnStnsList));
   } catch (error) {
     console.error(error);
@@ -82,3 +83,50 @@ export const fetchTrains = (fromStnCode, toStnCode, journeyDate) => async (dispa
   }
 };
 
+
+
+export const fetchTrainsFareEnqRequest = () => ({
+  type: FETCH_TRAINS_REQUEST,
+});
+
+export const fetchTrainsFareEnqSuccess = (trainsFare) => ({
+  type: FETCH_TRAINS_SUCCESS,
+  payload: trainsFare,
+});
+
+export const fetchTrainsFareEnqFailure = (error) => ({
+  type: FETCH_TRAINS_FAILURE,
+  payload: error,
+});
+
+// Thunk action to fetch trains fare enquiry
+export const fetchTrainsFareEnquiry = (trainNo, fromStnCode, toStnCode, journeyDate, jClass, jQuota, paymentEnqFlag ) => async (dispatch) => { 
+  const authToken = localStorage.authToken;
+  dispatch(fetchTrainsFareEnqRequest());
+  try {
+    const response = await fetch(`${API_URL}/trains/getTrains/avlFareEnquiry`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`,
+      },
+      body: JSON.stringify({
+        trainNo,
+        fromStnCode,
+        toStnCode,
+        journeyDate,
+        jClass, 
+        jQuota, 
+        paymentEnqFlag,
+      }),
+    });
+
+    const data = await response.json();
+    console.log('Request Params:', { fromStnCode, toStnCode, journeyDate });
+    console.log('Response Data:', data);
+    dispatch(fetchTrainsSuccess(data?.trainBtwnStnsList));
+  } catch (error) {
+    console.error(error);
+    dispatch(fetchTrainsFailure(error.message));
+  }
+}

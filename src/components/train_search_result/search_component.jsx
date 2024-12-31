@@ -192,8 +192,8 @@ const SearchComponent = ({
       showToast('Stations should not be the same !', 'error');
       return;
     }else{
-      const [ fromStationName, fromStnCode ] = leavingFrom.value.split(' - ');
-      const [ toStationName, toStnCode] = goingTo.value.split(' - ');
+      const fromStnCode = leavingFrom.value.split(' - ')[1];
+      const toStnCode = goingTo.value.split(' - ')[1];
       const formattedJourneyDate = formatDateToYYYYMMDD(journeyDate);
       const formattedTrainDate = formatDateToDayDDMONTH(journeyDate);
       dispatch(fetchTrains(fromStnCode, toStnCode, formattedJourneyDate));
@@ -202,8 +202,6 @@ const SearchComponent = ({
           from: leavingFrom,
           to: goingTo,
           date: journeyDate,
-          fromStationName : fromStationName,
-          toStationName : toStationName,
           formattedTrainDate: formattedTrainDate,
         }
       });
