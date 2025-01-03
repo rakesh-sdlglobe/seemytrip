@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { indian_flag, trainImage } from '../assets/images';
+import { trainImage } from '../assets/images';
 import { NavLink, Link, useNavigate  } from 'react-router-dom';
 import { useSelector,useDispatch } from 'react-redux';
 import { logout } from '../store/Actions/authActions';
@@ -8,14 +8,14 @@ import { selectPhoneNumber } from '../store/Selectors/mobileSelector';
 import { selectEmail, statedata } from '../store/Selectors/emailSelector'; 
 import { logoutMobileUser } from '../store/Actions/mobileOtpAction';
 import { logoutEmailUser } from '../store/Actions/emailAction';
-import {ReactComponent as Trainicon} from '../assets/images/Navbaricons/Train.svg'
-import {ReactComponent as Flighticon} from '../assets/images/Navbaricons/Flight.svg'
-import {ReactComponent as Hotelicon} from '../assets/images/Navbaricons/Hotel.svg'
-import {ReactComponent as Cabicon} from '../assets/images/Navbaricons/cab.svg'
-import {ReactComponent as Cruiseicon} from '../assets/images/Navbaricons/Cruise.svg'
-import {ReactComponent as Busicon} from '../assets/images/Navbaricons/Bus.svg'
-import {ReactComponent as Businessicon} from '../assets/images/Navbaricons/Business.svg'
-import {ReactComponent as Healthicon} from '../assets/images/Navbaricons/Medical.svg'
+// import {ReactComponent as Trainicon} from '../assets/images/Navbaricons/Train.svg'
+// import {ReactComponent as Flighticon} from '../assets/images/Navbaricons/Flight.svg'
+// import {ReactComponent as Hotelicon} from '../assets/images/Navbaricons/Hotel.svg'
+// import {ReactComponent as Cabicon} from '../assets/images/Navbaricons/cab.svg'
+// import {ReactComponent as Cruiseicon} from '../assets/images/Navbaricons/Cruise.svg'
+// import {ReactComponent as Busicon} from '../assets/images/Navbaricons/Bus.svg'
+// import {ReactComponent as Businessicon} from '../assets/images/Navbaricons/Business.svg'
+// import {ReactComponent as Healthicon} from '../assets/images/Navbaricons/Medical.svg'
 
 const Header02 = () => {
   const dispatch = useDispatch();
@@ -24,14 +24,11 @@ const Header02 = () => {
   const googleUser = useSelector(selectGoogleUser);
   const phoneNumber = useSelector(selectPhoneNumber);
   const emailuser = useSelector(selectEmail);
-  const statdata = useSelector(statedata)
+  // const statdata = useSelector(statedata)
   const isLoggedIn = Boolean(user || googleUser || phoneNumber|| emailuser);
   const googleUserName = localStorage.googleUser || localStorage.googleUserName?.replace(/["']/g, '')
   
   
-  
-  
- 
   const handleLogout = () => {
     dispatch(logout());
     dispatch(logoutMobileUser(navigate));
@@ -39,10 +36,15 @@ const Header02 = () => {
   };
 
   // useEffect(() => {
+  //   console.log("isLoggedIn ?? ",isLoggedIn)
   //   if (!isLoggedIn) {
   //     navigate('/login');
   //   }
   // }, [isLoggedIn, navigate]);
+
+  if(!isLoggedIn && localStorage.getItem('authToken')){
+    handleLogout();
+  }
 
   return (
     <>
@@ -54,7 +56,7 @@ const Header02 = () => {
             font-weight: bold;
             position: relative;
           }
-         .dropdown-item {
+          .dropdown-item {
             padding: 10px 20px;
             position: relative;
             transition: transform 0.3s ease, color 0.3s ease;
@@ -99,7 +101,7 @@ const Header02 = () => {
               <div className="nav-toggle" />
               <div className="mobile_nav">
                 <ul>
-               <li className="currencyDropdown me-2">
+                <li className="currencyDropdown me-2">
                     <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#currencyModal"><span className="fw-medium">INR</span></Link>
                   </li>
                   <li className="languageDropdown me-2">
@@ -113,20 +115,20 @@ const Header02 = () => {
             </div>
             <div className="nav-menus-wrapper" style={{ transitionProperty: 'none' }}>
             <ul className="nav-menu">
-                <li className='mt-3'><NavLink exact to="/" activeClassName="active"> <i className="fa-solid fa-train me-2 fa-lg" />Trains</NavLink></li>
-                <li className="mt-3"><NavLink to="/home-flight" activeClassName="active"><i className="fa-solid fa-plane me-2 fa-lg" />Flights</NavLink></li>
-                <li className='mt-3'><NavLink to="/home-hotel" activeClassName="active"><i className="fa-solid fa-hotel me-2 fa-lg" />Hotels</NavLink></li>
-                <li className='mt-3'><NavLink to="/home-car" activeClassName="active"><i className="fa-solid fa-car me-2 fa-lg" />Cabs</NavLink></li>
-                <li className="mt-3"><NavLink to="/home-cruise" activeClassName="active"><i className="fa-solid fa-ship me-2 fa-lg" />Cruises</NavLink></li>
-                <li className="mt-3"><NavLink to="/home-bus" activeClassName="active"><i className="fa-solid fa-bus me-2 fa-lg" />Buses</NavLink></li>
-                <li className="mt-3"><NavLink to="/home-businesstourism" activeClassName="active"><i className="fa-solid fa-briefcase me-2 fa-lg" />Business Tourism</NavLink></li>
-                <li className="mt-3"><NavLink to="/home-medicaltourism" activeClassName="active"><i className="fa-solid fa-heart-pulse me-2 fa-lg" />Health Tourism</NavLink></li>
+                <li className='mt-3'><NavLink to="/" > <i className="fa-solid fa-train me-2 fa-lg" />Trains</NavLink></li>
+                <li className="mt-3"><NavLink to="/home-flight" ><i className="fa-solid fa-plane me-2 fa-lg" />Flights</NavLink></li>
+                <li className='mt-3'><NavLink to="/home-hotel" ><i className="fa-solid fa-hotel me-2 fa-lg" />Hotels</NavLink></li>
+                <li className='mt-3'><NavLink to="/home-car" ><i className="fa-solid fa-car me-2 fa-lg" />Cabs</NavLink></li>
+                <li className="mt-3"><NavLink to="/home-cruise" ><i className="fa-solid fa-ship me-2 fa-lg" />Cruises</NavLink></li>
+                <li className="mt-3"><NavLink to="/home-bus" ><i className="fa-solid fa-bus me-2 fa-lg" />Buses</NavLink></li>
+                <li className="mt-3"><NavLink to="/home-businesstourism" ><i className="fa-solid fa-briefcase me-2 fa-lg" />Business Tourism</NavLink></li>
+                <li className="mt-3"><NavLink to="/home-medicaltourism" ><i className="fa-solid fa-heart-pulse me-2 fa-lg" />Health Tourism</NavLink></li>
               </ul>
               <ul className="nav-menu nav-menu-social align-to-right mt-3">
 
-               {/* <li className="currencyDropdown me-2">
+              {/* <li className="currencyDropdown me-2">
 
-                 <li className="currencyDropdown me-2">
+                <li className="currencyDropdown me-2">
 
                   <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#currencyModal"><span className="fw-medium">INR</span></Link>
                 </li> 
@@ -138,7 +140,7 @@ const Header02 = () => {
                 </li> */}
 
                 {/* <li className="list-buttons">
-                  <NavLink to="/login" activeClassName="active"><i className="fa-regular fa-circle-user fs-6 me-2" />Sign In / Register</NavLink>
+                  <NavLink to="/login" className="active"><i className="fa-regular fa-circle-user fs-6 me-2" />Sign In / Register</NavLink>
                 </li> */}
                     {isLoggedIn ? (
                   <li className="nav-item dropdown">
@@ -189,11 +191,11 @@ const Header02 = () => {
               <div className="modal-login-form py-4 px-md-3 px-0">
                 <form>
                   <div className="form-floating mb-4">
-                    <input type="email" className="form-control" placeholder="name@example.com" />
+                    <input type="email" className="form-control" placeholder="name@example.com" autoComplete='email'/>
                     <label>User Name</label>
                   </div>
                   <div className="form-floating mb-4">
-                    <input type="password" className="form-control" placeholder="Password" />
+                    <input type="password" className="form-control" placeholder="Password" autoComplete='current-password'/>
                     <label>Password</label>
                   </div>
                   <div className="form-group">
@@ -237,7 +239,6 @@ const Header02 = () => {
       {/* End Modal */}
       {/* Choose Currency Modal */}
       {/* Choose Countries Modal */}
-   
     </>
   );
 };

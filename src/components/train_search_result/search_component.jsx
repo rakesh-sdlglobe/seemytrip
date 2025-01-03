@@ -4,7 +4,7 @@ import Select from 'react-select';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import 'react-datepicker/dist/react-datepicker.css';
-import { fetchStations, fetchTrains } from '../../store/Actions/filterActions';
+import { fetchStations, fetchTrains, fetchTrainsSearchParams } from '../../store/Actions/filterActions';
 import { selectStations } from '../../store/Selectors/filterSelectors';
 import { useNavigate } from 'react-router-dom';
 import { Entering, IRCTC_Logo, Leaving, Calendar1 } from '../../assets/images';
@@ -26,7 +26,7 @@ const SearchComponent = ({
   dropdownHindden = 'auto',
   checklabelColor = 'auto',
   hindenswap = 'auto',
-  initialValues = null,
+  initialValues = (() => { try { return JSON.parse(localStorage.getItem('trainSearchParams')) || {}; } catch (e) { return {}; } })(),
   customStyles = {},
 }) => {
   const dispatch = useDispatch();
@@ -165,7 +165,7 @@ const SearchComponent = ({
     const dayName = dayNames[date.getDay()];
   
     // Get the day of the month
-    const dayOfMonth = date.getDate();
+    const dayOfMonth = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
   
     // Get the month name
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -192,11 +192,13 @@ const SearchComponent = ({
       showToast('Stations should not be the same !', 'error');
       return;
     }else{
-      const fromStnCode = leavingFrom.value.split(' - ')[1];
-      const toStnCode = goingTo.value.split(' - ')[1];
+      const fromStnCode = leavingFrom?.value.split(' - ')[1];
+      const toStnCode = goingTo?.value.split(' - ')[1];
       const formattedJourneyDate = formatDateToYYYYMMDD(journeyDate);
       const formattedTrainDate = formatDateToDayDDMONTH(journeyDate);
       dispatch(fetchTrains(fromStnCode, toStnCode, formattedJourneyDate));
+      dispatch(fetchTrainsSearchParams({formattedTrainDate : formattedTrainDate, date: journeyDate, from: leavingFrom, to: goingTo}));
+      localStorage.setItem('trainSearchParams', JSON.stringify({ formattedTrainDate : formattedTrainDate, date: journeyDate, from: leavingFrom, to: goingTo, fromStnCode : fromStnCode, toStnCode : toStnCode }));
       navigate('/Train-list-01', {
         state: {
           from: leavingFrom,
@@ -259,14 +261,17 @@ const SearchComponent = ({
   
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentHighlightIndex((prev) => 
-        prev === highlights.length - 1 ? 0 : prev + 1
-      );
-    }, 3000); // Change message every 3 seconds
-
-    return () => clearInterval(timer);
+    let frameId;
+  
+    const updateHighlight = () => {
+      setCurrentHighlightIndex((prev) => (prev + 1) % highlights.length);
+      frameId = setTimeout(updateHighlight, 3000); // Mimic setInterval
+    };
+    updateHighlight();
+  
+    return () => clearTimeout(frameId);
   }, [highlights.length]);
+  
 
   return (
     <>
@@ -712,7 +717,6 @@ const SearchComponent = ({
         closeOnClick
         pauseOnHover
         draggable
-        
         progress={undefined} 
         limit={1}
       />
@@ -855,7 +859,7 @@ const SearchComponent = ({
                               readOnly
                               className="form-control"
                               ref={journeyDateRef}
-                              value={journeyDate ? journeyDate.toLocaleDateString() : ''}
+                              value={journeyDate ? journeyDate.toLocaleDateString('en-GB') : ''}
                               onClick={() => setCalendarOpen(!calendarOpen)}
                               placeholder="Date"
                             />

@@ -4,31 +4,51 @@ import { selectTrains } from '../../store/Selectors/filterSelectors';
 import { useNavigate } from 'react-router-dom';
 import {selectUser} from'../../store/Selectors/authSelectors';
 import { selectStations } from '../../store/Selectors/filterSelectors';
+import { selectSearchParams } from '../../store/Selectors/filterSelectors';
 
-const TrainSearchResultList = ({ filters, searchParams }) => {
+const TrainSearchResultList = ({ filters }) => {
   const navigate = useNavigate();
   const isAuthenticated = useSelector(selectUser);
-  const  trainData = useSelector(selectTrains);
   const stationsList = useSelector(selectStations);
-  const {formattedTrainDate, date} = searchParams;
+  const [searchParams,setSearchParams] = useState(useSelector(selectSearchParams));
+  const [trainData,setTrainData] = useState(useSelector(selectTrains));
+  console.log('15 trainData:', trainData);
 
-  localStorage.setItem('searchParams', JSON.stringify(searchParams));
-
+  const {formattedTrainDate, date, } = searchParams;  
   
-  console.log("searchParams",searchParams);
+  if (!trainData || trainData.length === 0 ) { 
+    console.log('No trains found in the store. Checking localStorage...');
+    const trainSearchParams = localStorage.getItem('trainSearchParams');
+    const localTrainsData = localStorage.getItem('trains');
+    if(localTrainsData?.length > 0 && trainSearchParams?.length > 0){
+      const { fromStnCode : localFromStnCode, toStnCode : localToStnCode } = JSON.parse(trainSearchParams);
+      let localTrains = [];
+      if (localTrainsData) {
+        try {
+          localTrains = JSON.parse(localTrainsData);
+        } catch (error) {
+          console.error("Error parsing trains data from localStorage:", error);
+          localTrains = []; // Set to an empty array if parsing fails
+        }
+      }
+      if(localTrains[0]?.fromStnCode === localFromStnCode || localTrains[0]?.toStnCode === localToStnCode ){
+        setTrainData(localTrains);
+        setSearchParams(JSON.parse(trainSearchParams));
+      }
+    }
+  }
 
 
   const totalDuration = (duration) => {
     // Split the duration into hours and minutes
-    const [hours, minutes] = duration.split(':').map((timePart) => parseInt(timePart, 10));
+    const [hours, minutes] = duration?.split(':').map((timePart) => parseInt(timePart, 10));
   
     return `${hours}h ${minutes}min`;
   }
 
   const getStationName = (stationCode) => {
-    const station = stationsList.find((stn) => stn.split(" - ")[1] === stationCode);
-    console.log('Station:', station);
-    return station.split(" - ")[0];
+    const station = stationsList.find((stn) => stn?.split(" - ")[1] === stationCode);
+    return station?.split(" - ")[0];
   }
 
   const convertTo12HourFormat = (time) => {
@@ -45,11 +65,11 @@ const TrainSearchResultList = ({ filters, searchParams }) => {
     const dateObj = new Date(journeyDate);
   
     // Extract hours and minutes from departureTime
-    const [depHours, depMinutes] = departureTime.split(':').map(Number);
+    const [depHours, depMinutes] = departureTime?.split(':').map(Number);
     dateObj.setHours(depHours, depMinutes, 0, 0); // Set the departure time
   
     // Extract hours and minutes from duration
-    const [durHours, durMinutes] = duration.split(':').map(Number);
+    const [durHours, durMinutes] = duration?.split(':').map(Number);
   
     // Add duration to the Date object
     dateObj.setHours(dateObj.getHours() + durHours);
@@ -63,11 +83,11 @@ const TrainSearchResultList = ({ filters, searchParams }) => {
     });
   
     // Format the arrival date as "Day, DD MON"
-    const formattedArrivalDate = dateObj.toLocaleDateString('en-US', {
+    const formattedArrivalDate = dateObj.toLocaleDateString('en-GB', {
       weekday: 'short',
       day: '2-digit',
       month: 'short',
-    }).toUpperCase(); // Convert month to uppercase if required
+    }); // Convert month to uppercase if required
   
     return { formattedArrivalTime, formattedArrivalDate } ;
   }
@@ -84,7 +104,6 @@ const TrainSearchResultList = ({ filters, searchParams }) => {
       console.log('trains:', trains);
       
       return trains?.filter(train => {
-        console.log('filters:', filters);
         
         let isMatch = true;
   
@@ -143,8 +162,6 @@ const TrainSearchResultList = ({ filters, searchParams }) => {
   }, [trainData, filters]);
   
   
-  
-  
   const handleBooking = (train) =>{
     console.log('Auth status:', isAuthenticated)
     if(isAuthenticated){
@@ -187,7 +204,7 @@ const TrainSearchResultList = ({ filters, searchParams }) => {
       
       {filteredTrainData?.length > 0 ? (
         filteredTrainData?.map(train => (
-          <div key={train.id} className="col-xl-12 col-lg-12 col-md-12">
+          <div key={train.trainNumber} className="col-xl-12 col-lg-12 col-md-12">
             <div className="train-availability-card bg-white rounded-3 p-4 hover-shadow" style={{ 
               boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
               transition: "all 0.3s ease",
