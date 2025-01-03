@@ -64,8 +64,8 @@ const Home = () => {
             Hero Banner with Search Form
         ============================================ */}
         <div className="image-cover hero-header bg-white" 
-             style={{ background: "url(../images/indian_train.png)no-repeat" }} 
-             data-overlay={5}>
+            style={{ background: "url(../images/indian_train.png)no-repeat" }} 
+            data-overlay={5}>
           <div className="container">
             <div className="row justify-content-center align-items-center">
               {/* Hero Title */}

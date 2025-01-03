@@ -391,21 +391,21 @@ const PersonalInfo = () => {
                             <div className="form-group">
                                 <label className="form-label">Old Password</label>
                                 <input type="password" className="form-control" placeholder="*********" value={oldPassword}
-                                    onChange={(e) => setOldPassword(e.target.value)} />
+                                    onChange={(e) => setOldPassword(e.target.value)} autoComplete='current-password' />
                             </div>
                         </div>
                         <div className="col-xl-12 col-lg-12 col-md-12">
                             <div className="form-group">
                                 <label className="form-label">New Password</label>
                                 <input type="password" className="form-control" placeholder="*********" value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)} />
+                                    onChange={(e) => setNewPassword(e.target.value)} autoComplete='current-password'/>
                             </div>
                         </div>
                         <div className="col-xl-12 col-lg-12 col-md-12">
                             <div className="form-group">
                                 <label className="form-label">Confirm Password</label>
                                 <input type="password" className="form-control" placeholder="*********" value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)} />
+                                    onChange={(e) => setConfirmPassword(e.target.value)}  autoComplete='current-password'/>
                             </div>
                         </div>
                         <div className="col-xl-12 col-lg-12 col-md-12">

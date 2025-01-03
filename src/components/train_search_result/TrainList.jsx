@@ -7,7 +7,8 @@ import TrainSearchResultList from "./train_search-result";
 
 const TrainList01 = () => {
   const location = useLocation();
-  const searchParams = location.state || {};
+  const searchParams = location.state || JSON.parse(localStorage.getItem("searchParams"));
+
   console.log("11 from train list 01 ",searchParams);
 
   const [filters, setFilters] = useState({
@@ -548,7 +549,7 @@ const TrainList01 = () => {
                 </div>
               </div>
               <div className="col-xl-9 col-lg-8 col-md-12">
-                <TrainSearchResultList filters={filters} searchParams={searchParams}/>
+                <TrainSearchResultList filters={filters} />
               </div>
             </div>
           </div>

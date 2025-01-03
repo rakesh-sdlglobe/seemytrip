@@ -6,6 +6,7 @@ import {
   FETCH_TRAINS_REQUEST,
   FETCH_TRAINS_SUCCESS,
   FETCH_TRAINS_FAILURE,
+  FETCH_TRAINS_SEARCH_PARAMS,
 } from '../Actions/filterActions.js';
 
 const initialState = {
@@ -13,6 +14,7 @@ const initialState = {
   stations: [],
   trains: [],
   error: null,
+  searchParams: {},
 };
 
 export const filterReducer = (state = initialState, action) => {
@@ -50,6 +52,12 @@ export const filterReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         error: action.payload,
+      };
+    case FETCH_TRAINS_SEARCH_PARAMS:
+      return {
+        ...state,
+        loading: false,
+        searchParams: action.payload,
       };
     default:
       return state;

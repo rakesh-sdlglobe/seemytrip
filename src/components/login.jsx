@@ -208,7 +208,7 @@ const Login = () => {
                                   value={password}
                                   onChange={(e) => dispatch(setPassword(e.target.value))}
                                   required
-                                  autoComplete='current-password'
+                                  autoComplete="current-password"
                                 />
                                 <span
                                   className={`fa-solid ${passwordVisible ? "fa-eye-slash" : "fa-eye"} toggle-password position-absolute top-50 end-0 translate-middle-y me-3`}
