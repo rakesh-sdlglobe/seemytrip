@@ -4,6 +4,9 @@ import { indigo } from '../../assets/images';
 
 import AccordionApp from './AccrodionApp';
 
+import {indigo1} from '../../assets/images';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const FlightSearchResult = ({ flightData, filters }) => {
     const navigate = useNavigate();
