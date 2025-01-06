@@ -81,6 +81,7 @@ export const fetchTrains = (fromStnCode, toStnCode, journeyDate) => async (dispa
     console.log('Response Data:', data);
     localStorage.setItem('trains', (data?.trainBtwnStnsList) ?  JSON.stringify(data?.trainBtwnStnsList) : []);
     dispatch(fetchTrainsSuccess(data?.trainBtwnStnsList));
+
   } catch (error) {
     console.error(error);
     dispatch(fetchTrainsFailure(error.message));
@@ -134,3 +135,4 @@ export const fetchTrainsFareEnquiry = (trainNo, fromStnCode, toStnCode, journeyD
     dispatch(fetchTrainsFailure(error.message));
   }
 }
+

@@ -1,49 +1,31 @@
 import React, { useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { selectTrains } from '../../store/Selectors/filterSelectors';
+// import { selectTrains } from '../../store/Selectors/filterSelectors';
 import { useNavigate } from 'react-router-dom';
 import {selectUser} from'../../store/Selectors/authSelectors';
-import { selectStations } from '../../store/Selectors/filterSelectors';
-import { selectSearchParams } from '../../store/Selectors/filterSelectors';
+import { selectSearchParams, selectStations, selectTrains } from '../../store/Selectors/filterSelectors';
+// import { selectSearchParams } from '../../store/Selectors/filterSelectors';
 
 const TrainSearchResultList = ({ filters }) => {
   const navigate = useNavigate();
   const isAuthenticated = useSelector(selectUser);
   const stationsList = useSelector(selectStations);
-  const [searchParams,setSearchParams] = useState(useSelector(selectSearchParams));
-  const [trainData,setTrainData] = useState(useSelector(selectTrains));
-  console.log('15 trainData:', trainData);
-
-  const {formattedTrainDate, date, } = searchParams;  
+  let searchParams = useSelector(selectSearchParams);
+  let trainData = useSelector(selectTrains);
   
-  if (!trainData || trainData.length === 0 ) { 
+  if (trainData?.length === 0 ) { 
     console.log('No trains found in the store. Checking localStorage...');
-    const trainSearchParams = localStorage.getItem('trainSearchParams');
-    const localTrainsData = localStorage.getItem('trains');
-    if(localTrainsData?.length > 0 && trainSearchParams?.length > 0){
-      const { fromStnCode : localFromStnCode, toStnCode : localToStnCode } = JSON.parse(trainSearchParams);
-      let localTrains = [];
-      if (localTrainsData) {
-        try {
-          localTrains = JSON.parse(localTrainsData);
-        } catch (error) {
-          console.error("Error parsing trains data from localStorage:", error);
-          localTrains = []; // Set to an empty array if parsing fails
-        }
-      }
-      if(localTrains[0]?.fromStnCode === localFromStnCode || localTrains[0]?.toStnCode === localToStnCode ){
-        setTrainData(localTrains);
-        setSearchParams(JSON.parse(trainSearchParams));
-      }
-    }
+    trainData = JSON.parse(localStorage.getItem('trains') || '[]');
+    searchParams = JSON.parse(localStorage.getItem('trainSearchParams'));
   }
-
+  
+  let {formattedTrainDate, date } = searchParams;  
 
   const totalDuration = (duration) => {
     // Split the duration into hours and minutes
     const [hours, minutes] = duration?.split(':').map((timePart) => parseInt(timePart, 10));
   
-    return `${hours}h ${minutes}min`;
+    return hours > 0 ?  `${hours}h ${minutes}min` : `${minutes}min`;
   }
 
   const getStationName = (stationCode) => {
@@ -176,6 +158,10 @@ const TrainSearchResultList = ({ filters }) => {
       });
     }
   }
+
+  console.log('181 filteredTrainData:', filteredTrainData);
+  const stateData = useSelector((state) => state);
+  console.log('184 stateData:', stateData);
 
 
   return (
@@ -374,14 +360,26 @@ const TrainSearchResultList = ({ filters }) => {
 
                 <div className="col-xl-12 col-lg-12 col-md-12">
                   <div className="row text-center g-3 justify-content-start">
-                    {train.seats?.map((cls, index) => (
+                    {train.avlClasses?.map((cls, index) => (
                       <div key={index} className="col-auto">
                         <div
                           className="availability-card p-3 position-relative"
                           style={{
-                            minWidth: "180px",
-                            background: cls.availableSeats ? "linear-gradient(145deg, #e8f5e9, #f1f8e9)" : "linear-gradient(145deg, #ffebee, #fce4ec)",
-                            border: `1px solid ${cls.availableSeats ? '#81c784' : '#e57373'}`,
+                            minWidth: "140px",
+                            background: train.availabilities && train.availabilities[index] === "1" 
+                            ? "linear-gradient(145deg, #e8f5e9, #f1f8e9)" 
+                            : train.availabilities && train.availabilities[index] === "2" 
+                            ? "linear-gradient(145deg, #fff3e0, #ffe0b2)" 
+                            :"linear-gradient(145deg,rgb(247, 247, 247),rgb(255, 255, 255))",
+                            border: `1px solid ${
+                              train.availabilities && train.availabilities[index] === "0"
+                                  ? '#808080' // light black
+                                  : train.availabilities && (train.availabilities[index] === "1" || train.availabilities[index] === "2")
+                                  ? '#81c784' // green
+                                  : train.availabilities && train.availabilities[index] === "3"
+                                  ? '#ffa726' // orange
+                                  : '#e57373' // fallback (red if none matches)
+                              }`,
                             borderRadius: "10px",
                             cursor: "pointer",
                             transition: "transform 0.2s ease",
@@ -389,6 +387,7 @@ const TrainSearchResultList = ({ filters }) => {
                           }}
                           onClick={() => handleBooking(train)}
                         >
+                        { (train.availabilities[index].quota === "TQ" || train.availabilities[index].quota === "PT" )  &&                       
                           <div 
                             className="position-absolute badge bg-danger"
                             style={{
@@ -400,11 +399,10 @@ const TrainSearchResultList = ({ filters }) => {
                             }}
                           >
                             Tatkal
-                          </div>
+                          </div>}
                           <div className="d-flex justify-content-between align-items-center mb-2">
-                            <h6 className="mb-0 fw-bold" style={{color: cls.availableSeats ? "#2e7d32" : "#c62828"}}>{cls.seatClass}</h6>
-                            <div className="price fw-bold">₹{cls.price}</div>
-                          </div>
+                            <h6 className="mb-0 fw-bold" style={{color: train.avlClasses[index] === "3" ? "#2e7d32" : "#c62828"}}>{train.availabilities[index].enqClass}</h6>
+                            {train.availabilities[index].totalFare &&   <div className="price fw-bold">₹ { train.availabilities[index].totalFare }</div> }                          </div>
                           <div className="status-badge mb-1" style={{
                             color: cls.availableSeats ? "#2e7d32" : "#c62828",
                             fontSize: "0.9rem"
