@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { indigo } from '../../assets/images';
-import {indigo1} from '../../assets/images';
+
+import AccordionApp from './AccrodionApp';
+
 
 const FlightSearchResult = ({ flightData, filters }) => {
     const navigate = useNavigate();
@@ -144,6 +146,10 @@ const FlightSearchResult = ({ flightData, filters }) => {
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
+        .getstarted:hover { 
+        color: #ffffff;
+        border:transparent;
+                }
             `}
             </style>
             {/* Offer Coupon Box */}
@@ -161,7 +167,7 @@ const FlightSearchResult = ({ flightData, filters }) => {
                         </div>
                     </div>
                     <div className="flx-last text-md-end mt-md-0 mt-4">
-                        <button type="button" className="btn btn-white border fw-medium full-width text-dark px-xl-4">Get Started</button>
+                        <button type="button" className="btn btn-black getstarted bg-white border fw-medium full-width  px-xl-4">Get Started</button>
                     </div>
                 </div>
             </div>
@@ -216,10 +222,15 @@ const FlightSearchResult = ({ flightData, filters }) => {
                                     >
                                         Select Flight
                                     </button>
+                                   
                                 </div>
+                                
                             </div>
+                            <AccordionApp flight={flight} />
                         </div>
+                        <div className='text-end'>
                         
+                            </div>
                     </div>
                 ))
             ) : (

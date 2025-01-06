@@ -119,8 +119,9 @@ const Header02 = () => {
                 <li className='mt-3'><NavLink to="/home-car" activeClassName="active"><i className="fa-solid fa-car me-2 fa-lg" />Cabs</NavLink></li>
                 <li className="mt-3"><NavLink to="/home-cruise" activeClassName="active"><i className="fa-solid fa-ship me-2 fa-lg" />Cruises</NavLink></li>
                 <li className="mt-3"><NavLink to="/home-bus" activeClassName="active"><i className="fa-solid fa-bus me-2 fa-lg" />Buses</NavLink></li>
-                <li className="mt-3"><NavLink to="/home-businesstourism" activeClassName="active"><i className="fa-solid fa-briefcase me-2 fa-lg" />Business Tourism</NavLink></li>
-                <li className="mt-3"><NavLink to="/home-medicaltourism" activeClassName="active"><i className="fa-solid fa-heart-pulse me-2 fa-lg" />Health Tourism</NavLink></li>
+                <li className="mt-3"><NavLink to="/packages" activeClassName="active"> <i className="fa-solid fa-suitcase-rolling me-2" />Packages</NavLink></li>
+                
+                {/* <li className="mt-3"><NavLink to="/home-medicaltourism" activeClassName="active"><i className="fa-solid fa-heart-pulse me-2 fa-lg" />Health Tourism</NavLink></li> */}
               </ul>
               <ul className="nav-menu nav-menu-social align-to-right mt-3">
 
