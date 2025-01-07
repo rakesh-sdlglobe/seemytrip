@@ -49,13 +49,13 @@ export const Features = () => {
         <i className="fa-solid fa-shield-alt me-2" />Travel Insurance
       </Link>
     </li>
-    <li className="nav-item nav-item1 ">
+    {/* <li className="nav-item nav-item1 ">
       <Link
         className={`nav-link`} to = "/packages"
       >
         <i className="fa-solid fa-suitcase-rolling me-2" />Packages
       </Link>
-    </li>
+    </li> */}
     <li className="nav-item nav-item1 ">
       <Link
         className={`nav-link`} to = "/giftcards"
