@@ -1,12 +1,13 @@
 import axios from 'axios';
-
+import { API_URL } from './authActions';
 // Action types
 export const SET_FACEBOOK_USER = 'SET_FACEBOOK_USER';
 export const LOGOUT_FACEBOOK_USER = 'LOGOUT_FACEBOOK_USER';
 export const SET_AUTH_ERROR = 'SET_AUTH_ERROR';
 
 // Base API URL (replace with your backend API handling Facebook OAuth)
-const API_BASE_URL = 'https://tripadmin.onrender.com/auth/facebook';
+// const API_BASE_URL = 'https://tripadmin.onrender.com/auth/facebook';
+
 
 // Action to set Facebook authenticated user
 export const setFacebookUser = (user, token) => ({
@@ -23,7 +24,7 @@ export const setAuthError = (error) => ({
 // Facebook login action (You may use Facebook SDK or OAuth API)
 export const loginWithFacebook = (facebookToken, navigate) => async (dispatch) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/login`, { facebookToken });
+    const response = await axios.post(`${API_URL}/login`, { facebookToken });
     if (response.data) {
       const { user, token } = response.data;
       localStorage.setItem('authToken', token);

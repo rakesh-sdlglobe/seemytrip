@@ -57,7 +57,7 @@ const WelcomePopup = () => {
           </div>
           <div className="text-overlay">
             <h2>Welcome to See My Trip!</h2>
-            <p>Plan your journey and book your train tickets with ease.</p>
+            <p>Plan your journey and book all your travel needs with ease.</p>
           </div>
         </div>
 

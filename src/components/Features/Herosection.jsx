@@ -185,7 +185,7 @@ const Herosection = () => {
                             <h1 className="fs-1 lh-base text-light">Find Platform Number</h1>
                             <form className="col-md-9 bg-body rounded mx-auto p-2 mb-3">
                               <div className="input-group">
-                                <input className="form-control border-0 me-1" type="text" placeholder="Enter Station Code or Name" />
+                                <input className="form-control border-0 me-1" type="text" placeholder="Enter Station Name or Number" />
                                 <button type="button" className="btn btn-dark rounded px-xl-5 mb-0">Locate</button>
                               </div>
                             </form>

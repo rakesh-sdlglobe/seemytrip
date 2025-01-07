@@ -7,7 +7,9 @@ import TrainSearchResultList from "./train_search-result";
 
 const TrainList01 = () => {
   const location = useLocation();
-  const searchParams = location.state || {};
+  const searchParams = location.state || JSON.parse(localStorage.getItem("searchParams"));
+
+  console.log("11 from train list 01 ",searchParams);
 
   const [filters, setFilters] = useState({
     ac: false,
@@ -25,8 +27,12 @@ const TrainList01 = () => {
     "1A": false,
     "2A": false,
     "3A": false,
+    "3E" : false,
     SL: false,
     GN: false,
+    TQ: false,
+    PT: false,
+    LD: false,
   });
 
   const onFilterChange = (e) => {
@@ -54,8 +60,12 @@ const TrainList01 = () => {
       "1A": false,
       "2A": false,
       "3A": false,
+      "3E" : false,
       SL: false,
       GN: false,
+      TQ: false,
+      PT: false,
+      LD: false,
     });
   };
 
@@ -349,6 +359,70 @@ const TrainList01 = () => {
                         </li>
                       </ul>
 
+                      {/* Quota  */}
+                      <div className="searchBar-single-title d-flex mb-1 mt-3">
+                        <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
+                          Quota
+                        </h6>
+                      </div>
+                      <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2">
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="1A"
+                              checked={filters["1A"]}
+                              onChange={onFilterChange}
+                            />
+                            <label className="form-check-label" htmlFor="1A">
+                              General
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="2A"
+                              checked={filters["2A"]}
+                              onChange={onFilterChange}
+                            />
+                            <label className="form-check-label" htmlFor="2A">
+                              Tatkal
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="3A"
+                              checked={filters["3A"]}
+                              onChange={onFilterChange}
+                            />
+                            <label className="form-check-label" htmlFor="3A">
+                              Premium Tatkal
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="SL"
+                              checked={filters.SL}
+                              onChange={onFilterChange}
+                            />
+                            <label className="form-check-label" htmlFor="SL">
+                              Ladies
+                            </label>
+                          </div>
+                        </li>
+                      </ul>
                       {/* Journey Class */}
                       <div className="searchBar-single-title d-flex mb-1 mt-3">
                         <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
@@ -418,11 +492,11 @@ const TrainList01 = () => {
                               className="form-check-input"
                               type="checkbox"
                               id="GN"
-                              checked={filters.GN}
+                              checked={filters["3E"]}
                               onChange={onFilterChange}
                             />
                             <label className="form-check-label" htmlFor="GN">
-                              GN (General Class)
+                              3E (AC 3 tier Economy)
                             </label>
                           </div>
                         </li>

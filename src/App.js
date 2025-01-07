@@ -110,6 +110,8 @@ import Searchbyname from './components/Features/Searchbyname.jsx';
 import SearchbyStation from './components/Features/SearchbyStation.jsx';
 import TatkalRailwayreservation from './components/Features/TatkalRailwayreservation.jsx';
 import Platformlocator from './components/Features/Platformlocator.jsx';
+import BackToTop from './components/BackToTop';
+import FlightSeatSelection from './components/flight_components/FlightSeatSelection.jsx';
 
 
 function App() {
@@ -158,9 +160,13 @@ function App() {
           <Route path="/Train-list-01" element={<TrainList01 />} />
           <Route path="/booking-page" element={<BookingPage trainName="12976 JP MYSORE EXP" />} />
           <Route path="/booking-page/:trainName" element={<BookingPage />} />
+          <Route path="/booking-page-2" element={<BookingPage2/>} />
+          <Route path="/booking-page-3" element={<BookingPage3/>} />
+          <Route path="/booking-page-success" element={<BookingPageSuccess/>} />
           <Route path="/train-result" element={<TrainSearchResultList/>} />
           <Route path="/trainbookingdetails" element={<TrainBookingDetails/>} />
           <Route path="/train-card" element={<TrainBooking/>} />
+          
           
           {/* Train Features Routes */}
           <Route path="/train-running-status" element={<TrainRunningStatus />} />
@@ -169,6 +175,7 @@ function App() {
           <Route path="/search-by-name" element={<Searchbyname />} />
           <Route path="/search-by-station" element={<SearchbyStation />} />
           <Route path="/tatkal-railway-reservation" element={<TatkalRailwayreservation/>} />
+          <Route path="/platform-locator" element={<Platformlocator/>} />
 
           {/* Flight Routes */}
           <Route path="/home-flight" element={<HomeFlight />} />
@@ -176,8 +183,9 @@ function App() {
           <Route path="/flight-list-02" element={<FlightList02 />} />
           <Route path="/flight-detail" element={<FlightDetail />} />
           <Route path="/flight-Bookingpage" element={<FlightBookingpage01/>} />
+          <Route path="/flight-seat-selection" element={<FlightSeatSelection />} />
           <Route path="/flight-Bookingpage02" element={<FlightBookingPage02/>} />
-
+          
           {/* Hotel Routes */}
           <Route path="/home-hotel" element={<HomeHotel />} />
           <Route path="/hotel-list-01" element={<HotelList01 />} />
@@ -265,6 +273,7 @@ function App() {
           <Route path="/compare-listing" element={<CompareListing />} />
           <Route path="/support" element={<SupportPage/>} />
         </Routes>
+        <BackToTop />
       </Router>
     </div>
   );

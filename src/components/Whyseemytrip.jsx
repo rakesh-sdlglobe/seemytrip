@@ -35,7 +35,7 @@ function Whyseemytrip() {
       </div>
 
       {/* Internal CSS */}
-      <style jsx>{`
+      <style>{`
         .image-card .card {
           overflow: hidden;
           border-radius: 8px;

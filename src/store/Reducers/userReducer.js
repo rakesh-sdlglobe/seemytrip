@@ -15,6 +15,9 @@ import {
   FETCH_TRAVELERS_FAILURE,
   REMOVE_TRAVELER_SUCCESS,
   REMOVE_TRAVELER_FAILURE,
+  UPDATE_TRAVELER_REQUEST,
+  UPDATE_TRAVELER_SUCCESS,
+  UPDATE_TRAVELER_FAILURE,
 } from "../Actions/userActions";
 
 const initialState = {
@@ -74,6 +77,32 @@ const userReducer = (state = initialState, action) => {
       };
     case REMOVE_TRAVELER_FAILURE:
       return { ...state, loading: false, error: action.payload };
+    case UPDATE_TRAVELER_REQUEST:
+      return {
+        ...state,
+        loading: true
+      };
+    case UPDATE_TRAVELER_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        travelers: state.travelers.map(traveler => 
+          traveler.id === action.payload.id ? action.payload : traveler
+        )
+      };
+    case UPDATE_TRAVELER_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload
+      };
+    case 'UPDATE_TRAVELER':
+      return {
+        ...state,
+        travelers: state.travelers.map(traveler => 
+          traveler.id === action.payload.id ? action.payload : traveler
+        )
+      };
     default:
       return state;
   }

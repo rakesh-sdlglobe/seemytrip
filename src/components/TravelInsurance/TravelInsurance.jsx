@@ -11,21 +11,21 @@ const TravelInsurance = () => {
     {
       id: 1,
       name: 'Basic Plan',
-      price: 5,
+      price: 15000,
       coverage: 'Ideal for short domestic trips. Includes coverage for trip delays, lost luggage, and basic medical expenses.',
       img: Insurance
     },
     {
       id: 2,
       name: 'Comprehensive Plan',
-      price: 10,
+      price: 10000,
       coverage: 'Perfect for international travel. Offers extensive medical coverage, trip cancellation, and more.',
       img: Insurance
     },
     {
       id: 3,
       name: 'Family Plan',
-      price: 15,
+      price: 15000,
       coverage: 'Coverage for the whole family, including medical emergencies, trip interruptions, and family travel discounts.',
       img: Insurance
     }
@@ -184,7 +184,7 @@ const TravelInsurance = () => {
         {selectedPlan && (
           <div className="selected-plan-text">
             <p>You have selected: {selectedPlan.name}</p>
-            <p>Price: ${selectedPlan.price} / ticket</p>
+            <p>Price: ₹{selectedPlan.price} / ticket</p>
             <p>Coverage: {selectedPlan.coverage}</p>
           </div>
         )}

@@ -26,7 +26,7 @@ function OffersSection() {
   return (
     <div>
       {/* Inline CSS for the component */}
-      <style jsx="true">{`
+      <style jsx>{`
         .offer-card {
           transition: transform 0.3s ease, box-shadow 0.3s ease;
           border: none;

@@ -1,10 +1,10 @@
-import { D, trainImage } from '../../assets/images';
+import { D } from '../../assets/images';
 import { Link } from 'react-router-dom';
 import Header02 from '../header02';
-import { useLocation } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import FooterDark from '../footer-dark';
+// import { useLocation } from 'react-router-dom';
+// import { useParams } from 'react-router-dom';
 
 const BookingPage = () => {
   // const location = useLocation();
@@ -786,7 +786,7 @@ const BookingPage = () => {
             </div>
           </div>
         </div>
-        <Link id="back2Top" className="top-scroll" title="Back to top" to="#"><i className="fa-solid fa-sort-up" /></Link>
+        {/**/}
       </div>
       {/* ============================================================== */}
       {/* End Wrapper */}
