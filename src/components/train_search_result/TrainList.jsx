@@ -24,11 +24,13 @@ const TrainList01 = () => {
     arrivalNight: false,
     freeCancellation: false,
     tripGuarantee: false,
+    
     "1A": false,
     "2A": false,
     "3A": false,
     "3E" : false,
     SL: false,
+    
     GN: false,
     TQ: false,
     PT: false,
@@ -203,12 +205,12 @@ const TrainList01 = () => {
                       </div>
                     </div>
 
-                    {/* Departure Time Filters */}
                     <div className="searchBar-single px-3 py-3 border-bottom">
 
+                      {/* Quota  */}
                       <div className="searchBar-single-title d-flex mb-1 mt-3">
                         <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
-                          Departure Time
+                          Quota
                         </h6>
                       </div>
                       <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2">
@@ -217,15 +219,12 @@ const TrainList01 = () => {
                             <input
                               className="form-check-input"
                               type="checkbox"
-                              id="departureEarlyMorning"
-                              checked={filters.departureEarlyMorning}
+                              id="GN"
+                              checked={filters["GN"]}
                               onChange={onFilterChange}
                             />
-                            <label
-                              className="form-check-label"
-                              htmlFor="departureEarlyMorning"
-                            >
-                              Early Morning (00:00 - 06:00)
+                            <label className="form-check-label" htmlFor="GN">
+                              General
                             </label>
                           </div>
                         </li>
@@ -234,15 +233,12 @@ const TrainList01 = () => {
                             <input
                               className="form-check-input"
                               type="checkbox"
-                              id="departureMorning"
-                              checked={filters.departureMorning}
+                              id="TQ"
+                              checked={filters["TQ"]}
                               onChange={onFilterChange}
                             />
-                            <label
-                              className="form-check-label"
-                              htmlFor="departureMorning"
-                            >
-                              Morning (06:00 - 12:00)
+                            <label className="form-check-label" htmlFor="TQ">
+                              Tatkal
                             </label>
                           </div>
                         </li>
@@ -251,15 +247,12 @@ const TrainList01 = () => {
                             <input
                               className="form-check-input"
                               type="checkbox"
-                              id="departureMidDay"
-                              checked={filters.departureMidDay}
+                              id="PT"
+                              checked={filters["PT"]}
                               onChange={onFilterChange}
                             />
-                            <label
-                              className="form-check-label"
-                              htmlFor="departureMidDay"
-                            >
-                              Mid Day (12:00 - 18:00)
+                            <label className="form-check-label" htmlFor="PT">
+                              Premium Tatkal
                             </label>
                           </div>
                         </li>
@@ -268,15 +261,91 @@ const TrainList01 = () => {
                             <input
                               className="form-check-input"
                               type="checkbox"
-                              id="departureNight"
-                              checked={filters.departureNight}
+                              id="LD"
+                              checked={filters.LD}
                               onChange={onFilterChange}
                             />
-                            <label
-                              className="form-check-label"
-                              htmlFor="departureNight"
-                            >
-                              Night (18:00 - 24:00)
+                            <label className="form-check-label" htmlFor="LD">
+                              Ladies
+                            </label>
+                          </div>
+                        </li>
+                      </ul>
+                      
+                      {/* Journey Class */}
+                      <div className="searchBar-single-title d-flex mb-1 mt-3">
+                        <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
+                          Journey Class
+                        </h6>
+                      </div>
+                      <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2">
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="1A"
+                              checked={filters["1A"]}
+                              onChange={onFilterChange}
+                            />
+                            <label className="form-check-label" htmlFor="1A">
+                              1A (First Class AC)
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="2A"
+                              checked={filters["2A"]}
+                              onChange={onFilterChange}
+                            />
+                            <label className="form-check-label" htmlFor="2A">
+                              2A (Second Class AC)
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="3A"
+                              checked={filters["3A"]}
+                              onChange={onFilterChange}
+                            />
+                            <label className="form-check-label" htmlFor="3A">
+                              3A (Third Class AC)
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="SL"
+                              checked={filters.SL}
+                              onChange={onFilterChange}
+                            />
+                            <label className="form-check-label" htmlFor="SL">
+                              SL (Sleeper Class)
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="3E"
+                              checked={filters["3E"]}
+                              onChange={onFilterChange}
+                            />
+                            <label className="form-check-label" htmlFor="3E">
+                              3E (AC 3 tier Economy)
                             </label>
                           </div>
                         </li>
@@ -359,10 +428,10 @@ const TrainList01 = () => {
                         </li>
                       </ul>
 
-                      {/* Quota  */}
+                      {/* Departure Time Filters */}
                       <div className="searchBar-single-title d-flex mb-1 mt-3">
                         <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
-                          Quota
+                          Departure Time
                         </h6>
                       </div>
                       <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2">
@@ -371,12 +440,15 @@ const TrainList01 = () => {
                             <input
                               className="form-check-input"
                               type="checkbox"
-                              id="1A"
-                              checked={filters["1A"]}
+                              id="departureEarlyMorning"
+                              checked={filters.departureEarlyMorning}
                               onChange={onFilterChange}
                             />
-                            <label className="form-check-label" htmlFor="1A">
-                              General
+                            <label
+                              className="form-check-label"
+                              htmlFor="departureEarlyMorning"
+                            >
+                              Early Morning (00:00 - 06:00)
                             </label>
                           </div>
                         </li>
@@ -385,12 +457,15 @@ const TrainList01 = () => {
                             <input
                               className="form-check-input"
                               type="checkbox"
-                              id="2A"
-                              checked={filters["2A"]}
+                              id="departureMorning"
+                              checked={filters.departureMorning}
                               onChange={onFilterChange}
                             />
-                            <label className="form-check-label" htmlFor="2A">
-                              Tatkal
+                            <label
+                              className="form-check-label"
+                              htmlFor="departureMorning"
+                            >
+                              Morning (06:00 - 12:00)
                             </label>
                           </div>
                         </li>
@@ -399,12 +474,15 @@ const TrainList01 = () => {
                             <input
                               className="form-check-input"
                               type="checkbox"
-                              id="3A"
-                              checked={filters["3A"]}
+                              id="departureMidDay"
+                              checked={filters.departureMidDay}
                               onChange={onFilterChange}
                             />
-                            <label className="form-check-label" htmlFor="3A">
-                              Premium Tatkal
+                            <label
+                              className="form-check-label"
+                              htmlFor="departureMidDay"
+                            >
+                              Mid Day (12:00 - 18:00)
                             </label>
                           </div>
                         </li>
@@ -413,90 +491,15 @@ const TrainList01 = () => {
                             <input
                               className="form-check-input"
                               type="checkbox"
-                              id="SL"
-                              checked={filters.SL}
+                              id="departureNight"
+                              checked={filters.departureNight}
                               onChange={onFilterChange}
                             />
-                            <label className="form-check-label" htmlFor="SL">
-                              Ladies
-                            </label>
-                          </div>
-                        </li>
-                      </ul>
-                      {/* Journey Class */}
-                      <div className="searchBar-single-title d-flex mb-1 mt-3">
-                        <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
-                          Journey Class
-                        </h6>
-                      </div>
-                      <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2">
-                        <li className="col-12">
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="1A"
-                              checked={filters["1A"]}
-                              onChange={onFilterChange}
-                            />
-                            <label className="form-check-label" htmlFor="1A">
-                              1A (First Class AC)
-                            </label>
-                          </div>
-                        </li>
-                        <li className="col-12">
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="2A"
-                              checked={filters["2A"]}
-                              onChange={onFilterChange}
-                            />
-                            <label className="form-check-label" htmlFor="2A">
-                              2A (Second Class AC)
-                            </label>
-                          </div>
-                        </li>
-                        <li className="col-12">
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="3A"
-                              checked={filters["3A"]}
-                              onChange={onFilterChange}
-                            />
-                            <label className="form-check-label" htmlFor="3A">
-                              3A (Third Class AC)
-                            </label>
-                          </div>
-                        </li>
-                        <li className="col-12">
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="SL"
-                              checked={filters.SL}
-                              onChange={onFilterChange}
-                            />
-                            <label className="form-check-label" htmlFor="SL">
-                              SL (Sleeper Class)
-                            </label>
-                          </div>
-                        </li>
-                        <li className="col-12">
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="GN"
-                              checked={filters["3E"]}
-                              onChange={onFilterChange}
-                            />
-                            <label className="form-check-label" htmlFor="GN">
-                              3E (AC 3 tier Economy)
+                            <label
+                              className="form-check-label"
+                              htmlFor="departureNight"
+                            >
+                              Night (18:00 - 24:00)
                             </label>
                           </div>
                         </li>
