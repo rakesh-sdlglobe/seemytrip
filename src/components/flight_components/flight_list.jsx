@@ -121,8 +121,8 @@ const FlightList = () => {
           leavingLabel={null}
           goingLabel={null}
           dateLabel={null}
-          buttonBackgroundColor="#ffffff"
-          buttonTextColor="#cd2c22"
+          buttonBackgroundColor="#cd2c22"
+          buttonTextColor="#ffffff"
           dropdownHindden= "none"
           radioHindden = "none"
           ReturnLable = {null}

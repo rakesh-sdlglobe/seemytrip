@@ -1,6 +1,6 @@
 import React from 'react'
 
-const FlightFilter = () => {
+const FlightFilter = ( {filters, onFilterChange, handleClearAll }) => {
   return (
     <div className="col-xl-3 col-lg-4 col-md-12">
       <div className="filter-searchBar bg-white rounded-3">
@@ -11,7 +11,7 @@ const FlightFilter = () => {
               <p className="text-md text-muted m-0">Showing 180 Flights</p>
             </div>
             <div className="searchBar-headerlast text-end">
-              <a href="#" className="text-md fw-medium text-primary active">Clear All</a>
+            <button className="btn btn-link text-danger p-0" onClick={handleClearAll}>Clear All </button>
             </div>
           </div>
         </div>
@@ -22,28 +22,58 @@ const FlightFilter = () => {
               <h6 className="sidebar-subTitle fs-6 fw-medium m-0">Departure</h6>
             </div>
             <div className="searchBar-single-wrap mb-4">
-              <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2">
-                <li className="col-6">
-                  <input type="checkbox" className="btn-check" id="before6am" />
-                  <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="before6am">Before 6AM</label>
-                </li>
-                <li className="col-6">
-                  <input type="checkbox" className="btn-check" id="6am12pm" />
-                  <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="6am12pm">6AM -
-                    12PM</label>
-                </li>
-                <li className="col-6">
-                  <input type="checkbox" className="btn-check" id="12pm6pm" />
-                  <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="12pm6pm">12PM -
-                    6PM</label>
-                </li>
-                <li className="col-6">
-                  <input type="checkbox" className="btn-check" id="after6pm" />
-                  <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="after6pm">After
-                    6PM</label>
-                </li>
-              </ul>
-            </div>
+     
+          <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2">
+            <li className="col-6">
+              <input
+                type="checkbox"
+                className="btn-check"
+                id="departureEarlyMorning"
+                checked={filters.departureEarlyMorning}
+                onChange={onFilterChange}
+              />
+              <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="departureEarlyMorning">
+                Before 6AM
+              </label>
+            </li>
+            <li className="col-6">
+              <input
+                type="checkbox"
+                className="btn-check"
+                id="departureMorning"
+                checked={filters.departureMorning}
+                onChange={onFilterChange}
+              />
+              <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="departureMorning">
+                6AM - 12PM
+              </label>
+            </li>
+            <li className="col-6">
+              <input
+                type="checkbox"
+                className="btn-check"
+                id="departureMidDay"
+                checked={filters.departureMidDay}
+                onChange={onFilterChange}
+              />
+              <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="departureMidDay">
+                12PM - 6PM
+              </label>
+            </li>
+            <li className="col-6">
+              <input
+                type="checkbox"
+                className="btn-check"
+                id="departureNight"
+                checked={filters.departureNight}
+                onChange={onFilterChange}
+              />
+              <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="departureNight">
+                After 6PM
+              </label>
+            </li>
+          </ul>
+        </div>
             <div className="searchBar-single-title d-flex mb-3">
               <h6 className="sidebar-subTitle fs-6 fw-medium m-0">Return</h6>
             </div>

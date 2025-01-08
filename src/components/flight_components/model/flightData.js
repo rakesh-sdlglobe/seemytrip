@@ -11,7 +11,7 @@ const calculateDuration = (departureTime, arrivalTime) => {
 };
 
 // Sample flight routes data with durations
-export const flightData = [
+const flightData = [
     {
         flightId: 'AI202',
         departureTime: '08:00',
@@ -23,7 +23,27 @@ export const flightData = [
         ],
     },
     {
-        flightId: 'DL200',
+        flightId: 'AI203',
+        departureTime: '10:00',
+        arrivalTime: '12:30',
+        duration: calculateDuration('10:00', '12:30'),
+        stops: [
+            { airportId: 1, arrivalTime: '10:00', departureTime: '10:30' },  // Mumbai
+            { airportId: 2, arrivalTime: '12:30', departureTime: null },     // Delhi
+        ],
+    },
+    {
+        flightId: 'AI204',
+        departureTime: '20:00',
+        arrivalTime: '22:30',
+        duration: calculateDuration('08:00', '10:30'),
+        stops: [
+            { airportId: 1, arrivalTime: '20:00', departureTime: '22:30' },  // Mumbai
+            { airportId: 2, arrivalTime: '10:30', departureTime: null },     // Delhi
+        ],
+    },
+    {
+        flightId: 'DL205',
         departureTime: '15:00',
         arrivalTime: '17:45',
         duration: calculateDuration('08:00', '10:30'),
@@ -73,3 +93,4 @@ export const flightData = [
         ],
     },
 ];
+export {flightData};
