@@ -83,20 +83,40 @@ const TrainSearchResultList = ({ filters }) => {
   
   const filteredTrainData = useMemo(() => {
     const applyFilters = (trains, filters) => {
-      console.log('trains:', trains);
-      
+      const isEmptyFilters = Object.keys(filters).every(
+        key => !filters[key]
+      );
+      if (isEmptyFilters) {
+        console.log("No filters applied. Returning all trains.");
+        return trains;
+      }
+  
       return trains?.filter(train => {
-        
         let isMatch = true;
   
-        const departureHour = parseInt(train?.departureTime?.split(':')[0], 10);
-        const arrivalHour = parseInt(train?.arrivalTime?.split(':')[0], 10);
+        const departureHour = parseInt(train?.departureTime?.split(":")[0], 10);
+        const arrivalHour = parseInt(train?.arrivalTime?.split(":")[0], 10);
   
-        const seatClassesArray = train?.avlClasses;
+        const filteredAvailabilities = train.availabilities?.filter(avl => {
+          const seatClass = avl.enqClass;
+          if (filters["1A"] && seatClass === "1A") return true;
+          if (filters["2A"] && seatClass === "2A") return true;
+          if (filters["3A"] && seatClass === "3A") return true;
+          if (filters["3E"] && seatClass === "3E") return true;
+          if (filters["SL"] && seatClass === "SL") return true;
+          return false;
+        });
+  
+        if (!filteredAvailabilities || filteredAvailabilities.length === 0) {
+          return false;
+        }
   
         if (filters.ac) {
-          isMatch = isMatch && seatClassesArray.some(cls => ['1A', '2A', '3A', '3E', 'CC', 'EC'].includes(cls));
+          isMatch = isMatch && filteredAvailabilities.some(avl =>
+            ["1A", "2A", "3A", "3E", "CC", "EC"].includes(avl.enqClass)
+          );
         }
+  
         if (filters.departureEarlyMorning) {
           isMatch = isMatch && departureHour >= 0 && departureHour < 6;
         }
@@ -109,6 +129,7 @@ const TrainSearchResultList = ({ filters }) => {
         if (filters.departureNight) {
           isMatch = isMatch && departureHour >= 18 && departureHour < 24;
         }
+  
         if (filters.arrivalEarlyMorning) {
           isMatch = isMatch && arrivalHour >= 0 && arrivalHour < 6;
         }
@@ -121,28 +142,26 @@ const TrainSearchResultList = ({ filters }) => {
         if (filters.arrivalNight) {
           isMatch = isMatch && arrivalHour >= 18 && arrivalHour < 24;
         }
-        if (filters['SL']) {
-          isMatch = isMatch && seatClassesArray.includes('SL');
-        }
-        if (filters['3A']) {
-          isMatch = isMatch && seatClassesArray.includes('3A');
-        }
-        if (filters['2A']) {
-          isMatch = isMatch && seatClassesArray.includes('2A');
-        }
-        if (filters['1A']) {
-          isMatch = isMatch && seatClassesArray.includes('1A');
+  
+        if (isMatch) {
+          train.availabilities = filteredAvailabilities;
         }
   
         return isMatch;
       });
-      
     };
-
-    
+  
+    console.log("Initial trainData:", trainData);
+  
     return applyFilters(trainData, filters);
   }, [trainData, filters]);
   
+  // export default filteredTrainData;
+  
+  
+  
+  
+  console.log("Train data after filtered ", filteredTrainData);
   
   const handleBooking = (train) =>{
     console.log('Auth status:', isAuthenticated)
@@ -160,8 +179,30 @@ const TrainSearchResultList = ({ filters }) => {
   }
 
   console.log('181 filteredTrainData:', filteredTrainData);
-  const stateData = useSelector((state) => state);
-  console.log('184 stateData:', stateData);
+  // const stateData = useSelector((state) => state);
+  // console.log('184 stateData:', stateData);
+
+  const getFormattedSeatsData = (train, index) => {
+    
+    const availabilityStatus = train.availabilities[index]?.avlDayList?.[0]?.availablityStatus;
+    const availablityType = train.availabilities[index]?.avlDayList?.[0]?.availablityType;
+    
+    if (availablityType === "0" || availablityType === "4" || availablityType === "5" ) {
+      return availabilityStatus;
+    }else if (availablityType === "1") {
+        let seats = parseInt(availabilityStatus.split('-')[1], 10);
+        return `AVL ${seats}`;
+    } else if (availablityType === "2" && availabilityStatus.includes("RAC")) {
+            let seats = parseInt(availabilityStatus.split('RAC')[1], 10);
+            return `RAC ${seats}`;
+    } else if (availablityType === "3" && availabilityStatus.includes("WL")) {
+          let seats = parseInt(availabilityStatus.split('WL')[2], 10);
+          return `WL ${seats}`;
+    } else {
+      return "NOT AVAILABLE";
+    }
+};
+
 
 
   return (
@@ -272,7 +313,7 @@ const TrainSearchResultList = ({ filters }) => {
                       </div>
                     </div>
 
-                    <div className="journey-details flex-grow-1 mx-4 p-3" style={{
+                    <div className="journey-details flex-grow-1 mx-4 p-4" style={{
                       background: "linear-gradient(to right,rgb(244, 249, 254), #ffffff, #f8f9fa)",
                       borderRadius: "12px"
                     }}>
@@ -357,37 +398,39 @@ const TrainSearchResultList = ({ filters }) => {
                     </button> */}
 
                 <div className="w-100 border-top my-2 opacity-25"></div>
-
                 <div className="col-xl-12 col-lg-12 col-md-12">
                   <div className="row text-center g-3 justify-content-start">
-                    {train.avlClasses?.map((cls, index) => (
+                    {train.availabilities?.map((cls, index) => (
                       <div key={index} className="col-auto">
                         <div
-                          className="availability-card p-3 position-relative"
+                          className="availability-card p-2 position-relative"
                           style={{
                             minWidth: "140px",
-                            background: train.availabilities && train.availabilities[index] === "1" 
-                            ? "linear-gradient(145deg, #e8f5e9, #f1f8e9)" 
-                            : train.availabilities && train.availabilities[index] === "2" 
-                            ? "linear-gradient(145deg, #fff3e0, #ffe0b2)" 
-                            :"linear-gradient(145deg,rgb(247, 247, 247),rgb(255, 255, 255))",
-                            border: `1px solid ${
-                              train.availabilities && train.availabilities[index] === "0"
-                                  ? '#808080' // light black
-                                  : train.availabilities && (train.availabilities[index] === "1" || train.availabilities[index] === "2")
-                                  ? '#81c784' // green
-                                  : train.availabilities && train.availabilities[index] === "3"
-                                  ? '#ffa726' // orange
-                                  : '#e57373' // fallback (red if none matches)
-                              }`,
+                            background: 
+                            train.availabilities[index]?.avlDayList?.[0]?.availablityType === "1" || 
+                            train.availabilities[index]?.avlDayList?.[0]?.availablityType === "2"
+                              ? "linear-gradient(125deg, #e8f5e9, #F2F7EC)" 
+                              : train.availabilities[index]?.avlDayList?.[0]?.availablityType === "3"
+                                ? "linear-gradient(145deg, #fff3e0,rgb(249, 231, 204))"
+                                : "linear-gradient(145deg, rgb(247, 247, 247), rgb(255, 255, 255))",
+                          
+                            border: `0.3px solid ${
+                              train.availabilities[index]?.avlDayList?.[0]?.availablityType === "1" || 
+                              train.availabilities[index]?.avlDayList?.[0]?.availablityType === "2"
+                                ? "green"
+                                : train.availabilities[index]?.avlDayList?.[0]?.availablityType === "3"
+                                  ? "orange"
+                                  : "gray"
+                            }`,
+                          
                             borderRadius: "10px",
                             cursor: "pointer",
                             transition: "transform 0.2s ease",
-                            boxShadow: "0 2px 8px rgba(0,0,0,0.05)"
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.2)"
                           }}
                           onClick={() => handleBooking(train)}
                         >
-                        { (train.availabilities[index].quota === "TQ" || train.availabilities[index].quota === "PT" )  &&                       
+                        { (train.availabilities[index]?.quota === "TQ" || train.availabilities[index]?.quota === "PT" )  &&                       
                           <div 
                             className="position-absolute badge bg-danger"
                             style={{
@@ -400,17 +443,33 @@ const TrainSearchResultList = ({ filters }) => {
                           >
                             Tatkal
                           </div>}
-                          <div className="d-flex justify-content-between align-items-center mb-2">
-                            <h6 className="mb-0 fw-bold" style={{color: train.avlClasses[index] === "3" ? "#2e7d32" : "#c62828"}}>{train.availabilities[index].enqClass}</h6>
-                            {train.availabilities[index].totalFare &&   <div className="price fw-bold">₹ { train.availabilities[index].totalFare }</div> }                          </div>
-                          <div className="status-badge mb-1" style={{
-                            color: cls.availableSeats ? "#2e7d32" : "#c62828",
-                            fontSize: "0.9rem"
-                          }}>
-                            {cls.status}
-                          </div>
-                          <div className="availability small" style={{color: "#666"}}>
-                            {cls.availableSeats} available
+                          <div className="d-flex justify-content-between align-items-center">
+                            <h6 className="mb-0 small" style={{color: "black"}}>{train.availabilities[index]?.enqClass}</h6>
+                            {train.availabilities[index]?.totalFare &&   <div className="price bold">₹ { train.availabilities[index]?.totalFare }</div> }  </div>
+                          <div className="availability bold" style={{color: "#666"}}>
+                          <b style={{fontSize: "1.1rem", color : 
+                              train.availabilities[index]?.avlDayList?.[0]?.availablityType === "1" || 
+                              train.availabilities[index]?.avlDayList?.[0]?.availablityType === "2"
+                              ? "green"
+                              : train.availabilities[index]?.avlDayList?.[0]?.availablityType === "3"
+                              ? "#E86716"
+                              : "gray"
+                            }}>{getFormattedSeatsData(train,index)}</b>
+                            <div className="status-badge mb-1" style={{
+                              color: cls.availableSeats ? "#2e7d32" : "#c62828",
+                              fontSize: "0.7rem"
+                            }}> { (train.availabilities[index]?.avlDayList?.[0]?.availablityType === "1" || 
+                              train.availabilities[index]?.avlDayList?.[0]?.availablityType === "2") ? 
+                              (<span style={{ color: "green", display: "flex", alignItems: "center" }}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="15" viewBox="0 0 24 24">
+                                  <path fill="green" d="M12 2L1 5v7c0 8 5 12 11 12s11-4 11-12V5l-11-3z"/>
+                                  <path fill="white" d="M14 16.2l-3.4-3.4 1.4-1.4L9 13.4l6.6-6.6 1.4 1.4z"/>
+                                </svg>
+                                <span style={{ marginLeft: "5px" }}>Travel Guarantee</span>
+                              </span>) : train.availabilities[index]?.avlDayList?.[0]?.availablityType === "3" 
+                              ? " 50% chances" : ""
+                              }
+                            </div>
                           </div>
                         </div>
                       </div>

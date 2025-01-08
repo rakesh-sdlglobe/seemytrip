@@ -148,9 +148,9 @@ const FlightList = () => {
         <FooterDark />
 
         {/* Back to Top Button */}
-        <a id="back2Top" className="top-scroll" title="Back to top" href="#">
+        {/* <a id="back2Top" className="top-scroll" title="Back to top" href="#">
           <i className="fa-solid fa-sort-up" />
-        </a>
+        </a> */}
       </div>
     </div>
   );
