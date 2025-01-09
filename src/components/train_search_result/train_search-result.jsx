@@ -1,17 +1,21 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 // import { selectTrains } from '../../store/Selectors/filterSelectors';
 import { useNavigate } from 'react-router-dom';
 import {selectUser} from'../../store/Selectors/authSelectors';
-import { selectSearchParams, selectStations, selectTrains } from '../../store/Selectors/filterSelectors';
+import { selectSearchParams, selectStations, selectTrains, selectLoading } from '../../store/Selectors/filterSelectors';
 // import { selectSearchParams } from '../../store/Selectors/filterSelectors';
+import SkeletonLoader from './trainsSkeletonCode';
 
 const TrainSearchResultList = ({ filters }) => {
   const navigate = useNavigate();
   const isAuthenticated = useSelector(selectUser);
   const stationsList = useSelector(selectStations);
+  const loading = useSelector(selectLoading);
   let searchParams = useSelector(selectSearchParams);
   let trainData = useSelector(selectTrains);
+  const [showSkeleton, setShowSkeleton] = useState(true);
+
   
   if (trainData?.length === 0 ) { 
     console.log('No trains found in the store. Checking localStorage...');
@@ -21,6 +25,8 @@ const TrainSearchResultList = ({ filters }) => {
   
   let {formattedTrainDate, date } = searchParams;  
 
+
+
   const totalDuration = (duration) => {
     // Split the duration into hours and minutes
     const [hours, minutes] = duration?.split(':').map((timePart) => parseInt(timePart, 10));
@@ -29,7 +35,7 @@ const TrainSearchResultList = ({ filters }) => {
   }
 
   const getStationName = (stationCode) => {
-    const station = stationsList.find((stn) => stn?.split(" - ")[1] === stationCode);
+    const station = stationsList?.find((stn) => stn?.split(" - ")[1] === stationCode);
     return station?.split(" - ")[0];
   }
 
@@ -80,14 +86,28 @@ const TrainSearchResultList = ({ filters }) => {
   }
 
   // let filteredTrainData = filteredTrainData ? [] : localStorage.getItem('trains')
-  
   const filteredTrainData = useMemo(() => {
     const applyFilters = (trains, filters) => {
-      const isEmptyFilters = Object.keys(filters).every(
-        key => !filters[key]
+      const noClassSelected = Object.keys(filters).every(
+        key => !["1A", "2A", "3A", "3E", "SL"].includes(key) || !filters[key]
       );
-      if (isEmptyFilters) {
-        console.log("No filters applied. Returning all trains.");
+  
+      // If no classes are selected and a quota is selected, return all availabilities that match the quota
+      if (noClassSelected && filters.quota) {
+        return trains?.filter(train => {
+          const filteredAvailabilities = train.availabilities?.filter(avl => avl.quota === filters.quota);
+          
+          // Only include the train if there is at least one availability matching the quota
+          if (filteredAvailabilities?.length > 0) {
+            train.availabilities = filteredAvailabilities; // Update availabilities to only match the quota
+            return true;
+          }
+          return false;
+        });
+      }
+  
+      // If no classes are selected and no quota filter is applied, return all trains
+      if (noClassSelected) {
         return trains;
       }
   
@@ -99,24 +119,35 @@ const TrainSearchResultList = ({ filters }) => {
   
         const filteredAvailabilities = train.availabilities?.filter(avl => {
           const seatClass = avl.enqClass;
-          if (filters["1A"] && seatClass === "1A") return true;
-          if (filters["2A"] && seatClass === "2A") return true;
-          if (filters["3A"] && seatClass === "3A") return true;
-          if (filters["3E"] && seatClass === "3E") return true;
-          if (filters["SL"] && seatClass === "SL") return true;
-          return false;
+  
+          // Check if seatClass matches any of the selected class filters
+          const isClassMatch =
+            (filters["1A"] && seatClass === "1A") ||
+            (filters["2A"] && seatClass === "2A") ||
+            (filters["3A"] && seatClass === "3A") ||
+            (filters["3E"] && seatClass === "3E") ||
+            (filters["SL"] && seatClass === "SL");
+  
+          // Check if quota matches the selected quota
+          const isQuotaMatch = filters.quota ? avl.quota === filters.quota : true;
+  
+          // Return true only if both class and quota match
+          return isClassMatch && isQuotaMatch;
         });
   
+        // If no filteredAvailabilities match, exclude this train
         if (!filteredAvailabilities || filteredAvailabilities.length === 0) {
           return false;
         }
   
+        // Filter based on AC classes if applicable
         if (filters.ac) {
           isMatch = isMatch && filteredAvailabilities.some(avl =>
             ["1A", "2A", "3A", "3E", "CC", "EC"].includes(avl.enqClass)
           );
         }
   
+        // Filter based on departure times
         if (filters.departureEarlyMorning) {
           isMatch = isMatch && departureHour >= 0 && departureHour < 6;
         }
@@ -130,6 +161,7 @@ const TrainSearchResultList = ({ filters }) => {
           isMatch = isMatch && departureHour >= 18 && departureHour < 24;
         }
   
+        // Filter based on arrival times
         if (filters.arrivalEarlyMorning) {
           isMatch = isMatch && arrivalHour >= 0 && arrivalHour < 6;
         }
@@ -143,6 +175,7 @@ const TrainSearchResultList = ({ filters }) => {
           isMatch = isMatch && arrivalHour >= 18 && arrivalHour < 24;
         }
   
+        // Update train's availabilities with filtered results
         if (isMatch) {
           train.availabilities = filteredAvailabilities;
         }
@@ -150,17 +183,10 @@ const TrainSearchResultList = ({ filters }) => {
         return isMatch;
       });
     };
-  
-    console.log("Initial trainData:", trainData);
-  
+    
     return applyFilters(trainData, filters);
   }, [trainData, filters]);
-  
-  // export default filteredTrainData;
-  
-  
-  
-  
+
   console.log("Train data after filtered ", filteredTrainData);
   
   const handleBooking = (train) =>{
@@ -178,7 +204,7 @@ const TrainSearchResultList = ({ filters }) => {
     }
   }
 
-  console.log('181 filteredTrainData:', filteredTrainData);
+  // console.log('181 filteredTrainData:', filteredTrainData);
   // const stateData = useSelector((state) => state);
   // console.log('184 stateData:', stateData);
 
@@ -191,18 +217,33 @@ const TrainSearchResultList = ({ filters }) => {
       return availabilityStatus;
     }else if (availablityType === "1") {
         let seats = parseInt(availabilityStatus.split('-')[1], 10);
-        return `AVL ${seats}`;
+        return seats ? `AVL ${seats}` : 'AVL';
     } else if (availablityType === "2" && availabilityStatus.includes("RAC")) {
-            let seats = parseInt(availabilityStatus.split('RAC')[1], 10);
-            return `RAC ${seats}`;
+        let seats = parseInt(availabilityStatus.split('RAC')[1], 10);
+        return seats ? `RAC ${seats}` : "RAC";
     } else if (availablityType === "3" && availabilityStatus.includes("WL")) {
           let seats = parseInt(availabilityStatus.split('WL')[2], 10);
-          return `WL ${seats}`;
+          return seats ? `WL ${seats}` : "WL";
     } else {
-      return "NOT AVAILABLE";
+      return "NOT\nAVAILABLE";
     }
 };
 
+  // if (loading) {
+  //   return (
+  //     <div className="min-h-screen bg-gray-100 p-8">
+  //       <div className="max-w-3xl mx-auto space-y-4">
+  //         <SkeletonLoader />
+  //       </div>
+  //     </div>
+  //   );
+  // }
+  useEffect(() => {
+    if (!loading) {
+      const delayTimeout = setTimeout(() => setShowSkeleton(false), 4500); // Adjust delay as needed
+      return () => clearTimeout(delayTimeout);
+    }
+  }, [loading]);
 
 
   return (
@@ -229,7 +270,9 @@ const TrainSearchResultList = ({ filters }) => {
 
       {/* Train list */}
       
-      {filteredTrainData?.length > 0 ? (
+    {   loading && showSkeleton ? (
+        <SkeletonLoader />
+      ) : filteredTrainData?.length > 0 ? (
         filteredTrainData?.map(train => (
           <div key={train.trainNumber} className="col-xl-12 col-lg-12 col-md-12">
             <div className="train-availability-card bg-white rounded-3 p-4 hover-shadow" style={{ 
@@ -313,15 +356,15 @@ const TrainSearchResultList = ({ filters }) => {
                       </div>
                     </div>
 
-                    <div className="journey-details flex-grow-1 mx-4 p-4" style={{
-                      background: "linear-gradient(to right,rgb(244, 249, 254), #ffffff, #f8f9fa)",
+                    <div className="journey-details flex-grow-1 mx-4 p-3" style={{
+                      background: "linear-gradient(to right,rgb(234, 245, 255), #ffffff,rgb(234, 245, 255)",
                       borderRadius: "12px"
                     }}>
                       <div className="d-flex align-items-center justify-content-between">
                         <div className="text-center">
                           <div className="text-primary fw-bold" style={{fontSize: "0.8rem"}}>{getStationName(train.fromStnCode)}</div>
                           <div className="h4 mb-0 ">{convertTo12HourFormat(train.departureTime)}</div>
-                          <div className="text-black-50 bold">{formattedTrainDate}</div>
+                          <div className="text-black-50">{formattedTrainDate}</div>
                         </div>
 
                         <div className="flex-grow-1 px-4">
@@ -381,7 +424,7 @@ const TrainSearchResultList = ({ filters }) => {
                         <div className="text-center">
                           <div className="text-primary fw-bold" style={{fontSize: "0.8rem"}}>{getStationName(train.toStnCode)}</div>
                           <div className="h4 mb-0 ">{getTrainArrival(train,date,"time")}</div>
-                          <div className="text-black-50 bold">{getTrainArrival(train,date,"date")}</div>
+                          <div className="text-black-50">{getTrainArrival(train,date,"date")}</div>
                         </div>
                       </div>
                     </div>
@@ -395,85 +438,119 @@ const TrainSearchResultList = ({ filters }) => {
                     }}>
                       <i className="fas fa-ticket-alt me-2"></i>
                       Availability
+                      train.availabilities?.[0].avlDayList?.[0]?.availabilityStatus === "TRAIN DEPARTED" 
                     </button> */}
 
                 <div className="w-100 border-top my-2 opacity-25"></div>
                 <div className="col-xl-12 col-lg-12 col-md-12">
                   <div className="row text-center g-3 justify-content-start">
-                    {train.availabilities?.map((cls, index) => (
-                      <div key={index} className="col-auto">
-                        <div
-                          className="availability-card p-2 position-relative"
-                          style={{
-                            minWidth: "140px",
-                            background: 
-                            train.availabilities[index]?.avlDayList?.[0]?.availablityType === "1" || 
-                            train.availabilities[index]?.avlDayList?.[0]?.availablityType === "2"
-                              ? "linear-gradient(125deg, #e8f5e9, #F2F7EC)" 
-                              : train.availabilities[index]?.avlDayList?.[0]?.availablityType === "3"
-                                ? "linear-gradient(145deg, #fff3e0,rgb(249, 231, 204))"
-                                : "linear-gradient(145deg, rgb(247, 247, 247), rgb(255, 255, 255))",
-                          
-                            border: `0.3px solid ${
-                              train.availabilities[index]?.avlDayList?.[0]?.availablityType === "1" || 
-                              train.availabilities[index]?.avlDayList?.[0]?.availablityType === "2"
-                                ? "green"
-                                : train.availabilities[index]?.avlDayList?.[0]?.availablityType === "3"
+                    {train.availabilities?.[0]?.avlDayList?.[0]?.availablityStatus === "TRAIN DEPARTED" ? (
+                      <div
+                        style={{
+                          width: "100%",
+                          backgroundColor: "#F1F5F8",
+                          color: "gray",
+                          fontWeight :"bold",
+                          textAlign: "center",
+                          fontSize:"1.1rem",
+                          padding: "5px",
+                          borderRadius: "10px",
+                        }}
+                      >
+                        TRAIN DEPARTED
+                      </div>
+                      ) : (
+                      train.availabilities?.map((cls, index) => (
+                        <div key={index} className="col-auto">
+                          <div
+                            className="availability-card p-2 position-relative"
+                            style={{
+                              minWidth: "140px",
+                              background:
+                                train.availabilities[index]?.avlDayList?.[0]?.availablityType === "1" ||
+                                train.availabilities[index]?.avlDayList?.[0]?.availablityType === "2"
+                                  ? "linear-gradient(125deg, #e8f5e9, #F2F7EC)"
+                                  : train.availabilities[index]?.avlDayList?.[0]?.availablityType === "3"
+                                  ? "linear-gradient(145deg, #fff3e0,rgb(249, 231, 204))"
+                                  : "linear-gradient(145deg, rgb(247, 247, 247), rgb(255, 255, 255))",
+                              border: `0.3px solid ${
+                                train.availabilities[index]?.avlDayList?.[0]?.availablityType === "1" ||
+                                train.availabilities[index]?.avlDayList?.[0]?.availablityType === "2"
+                                  ? "green"
+                                  : train.availabilities[index]?.avlDayList?.[0]?.availablityType === "3"
                                   ? "orange"
                                   : "gray"
-                            }`,
-                          
-                            borderRadius: "10px",
-                            cursor: "pointer",
-                            transition: "transform 0.2s ease",
-                            boxShadow: "0 2px 8px rgba(0,0,0,0.2)"
-                          }}
-                          onClick={() => handleBooking(train)}
-                        >
-                        { (train.availabilities[index]?.quota === "TQ" || train.availabilities[index]?.quota === "PT" )  &&                       
-                          <div 
-                            className="position-absolute badge bg-danger"
-                            style={{
-                              top: "-10px",
-                              right: "10px",
-                              fontSize: "0.7rem",
-                              padding: "4px 8px",
-                              zIndex: "1"
+                              }`,
+                              borderRadius: "10px",
+                              cursor: "pointer",
+                              transition: "transform 0.2s ease",
+                              boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
                             }}
+                            onClick={() => handleBooking(train)}
                           >
-                            Tatkal
-                          </div>}
-                          <div className="d-flex justify-content-between align-items-center">
-                            <h6 className="mb-0 small" style={{color: "black"}}>{train.availabilities[index]?.enqClass}</h6>
-                            {train.availabilities[index]?.totalFare &&   <div className="price bold">₹ { train.availabilities[index]?.totalFare }</div> }  </div>
-                          <div className="availability bold" style={{color: "#666"}}>
-                          <b style={{fontSize: "1.1rem", color : 
-                              train.availabilities[index]?.avlDayList?.[0]?.availablityType === "1" || 
-                              train.availabilities[index]?.avlDayList?.[0]?.availablityType === "2"
-                              ? "green"
-                              : train.availabilities[index]?.avlDayList?.[0]?.availablityType === "3"
-                              ? "#E86716"
-                              : "gray"
-                            }}>{getFormattedSeatsData(train,index)}</b>
-                            <div className="status-badge mb-1" style={{
-                              color: cls.availableSeats ? "#2e7d32" : "#c62828",
-                              fontSize: "0.7rem"
-                            }}> { (train.availabilities[index]?.avlDayList?.[0]?.availablityType === "1" || 
-                              train.availabilities[index]?.avlDayList?.[0]?.availablityType === "2") ? 
-                              (<span style={{ color: "green", display: "flex", alignItems: "center" }}>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="15" viewBox="0 0 24 24">
-                                  <path fill="green" d="M12 2L1 5v7c0 8 5 12 11 12s11-4 11-12V5l-11-3z"/>
-                                  <path fill="white" d="M14 16.2l-3.4-3.4 1.4-1.4L9 13.4l6.6-6.6 1.4 1.4z"/>
-                                </svg>
-                                <span style={{ marginLeft: "5px" }}>Travel Guarantee</span>
-                              </span>) : train.availabilities[index]?.avlDayList?.[0]?.availablityType === "3" 
-                              ? " 50% chances" : ""
-                              }
+                            { (train.availabilities[index]?.quota === "TQ" || train.availabilities[index]?.quota === "PT") && (
+                              <div
+                                className="position-absolute badge bg-danger"
+                                style={{
+                                  top: "-10px",
+                                  right: "10px",
+                                  fontSize: "0.7rem",
+                                  padding: "4px 8px",
+                                  zIndex: "1",
+                                }}
+                              >
+                              {train.availabilities[index]?.quota === "TQ" ? "TATKAL" : "PREMIUM"}                              </div>
+                            )}
+                            <div className="d-flex justify-content-between align-items-center">
+                              <h6 className="mb-0 " style={{ color: "black" }}>
+                                {train.availabilities[index]?.enqClass}
+                              </h6>
+                              {train.availabilities[index]?.totalFare > 0 && (
+                                <div className="price">₹ {train.availabilities[index]?.totalFare}</div>
+                              )}
+                            </div>
+                            <div className="availability">
+                              <b
+                                style={{
+                                  fontSize: "1.1rem",
+                                  color:
+                                    train.availabilities[index]?.avlDayList?.[0]?.availablityType === "1" ||
+                                    train.availabilities[index]?.avlDayList?.[0]?.availablityType === "2"
+                                      ? "green"
+                                      : train.availabilities[index]?.avlDayList?.[0]?.availablityType === "3"
+                                      ? "#E86716"
+                                      : "gray",
+                                }}
+                              >
+                                {getFormattedSeatsData(train, index)}
+                              </b>
+                              <div
+                                className="status-badge mb-1"
+                                style={{
+                                  color: cls.availableSeats ? "#2e7d32" : "#c62828",
+                                  fontSize: "0.7rem",
+                                }}
+                              >
+                                {(train.availabilities[index]?.avlDayList?.[0]?.availablityType === "1" ||
+                                train.availabilities[index]?.avlDayList?.[0]?.availablityType === "2") ? (
+                                  <span style={{ color: "green", display: "flex", alignItems: "center" }}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="15" viewBox="0 0 24 24">
+                                      <path fill="green" d="M12 2L1 5v7c0 8 5 12 11 12s11-4 11-12V5l-11-3z" />
+                                      <path fill="white" d="M14 16.2l-3.4-3.4 1.4-1.4L9 13.4l6.6-6.6 1.4 1.4z" />
+                                    </svg>
+                                    <span style={{ marginLeft: "5px" }}>Travel Guarantee</span>
+                                  </span>
+                                ) : train.availabilities[index]?.avlDayList?.[0]?.availablityType === "3" ? (
+                                  "50% chances"
+                                ) : (
+                                  "."
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))
+                    )}
                   </div>
                 </div>
               </div>

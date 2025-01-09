@@ -190,15 +190,24 @@ const SearchComponent = ({
       }
     }else if (leavingFrom.value === goingTo.value) {
       showToast('Stations should not be the same !', 'error');
-      return;
+      return; 
     }else{
+
+      console.log("**************************Hendle SUBMIT************************************");
+      const { from : tempFrom, to: tempTO, formattedTrainDate : tempDate } =  JSON.parse(localStorage.getItem("trainSearchParams") || '[]')
+
       const fromStnCode = leavingFrom?.value.split(' - ')[1];
       const toStnCode = goingTo?.value.split(' - ')[1];
       const formattedJourneyDate = formatDateToYYYYMMDD(journeyDate);
       const formattedTrainDate = formatDateToDayDDMONTH(journeyDate);
-      dispatch(fetchTrains(fromStnCode, toStnCode, formattedJourneyDate));
-      dispatch(fetchTrainsSearchParams({formattedTrainDate : formattedTrainDate, date: journeyDate, from: leavingFrom, to: goingTo}));
-      localStorage.setItem('trainSearchParams', JSON.stringify({ formattedTrainDate : formattedTrainDate, date: journeyDate, from: leavingFrom, to: goingTo, fromStnCode : fromStnCode, toStnCode : toStnCode }));
+      if (tempFrom?.value !== leavingFrom?.value || tempTO?.value !== goingTo?.value || tempDate !== formattedTrainDate) {
+        console.log("===============API CALL to fetch TRAINS================================ ")
+        localStorage.removeItem('trains')
+        dispatch(fetchTrains(fromStnCode, toStnCode, formattedJourneyDate));
+        dispatch(fetchTrainsSearchParams({formattedTrainDate : formattedTrainDate, date: journeyDate, from: leavingFrom, to: goingTo}));
+        localStorage.setItem('trainSearchParams', JSON.stringify({ formattedTrainDate : formattedTrainDate, date: journeyDate, from: leavingFrom, to: goingTo, fromStnCode : fromStnCode, toStnCode : toStnCode }));
+      }
+      console.log("I'm navigating to result");
       navigate('/Train-list-01', {
         state: {
           from: leavingFrom,
