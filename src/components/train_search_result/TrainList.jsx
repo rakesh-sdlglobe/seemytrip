@@ -8,20 +8,24 @@ import TrainSearchResultList from "./train_search-result";
 const TrainList01 = () => {
   const location = useLocation();
   const searchParams = location.state || JSON.parse(localStorage.getItem("searchParams"));
+  
 
   console.log("11 from train list 01 ",searchParams);
 
   const [filters, setFilters] = useState({
     ac: false,
     available: false,
+    
     departureEarlyMorning: false,
     departureMorning: false,
     departureMidDay: false,
     departureNight: false,
+    
     arrivalEarlyMorning: false,
     arrivalMorning: false,
     arrivalMidDay: false,
     arrivalNight: false,
+    
     freeCancellation: false,
     tripGuarantee: false,
     
@@ -31,43 +35,64 @@ const TrainList01 = () => {
     "3E" : false,
     SL: false,
     
-    GN: false,
+    GN: true,
     TQ: false,
     PT: false,
     LD: false,
+
+    quota : "GN"
   });
 
   const onFilterChange = (e) => {
-    const { id, checked } = e.target;
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [id]: checked,
-    }));
+    const { id, checked, type } = e.target;
+    setFilters((prevFilters) => {
+      if (type === "radio") {
+        return {
+          ...prevFilters,
+          quota: id, 
+          
+        };
+      } else if (type === "checkbox") {
+        return {
+          ...prevFilters,
+          [id]: checked, // Toggle the class filter based on the checkbox state
+        };
+      }
+      return prevFilters;
+    });
   };
+  
 
   const handleClearAll = () => {
     setFilters({
       ac: false,
       available: false,
+      
       departureEarlyMorning: false,
       departureMorning: false,
       departureMidDay: false,
       departureNight: false,
+      
       arrivalEarlyMorning: false,
       arrivalMorning: false,
       arrivalMidDay: false,
       arrivalNight: false,
+      
       freeCancellation: false,
       tripGuarantee: false,
+      
       "1A": false,
       "2A": false,
       "3A": false,
       "3E" : false,
       SL: false,
-      GN: false,
+      
+      GN: true,
       TQ: false,
       PT: false,
       LD: false,
+
+      quota:"GN"
     });
   };
 
@@ -218,9 +243,10 @@ const TrainList01 = () => {
                           <div className="form-check">
                             <input
                               className="form-check-input"
-                              type="checkbox"
+                              type="radio"
+                              name="quota"
                               id="GN"
-                              checked={filters["GN"]}
+                              checked={filters.quota === "GN"}
                               onChange={onFilterChange}
                             />
                             <label className="form-check-label" htmlFor="GN">
@@ -232,9 +258,10 @@ const TrainList01 = () => {
                           <div className="form-check">
                             <input
                               className="form-check-input"
-                              type="checkbox"
+                              type="radio"
+                              name="quota"
                               id="TQ"
-                              checked={filters["TQ"]}
+                              checked={filters.quota === "TQ"}
                               onChange={onFilterChange}
                             />
                             <label className="form-check-label" htmlFor="TQ">
@@ -246,9 +273,10 @@ const TrainList01 = () => {
                           <div className="form-check">
                             <input
                               className="form-check-input"
-                              type="checkbox"
+                              type="radio"
+                              name="quota"
                               id="PT"
-                              checked={filters["PT"]}
+                              checked={filters.quota === "PT"}
                               onChange={onFilterChange}
                             />
                             <label className="form-check-label" htmlFor="PT">
@@ -260,9 +288,10 @@ const TrainList01 = () => {
                           <div className="form-check">
                             <input
                               className="form-check-input"
-                              type="checkbox"
+                              type="radio"
+                              name="quota"
                               id="LD"
-                              checked={filters.LD}
+                              checked={filters.quota === "LD"}
                               onChange={onFilterChange}
                             />
                             <label className="form-check-label" htmlFor="LD">
@@ -326,6 +355,20 @@ const TrainList01 = () => {
                             <input
                               className="form-check-input"
                               type="checkbox"
+                              id="3E"
+                              checked={filters["3E"]}
+                              onChange={onFilterChange}
+                            />
+                            <label className="form-check-label" htmlFor="3E">
+                              3E (AC 3 tier Economy)
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
                               id="SL"
                               checked={filters.SL}
                               onChange={onFilterChange}
@@ -335,17 +378,81 @@ const TrainList01 = () => {
                             </label>
                           </div>
                         </li>
+                      </ul>
+
+
+                      {/* Departure Time Filters */}
+                      <div className="searchBar-single-title d-flex mb-1 mt-3">
+                        <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
+                          Departure Time
+                        </h6>
+                      </div>
+                      <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2">
                         <li className="col-12">
                           <div className="form-check">
                             <input
                               className="form-check-input"
                               type="checkbox"
-                              id="3E"
-                              checked={filters["3E"]}
+                              id="departureEarlyMorning"
+                              checked={filters.departureEarlyMorning}
                               onChange={onFilterChange}
                             />
-                            <label className="form-check-label" htmlFor="3E">
-                              3E (AC 3 tier Economy)
+                            <label
+                              className="form-check-label"
+                              htmlFor="departureEarlyMorning"
+                            >
+                              Early Morning (00:00 - 06:00)
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="departureMorning"
+                              checked={filters.departureMorning}
+                              onChange={onFilterChange}
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor="departureMorning"
+                            >
+                              Morning (06:00 - 12:00)
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="departureMidDay"
+                              checked={filters.departureMidDay}
+                              onChange={onFilterChange}
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor="departureMidDay"
+                            >
+                              Mid Day (12:00 - 18:00)
+                            </label>
+                          </div>
+                        </li>
+                        <li className="col-12">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id="departureNight"
+                              checked={filters.departureNight}
+                              onChange={onFilterChange}
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor="departureNight"
+                            >
+                              Night (18:00 - 24:00)
                             </label>
                           </div>
                         </li>
@@ -421,83 +528,6 @@ const TrainList01 = () => {
                             <label
                               className="form-check-label"
                               htmlFor="arrivalNight"
-                            >
-                              Night (18:00 - 24:00)
-                            </label>
-                          </div>
-                        </li>
-                      </ul>
-
-                      {/* Departure Time Filters */}
-                      <div className="searchBar-single-title d-flex mb-1 mt-3">
-                        <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
-                          Departure Time
-                        </h6>
-                      </div>
-                      <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2">
-                        <li className="col-12">
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="departureEarlyMorning"
-                              checked={filters.departureEarlyMorning}
-                              onChange={onFilterChange}
-                            />
-                            <label
-                              className="form-check-label"
-                              htmlFor="departureEarlyMorning"
-                            >
-                              Early Morning (00:00 - 06:00)
-                            </label>
-                          </div>
-                        </li>
-                        <li className="col-12">
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="departureMorning"
-                              checked={filters.departureMorning}
-                              onChange={onFilterChange}
-                            />
-                            <label
-                              className="form-check-label"
-                              htmlFor="departureMorning"
-                            >
-                              Morning (06:00 - 12:00)
-                            </label>
-                          </div>
-                        </li>
-                        <li className="col-12">
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="departureMidDay"
-                              checked={filters.departureMidDay}
-                              onChange={onFilterChange}
-                            />
-                            <label
-                              className="form-check-label"
-                              htmlFor="departureMidDay"
-                            >
-                              Mid Day (12:00 - 18:00)
-                            </label>
-                          </div>
-                        </li>
-                        <li className="col-12">
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id="departureNight"
-                              checked={filters.departureNight}
-                              onChange={onFilterChange}
-                            />
-                            <label
-                              className="form-check-label"
-                              htmlFor="departureNight"
                             >
                               Night (18:00 - 24:00)
                             </label>

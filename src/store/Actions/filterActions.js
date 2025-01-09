@@ -1,5 +1,5 @@
 // actions/stationActions.js
-import { API_URL, Loginn } from "./authActions";
+import { API_URL, } from "./authActions";
 
 // Action Types
 export const FETCH_STATIONS_REQUEST = 'FETCH_STATIONS_REQUEST';
@@ -80,11 +80,11 @@ export const fetchTrains = (fromStnCode, toStnCode, journeyDate) => async (dispa
     console.log('Request Params:', { fromStnCode, toStnCode, journeyDate });
     console.log('Response Data:', data);
     localStorage.setItem('trains', (data?.trainBtwnStnsList) ?  JSON.stringify(data?.trainBtwnStnsList) : []);
-    dispatch(fetchTrainsSuccess(data?.trainBtwnStnsList));
+    setTimeout(() => dispatch(fetchTrainsSuccess(data?.trainBtwnStnsList)), 3500);
 
   } catch (error) {
     console.error(error);
-    dispatch(fetchTrainsFailure(error.message));
+    setTimeout(() => dispatch(fetchTrainsFailure(error.message)), 1500);
   }
 };
 
