@@ -1,4 +1,5 @@
 // actions/stationActions.js
+import axios from "axios";
 import { API_URL, } from "./authActions";
 
 // Action Types
@@ -9,6 +10,12 @@ export const FETCH_TRAINS_REQUEST = 'FETCH_TRAINS_REQUEST';
 export const FETCH_TRAINS_SUCCESS = 'FETCH_TRAINS_SUCCESS';
 export const FETCH_TRAINS_FAILURE = 'FETCH_TRAINS_FAILURE';
 export const FETCH_TRAINS_SEARCH_PARAMS = 'FETCH_TRAINS_SEARCH_PARAMS';
+export const FETCH_TRAINS_FARE_REQUEST = 'FETCH_TRAINS_FARE_REQUEST'
+export const FETCH_TRAINS_FARE_SUCCESS = 'FETCH_TRAINS_FARE_SUCCESS'
+export const FETCH_TRAINS_FARE_FAILURE = 'FETCH_TRAINS_FARE_FAILURE'
+export const FETCH_TRAINS_SCHEDULE_REQUEST = 'FETCH_TRAINS_SCHEDULE_REQUEST'
+export const FETCH_TRAINS_SCHEDULE_SUCCESS = 'FETCH_TRAINS_SCHEDULE_SUCCESS'
+export const FETCH_TRAINS_SCHEDULE_FAILURE = 'FETCH_TRAINS_SCHEDULE_FAILURE'
 
 // Action Creators
 export const fetchStationsRequest = () => ({
@@ -80,27 +87,27 @@ export const fetchTrains = (fromStnCode, toStnCode, journeyDate) => async (dispa
     console.log('Request Params:', { fromStnCode, toStnCode, journeyDate });
     console.log('Response Data:', data);
     localStorage.setItem('trains', (data?.trainBtwnStnsList) ?  JSON.stringify(data?.trainBtwnStnsList) : []);
-    setTimeout(() => dispatch(fetchTrainsSuccess(data?.trainBtwnStnsList)), 3500);
+    dispatch(fetchTrainsSuccess(data?.trainBtwnStnsList));
 
   } catch (error) {
     console.error(error);
-    setTimeout(() => dispatch(fetchTrainsFailure(error.message)), 1500);
+    dispatch(fetchTrainsFailure(error.message));
   }
 };
 
 
 
 export const fetchTrainsFareEnqRequest = () => ({
-  type: FETCH_TRAINS_REQUEST,
+  type: FETCH_TRAINS_FARE_REQUEST,
 });
 
 export const fetchTrainsFareEnqSuccess = (trainsFare) => ({
-  type: FETCH_TRAINS_SUCCESS,
+  type: FETCH_TRAINS_FARE_SUCCESS,
   payload: trainsFare,
 });
 
 export const fetchTrainsFareEnqFailure = (error) => ({
-  type: FETCH_TRAINS_FAILURE,
+  type: FETCH_TRAINS_FARE_FAILURE,
   payload: error,
 });
 
@@ -136,3 +143,31 @@ export const fetchTrainsFareEnquiry = (trainNo, fromStnCode, toStnCode, journeyD
   }
 }
 
+export const fetchTrainsScheduleRequest = () => ({
+  type: FETCH_TRAINS_SCHEDULE_REQUEST,
+});
+
+export const fetchTrainsScheduleSuccess = (trainSchedule) => ({
+  type: FETCH_TRAINS_SCHEDULE_SUCCESS,
+  payload: trainSchedule,
+});
+
+export const fetchTrainsScheduleFailure = (error) => ({
+  type: FETCH_TRAINS_SCHEDULE_FAILURE,
+  payload: error,
+});
+
+
+export const fetchTrainSchedule = (trainNumber) => async (dispatch) => {
+  console.log("calling fetch trains 161 from filter actions", trainNumber)
+  dispatch(fetchTrainsScheduleRequest());
+  try {
+    const response = await axios.get(`${API_URL}/trains/getTrainSchedule/${trainNumber}`);
+    if(response.data && response.data?.stationList){
+      dispatch(fetchTrainsScheduleSuccess(response.data))
+    }
+  } catch (error) {
+    console.error("Error fetching train schedule:", error.message);
+    dispatch(fetchTrainsScheduleFailure(error.message));
+  }
+};
