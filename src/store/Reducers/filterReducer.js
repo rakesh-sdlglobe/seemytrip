@@ -7,6 +7,12 @@ import {
   FETCH_TRAINS_SUCCESS,
   FETCH_TRAINS_FAILURE,
   FETCH_TRAINS_SEARCH_PARAMS,
+  FETCH_TRAINS_FARE_REQUEST,
+  FETCH_TRAINS_FARE_SUCCESS,
+  FETCH_TRAINS_FARE_FAILURE,
+  FETCH_TRAINS_SCHEDULE_REQUEST,
+  FETCH_TRAINS_SCHEDULE_SUCCESS,
+  FETCH_TRAINS_SCHEDULE_FAILURE
 } from '../Actions/filterActions.js';
 
 const initialState = {
@@ -15,6 +21,7 @@ const initialState = {
   trains: [],
   error: null,
   searchParams: {},
+  trainSchedule:[],
 };
 
 export const filterReducer = (state = initialState, action) => {
@@ -36,7 +43,7 @@ export const filterReducer = (state = initialState, action) => {
         loading: false,
         error: action.payload,
       };
-      case FETCH_TRAINS_REQUEST:
+    case FETCH_TRAINS_REQUEST:
       return {
         ...state,
         loading: true,
@@ -59,6 +66,40 @@ export const filterReducer = (state = initialState, action) => {
         loading: false,
         searchParams: action.payload,
       };
+      case FETCH_TRAINS_FARE_REQUEST:
+        return {
+          ...state,
+          loading: true,
+        };
+      case FETCH_TRAINS_FARE_SUCCESS:
+        return {
+          ...state,
+          loading: false,
+          trainsFare: action.payload,
+        };
+      case FETCH_TRAINS_FARE_FAILURE:
+        return {
+          ...state,
+          loading: false,
+          error: action.payload,
+        };
+        case FETCH_TRAINS_SCHEDULE_REQUEST:
+          return {
+            ...state,
+            loading: true,
+          };
+        case FETCH_TRAINS_SCHEDULE_SUCCESS:
+          return {
+            ...state,
+            loading: false,
+            trainSchedule: action.payload,
+          };
+        case FETCH_TRAINS_SCHEDULE_FAILURE:
+          return {
+            ...state,
+            loading: false,
+            error: action.payload,
+          };
     default:
       return state;
   }

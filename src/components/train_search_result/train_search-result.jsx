@@ -1,11 +1,14 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 // import { selectTrains } from '../../store/Selectors/filterSelectors';
 import { useNavigate } from 'react-router-dom';
 import {selectUser} from'../../store/Selectors/authSelectors';
-import { selectSearchParams, selectStations, selectTrains, selectLoading } from '../../store/Selectors/filterSelectors';
+import { selectSearchParams, selectStations, selectTrains, selectLoading, selectTrainsSchedule } from '../../store/Selectors/filterSelectors';
 // import { selectSearchParams } from '../../store/Selectors/filterSelectors';
 import SkeletonLoader from './trainsSkeletonCode';
+import Modal from './Modal';
+import { fetchTrainSchedule } from '../../store/Actions/filterActions';
+import { useDispatch } from 'react-redux';
 
 const TrainSearchResultList = ({ filters }) => {
   const navigate = useNavigate();
@@ -15,7 +18,9 @@ const TrainSearchResultList = ({ filters }) => {
   let searchParams = useSelector(selectSearchParams);
   let trainData = useSelector(selectTrains);
   const [showSkeleton, setShowSkeleton] = useState(true);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTrainNumber, setSelectedTrainNumber] = useState(null);
+  const dispatch = useDispatch();
   
   if (trainData?.length === 0 ) { 
     console.log('No trains found in the store. Checking localStorage...');
@@ -205,8 +210,8 @@ const TrainSearchResultList = ({ filters }) => {
   }
 
   // console.log('181 filteredTrainData:', filteredTrainData);
-  // const stateData = useSelector((state) => state);
-  // console.log('184 stateData:', stateData);
+  const stateData = useSelector((state) => state);
+  console.log('217 stateData from train search result :', stateData);
 
   const getFormattedSeatsData = (train, index) => {
     
@@ -225,7 +230,7 @@ const TrainSearchResultList = ({ filters }) => {
           let seats = parseInt(availabilityStatus.split('WL')[2], 10);
           return seats ? `WL ${seats}` : "WL";
     } else {
-      return "NOT\nAVAILABLE";
+      return "NOT AVAILABLE";
     }
 };
 
@@ -238,13 +243,23 @@ const TrainSearchResultList = ({ filters }) => {
   //     </div>
   //   );
   // }
-  useEffect(() => {
-    if (!loading) {
-      const delayTimeout = setTimeout(() => setShowSkeleton(false), 4500); // Adjust delay as needed
-      return () => clearTimeout(delayTimeout);
-    }
-  }, [loading]);
+  // useEffect(() => {
+  //   if (!loading) {
+  //     const delayTimeout = setTimeout(() => setShowSkeleton(false), 4500); // Adjust delay as needed
+  //     return () => clearTimeout(delayTimeout);
+  //   }
+  // }, [loading]);
 
+  const openModel = useCallback((trainNumber) => {
+    setSelectedTrainNumber(trainNumber);
+    dispatch(fetchTrainSchedule(trainNumber)); 
+    setIsModalOpen(true);
+  }, [dispatch]);
+
+  const closeModel = useCallback(() => {
+    setIsModalOpen(false);
+    setSelectedTrainNumber(null);
+  }, []);
 
   return (
     <div className="row align-items-center g-4 mt-0">
@@ -270,9 +285,11 @@ const TrainSearchResultList = ({ filters }) => {
 
       {/* Train list */}
       
-    {   loading && showSkeleton ? (
-        <SkeletonLoader />
-      ) : filteredTrainData?.length > 0 ? (
+    {
+      //  loading && showSkeleton ? (
+      //   <SkeletonLoader />
+      // ) : 
+      filteredTrainData?.length > 0 ? (
         filteredTrainData?.map(train => (
           <div key={train.trainNumber} className="col-xl-12 col-lg-12 col-md-12">
             <div className="train-availability-card bg-white rounded-3 p-4 hover-shadow" style={{ 
@@ -369,12 +386,12 @@ const TrainSearchResultList = ({ filters }) => {
 
                         <div className="flex-grow-1 px-4">
                           <div className="journey-line position-relative">
-                            <div className="distance text-center mb-2">
+                            <div className="duration text-center mb-2">
                               <span 
                                 className="badge bg-light text-dark px-3 py-2" 
-                                style={{boxShadow: "0 2px 4px rgba(0,0,0,0.1)"}}
+                                style={{boxShadow: "0 2px 4px rgba(0,0,0,0.4)"}}
                               >
-                                {train.distance} km
+                                {totalDuration(train.duration)}
                               </span>
                             </div>
                             <div className="line d-flex align-items-center" style={{
@@ -408,15 +425,18 @@ const TrainSearchResultList = ({ filters }) => {
                                 zIndex: "1"
                               }}></div>
                             </div>
+                            <div className="view-route text-center mt-2">
+                            <button
+                              className="badge bg-light text-danger px-3 py-2"
+                              style={{ boxShadow: "0 2px 4px rgba(36, 36, 36, 0.49)",border:'none',fontWeight : "bold"}}
+                              onClick={() => openModel(train.trainNumber)} // Use callback function
+                            >
+                              View Route
+                            </button>
+                            <Modal isOpen={isModalOpen} onClose={closeModel} trainNumber={selectedTrainNumber} /> 
+                          </div>
 
-                            <div className="duration text-center mt-2">
-                              <span 
-                                className="badge bg-light text-dark px-3 py-2" 
-                                style={{boxShadow: "0 2px 4px rgba(0,0,0,0.1)"}}
-                              >
-                                {totalDuration(train.duration)}
-                              </span>
-                            </div>
+
 
                           </div>
                         </div>
