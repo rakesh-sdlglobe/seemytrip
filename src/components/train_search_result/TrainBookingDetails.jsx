@@ -506,90 +506,71 @@ const handleProceedToPayment = (e)=>{
 
   // Add new contact details form
   const renderContactDetails = () => (
-    <div className="card p-4 mb-4">
-      <h4 className="mb-4">Contact Details</h4>
-      
-      <div className="mb-3">
-        <label htmlFor="irctcUsername" className="form-label">IRCTC Username*</label>
-        <input
-          type="text"
-          className="form-control"
-          id="irctcUsername"
-          value={contactDetails.irctcUsername}
-          onChange={(e) => setContactDetails({...contactDetails, irctcUsername: e.target.value})}
-        />
-        <small className="text-muted">
-          The IRCTC ID and Password will be required after payment to complete your booking.
-        </small>
-      </div>
-{/* 
-      <div className="mb-3">
-        <label htmlFor="email" className="form-label">Email ID*</label>
-        <input
-          type="email"
-          className="form-control"
-          id="email"
-          value={contactDetails.email}
-          onChange={(e) => setContactDetails({...contactDetails, email: e.target.value})}
-        />
-      </div> */}
-
-      {/* <div className="mb-3">
-        <label htmlFor="phone" className="form-label">Phone Number*</label>
-        <input
-          type="tel"
-          className="form-control"
-          id="phone"
-          value={contactDetails.phone}
-          onChange={(e) => setContactDetails({...contactDetails, phone: e.target.value})}
-        />
-      </div> */}
-
-      <div className="mb-3">
-        <label htmlFor="email" className="form-label">
-          Email ID*
-        </label>
-        <input
-          type="email"
-          className="form-control"
-          id="email"
-          value={contactDetails.email}
-          onChange={handleEmailChange}
-          required
-        />
-        {errors.email && <small className="text-danger">{errors.email}</small>}
-      </div>
-
-      <div className="mb-3">
-        <label htmlFor="phone" className="form-label">
-          Phone Number*
-        </label>
-        <input
-          type="tel"
-          className="form-control"
-          id="phone"
-          value={contactDetails.phone}
-          onChange={handlePhoneChange}
-          required
-        />
-        {errors.phone && <small className="text-danger">{errors.phone}</small>}
-      </div>
-
-      <div className="mb-3">
-        <label htmlFor="state" className="form-label">State*</label>
-        <select
-          className="form-select"
-          id="state"
-          value={contactDetails.state}
-          onChange={(e) => setContactDetails({...contactDetails, state: e.target.value})}
-        >
-          <option value="">Select State</option>
-          <option value="maharashtra">Maharashtra</option>
-          <option value="karnataka">Karnataka</option>
-          {/* Add more states as needed */}
-        </select>
-      </div>
+<div className="card mb-4 p-4">
+  <h4 className="mb-4">Contact Details</h4>
+  
+  <div className="row g-3">
+    <div className="col-xl-6 col-md-6 col-sm-12">
+      <label htmlFor="irctcUsername" className="form-label">IRCTC Username*</label>
+      <input
+        type="text"
+        className="form-control"
+        id="irctcUsername"
+        value={contactDetails.irctcUsername}
+        onChange={(e) => setContactDetails({ ...contactDetails, irctcUsername: e.target.value })}
+        style={{ fontSize: '0.875rem', padding: '0.5rem' }} // Reduced size
+      />
+      <small className="text-muted">
+        The IRCTC ID and Password will be required after payment to complete your booking.
+      </small>
     </div>
+
+    <div className="col-xl-6 col-md-6 col-sm-12">
+      <label htmlFor="email" className="form-label">Email ID*</label>
+      <input
+        type="email"
+        className="form-control"
+        id="email"
+        value={contactDetails.email}
+        onChange={handleEmailChange}
+        style={{ fontSize: '0.875rem', padding: '0.5rem' }} // Reduced size
+        required
+      />
+      {errors.email && <small className="text-danger">{errors.email}</small>}
+    </div>
+
+    <div className="col-xl-6 col-md-6 col-sm-12">
+      <label htmlFor="phone" className="form-label">Phone Number*</label>
+      <input
+        type="tel"
+        className="form-control"
+        id="phone"
+        value={contactDetails.phone}
+        onChange={handlePhoneChange}
+        style={{ fontSize: '0.875rem', padding: '0.5rem' }} // Reduced size
+        required
+      />
+      {errors.phone && <small className="text-danger">{errors.phone}</small>}
+    </div>
+
+    <div className="col-xl-6 col-md-6 col-sm-12">
+      <label htmlFor="state" className="form-label">State*</label>
+      <select
+        className="form-select"
+        id="state"
+        value={contactDetails.state}
+        onChange={(e) => setContactDetails({ ...contactDetails, state: e.target.value })}
+        style={{ fontSize: '0.875rem', padding: '1rem' }} // Reduced size
+      >
+        <option value="">Select State</option>
+        <option value="maharashtra">Maharashtra</option>
+        <option value="karnataka">Karnataka</option>
+        {/* Add more states as needed */}
+      </select>
+    </div>
+  </div>
+</div>
+
   );
 
   return (
@@ -683,13 +664,22 @@ const handleProceedToPayment = (e)=>{
         }
 
         .card.border-primary {
-          border: 1px solid #0d6efd !important;
+          border: 1px solid #ff6f61; !important;
         }
 
         .form-check-input:checked {
-          background-color: #0d6efd;
-          border-color: #0d6efd;
+          background-color: #ff6f61;
+          border-color:rgb(253, 142, 132);
         }
+
+
+
+
+/* Option styling within the dropdown (where supported) */
+.form-select option:hover {
+  background-color: #ff6f61; /* Rose red */
+  color: white; /* Text color */
+}
       `}</style>
     </div>
   );

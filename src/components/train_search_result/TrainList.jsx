@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Header02 from "../header02";
 import Footer from "../footer";
@@ -8,9 +8,6 @@ import TrainSearchResultList from "./train_search-result";
 const TrainList01 = () => {
   const location = useLocation();
   const searchParams = location.state || JSON.parse(localStorage.getItem("searchParams"));
-  
-
-  console.log("11 from train list 01 ",searchParams);
 
   const [filters, setFilters] = useState({
     ac: false,
@@ -32,38 +29,60 @@ const TrainList01 = () => {
     "1A": false,
     "2A": false,
     "3A": false,
-    "3E" : false,
+    "3E": false,
     SL: false,
     
-    GN: true,
-    TQ: false,
-    PT: false,
-    LD: false,
-
-    quota : "GN"
+    quota: "GN" // Default to General quota
   });
 
-  const onFilterChange = (e) => {
+  const onFilterChange = useCallback((e) => {
     const { id, checked, type } = e.target;
+    
     setFilters((prevFilters) => {
       if (type === "radio") {
         return {
           ...prevFilters,
-          quota: id, 
-          
+          quota: id,
         };
       } else if (type === "checkbox") {
+        if (id === "ac") {
+          // When AC is checked/unchecked, update all AC class filters
+          return {
+            ...prevFilters,
+            ac: checked,
+            "1A": checked,
+            "2A": checked,
+            "3A": checked,
+            "3E": checked
+          };
+        }
+        // For AC classes, also update the main AC filter if needed
+        if (["1A", "2A", "3A", "3E"].includes(id)) {
+          const allAcClasses = ["1A", "2A", "3A", "3E"];
+          const updatedFilters = {
+            ...prevFilters,
+            [id]: checked
+          };
+          // Check if all AC classes are selected/deselected
+          const shouldUpdateAc = checked ? 
+            allAcClasses.every(cls => cls === id || updatedFilters[cls]) :
+            allAcClasses.every(cls => cls === id || !updatedFilters[cls]);
+          
+          return {
+            ...updatedFilters,
+            ac: shouldUpdateAc
+          };
+        }
         return {
           ...prevFilters,
-          [id]: checked, // Toggle the class filter based on the checkbox state
+          [id]: checked,
         };
       }
       return prevFilters;
     });
-  };
-  
+  }, []);
 
-  const handleClearAll = () => {
+  const handleClearAll = useCallback(() => {
     setFilters({
       ac: false,
       available: false,
@@ -84,17 +103,12 @@ const TrainList01 = () => {
       "1A": false,
       "2A": false,
       "3A": false,
-      "3E" : false,
+      "3E": false,
       SL: false,
       
-      GN: true,
-      TQ: false,
-      PT: false,
-      LD: false,
-
-      quota:"GN"
+      quota: "GN" // Maintain General quota as default
     });
-  };
+  }, []);
 
   return (
     <div>
@@ -164,13 +178,13 @@ const TrainList01 = () => {
             `
           }}
         />
-        <section className="gray-simple" >
-          <div className="container" >
+        <section className="gray-simple">
+          <div className="container">
             <div className="row justify-content-between gy-4 gx-xl-4 gx-lg-3 gx-md-3 gx-4">
-              <div className="col-xl-3 col-lg-4 col-md-12" >
+              <div className="col-xl-3 col-lg-4 col-md-12">
                 <div className="filter-searchBar bg-white rounded-3" style={{ boxShadow:"0 2px 5px rgba(0, 0, 0, 0.1)" }}>
                   <div className="filter-searchBar-head border-bottom">
-                    <div className="searchBar-headerBody d-flex align-items-start justify-content-between px-3 py-3" >
+                    <div className="searchBar-headerBody d-flex align-items-start justify-content-between px-3 py-3">
                       <div className="searchBar-headerfirst">
                         <h6 className="fw-bold fs-5 m-0">Filters</h6>
                       </div>
@@ -218,10 +232,7 @@ const TrainList01 = () => {
                                 checked={filters.available}
                                 onChange={onFilterChange}
                               />
-                              <label
-                                className="form-check-label"
-                                htmlFor="available"
-                              >
+                              <label className="form-check-label" htmlFor="available">
                                 Available
                               </label>
                             </div>
@@ -231,8 +242,7 @@ const TrainList01 = () => {
                     </div>
 
                     <div className="searchBar-single px-3 py-3 border-bottom">
-
-                      {/* Quota  */}
+                      {/* Quota */}
                       <div className="searchBar-single-title d-flex mb-1 mt-3">
                         <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
                           Quota
@@ -380,7 +390,6 @@ const TrainList01 = () => {
                         </li>
                       </ul>
 
-
                       {/* Departure Time Filters */}
                       <div className="searchBar-single-title d-flex mb-1 mt-3">
                         <h6 className="sidebar-subTitle fs-6 fw-medium m-0">
@@ -397,10 +406,7 @@ const TrainList01 = () => {
                               checked={filters.departureEarlyMorning}
                               onChange={onFilterChange}
                             />
-                            <label
-                              className="form-check-label"
-                              htmlFor="departureEarlyMorning"
-                            >
+                            <label className="form-check-label" htmlFor="departureEarlyMorning">
                               Early Morning (00:00 - 06:00)
                             </label>
                           </div>
@@ -414,10 +420,7 @@ const TrainList01 = () => {
                               checked={filters.departureMorning}
                               onChange={onFilterChange}
                             />
-                            <label
-                              className="form-check-label"
-                              htmlFor="departureMorning"
-                            >
+                            <label className="form-check-label" htmlFor="departureMorning">
                               Morning (06:00 - 12:00)
                             </label>
                           </div>
@@ -431,10 +434,7 @@ const TrainList01 = () => {
                               checked={filters.departureMidDay}
                               onChange={onFilterChange}
                             />
-                            <label
-                              className="form-check-label"
-                              htmlFor="departureMidDay"
-                            >
+                            <label className="form-check-label" htmlFor="departureMidDay">
                               Mid Day (12:00 - 18:00)
                             </label>
                           </div>
@@ -448,10 +448,7 @@ const TrainList01 = () => {
                               checked={filters.departureNight}
                               onChange={onFilterChange}
                             />
-                            <label
-                              className="form-check-label"
-                              htmlFor="departureNight"
-                            >
+                            <label className="form-check-label" htmlFor="departureNight">
                               Night (18:00 - 24:00)
                             </label>
                           </div>
@@ -474,10 +471,7 @@ const TrainList01 = () => {
                               checked={filters.arrivalEarlyMorning}
                               onChange={onFilterChange}
                             />
-                            <label
-                              className="form-check-label"
-                              htmlFor="arrivalEarlyMorning"
-                            >
+                            <label className="form-check-label" htmlFor="arrivalEarlyMorning">
                               Early Morning (00:00 - 06:00)
                             </label>
                           </div>
@@ -491,10 +485,7 @@ const TrainList01 = () => {
                               checked={filters.arrivalMorning}
                               onChange={onFilterChange}
                             />
-                            <label
-                              className="form-check-label"
-                              htmlFor="arrivalMorning"
-                            >
+                            <label className="form-check-label" htmlFor="arrivalMorning">
                               Morning (06:00 - 12:00)
                             </label>
                           </div>
@@ -508,10 +499,7 @@ const TrainList01 = () => {
                               checked={filters.arrivalMidDay}
                               onChange={onFilterChange}
                             />
-                            <label
-                              className="form-check-label"
-                              htmlFor="arrivalMidDay"
-                            >
+                            <label className="form-check-label" htmlFor="arrivalMidDay">
                               Mid Day (12:00 - 18:00)
                             </label>
                           </div>
@@ -525,10 +513,7 @@ const TrainList01 = () => {
                               checked={filters.arrivalNight}
                               onChange={onFilterChange}
                             />
-                            <label
-                              className="form-check-label"
-                              htmlFor="arrivalNight"
-                            >
+                            <label className="form-check-label" htmlFor="arrivalNight">
                               Night (18:00 - 24:00)
                             </label>
                           </div>
@@ -551,10 +536,7 @@ const TrainList01 = () => {
                               checked={filters.freeCancellation}
                               onChange={onFilterChange}
                             />
-                            <label
-                              className="form-check-label"
-                              htmlFor="freeCancellation"
-                            >
+                            <label className="form-check-label" htmlFor="freeCancellation">
                               Free Cancellation
                             </label>
                           </div>
@@ -568,10 +550,7 @@ const TrainList01 = () => {
                               checked={filters.tripGuarantee}
                               onChange={onFilterChange}
                             />
-                            <label
-                              className="form-check-label"
-                              htmlFor="tripGuarantee"
-                            >
+                            <label className="form-check-label" htmlFor="tripGuarantee">
                               Trip Guarantee
                             </label>
                           </div>
@@ -593,4 +572,4 @@ const TrainList01 = () => {
   );
 };
 
-export default TrainList01;
+export default React.memo(TrainList01);

@@ -150,13 +150,13 @@ const SeatSelection = () => {
                 select.form-select {
                     padding: 10px;
                     font-size: 16px;
-                    // border: 2px solid #007bff;
+                    // border: 2px solidrgb(244, 134, 134);
                     border-radius: 5px;
                     transition: border-color 0.3s ease;
                 }
 
                 select.form-select:focus {
-                    border-color: #0056b3;
+                    border-color:rgb(254, 118, 118);
                     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
                 }
 
@@ -167,7 +167,7 @@ const SeatSelection = () => {
                 }
 
                 button.btn-proceed {
-                    background-color: #007bff;
+                    background-color:rgb(253, 122, 122);
                     border: none;
                     color: #fff;
                     border-radius: 5px;
@@ -178,7 +178,7 @@ const SeatSelection = () => {
                 }
 
                 button.btn-proceed:hover {
-                    background-color: #0056b3;
+                    background-color:rgb(252, 126, 126);
                 }
             `}</style>
 
