@@ -1,26 +1,30 @@
-import React, { useEffect, useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 // import { selectTrains } from '../../store/Selectors/filterSelectors';
 import { useNavigate } from 'react-router-dom';
 import {selectUser} from'../../store/Selectors/authSelectors';
-import { selectSearchParams, selectStations, selectTrains, selectLoading, selectTrainsSchedule } from '../../store/Selectors/filterSelectors';
+import { selectSearchParams, selectStations, } from '../../store/Selectors/filterSelectors';
 // import { selectSearchParams } from '../../store/Selectors/filterSelectors';
-import SkeletonLoader from './trainsSkeletonCode';
+// import SkeletonLoader from './trainsSkeletonCode';
 import Modal from './Modal';
 import { fetchTrainSchedule } from '../../store/Actions/filterActions';
 import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import SkeletonLoader from './SkeletonLoader';
 
 const TrainSearchResultList = ({ filters }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const isAuthenticated = useSelector(selectUser);
   const stationsList = useSelector(selectStations);
-  const loading = useSelector(selectLoading);
   let searchParams = useSelector(selectSearchParams);
-  let trainData = useSelector(selectTrains);
-  const [showSkeleton, setShowSkeleton] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTrainNumber, setSelectedTrainNumber] = useState(null);
-  const dispatch = useDispatch();
+  const [selectedTrainFromStnCode, setSelectedTrainFromStnCode] = useState(null);
+  const [selectedTrainToStnCode, setSelectedTrainToStnCode] = useState(null);
+  let trainData = [];
+  // const loading = useSelector(selectLoading);
+  // const [showSkeleton, setShowSkeleton] = useState(true);
   
   if (trainData?.length === 0 ) { 
     console.log('No trains found in the store. Checking localStorage...');
@@ -29,7 +33,7 @@ const TrainSearchResultList = ({ filters }) => {
   }
   
   let {formattedTrainDate, date } = searchParams;  
-
+  
 
 
   const totalDuration = (duration) => {
@@ -101,7 +105,6 @@ const TrainSearchResultList = ({ filters }) => {
       if (noClassSelected && filters.quota) {
         return trains?.filter(train => {
           const filteredAvailabilities = train.availabilities?.filter(avl => avl.quota === filters.quota);
-          
           // Only include the train if there is at least one availability matching the quota
           if (filteredAvailabilities?.length > 0) {
             train.availabilities = filteredAvailabilities; // Update availabilities to only match the quota
@@ -141,9 +144,8 @@ const TrainSearchResultList = ({ filters }) => {
         });
   
         // If no filteredAvailabilities match, exclude this train
-        if (!filteredAvailabilities || filteredAvailabilities.length === 0) {
+        if (!filteredAvailabilities || filteredAvailabilities.length === 0)
           return false;
-        }
   
         // Filter based on AC classes if applicable
         if (filters.ac) {
@@ -153,37 +155,28 @@ const TrainSearchResultList = ({ filters }) => {
         }
   
         // Filter based on departure times
-        if (filters.departureEarlyMorning) {
+        if (filters.departureEarlyMorning) 
           isMatch = isMatch && departureHour >= 0 && departureHour < 6;
-        }
-        if (filters.departureMorning) {
+        if (filters.departureMorning) 
           isMatch = isMatch && departureHour >= 6 && departureHour < 12;
-        }
-        if (filters.departureMidDay) {
+        if (filters.departureMidDay) 
           isMatch = isMatch && departureHour >= 12 && departureHour < 18;
-        }
-        if (filters.departureNight) {
+        if (filters.departureNight) 
           isMatch = isMatch && departureHour >= 18 && departureHour < 24;
-        }
   
         // Filter based on arrival times
-        if (filters.arrivalEarlyMorning) {
+        if (filters.arrivalEarlyMorning)
           isMatch = isMatch && arrivalHour >= 0 && arrivalHour < 6;
-        }
-        if (filters.arrivalMorning) {
+        if (filters.arrivalMorning) 
           isMatch = isMatch && arrivalHour >= 6 && arrivalHour < 12;
-        }
-        if (filters.arrivalMidDay) {
+        if (filters.arrivalMidDay) 
           isMatch = isMatch && arrivalHour >= 12 && arrivalHour < 18;
-        }
-        if (filters.arrivalNight) {
+        if (filters.arrivalNight)
           isMatch = isMatch && arrivalHour >= 18 && arrivalHour < 24;
-        }
   
         // Update train's availabilities with filtered results
-        if (isMatch) {
+        if (isMatch)
           train.availabilities = filteredAvailabilities;
-        }
   
         return isMatch;
       });
@@ -193,25 +186,63 @@ const TrainSearchResultList = ({ filters }) => {
   }, [trainData, filters]);
 
   console.log("Train data after filtered ", filteredTrainData);
+  console.log("The filters are ", filters)
+
   
-  const handleBooking = (train) =>{
-    console.log('Auth status:', isAuthenticated)
-    if(isAuthenticated){
-      navigate('/trainbookingdetails',{state:{ trainData: train}})
+  const handleBooking = useCallback((train, classInfo) => {
+    const isAvailable = classInfo?.avlDayList?.[0]?.availablityType === "1" || classInfo.avlDayList?.[0]?.availablityType === "2" || classInfo.avlDayList?.[0]?.availablityType === "3";
+
+    if (!isAvailable) {
+      toast.error('Booking not allowed', {
+        position: "bottom-center",
+        autoClose: 2500,
+        theme:'colored',
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      return;
     }
-    else{
-      navigate('/login',{
-        state:{
-          redirectTo:'/trainbookingdetails',
-          trainData:train,
+
+    const bookingData = {
+      ...train,
+      selectedClass: classInfo.enqClass,
+      selectedQuota: classInfo.quota,
+      fare: classInfo.totalFare
+    };
+
+    if (isAuthenticated) {
+      navigate('/trainbookingdetails', { state: { trainData: bookingData } });
+    } else {
+      navigate('/login', {
+        state: {
+          redirectTo: '/trainbookingdetails',
+          trainData: bookingData,
         }
       });
     }
-  }
+  }, [isAuthenticated, navigate]);
+
+
+  // const handleBooking = (train) =>{
+  //   console.log('Auth status:', isAuthenticated)
+  //   if(isAuthenticated){
+  //     navigate('/trainbookingdetails',{state:{ trainData: train}})
+  //   }
+  //   else{
+  //     navigate('/login',{
+  //       state:{
+  //         redirectTo:'/trainbookingdetails',
+  //         trainData:train,
+  //       }
+  //     });
+  //   }
+  // }
 
   // console.log('181 filteredTrainData:', filteredTrainData);
-  const stateData = useSelector((state) => state);
-  console.log('217 stateData from train search result :', stateData);
+  // const stateData = useSelector((state) => state);
+  // console.log('217 stateData from train search result :', stateData);
 
   const getFormattedSeatsData = (train, index) => {
     
@@ -250,8 +281,10 @@ const TrainSearchResultList = ({ filters }) => {
   //   }
   // }, [loading]);
 
-  const openModel = useCallback((trainNumber) => {
+  const openModel = useCallback((trainNumber,trainFromStnCode, trainToStnCode) => {
     setSelectedTrainNumber(trainNumber);
+    setSelectedTrainFromStnCode(trainFromStnCode)
+    setSelectedTrainToStnCode(trainToStnCode)
     dispatch(fetchTrainSchedule(trainNumber)); 
     setIsModalOpen(true);
   }, [dispatch]);
@@ -259,6 +292,8 @@ const TrainSearchResultList = ({ filters }) => {
   const closeModel = useCallback(() => {
     setIsModalOpen(false);
     setSelectedTrainNumber(null);
+    setSelectedTrainFromStnCode(null)
+    setSelectedTrainToStnCode(null)
   }, []);
 
   return (
@@ -429,11 +464,11 @@ const TrainSearchResultList = ({ filters }) => {
                             <button
                               className="badge bg-light text-danger px-3 py-2"
                               style={{ boxShadow: "0 2px 4px rgba(36, 36, 36, 0.49)",border:'none',fontWeight : "bold"}}
-                              onClick={() => openModel(train.trainNumber)} // Use callback function
+                              onClick={() => openModel(train.trainNumber, train.fromStnCode, train.toStnCode)} // Use callback function
                             >
                               View Route
                             </button>
-                            <Modal isOpen={isModalOpen} onClose={closeModel} trainNumber={selectedTrainNumber} /> 
+                            <Modal isOpen={isModalOpen} onClose={closeModel} trainNumber={selectedTrainNumber} selectedTrainFromStnCode={selectedTrainFromStnCode} selectedTrainToStnCode={selectedTrainToStnCode} /> 
                           </div>
 
 
@@ -506,7 +541,7 @@ const TrainSearchResultList = ({ filters }) => {
                               transition: "transform 0.2s ease",
                               boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
                             }}
-                            onClick={() => handleBooking(train)}
+                            onClick={() => handleBooking(train,cls)}
                           >
                             { (train.availabilities[index]?.quota === "TQ" || train.availabilities[index]?.quota === "PT") && (
                               <div
