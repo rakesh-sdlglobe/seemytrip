@@ -13,27 +13,27 @@ const location = useLocation();
 const trainData = location.state?.trainData;
 const navigate = useNavigate();
   // Add max travelers constant
-  const MAX_TRAVELERS = 6;
+const MAX_TRAVELERS = 6;
 
-  // State management
-  const [travelers, setTravelers] = useState([]);
-  const [currentTraveler, setCurrentTraveler] = useState({
-    name: '',
-    age: '',
-    gender: 'male',
-    berth: '',
-    country: '',
-  });
-  const [selectedTravelers, setSelectedTravelers] = useState([]);
+// State management
+const [travelers, setTravelers] = useState([]);
+const [currentTraveler, setCurrentTraveler] = useState({
+  name: '',
+  age: '',
+  gender: 'male',
+  berth: '',
+  country: '',
+});
+const [selectedTravelers, setSelectedTravelers] = useState([]);
 
-  // Add new state for form validation and contact details
-  const [formErrors, setFormErrors] = useState({});
-  const [errors, setErrors] = useState({ email: '', phone: '' });
-  const [contactDetails, setContactDetails] = useState({
-    irctcUsername: '',
-    email: '',
-    phone: '',
-    state: '',
+// Add new state for form validation and contact details
+const [formErrors, setFormErrors] = useState({});
+const [errors, setErrors] = useState({ email: '', phone: '' });
+const [contactDetails, setContactDetails] = useState({
+  irctcUsername: '',
+  email: '',
+  phone: '',
+  state: '',
   });
 
 
@@ -105,6 +105,7 @@ const navigate = useNavigate();
       });
       toast.success('Traveler added successfully')
     }
+
   };
 
   //validate before payment
@@ -472,7 +473,7 @@ const handleProceedToPayment = (e)=>{
               <option value="yesvantpur">Yesvantpur Jn (05:45 AM)</option>
             </select>
             <small className="text-muted">
-              Please select the station from where you will board the train
+              Select the station from where you will board the train.
             </small>
           </div>
         </div>
@@ -669,7 +670,7 @@ const handleProceedToPayment = (e)=>{
 
         .form-check-input:checked {
           background-color: #ff6f61;
-          border-color:rgb(253, 142, 132);
+          border-color: #db2413;
         }
 
 
