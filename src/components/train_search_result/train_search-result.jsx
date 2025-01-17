@@ -1,11 +1,9 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 // import { selectTrains } from '../../store/Selectors/filterSelectors';
 import { useNavigate } from 'react-router-dom';
-import {selectUser} from'../../store/Selectors/authSelectors';
-import { selectSearchParams, selectStations, } from '../../store/Selectors/filterSelectors';
-// import { selectSearchParams } from '../../store/Selectors/filterSelectors';
-// import SkeletonLoader from './trainsSkeletonCode';
+import { selectUser } from'../../store/Selectors/authSelectors';
+import { selectSearchParams, selectStations,selectLoading } from '../../store/Selectors/filterSelectors';
 import Modal from './Modal';
 import { fetchTrainSchedule } from '../../store/Actions/filterActions';
 import { useDispatch } from 'react-redux';
@@ -17,6 +15,7 @@ const TrainSearchResultList = ({ filters }) => {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector(selectUser);
   const stationsList = useSelector(selectStations);
+  const loading = JSON.parse(localStorage.getItem('loading'));
   let searchParams = useSelector(selectSearchParams);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTrainNumber, setSelectedTrainNumber] = useState(null);
@@ -25,16 +24,17 @@ const TrainSearchResultList = ({ filters }) => {
   let trainData = [];
   // const loading = useSelector(selectLoading);
   // const [showSkeleton, setShowSkeleton] = useState(true);
-  
+
+
   if (trainData?.length === 0 ) { 
     console.log('No trains found in the store. Checking localStorage...');
     trainData = JSON.parse(localStorage.getItem('trains') || '[]');
     searchParams = JSON.parse(localStorage.getItem('trainSearchParams'));
   }
   
+
   let {formattedTrainDate, date } = searchParams;  
   
-
 
   const totalDuration = (duration) => {
     // Split the duration into hours and minutes
@@ -241,8 +241,8 @@ const TrainSearchResultList = ({ filters }) => {
   // }
 
   // console.log('181 filteredTrainData:', filteredTrainData);
-  // const stateData = useSelector((state) => state);
-  // console.log('217 stateData from train search result :', stateData);
+  const stateData = useSelector((state) => state);
+  console.log('217 stateData from train search result :', stateData);
 
   const getFormattedSeatsData = (train, index) => {
     
@@ -296,6 +296,10 @@ const TrainSearchResultList = ({ filters }) => {
     setSelectedTrainToStnCode(null)
   }, []);
 
+  // if (loading || !trainData) {
+  //   return <SkeletonLoader />;
+  // }
+
   return (
     <div className="row align-items-center g-4 mt-0">
       {/* Offer Coupon Box */}
@@ -319,11 +323,12 @@ const TrainSearchResultList = ({ filters }) => {
       </div>
 
       {/* Train list */}
+      {console.log("===========> loading ", loading)}
       
     {
-      //  loading && showSkeleton ? (
-      //   <SkeletonLoader />
-      // ) : 
+      loading ? (
+        <SkeletonLoader />
+      ) : 
       filteredTrainData?.length > 0 ? (
         filteredTrainData?.map(train => (
           <div key={train.trainNumber} className="col-xl-12 col-lg-12 col-md-12">

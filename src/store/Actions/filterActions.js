@@ -70,6 +70,7 @@ export const fetchTrainsSearchParams = (searchParams) => ({
 
 export const fetchTrains = (fromStnCode, toStnCode, journeyDate) => async (dispatch) => {
   dispatch(fetchTrainsRequest());
+  localStorage.setItem('loading',true);
   try {
     const response = await fetch(`${API_URL}/trains/getTrains`, {
       method: 'POST',
@@ -88,10 +89,13 @@ export const fetchTrains = (fromStnCode, toStnCode, journeyDate) => async (dispa
     console.log('Response Data:', data);
     localStorage.setItem('trains', (data?.trainBtwnStnsList) ?  JSON.stringify(data?.trainBtwnStnsList) : []);
     dispatch(fetchTrainsSuccess(data?.trainBtwnStnsList));
+    localStorage.setItem('loading',false);
 
   } catch (error) {
     console.error(error);
     dispatch(fetchTrainsFailure(error.message));
+    localStorage.setItem('loading',false);
+
   }
 };
 

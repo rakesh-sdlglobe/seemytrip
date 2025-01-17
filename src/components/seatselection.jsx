@@ -156,8 +156,8 @@ const SeatSelection = () => {
                 }
 
                 select.form-select:focus {
-                    border-color:rgb(254, 118, 118);
-                    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+                    border-color:rgb(253, 96, 96);
+                    box-shadow: 0 0 0 0.2rem rgb(214, 75, 75);
                 }
 
                 .total-price {
@@ -167,7 +167,7 @@ const SeatSelection = () => {
                 }
 
                 button.btn-proceed {
-                    background-color:rgb(253, 122, 122);
+                    background-color:rgb(249, 94, 94);
                     border: none;
                     color: #fff;
                     border-radius: 5px;
