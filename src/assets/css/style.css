@@ -26,7 +26,7 @@ Default Style
 :root,
 [data-bs-theme=light] {
   /* --bs-primary: #147289; */
-  /* --bs-primary: #D20000; */
+  /* --bs-primary: #cd2c22; */
   --bs-primary: #cd2c22;
   --bs-primary-bg-subtle: #e8f1f3;
   --bs-primary-bg-dark: #cd2c22;

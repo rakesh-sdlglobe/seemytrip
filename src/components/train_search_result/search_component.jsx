@@ -237,7 +237,7 @@ const SearchComponent = ({
       paddingLeft: '50px',
       boxShadow: '0 2px 4px rgba(0,0,0,0.0)',
       '&:hover': {
-        // borderColor: '#d20000',
+        // borderColor: '#cd2c22',
         paddingLeft: '50px',
         backgroundColor:'none'
       }
@@ -253,7 +253,7 @@ const SearchComponent = ({
     option: (provided, state) => ({
       ...provided,
       padding: '12px 15px', // Increased padding
-      backgroundColor: state.isSelected ? '#d20000' : state.isFocused ? '#f5f5f5' : '#fff',
+      backgroundColor: state.isSelected ? '#cd2c22' : state.isFocused ? '#f5f5f5' : '#fff',
       color: state.isSelected ? '#fff' : '#333',
     }),
     placeholder: (provided) => ({
@@ -449,7 +449,7 @@ const SearchComponent = ({
               // }
 
               .react-calendar__tile--active {
-                background: #d20000 !important;
+                background: #cd2c22 !important;
                 color: white;
               }
 
@@ -458,7 +458,7 @@ const SearchComponent = ({
               }
 
               .react-calendar__month-view__days__day--weekend {
-                color: #d20000;
+                color: #cd2c22;
               }
 
               .react-calendar__month-view__days__day--neighboringMonth {
@@ -478,7 +478,7 @@ const SearchComponent = ({
               margin: 4px; /* Spacing between tiles */
             }
             .react-calendar__tile--active {
-              background: #d20000;
+              background: #cd2c22;
               color: white;
             }
             @media (max-width: 576px) {
@@ -514,7 +514,7 @@ const SearchComponent = ({
             }
 
             .highlight-item i {
-              color: #d20000;
+              color: #cd2c22;
             }
 
             @keyframes slideIn {
@@ -669,7 +669,7 @@ const SearchComponent = ({
           // Remove default focus styles for the calendar input
           .icon-input input:focus {
             background: #f4f5f5 !important;
-            border-bottom: 2px solid #d20000;
+            border-bottom: 2px solid #cd2c22;
             box-shadow: none;
             outline: none;
           }

@@ -202,7 +202,7 @@ const BookingPage3 = () => {
 
         .payment-option:hover {
           background-color: #f8f9fa;
-          border-color: #d20000!important;
+          border-color: #cd2c22!important;
           transform: translateX(4px);
         }
 
@@ -230,8 +230,8 @@ const BookingPage3 = () => {
         }
 
         .payment-option input[type="radio"]:checked {
-          border-color: #d20000;
-          background-color: #d20000;
+          border-color: #cd2c22;
+          background-color: #cd2c22;
           box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
         }
 
@@ -261,7 +261,7 @@ const BookingPage3 = () => {
           padding: 12px 24px;
           font-weight: 600;
           border-radius: 12px;
-          background: linear-gradient(45deg, #d20000, #d20000);
+          background: linear-gradient(45deg, #cd2c22, #cd2c22);
           border: none;
           box-shadow: 0 4px 15px rgba(13, 110, 253, 0.2);
           transition: all 0.3s ease;
@@ -270,11 +270,11 @@ const BookingPage3 = () => {
         .btn-primary:hover {
           transform: translateY(-2px);
           box-shadow: 0 6px 20px rgba(13, 110, 253, 0.3);
-          background: linear-gradient(45deg, #d20000, #d20000);
+          background: linear-gradient(45deg, #cd2c22, #cd2c22);
         }
 
         .btn-link {
-          color: #d20000;
+          color: #cd2c22;
           text-decoration: none;
           font-weight: 500;
           padding: 8px 16px;
@@ -307,14 +307,14 @@ const BookingPage3 = () => {
 
         /* Cancellation Policy Link */
         .text-muted a {
-          color: #d20000;
+          color: #cd2c22;
           text-decoration: none;
           font-weight: 500;
           transition: color 0.2s ease;
         }
 
         .text-muted a:hover {
-          color: #d20000;
+          color: #cd2c22;
           text-decoration: underline;
         }
 

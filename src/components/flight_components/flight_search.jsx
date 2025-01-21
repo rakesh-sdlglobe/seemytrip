@@ -233,7 +233,7 @@ const FlightSearch = ({
       ...provided,
       backgroundColor: 'white',
       color: state.isSelected ? 'white' : '#333',
-      backgroundColor: state.isSelected ? '#d20000' : 'white',
+      backgroundColor: state.isSelected ? '#cd2c22' : 'white',
       '&:hover': {
         backgroundColor: '#e5e8e8',
         color:'#17181c',
@@ -433,7 +433,7 @@ const FlightSearch = ({
               height:50px;
               }
               .react-calendar__tile--active {
-              background: #d20000;
+              background: #cd2c22;
               color: white;
             }
                .react-calendar__tile {
@@ -548,7 +548,7 @@ color:gray;
 }
 
 .guest-selector-btn:hover {
-  border-color: #d20000;
+  border-color: #cd2c22;
 }
 
 .guests-dropdown {
@@ -597,8 +597,8 @@ color:gray;
 
 .ctrl-btn:hover:not(.disabled) {
   background: #f5f5f5;
-  border-color: #d20000;
-  color: #d20000;
+  border-color: #cd2c22;
+  color: #cd2c22;
 }
 
 .ctrl-btn.disabled {
@@ -624,7 +624,7 @@ color:gray;
 }
 
 .class-selector:hover {
-  border-color: #d20000;
+  border-color: #cd2c22;
 }
 
 /* Add click-outside handling for the guests dropdown */
