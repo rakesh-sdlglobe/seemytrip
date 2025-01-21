@@ -279,7 +279,7 @@ const PersonalTravel = () => {
           width: 40px;
           height: 40px;
           background: #ffe6e6;
-          color: #d20000;
+          color: #cd2c22;
           border-radius: 50%;
           display: flex;
           align-items: center;
@@ -298,8 +298,8 @@ const PersonalTravel = () => {
         }
 
         .btn-primary {
-          background-color: #d20000;
-          border-color: #d20000;
+          background-color: #cd2c22;
+          border-color: #cd2c22;
         }
 
         .btn-primary:hover {
@@ -308,7 +308,7 @@ const PersonalTravel = () => {
         }
 
         .text-primary {
-          color: #d20000 !important;
+          color: #cd2c22 !important;
         }
       `}</style>
     </div>

@@ -313,8 +313,8 @@ const Login = () => {
         }
 
         .btn-primary {
-          background-color: #d20000;
-          border-color: #d20000;
+          background-color: #cd2c22;
+          border-color: #cd2c22;
           transition: all 0.3s ease;
         }
 
@@ -325,8 +325,8 @@ const Login = () => {
         }
 
         .btn-primary:disabled {
-          background-color: #d20000;
-          border-color: #d20000;
+          background-color: #cd2c22;
+          border-color: #cd2c22;
           opacity: 0.7;
         }
 
@@ -337,7 +337,7 @@ const Login = () => {
           left: -1px;
           right: -1px;
           bottom: -1px;
-          background: linear-gradient(90deg, #d20000, #ff1a1a);
+          background: linear-gradient(90deg, #cd2c22, #ff1a1a);
           border-radius: inherit;
           animation: pulse 1.5s ease infinite;
           z-index: -1;
