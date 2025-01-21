@@ -566,7 +566,7 @@ const handleProceedToPayment = (e)=>{
           </div>
         </div>
 
-        {/* Price Summary */}
+        {/* Price Summary .*/}
         <div className="price-summary">
           <h5 className="mb-3">Price Details</h5>
           <ul className="list-unstyled">
