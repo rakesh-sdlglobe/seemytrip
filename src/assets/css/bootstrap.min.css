@@ -33,7 +33,7 @@
     /* --bs-primary: #0d6efd; */
     --bs-primary: #cd2c22;
     /* --bs-primary: #147289; */
-    /* --bs-primary: #D20000; */
+    /* --bs-primary: #cd2c22; */
     --bs-secondary: #6c757d;
     --bs-success: #198754;
     --bs-info: #0dcaf0;
@@ -60,7 +60,7 @@
     --bs-light-text-emphasis: #495057;
     --bs-dark-text-emphasis: #495057;
     /* --bs-primary-bg-subtle: #cfe2ff; */
-    --bs-primary-bg-subtle: #d2000012 !important;
+    --bs-primary-bg-subtle: #cd2c2212 !important;
     --bs-secondary-bg-subtle: #e2e3e5;
     --bs-success-bg-subtle: #d1e7dd;
     --bs-info-bg-subtle: #cff4fc;

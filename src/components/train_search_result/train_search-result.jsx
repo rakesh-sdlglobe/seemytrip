@@ -351,7 +351,7 @@ const TrainSearchResultList = ({ filters }) => {
                           className="mx-1" 
                           style={{
                             fontWeight: train?.runningSun === "Y" ? 'bold' : 'normal',
-                            color: train?.runningSun === "Y" ? '#d20000' : 'inherit',
+                            color: train?.runningSun === "Y" ? '#cd2c22' : 'inherit',
                           }}
                         >
                           S
@@ -360,7 +360,7 @@ const TrainSearchResultList = ({ filters }) => {
                           className="mx-1" 
                           style={{
                             fontWeight: train?.runningMon === "Y" ? 'bold' : 'normal',
-                            color: train?.runningMon === "Y" ? '#d20000' : 'inherit',
+                            color: train?.runningMon === "Y" ? '#cd2c22' : 'inherit',
                           }}
                         >
                           M
@@ -369,7 +369,7 @@ const TrainSearchResultList = ({ filters }) => {
                           className="mx-1" 
                           style={{
                             fontWeight: train?.runningTue === "Y" ? 'bold' : 'normal',
-                            color: train?.runningTue === "Y" ? '#d20000' : 'inherit',
+                            color: train?.runningTue === "Y" ? '#cd2c22' : 'inherit',
                           }}
                         >
                           T
@@ -378,7 +378,7 @@ const TrainSearchResultList = ({ filters }) => {
                           className="mx-1" 
                           style={{
                             fontWeight: train?.runningWed === "Y" ? 'bold' : 'normal',
-                            color: train?.runningWed === "Y" ? '#d20000' : 'inherit',
+                            color: train?.runningWed === "Y" ? '#cd2c22' : 'inherit',
                           }}
                         >
                           W
@@ -387,7 +387,7 @@ const TrainSearchResultList = ({ filters }) => {
                           className="mx-1" 
                           style={{
                             fontWeight: train?.runningThu === "Y" ? 'bold' : 'normal',
-                            color: train?.runningThu === "Y" ? '#d20000' : 'inherit',
+                            color: train?.runningThu === "Y" ? '#cd2c22' : 'inherit',
                           }}
                         >
                           T
@@ -396,7 +396,7 @@ const TrainSearchResultList = ({ filters }) => {
                           className="mx-1" 
                           style={{
                             fontWeight: train?.runningFri === "Y" ? 'bold' : 'normal',
-                            color: train?.runningFri === "Y" ? '#d20000' : 'inherit',
+                            color: train?.runningFri === "Y" ? '#cd2c22' : 'inherit',
                           }}
                         >
                           F
@@ -405,7 +405,7 @@ const TrainSearchResultList = ({ filters }) => {
                           className="mx-1" 
                           style={{
                             fontWeight: train?.runningSat === "Y" ? 'bold' : 'normal',
-                            color: train?.runningSat === "Y" ? '#d20000' : 'inherit',
+                            color: train?.runningSat === "Y" ? '#cd2c22' : 'inherit',
                           }}
                         >
                           S

@@ -161,7 +161,7 @@ const WelcomePopup = () => {
 
     .custom-submit-button {
       padding: 10px 20px;
-      background-color: #d20000;
+      background-color: #cd2c22;
       color: #fff;
       border: none;
       border-radius: 0 5px 5px 0;
@@ -171,7 +171,7 @@ const WelcomePopup = () => {
     }
 
     .custom-submit-button:hover {
-      background-color: #d20000;
+      background-color: #cd2c22;
     }
 
     .email-form .email-group .email-input-group {

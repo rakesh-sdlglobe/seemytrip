@@ -720,7 +720,7 @@ const handleProceedToPayment = (e)=>{
           position: absolute;
           width: 8px;
           height: 8px;
-          background: #d20000;
+          background: #cd2c22;
           border-radius: 50%;
           top: -3px;
         }
@@ -769,21 +769,21 @@ const handleProceedToPayment = (e)=>{
         }
 
         .card.border-primary {
-          border: 1px solid #d20000 !important;
+          border: 1px solid #cd2c22 !important;
         }
 
         .form-check-input:checked {
-          background-color: #d20000;
-          border-color: #d20000;
+          background-color: #cd2c22;
+          border-color: #cd2c22;
         }
 
         .form-label i {
-          color: #d20000;
+          color: #cd2c22;
         }
 
         .btn-primary {
-          background-color: #d20000;
-          border-color: #d20000;
+          background-color: #cd2c22;
+          border-color: #cd2c22;
           color: white;
         }
 
@@ -793,34 +793,34 @@ const handleProceedToPayment = (e)=>{
         }
 
         .btn-outline-primary {
-          color: #d20000;
-          border-color: #d20000;
+          color: #cd2c22;
+          border-color: #cd2c22;
         }
 
         .btn-outline-primary:hover {
-          background-color: #d20000;
-          border-color: #d20000;
+          background-color: #cd2c22;
+          border-color: #cd2c22;
           color: white;
         }
 
         /* Option styling within the dropdown (where supported) */
         .form-select option:hover {
-          background-color: #d20000;
+          background-color: #cd2c22;
           color: white;
         }
 
         .text-primary {
-          color: #d20000 !important;
+          color: #cd2c22 !important;
         }
 
         .journey-line .dot {
-          background: #d20000;
+          background: #cd2c22;
         }
 
         /* Add focus state for form elements */
         .form-control:focus,
         .form-select:focus {
-          border-color: #d20000;
+          border-color: #cd2c22;
           box-shadow: 0 0 0 0.25rem rgba(210, 0, 0, 0.25);
         }
 
@@ -836,7 +836,7 @@ const handleProceedToPayment = (e)=>{
         }
 
         .empty-state-icon i {
-          color: #d20000;
+          color: #cd2c22;
         }
 
         .btn.mx-auto {

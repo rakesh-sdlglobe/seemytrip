@@ -496,7 +496,7 @@ export const FlightBookingpage01 = () => {
           position: absolute;
           width: 8px;
           height: 8px;
-          background: #d20000;
+          background: #cd2c22;
           border-radius: 50%;
           top: -3px;
         }
