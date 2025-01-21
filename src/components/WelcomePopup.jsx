@@ -3,7 +3,7 @@ import { Modal, Container, Row, Col, Card, Form, Alert } from 'react-bootstrap';
 import { FaInstagram, FaFacebook, FaTwitter, FaTimes } from 'react-icons/fa';
 import { Appstoreicon, offer, Playstoreicon, PopupImage } from '../assets/images';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInstagram, faFacebook, faXTwitter } from '@fortawesome/free-brands-svg-icons';
+import { faInstagram, faFacebook, faXTwitter, faRoute } from '@fortawesome/free-brands-svg-icons';
 
 const WelcomePopup = () => {
   const [show, setShow] = useState(false);
@@ -101,10 +101,13 @@ const WelcomePopup = () => {
                 </Card>
               </Col>
               <Col md={3}>
-                <Card className="mb-4 custom-card">
+                <Card className="mb-4 custom-card journey-card">
                   <Card.Body className="d-flex flex-column card-body-full-height">
-                    <h4>Plan Your Journey</h4>
-                    <Card.Text>
+                    <div className="journey-icon-wrapper">
+                      <i className="fas fa-route"></i>
+                    </div>
+                    <h4 className="journey-title">Plan Your Journey</h4>
+                    <Card.Text className="journey-text">
                       Our easy-to-use booking system helps you find the best routes and rates.
                     </Card.Text>
                   </Card.Body>
@@ -281,6 +284,45 @@ const WelcomePopup = () => {
       height: 20px;
       margin: 0 5px;
     }
+
+    .journey-card {
+      background: linear-gradient(145deg, #ffffff, #f5f5f5);
+      border: none;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+
+    .journey-icon-wrapper {
+      background: linear-gradient(45deg, #cd2c22, #ff4b40);
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+
+    .journey-icon-wrapper i {
+      color: white;
+      font-size: 24px;
+    }
+
+    .journey-title {
+      color: #333;
+      font-weight: 600;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .journey-text {
+      color: #666;
+      text-align: center;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
   `}
 </style>
 
