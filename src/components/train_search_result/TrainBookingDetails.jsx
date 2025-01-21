@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Edit2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Edit2, PlusCircle } from 'lucide-react';
 import Header02 from '../header02';
 import FooterDark from '../footer-dark';
 import { Link } from 'react-router-dom';
@@ -36,6 +36,22 @@ const [contactDetails, setContactDetails] = useState({
   state: '',
   });
 
+  const [showTravelerModal, setShowTravelerModal] = useState(false);
+
+  // Add a new state to track if we're editing
+  const [editingTravelerIndex, setEditingTravelerIndex] = useState(null);
+
+  useEffect(() => {
+    if (showTravelerModal) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, [showTravelerModal]);
 
   const handleEmailChange = (e) => {
     const email = e.target.value;
@@ -89,13 +105,25 @@ const [contactDetails, setContactDetails] = useState({
 
   // Handler functions
   const handleSave = () => {
-    if (travelers.length >= MAX_TRAVELERS) {
+    if (travelers.length >= MAX_TRAVELERS && editingTravelerIndex === null) {
       toast.error('Maximum limit of 6 travelers reached.');
       return;
     }
     
     if (validateForm()) {
-      setTravelers([...travelers, currentTraveler]);
+      if (editingTravelerIndex !== null) {
+        // Update existing traveler
+        const updatedTravelers = [...travelers];
+        updatedTravelers[editingTravelerIndex] = currentTraveler;
+        setTravelers(updatedTravelers);
+        toast.success('Traveler updated successfully');
+      } else {
+        // Add new traveler
+        setTravelers([...travelers, currentTraveler]);
+        toast.success('Traveler added successfully');
+      }
+
+      // Reset form and close modal
       setCurrentTraveler({
         name: '',
         age: '',
@@ -103,9 +131,9 @@ const [contactDetails, setContactDetails] = useState({
         berth: '',
         country: '',
       });
-      toast.success('Traveler added successfully')
+      setEditingTravelerIndex(null);
+      setShowTravelerModal(false);
     }
-
   };
 
   //validate before payment
@@ -161,12 +189,11 @@ const handleProceedToPayment = (e)=>{
     toast.error('Traveler deleted successfully');
   };
 
-  // Add new handler function near other handlers
+  // Update handleEditTraveler function
   const handleEditTraveler = (index) => {
     setCurrentTraveler(travelers[index]);
-    // handleDeleteTraveler(index);
-    const updateTravelers = travelers.filter((_, i) => i !==index);
-    setTravelers(updateTravelers);
+    setEditingTravelerIndex(index); // Set the index of traveler being edited
+    setShowTravelerModal(true);
     toast.info('Edit traveler details');
   };
 
@@ -179,6 +206,19 @@ const handleProceedToPayment = (e)=>{
         return [...prev, index];
       }
     });
+  };
+
+  // Update modal close handler
+  const handleModalClose = () => {
+    setShowTravelerModal(false);
+    setCurrentTraveler({
+      name: '',
+      age: '',
+      gender: 'male',
+      berth: '',
+      country: '',
+    });
+    setEditingTravelerIndex(null);
   };
 
   // Render functions
@@ -208,141 +248,188 @@ const handleProceedToPayment = (e)=>{
     </div>
   );
 
-  const renderTravelerForm = () => (
-    <div className="card p-4 mb-4">
-      <div className="d-flex align-items-center mb-4">
-        <h4 className="mb-0">Add Traveller</h4>
-      </div>
+  const renderTravelerModal = () => (
+    <>
+      <div 
+        className={`modal ${showTravelerModal ? 'show' : ''}`} 
+        style={{ display: showTravelerModal ? 'block' : 'none' }}
+        tabIndex="-1"
+        role="dialog"
+      >
+        <div className="modal-dialog modal-lg modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">
+                {editingTravelerIndex !== null ? `Edit Traveler: ${currentTraveler.name}` : 'Add Traveler'}
+              </h5>
+              <button 
+                type="button" 
+                className="btn-close" 
+                onClick={handleModalClose}
+              ></button>
+            </div>
+            <div className="modal-body">
+              <div className="card border-0 shadow-none">
+                {travelers.length < MAX_TRAVELERS ? (
+                  <p className="text-muted small mb-4">
+                    You can book up to 6 travelers at once. ({travelers.length}/6 added)
+                  </p>
+                ) : (
+                  <p className="text-danger small mb-4">
+                    Maximum limit of 6 travelers reached.
+                  </p>
+                )}
 
-      {travelers.length < MAX_TRAVELERS ? (
-        <p className="text-muted small mb-4">
-          You can book up to 6 travelers at once. ({travelers.length}/6 added)
-        </p>
-      ) : (
-        <p className="text-danger small mb-4">
-          Maximum limit of 6 travelers reached.
-        </p>
-      )}
+                {/* Gender Selection */}
+                <div className="mb-4">
+                  {['male', 'female', 'transgender'].map((gender) => (
+                    <div className="form-check form-check-inline" key={gender}>
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="gender"
+                        id={gender}
+                        value={gender}
+                        checked={currentTraveler.gender === gender}
+                        onChange={(e) => setCurrentTraveler({ ...currentTraveler, gender: e.target.value })}
+                      />
+                      <label className="form-check-label" htmlFor={gender}>
+                        {gender.charAt(0).toUpperCase() + gender.slice(1)}
+                      </label>
+                    </div>
+                  ))}
+                </div>
 
-      {/* Gender Selection */}
-      <div className="mb-4">
-        {['male', 'female', 'transgender'].map((gender) => (
-          <div className="form-check form-check-inline" key={gender}>
-            <input
-              className="form-check-input"
-              type="radio"
-              name="gender"
-              id={gender}
-              value={gender}
-              checked={currentTraveler.gender === gender}
-              onChange={(e) => setCurrentTraveler({ ...currentTraveler, gender: e.target.value })}
-            />
-            <label className="form-check-label" htmlFor={gender}>
-              {gender.charAt(0).toUpperCase() + gender.slice(1)}
-            </label>
+                {/* Name and Age Fields */}
+                <div className="row mb-4">
+                  <div className="col-md-6 mb-3 mb-md-0">
+                    <label htmlFor="name" className="form-label">Full Name*</label>
+                    <input
+                      id="name"
+                      type="text"
+                      className="form-control"
+                      value={currentTraveler.name}
+                      onChange={(e) => setCurrentTraveler({ ...currentTraveler, name: e.target.value })}
+                      required
+                    />
+                    {formErrors.name && <div className="text-danger small mt-1">{formErrors.name}</div>}
+                  </div>
+                  <div className="col-md-6">
+                    <label htmlFor="age" className="form-label">Age*</label>
+                    <input
+                      id="age"
+                      type="number"
+                      className="form-control"
+                      value={currentTraveler.age}
+                      onChange={(e) => {
+                        const newAge = e.target.value;
+                        setCurrentTraveler({ 
+                          ...currentTraveler, 
+                          age: newAge,
+                          // Clear berth and country if age is below 5
+                          ...(parseInt(newAge) < 5 ? { berth: '', country: '' } : {})
+                        });
+                      }}
+                      required
+                    />
+                    {formErrors.age && <div className="text-danger small mt-1">{formErrors.age}</div>}
+                  </div>
+                </div>
+
+                {/* Show warning message for under 5 */}
+                {currentTraveler.age && parseInt(currentTraveler.age) < 5 && (
+                  <div className="alert alert-warning mb-4">
+                    Children below 5 years will not appear on the ticket as they can travel free of charge (without berth). Please carry age proof in the train.
+                  </div>
+                )}
+
+                {/* Only show Berth and Country for age 5 and above */}
+                {(!currentTraveler.age || parseInt(currentTraveler.age) >= 5) && (
+                  <div className="row mb-4">
+                    <div className="col-md-6 mb-3 mb-md-0">
+                      <label htmlFor="berth" className="form-label">Berth Preference*</label>
+                      <select
+                        id="berth"
+                        className="form-select"
+                        value={currentTraveler.berth}
+                        style={{ height: '58px' }}
+                        onChange={(e) => setCurrentTraveler({ ...currentTraveler, berth: e.target.value })}
+                        required
+                      >
+                        <option value="">Select berth preference</option>
+                        <option value="lower">Lower</option>
+                        <option value="upper">Upper</option>
+                        <option value="middle">Middle</option>
+                        <option value="side-lower">Side Lower</option>
+                        <option value="side-upper">Side Upper</option>
+                        <option value="no-preference">No Preference</option>
+                      </select>
+                      {formErrors.berth && <div className="text-danger small mt-1">{formErrors.berth}</div>}
+                    </div>
+                    <div className="col-md-6">
+                      <label htmlFor="country" className="form-label">Country*</label>
+                      <select
+                        id="country"
+                        className="form-select"
+                        value={currentTraveler.country}
+                        onChange={(e) => setCurrentTraveler({ ...currentTraveler, country: e.target.value })}
+                        required
+                        style={{ height: '58px' }}
+                      >
+                        <option value="">Select country</option>
+                        <option value="india">India</option>
+                        <option value="other">Other</option>
+                      </select>
+                      {formErrors.country && <div className="text-danger small mt-1">{formErrors.country}</div>}
+                    </div>
+                  </div>
+                )}
+
+                <button className="btn btn-primary" onClick={handleSave}>
+                  {editingTravelerIndex !== null ? 'Update Traveler Details' : 'Save Traveler Details'}
+                </button>
+              </div>
+            </div>
           </div>
-        ))}
-      </div>
-
-      {/* Name and Age Fields */}
-      <div className="row mb-4">
-        <div className="col-md-6 mb-3 mb-md-0">
-          <label htmlFor="name" className="form-label">Full Name*</label>
-          <input
-            id="name"
-            type="text"
-            className="form-control"
-            value={currentTraveler.name}
-            onChange={(e) => setCurrentTraveler({ ...currentTraveler, name: e.target.value })}
-            required
-          />
-          {formErrors.name && <div className="text-danger small mt-1">{formErrors.name}</div>}
-        </div>
-        <div className="col-md-6">
-          <label htmlFor="age" className="form-label">Age*</label>
-          <input
-            id="age"
-            type="number"
-            className="form-control"
-            value={currentTraveler.age}
-            onChange={(e) => {
-              const newAge = e.target.value;
-              setCurrentTraveler({ 
-                ...currentTraveler, 
-                age: newAge,
-                // Clear berth and country if age is below 5
-                ...(parseInt(newAge) < 5 ? { berth: '', country: '' } : {})
-              });
-            }}
-            required
-          />
-          {formErrors.age && <div className="text-danger small mt-1">{formErrors.age}</div>}
         </div>
       </div>
-
-      {/* Show warning message for under 5 */}
-      {currentTraveler.age && parseInt(currentTraveler.age) < 5 && (
-        <div className="alert alert-warning mb-4">
-          Children below 5 years will not appear on the ticket as they can travel free of charge (without berth). Please carry age proof in the train.
-        </div>
-      )}
-
-      {/* Only show Berth and Country for age 5 and above */}
-      {(!currentTraveler.age || parseInt(currentTraveler.age) >= 5) && (
-        <div className="row mb-4">
-          <div className="col-md-6 mb-3 mb-md-0">
-            <label htmlFor="berth" className="form-label">Berth Preference*</label>
-            <select
-              id="berth"
-              className="form-select"
-              value={currentTraveler.berth}
-              style={{ height: '58px' }}
-              onChange={(e) => setCurrentTraveler({ ...currentTraveler, berth: e.target.value })}
-              required
-            >
-              <option value="">Select berth preference</option>
-              <option value="lower">Lower</option>
-              <option value="upper">Upper</option>
-              <option value="middle">Middle</option>
-              <option value="side-lower">Side Lower</option>
-              <option value="side-upper">Side Upper</option>
-              <option value="no-preference">No Preference</option>
-            </select>
-            {formErrors.berth && <div className="text-danger small mt-1">{formErrors.berth}</div>}
-          </div>
-          <div className="col-md-6">
-            <label htmlFor="country" className="form-label">Country*</label>
-            <select
-              id="country"
-              className="form-select"
-              value={currentTraveler.country}
-              onChange={(e) => setCurrentTraveler({ ...currentTraveler, country: e.target.value })}
-              required
-              style={{ height: '58px' }}
-            >
-              <option value="">Select country</option>
-              <option value="india">India</option>
-              <option value="other">Other</option>
-            </select>
-            {formErrors.country && <div className="text-danger small mt-1">{formErrors.country}</div>}
-          </div>
-        </div>
-      )}
-
-      <button className="btn btn-primary" onClick={handleSave}>
-        Save Traveler Details
-      </button>
-    </div>
+      {showTravelerModal && <div className="modal-backdrop show"></div>}
+    </>
   );
+
   const renderSavedTravelers = () => (
-    travelers.length > 0 && (
-      <div className="mt-4 mb-3">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h4 className="mb-0">Saved Travelers</h4>
-          <div className="text-muted small">
-            {selectedTravelers.length} selected
+    <div className="card p-4 mb-4">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h4 className="mb-0">Travelers</h4>
+        {travelers.length < MAX_TRAVELERS && (
+          <button 
+            className="btn btn-primary d-flex align-items-center gap-2"
+            onClick={() => setShowTravelerModal(true)}
+          >
+            <PlusCircle size={20} />
+            Add Traveler
+          </button>
+        )}
+      </div>
+
+      {travelers.length === 0 ? (
+        <div className="text-center py-5">
+          <div className="empty-state-icon mb-4">
+            <i className="fa-solid fa-users-slash fa-4x text-muted"></i>
           </div>
+          <h5 className="mb-3">No Travelers Added</h5>
+          <p className="text-muted mb-4">
+            Add travelers to proceed with your booking. You can add up to 6 travelers.
+          </p>
+          <button 
+            className="btn btn-primary d-flex align-items-center gap-2 mx-auto"
+            onClick={() => setShowTravelerModal(true)}
+          >
+            <PlusCircle size={20} />
+            Add Your First Traveler
+          </button>
         </div>
+      ) : (
         <div className="row g-3">
           {travelers.map((traveler, index) => (
             <div key={index} className="col-md-6">
@@ -383,9 +470,10 @@ const handleProceedToPayment = (e)=>{
             </div>
           ))}
         </div>
-      </div>
-    )
+      )}
+    </div>
   );
+
   const renderBookingSummary = () => (
     <div className="booking-summary-sticky">
       <div className="card p-4">
@@ -508,11 +596,17 @@ const handleProceedToPayment = (e)=>{
   // Add new contact details form
   const renderContactDetails = () => (
 <div className="card mb-4 p-4">
-  <h4 className="mb-4">Contact Details</h4>
+  <h4 className="mb-4">
+    <i className="fa-solid fa-address-card me-2"></i>
+    Contact Details
+  </h4>
   
   <div className="row g-3">
     <div className="col-xl-6 col-md-6 col-sm-12">
-      <label htmlFor="irctcUsername" className="form-label">IRCTC Username*</label>
+      <label htmlFor="irctcUsername" className="form-label">
+        <i className="fa-solid fa-user me-2"></i>
+        IRCTC Username*
+      </label>
       <input
         type="text"
         className="form-control"
@@ -527,7 +621,10 @@ const handleProceedToPayment = (e)=>{
     </div>
 
     <div className="col-xl-6 col-md-6 col-sm-12">
-      <label htmlFor="email" className="form-label">Email ID*</label>
+      <label htmlFor="email" className="form-label">
+        <i className="fa-solid fa-envelope me-2"></i>
+        Email ID*
+      </label>
       <input
         type="email"
         className="form-control"
@@ -541,7 +638,10 @@ const handleProceedToPayment = (e)=>{
     </div>
 
     <div className="col-xl-6 col-md-6 col-sm-12">
-      <label htmlFor="phone" className="form-label">Phone Number*</label>
+      <label htmlFor="phone" className="form-label">
+        <i className="fa-solid fa-phone me-2"></i>
+        Phone Number*
+      </label>
       <input
         type="tel"
         className="form-control"
@@ -555,7 +655,10 @@ const handleProceedToPayment = (e)=>{
     </div>
 
     <div className="col-xl-6 col-md-6 col-sm-12">
-      <label htmlFor="state" className="form-label">State*</label>
+      <label htmlFor="state" className="form-label">
+        <i className="fa-solid fa-location-dot me-2"></i>
+        State*
+      </label>
       <select
         className="form-select"
         id="state"
@@ -588,7 +691,6 @@ const handleProceedToPayment = (e)=>{
           <div className="row">
             {/* Left Column - Traveler Form */}
             <div className="col-xl-8 col-lg-8 col-md-12">
-              {renderTravelerForm()}
               {renderSavedTravelers()}
               {renderContactDetails()}
             </div>
@@ -602,6 +704,8 @@ const handleProceedToPayment = (e)=>{
       </section>
 
       <FooterDark />
+
+      {renderTravelerModal()}
 
       <style jsx>{`
         .journey-line {
@@ -665,22 +769,166 @@ const handleProceedToPayment = (e)=>{
         }
 
         .card.border-primary {
-          border: 1px solid #ff6f61; !important;
+          border: 1px solid #d20000 !important;
         }
 
         .form-check-input:checked {
-          background-color: #ff6f61;
-          border-color: #db2413;
+          background-color: #d20000;
+          border-color: #d20000;
         }
 
+        .form-label i {
+          color: #d20000;
+        }
 
+        .btn-primary {
+          background-color: #d20000;
+          border-color: #d20000;
+          color: white;
+        }
 
+        .btn-primary:hover {
+          background-color: #b30000;
+          border-color: #b30000;
+        }
 
-/* Option styling within the dropdown (where supported) */
-.form-select option:hover {
-  background-color: #ff6f61; /* Rose red */
-  color: white; /* Text color */
-}
+        .btn-outline-primary {
+          color: #d20000;
+          border-color: #d20000;
+        }
+
+        .btn-outline-primary:hover {
+          background-color: #d20000;
+          border-color: #d20000;
+          color: white;
+        }
+
+        /* Option styling within the dropdown (where supported) */
+        .form-select option:hover {
+          background-color: #d20000;
+          color: white;
+        }
+
+        .text-primary {
+          color: #d20000 !important;
+        }
+
+        .journey-line .dot {
+          background: #d20000;
+        }
+
+        /* Add focus state for form elements */
+        .form-control:focus,
+        .form-select:focus {
+          border-color: #d20000;
+          box-shadow: 0 0 0 0.25rem rgba(210, 0, 0, 0.25);
+        }
+
+        .empty-state-icon {
+          width: 120px;
+          height: 120px;
+          margin: 0 auto;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: #fff0f0;
+          border-radius: 50%;
+        }
+
+        .empty-state-icon i {
+          color: #d20000;
+        }
+
+        .btn.mx-auto {
+          width: fit-content;
+        }
+
+        /* Modal styles */
+        .modal {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 1055;
+          outline: 0;
+          overflow-x: hidden;
+          overflow-y: auto;
+        }
+
+        .modal.show {
+          display: block;
+          background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-dialog {
+          position: relative;
+          width: auto;
+          margin: 1.75rem auto;
+          pointer-events: all;
+          transform: translate(0, 0);
+          transition: transform 0.3s ease-out;
+        }
+
+        .modal-content {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          background-color: #fff;
+          border: none;
+          border-radius: 12px;
+          box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+          outline: 0;
+        }
+
+        .modal-backdrop {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background-color: #000;
+          opacity: 0.5;
+          z-index: 1054;
+        }
+
+        .modal-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 1rem 1.5rem;
+          border-bottom: 1px dashed #dee2e6;
+        }
+
+        .modal-body {
+          position: relative;
+          flex: 1 1 auto;
+          padding: 1.5rem;
+          max-height: calc(100vh - 210px);
+          overflow-y: auto;
+        }
+
+        .btn-close {
+          padding: 0.5rem;
+          margin: -0.5rem -0.5rem -0.5rem auto;
+        }
+
+        .btn-close:hover {
+          opacity: 0.75;
+        }
+
+        /* Prevent body scroll when modal is open */
+        :global(body.modal-open) {
+          overflow: hidden;
+        }
+
+        /* Media query for mobile devices */
+        @media (max-width: 576px) {
+          .modal-dialog {
+            margin: 0.5rem;
+          }
+        }
       `}</style>
     </div>
   );
