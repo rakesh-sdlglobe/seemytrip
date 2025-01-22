@@ -7,6 +7,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {useLocation} from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { IRCTC_Logo } from '../../assets/images';
 
 const TrainBookingDetails = () => {
 const location = useLocation();
@@ -18,7 +19,8 @@ const MAX_TRAVELERS = 6;
 // State management
 const [travelers, setTravelers] = useState([]);
 const [currentTraveler, setCurrentTraveler] = useState({
-  name: '',
+  firstName: '',
+  lastName: '',
   age: '',
   gender: 'male',
   berth: '',
@@ -40,6 +42,30 @@ const [contactDetails, setContactDetails] = useState({
 
   // Add a new state to track if we're editing
   const [editingTravelerIndex, setEditingTravelerIndex] = useState(null);
+
+  // Add this state near other state declarations
+  const [showIRCTCPopup, setShowIRCTCPopup] = useState(false);
+
+  // Add this new state near other state declarations
+  const [showForgotUsernamePopup, setShowForgotUsernamePopup] = useState(false);
+  const [forgotUsernameForm, setForgotUsernameForm] = useState({
+    contact: '',
+    dob: ''
+  });
+
+  // Add validation state
+  const [forgotUsernameError, setForgotUsernameError] = useState('');
+
+  // Add these new states near other state declarations
+  const [showForgotPasswordPopup, setShowForgotPasswordPopup] = useState(false);
+  const [forgotPasswordForm, setForgotPasswordForm] = useState({
+    username: '',
+    mobile: ''
+  });
+  const [forgotPasswordError, setForgotPasswordError] = useState({
+    username: '',
+    mobile: ''
+  });
 
   useEffect(() => {
     if (showTravelerModal) {
@@ -111,21 +137,25 @@ const [contactDetails, setContactDetails] = useState({
     }
     
     if (validateForm()) {
+      const travelerWithFullName = {
+        ...currentTraveler,
+        name: `${currentTraveler.firstName} ${currentTraveler.lastName}`.trim()
+      };
+
       if (editingTravelerIndex !== null) {
-        // Update existing traveler
         const updatedTravelers = [...travelers];
-        updatedTravelers[editingTravelerIndex] = currentTraveler;
+        updatedTravelers[editingTravelerIndex] = travelerWithFullName;
         setTravelers(updatedTravelers);
         toast.success('Traveler updated successfully');
       } else {
-        // Add new traveler
-        setTravelers([...travelers, currentTraveler]);
+        setTravelers([...travelers, travelerWithFullName]);
         toast.success('Traveler added successfully');
       }
 
       // Reset form and close modal
       setCurrentTraveler({
-        name: '',
+        firstName: '',
+        lastName: '',
         age: '',
         gender: 'male',
         berth: '',
@@ -159,11 +189,18 @@ const handleProceedToPayment = (e)=>{
   const validateForm = () => {
     const errors = {};
     
-    if (!currentTraveler.name.trim()) {
-      errors.name = 'Name is required';
-    } else if (!/^[a-zA-Z\s]+$/.test(currentTraveler.name.trim())) {
-      errors.name = 'Name should only contain letters and spaces';
+    if (!currentTraveler.firstName.trim()) {
+      errors.firstName = 'First name is required';
+    } else if (!/^[a-zA-Z\s]+$/.test(currentTraveler.firstName.trim())) {
+      errors.firstName = 'First name should only contain letters';
     }
+
+    if (!currentTraveler.lastName.trim()) {
+      errors.lastName = 'Last name is required';
+    } else if (!/^[a-zA-Z\s]+$/.test(currentTraveler.lastName.trim())) {
+      errors.lastName = 'Last name should only contain letters';
+    }
+
     if (!currentTraveler.age) {
       errors.age = 'Age is required';
     }
@@ -191,8 +228,14 @@ const handleProceedToPayment = (e)=>{
 
   // Update handleEditTraveler function
   const handleEditTraveler = (index) => {
-    setCurrentTraveler(travelers[index]);
-    setEditingTravelerIndex(index); // Set the index of traveler being edited
+    const traveler = travelers[index];
+    const [firstName, ...lastNameParts] = traveler.name.split(' ');
+    setCurrentTraveler({
+      ...traveler,
+      firstName: firstName || '',
+      lastName: lastNameParts.join(' ') || ''
+    });
+    setEditingTravelerIndex(index);
     setShowTravelerModal(true);
     toast.info('Edit traveler details');
   };
@@ -212,13 +255,74 @@ const handleProceedToPayment = (e)=>{
   const handleModalClose = () => {
     setShowTravelerModal(false);
     setCurrentTraveler({
-      name: '',
+      firstName: '',
+      lastName: '',
       age: '',
       gender: 'male',
       berth: '',
       country: '',
     });
     setEditingTravelerIndex(null);
+  };
+
+  // Add this function near other handler functions
+  const handleIRCTCClick = (e) => {
+    e.preventDefault();
+    setShowIRCTCPopup(true);
+  };
+
+  // Add these handler functions near other handlers
+  const handleForgotUsernameClick = (e) => {
+    e.preventDefault();
+    setShowForgotUsernamePopup(true);
+  };
+
+  const handleForgotUsernameSubmit = (e) => {
+    e.preventDefault();
+    
+    // Validate contact field
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[6-9]\d{9}$/;
+    
+    if (!emailRegex.test(forgotUsernameForm.contact) && !phoneRegex.test(forgotUsernameForm.contact)) {
+      setForgotUsernameError('Please enter a valid email or 10-digit mobile number');
+      return;
+    }
+
+    toast.success('If the details match, your username will be sent to your registered contact');
+    setShowForgotUsernamePopup(false);
+    setForgotUsernameError('');
+  };
+
+  // Add these handler functions near other handlers
+  const handleForgotPasswordClick = (e) => {
+    e.preventDefault();
+    setShowForgotPasswordPopup(true);
+  };
+
+  const handleForgotPasswordSubmit = (e) => {
+    e.preventDefault();
+    
+    // Validate fields
+    const errors = {};
+    if (!forgotPasswordForm.username.trim()) {
+      errors.username = 'IRCTC username is required';
+    }
+    
+    const phoneRegex = /^[6-9]\d{9}$/;
+    if (!phoneRegex.test(forgotPasswordForm.mobile)) {
+      errors.mobile = 'Please enter a valid 10-digit mobile number';
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setForgotPasswordError(errors);
+      return;
+    }
+
+    toast.success('Password reset instructions will be sent to your registered mobile number');
+    setShowForgotPasswordPopup(false);
+    setForgotPasswordError({});
+    setForgotPasswordForm({ username: '', mobile: '' });
   };
 
   // Render functions
@@ -302,19 +406,31 @@ const handleProceedToPayment = (e)=>{
 
                 {/* Name and Age Fields */}
                 <div className="row mb-4">
-                  <div className="col-md-6 mb-3 mb-md-0">
-                    <label htmlFor="name" className="form-label">Full Name*</label>
+                  <div className="col-md-4 mb-3 ps-4">
+                    <label htmlFor="firstName" className="form-label">First Name*</label>
                     <input
-                      id="name"
+                      id="firstName"
                       type="text"
                       className="form-control"
-                      value={currentTraveler.name}
-                      onChange={(e) => setCurrentTraveler({ ...currentTraveler, name: e.target.value })}
+                      value={currentTraveler.firstName}
+                      onChange={(e) => setCurrentTraveler({ ...currentTraveler, firstName: e.target.value })}
                       required
                     />
-                    {formErrors.name && <div className="text-danger small mt-1">{formErrors.name}</div>}
+                    {formErrors.firstName && <div className="text-danger small mt-1">{formErrors.firstName}</div>}
                   </div>
-                  <div className="col-md-6">
+                  <div className="col-md-4 mb-3">
+                    <label htmlFor="lastName" className="form-label">Last Name*</label>
+                    <input
+                      id="lastName"
+                      type="text"
+                      className="form-control"
+                      value={currentTraveler.lastName}
+                      onChange={(e) => setCurrentTraveler({ ...currentTraveler, lastName: e.target.value })}
+                      required
+                    />
+                    {formErrors.lastName && <div className="text-danger small mt-1">{formErrors.lastName}</div>}
+                  </div>
+                  <div className="col-md-4 mb-3">
                     <label htmlFor="age" className="form-label">Age*</label>
                     <input
                       id="age"
@@ -326,7 +442,6 @@ const handleProceedToPayment = (e)=>{
                         setCurrentTraveler({ 
                           ...currentTraveler, 
                           age: newAge,
-                          // Clear berth and country if age is below 5
                           ...(parseInt(newAge) < 5 ? { berth: '', country: '' } : {})
                         });
                       }}
@@ -346,40 +461,42 @@ const handleProceedToPayment = (e)=>{
                 {/* Only show Berth and Country for age 5 and above */}
                 {(!currentTraveler.age || parseInt(currentTraveler.age) >= 5) && (
                   <div className="row mb-4">
-                    <div className="col-md-6 mb-3 mb-md-0">
+                    <div className="col-md-6 mb-3 mb-md-0 ps-4">
                       <label htmlFor="berth" className="form-label">Berth Preference*</label>
-                      <select
-                        id="berth"
-                        className="form-select"
-                        value={currentTraveler.berth}
-                        style={{ height: '58px' }}
-                        onChange={(e) => setCurrentTraveler({ ...currentTraveler, berth: e.target.value })}
-                        required
-                      >
-                        <option value="">Select berth preference</option>
-                        <option value="lower">Lower</option>
-                        <option value="upper">Upper</option>
-                        <option value="middle">Middle</option>
-                        <option value="side-lower">Side Lower</option>
-                        <option value="side-upper">Side Upper</option>
-                        <option value="no-preference">No Preference</option>
-                      </select>
+                      <div className="select-wrapper">
+                        <select
+                          id="berth"
+                          className="form-select card-select"
+                          value={currentTraveler.berth}
+                          onChange={(e) => setCurrentTraveler({ ...currentTraveler, berth: e.target.value })}
+                          required
+                        >
+                          <option value="" disabled>Select berth preference</option>
+                          <option value="lower">Lower Berth</option>
+                          <option value="upper">Upper Berth</option>
+                          <option value="middle">Middle Berth</option>
+                          <option value="side-lower">Side Lower Berth</option>
+                          <option value="side-upper">Side Upper Berth</option>
+                          <option value="no-preference">No Preference</option>
+                        </select>
+                      </div>
                       {formErrors.berth && <div className="text-danger small mt-1">{formErrors.berth}</div>}
                     </div>
                     <div className="col-md-6">
                       <label htmlFor="country" className="form-label">Country*</label>
-                      <select
-                        id="country"
-                        className="form-select"
-                        value={currentTraveler.country}
-                        onChange={(e) => setCurrentTraveler({ ...currentTraveler, country: e.target.value })}
-                        required
-                        style={{ height: '58px' }}
-                      >
-                        <option value="">Select country</option>
-                        <option value="india">India</option>
-                        <option value="other">Other</option>
-                      </select>
+                      <div className="select-wrapper">
+                        <select
+                          id="country"
+                          className="form-select card-select"
+                          value={currentTraveler.country}
+                          onChange={(e) => setCurrentTraveler({ ...currentTraveler, country: e.target.value })}
+                          required
+                        >
+                          <option value="" disabled>Select country</option>
+                          <option value="india">India</option>
+                          <option value="other">Other Countries</option>
+                        </select>
+                      </div>
                       {formErrors.country && <div className="text-danger small mt-1">{formErrors.country}</div>}
                     </div>
                   </div>
@@ -554,12 +671,14 @@ const handleProceedToPayment = (e)=>{
           {/* Add Boarding Station dropdown */}
           <div className="mb-3">
             <label htmlFor="boardingStation" className="form-label">Boarding Station*</label>
-            <select className="form-select">
-              <option value="">Select boarding point</option>
-              <option value="krishnarajapuram">Krishnarajapuram (04:40 AM)</option>
-              <option value="bangalore">Bangalore City Jn (05:15 AM)</option>
-              <option value="yesvantpur">Yesvantpur Jn (05:45 AM)</option>
-            </select>
+            <div className="select-wrapper">
+              <select className="form-select card-select">
+                <option value="" disabled>Select boarding point</option>
+                <option value="krishnarajapuram">Krishnarajapuram (04:40 AM)</option>
+                <option value="bangalore">Bangalore City Jn (05:15 AM)</option>
+                <option value="yesvantpur">Yesvantpur Jn (05:45 AM)</option>
+              </select>
+            </div>
             <small className="text-muted">
               Select the station from where you will board the train.
             </small>
@@ -592,89 +711,427 @@ const handleProceedToPayment = (e)=>{
     </div>
   );
 
+  // Add this new function to render IRCTC Details section
+  const renderIRCTCDetails = () => (
+    <div className="card mb-4">
+      <div className="card-header bg-white p-4 border-bottom">
+        <div className="d-flex align-items-center">
+          <div className="irctc-logo-container me-3">
+            <img src={IRCTC_Logo} alt="IRCTC Logo" className="irctc-logo" />
+          </div>
+          <div>
+            <h4 className="mb-1">IRCTC Details</h4>
+            <p className="text-muted mb-0 small">
+              IRCTC Username will be required after payment. Please ensure you have entered correct username.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="card-body p-4">
+        <div className="mb-4">
+          <label htmlFor="irctcUsername" className="form-label fw-medium">IRCTC Username*</label>
+          <div className="input-group" style={{ width: '100%' }}>
+            <input
+              type="text"
+              className="form-control form-control-lg"
+              style={{ flex: '1 1 auto' }}
+              id="irctcUsername"
+              placeholder="Enter your IRCTC username"
+              value={contactDetails.irctcUsername}
+              onChange={(e) => setContactDetails({ ...contactDetails, irctcUsername: e.target.value })}
+            />
+            {contactDetails.irctcUsername && (
+              <button 
+                className="btn btn-link position-absolute end-0 top-50 translate-middle-y text-muted px-3"
+                onClick={() => setContactDetails({ ...contactDetails, irctcUsername: '' })}
+                style={{ zIndex: 5, right: '40px' }}
+              >
+                <i className="fa-solid fa-xmark"></i>
+              </button>
+            )}
+          </div>
+          {contactDetails.irctcUsername && (
+            <div className="d-flex align-items-center mt-2">
+              <span className="badge bg-success-subtle text-success rounded-pill">
+                <i className="fa-solid fa-check-circle me-1"></i>
+                IRCTC ID Verified
+              </span>
+            </div>
+          )}
+        </div>
+
+        <div className="d-flex flex-wrap gap-3 mb-4">
+          <a href="#" className="text-decoration-none text-blue" onClick={handleForgotUsernameClick}>
+            <i className="fa-solid fa-user-lock me-1"></i>
+            Forgot Username
+          </a>
+          <span className="text-muted">|</span>
+          <a href="#" className="text-decoration-none text-blue" onClick={handleIRCTCClick}>
+            <i className="fa-solid fa-user-plus me-1"></i>
+            Create IRCTC ID
+          </a>
+          <span className="text-muted">|</span>
+          <a href="#" className="text-decoration-none text-blue" onClick={handleForgotPasswordClick}>
+            <i className="fa-solid fa-key me-1"></i>
+            Forgot IRCTC Password
+          </a>
+        </div>
+
+        <div className="alert alert-info d-flex align-items-center mb-0" role="alert">
+          <i className="fa-solid fa-info-circle me-2 fs-5"></i>
+          <div className="small">
+            IRCTC ID Password will be required after payment to complete your booking.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   // Add new contact details form
   const renderContactDetails = () => (
-<div className="card mb-4 p-4">
-  <h4 className="mb-4">
-    <i className="fa-solid fa-address-card me-2"></i>
-    Contact Details
-  </h4>
-  
-  <div className="row g-3">
-    <div className="col-xl-6 col-md-6 col-sm-12">
-      <label htmlFor="irctcUsername" className="form-label">
-        <i className="fa-solid fa-user me-2"></i>
-        IRCTC Username*
-      </label>
-      <input
-        type="text"
-        className="form-control"
-        id="irctcUsername"
-        value={contactDetails.irctcUsername}
-        onChange={(e) => setContactDetails({ ...contactDetails, irctcUsername: e.target.value })}
-        style={{ fontSize: '0.875rem', padding: '0.5rem' }} // Reduced size
-      />
-      <small className="text-muted">
-        The IRCTC ID and Password will be required after payment to complete your booking.
-      </small>
-    </div>
+    <div className="card mb-4 p-4">
+      <h4 className="mb-4">
+        <i className="fa-solid fa-address-card me-2"></i>
+        Contact Details
+      </h4>
+      
+      <div className="row g-3">
+        <div className="col-xl-6 col-md-6 col-sm-12">
+          <label htmlFor="email" className="form-label">
+            <i className="fa-solid fa-envelope me-2"></i>
+            Email ID*
+          </label>
+          <input
+            type="email"
+            className="form-control"
+            id="email"
+            value={contactDetails.email}
+            onChange={handleEmailChange}
+            style={{ fontSize: '0.875rem', padding: '0.5rem' }}
+            required
+          />
+          {errors.email && <small className="text-danger">{errors.email}</small>}
+        </div>
 
-    <div className="col-xl-6 col-md-6 col-sm-12">
-      <label htmlFor="email" className="form-label">
-        <i className="fa-solid fa-envelope me-2"></i>
-        Email ID*
-      </label>
-      <input
-        type="email"
-        className="form-control"
-        id="email"
-        value={contactDetails.email}
-        onChange={handleEmailChange}
-        style={{ fontSize: '0.875rem', padding: '0.5rem' }} // Reduced size
-        required
-      />
-      {errors.email && <small className="text-danger">{errors.email}</small>}
-    </div>
+        <div className="col-xl-6 col-md-6 col-sm-12">
+          <label htmlFor="phone" className="form-label">
+            <i className="fa-solid fa-phone me-2"></i>
+            Phone Number*
+          </label>
+          <input
+            type="tel"
+            className="form-control"
+            id="phone"
+            value={contactDetails.phone}
+            onChange={handlePhoneChange}
+            style={{ fontSize: '0.875rem', padding: '0.5rem' }}
+            required
+          />
+          {errors.phone && <small className="text-danger">{errors.phone}</small>}
+        </div>
 
-    <div className="col-xl-6 col-md-6 col-sm-12">
-      <label htmlFor="phone" className="form-label">
-        <i className="fa-solid fa-phone me-2"></i>
-        Phone Number*
-      </label>
-      <input
-        type="tel"
-        className="form-control"
-        id="phone"
-        value={contactDetails.phone}
-        onChange={handlePhoneChange}
-        style={{ fontSize: '0.875rem', padding: '0.5rem' }} // Reduced size
-        required
-      />
-      {errors.phone && <small className="text-danger">{errors.phone}</small>}
+        <div className="col-12">
+          <label htmlFor="state" className="form-label">
+            <i className="fa-solid fa-location-dot me-2"></i>
+            State*
+          </label>
+          <div className="select-wrapper">
+            <select
+              className="form-select card-select"
+              id="state"
+              value={contactDetails.state}
+              onChange={(e) => setContactDetails({ ...contactDetails, state: e.target.value })}
+            >
+              <option value="" disabled>Select State</option>
+              <option value="maharashtra">Maharashtra</option>
+              <option value="karnataka">Karnataka</option>
+              <option value="delhi">Delhi</option>
+              <option value="tamil-nadu">Tamil Nadu</option>
+              <option value="kerala">Kerala</option>
+              <option value="uttar-pradesh">Uttar Pradesh</option>
+              {/* Add more states as needed */}
+            </select>
+          </div>
+        </div>
+      </div>
     </div>
+  );
 
-    <div className="col-xl-6 col-md-6 col-sm-12">
-      <label htmlFor="state" className="form-label">
-        <i className="fa-solid fa-location-dot me-2"></i>
-        State*
-      </label>
-      <select
-        className="form-select"
-        id="state"
-        value={contactDetails.state}
-        onChange={(e) => setContactDetails({ ...contactDetails, state: e.target.value })}
-        style={{ fontSize: '0.875rem', padding: '1rem' }} // Reduced size
+  // Add this modal component near other render functions
+  const renderIRCTCPopup = () => (
+    <>
+      <div 
+        className={`modal ${showIRCTCPopup ? 'show' : ''}`} 
+        style={{ display: showIRCTCPopup ? 'block' : 'none' }}
+        tabIndex="-1"
+        role="dialog"
       >
-        <option value="">Select State</option>
-        <option value="maharashtra">Maharashtra</option>
-        <option value="karnataka">Karnataka</option>
-        {/* Add more states as needed */}
-      </select>
-    </div>
-  </div>
-</div>
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header border-bottom">
+              <h5 className="modal-title">Create IRCTC Account</h5>
+              <button 
+                type="button" 
+                className="btn-close" 
+                onClick={() => setShowIRCTCPopup(false)}
+              ></button>
+            </div>
+            <div className="modal-body text-center p-4">
+              <div className="mb-4">
+                <i className="fa-solid fa-user-plus fa-3x text-primary mb-3"></i>
+                <h5 className="mb-3">Register on IRCTC</h5>
+                <p className="text-muted mb-0">
+                  You'll be redirected to the official IRCTC website to create your account. 
+                  Would you like to proceed?
+                </p>
+              </div>
+              <div className="d-flex justify-content-center gap-2">
+                <a 
+                  href="https://www.irctc.co.in/nget/profile/user-registration" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="btn btn-primary px-4"
+                  onClick={() => setShowIRCTCPopup(false)}
+                >
+                  Go to IRCTC
+                </a>
+                <button 
+                  className="btn btn-outline-secondary px-4"
+                  onClick={() => setShowIRCTCPopup(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {showIRCTCPopup && <div className="modal-backdrop show"></div>}
+    </>
+  );
 
+  // Update the render function for the forgot username popup
+  const renderForgotUsernamePopup = () => (
+    <>
+      <div 
+        className={`modal ${showForgotUsernamePopup ? 'show' : ''}`} 
+        style={{ display: showForgotUsernamePopup ? 'block' : 'none' }}
+        tabIndex="-1"
+        role="dialog"
+      >
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header border-bottom">
+              <h5 className="modal-title">Forgot IRCTC Username</h5>
+              <button 
+                type="button" 
+                className="btn-close" 
+                onClick={() => {
+                  setShowForgotUsernamePopup(false);
+                  setForgotUsernameError('');
+                }}
+              ></button>
+            </div>
+            <div className="modal-body p-4">
+              <form onSubmit={handleForgotUsernameSubmit}>
+                <div className="mb-3">
+                  <label className="form-label">
+                    <i className="fa-solid fa-address-card me-2 text-primary"></i>
+                    Mobile Number or Email ID*
+                  </label>
+                  <input
+                    type="text"
+                    className={`form-control ${forgotUsernameError ? 'is-invalid' : ''}`}
+                    placeholder="Enter mobile number or email ID"
+                    value={forgotUsernameForm.contact}
+                    onChange={(e) => {
+                      setForgotUsernameForm({
+                        ...forgotUsernameForm,
+                        contact: e.target.value
+                      });
+                      setForgotUsernameError('');
+                    }}
+                    required
+                  />
+                  {forgotUsernameError ? (
+                    <div className="invalid-feedback">{forgotUsernameError}</div>
+                  ) : (
+                    <small className="text-muted">
+                      Enter your registered mobile number or email ID
+                    </small>
+                  )}
+                </div>
+
+                <div className="mb-4">
+                  <label className="form-label">
+                    <i className="fa-solid fa-calendar me-2 text-primary"></i>
+                    Date of Birth*
+                  </label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={forgotUsernameForm.dob}
+                    onChange={(e) => setForgotUsernameForm({
+                      ...forgotUsernameForm,
+                      dob: e.target.value
+                    })}
+                    required
+                    max={new Date().toISOString().split('T')[0]}
+                  />
+                </div>
+
+                <div className="alert alert-info d-flex" role="alert">
+                  <i className="fa-solid fa-info-circle me-2 mt-1"></i>
+                  <div className="small">
+                    Your IRCTC username will be sent to your registered mobile number/email ID if the details match our records.
+                  </div>
+                </div>
+
+                <div className="d-grid gap-2">
+                  <button 
+                    type="submit" 
+                    className="btn btn-primary"
+                  >
+                    <i className="fa-solid fa-paper-plane me-2"></i>
+                    Send IRCTC Username
+                  </button>
+                  <button 
+                    type="button" 
+                    className="btn btn-outline-secondary"
+                    onClick={() => {
+                      setShowForgotUsernamePopup(false);
+                      setForgotUsernameError('');
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {showForgotUsernamePopup && <div className="modal-backdrop show"></div>}
+    </>
+  );
+
+  // Add this new render function near other render functions
+  const renderForgotPasswordPopup = () => (
+    <>
+      <div 
+        className={`modal ${showForgotPasswordPopup ? 'show' : ''}`} 
+        style={{ display: showForgotPasswordPopup ? 'block' : 'none' }}
+        tabIndex="-1"
+        role="dialog"
+      >
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header border-bottom">
+              <h5 className="modal-title">Forgot IRCTC Password</h5>
+              <button 
+                type="button" 
+                className="btn-close" 
+                onClick={() => {
+                  setShowForgotPasswordPopup(false);
+                  setForgotPasswordError({});
+                  setForgotPasswordForm({ username: '', mobile: '' });
+                }}
+              ></button>
+            </div>
+            <div className="modal-body p-4">
+              <form onSubmit={handleForgotPasswordSubmit}>
+                <div className="mb-3">
+                  <label className="form-label">
+                    <i className="fa-solid fa-user me-2 text-primary"></i>
+                    IRCTC Username*
+                  </label>
+                  <input
+                    type="text"
+                    className={`form-control ${forgotPasswordError.username ? 'is-invalid' : ''}`}
+                    placeholder="Enter your IRCTC username"
+                    value={forgotPasswordForm.username}
+                    onChange={(e) => {
+                      setForgotPasswordForm({
+                        ...forgotPasswordForm,
+                        username: e.target.value
+                      });
+                      setForgotPasswordError({
+                        ...forgotPasswordError,
+                        username: ''
+                      });
+                    }}
+                    required
+                  />
+                  {forgotPasswordError.username && (
+                    <div className="invalid-feedback">{forgotPasswordError.username}</div>
+                  )}
+                </div>
+
+                <div className="mb-4">
+                  <label className="form-label">
+                    <i className="fa-solid fa-mobile-screen me-2 text-primary"></i>
+                    Registered Mobile Number*
+                  </label>
+                  <input
+                    type="tel"
+                    className={`form-control ${forgotPasswordError.mobile ? 'is-invalid' : ''}`}
+                    placeholder="Enter 10-digit mobile number"
+                    value={forgotPasswordForm.mobile}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                      setForgotPasswordForm({
+                        ...forgotPasswordForm,
+                        mobile: value
+                      });
+                      setForgotPasswordError({
+                        ...forgotPasswordError,
+                        mobile: ''
+                      });
+                    }}
+                    required
+                  />
+                  {forgotPasswordError.mobile ? (
+                    <div className="invalid-feedback">{forgotPasswordError.mobile}</div>
+                  ) : (
+                    <small className="text-muted">Enter 10-digit number starting with 6-9</small>
+                  )}
+                </div>
+
+                <div className="alert alert-info d-flex" role="alert">
+                  <i className="fa-solid fa-info-circle me-2 mt-1"></i>
+                  <div className="small">
+                    Password reset instructions will be sent to your registered mobile number if the details match our records.
+                  </div>
+                </div>
+
+                <div className="d-grid gap-2">
+                  <button 
+                    type="submit" 
+                    className="btn btn-primary"
+                  >
+                    <i className="fa-solid fa-paper-plane me-2"></i>
+                    Send Reset Instructions
+                  </button>
+                  <button 
+                    type="button" 
+                    className="btn btn-outline-secondary"
+                    onClick={() => {
+                      setShowForgotPasswordPopup(false);
+                      setForgotPasswordError({});
+                      setForgotPasswordForm({ username: '', mobile: '' });
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {showForgotPasswordPopup && <div className="modal-backdrop show"></div>}
+    </>
   );
 
   return (
@@ -692,6 +1149,7 @@ const handleProceedToPayment = (e)=>{
             {/* Left Column - Traveler Form */}
             <div className="col-xl-8 col-lg-8 col-md-12">
               {renderSavedTravelers()}
+              {renderIRCTCDetails()}
               {renderContactDetails()}
             </div>
 
@@ -706,6 +1164,9 @@ const handleProceedToPayment = (e)=>{
       <FooterDark />
 
       {renderTravelerModal()}
+      {renderIRCTCPopup()}
+      {renderForgotUsernamePopup()}
+      {renderForgotPasswordPopup()}
 
       <style jsx>{`
         .journey-line {
@@ -928,6 +1389,187 @@ const handleProceedToPayment = (e)=>{
           .modal-dialog {
             margin: 0.5rem;
           }
+        }
+
+        .end-3 {
+          right: 1rem;
+        }
+
+        .form-control-lg {
+          height: 50px;
+          font-size: 1rem;
+        }
+
+        .text-success {
+          color: #28a745 !important;
+        }
+
+        a.text-decoration-none {
+          color: #cd2c22;
+        }
+
+        a.text-decoration-none:hover {
+          color: #b30000;
+          text-decoration: underline !important;
+        }
+
+        .gap-3 {
+          gap: 1rem !important;
+        }
+
+        .irctc-logo-container {
+          width: 60px;
+          height: 60px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #f8f9fa;
+          border-radius: 12px;
+          padding: 10px;
+        }
+
+        .irctc-logo {
+          width: 100%;
+          height: auto;
+          object-fit: contain;
+        }
+
+        .form-control-lg {
+          height: 48px;
+          font-size: 0.95rem;
+          border-radius: 8px;
+        }
+
+        .input-group .form-control {
+          border-right: 0;
+        }
+
+        .input-group-text {
+          border-left: 0;
+          background-color: transparent;
+        }
+
+        .badge {
+          font-weight: 500;
+          padding: 0.5rem 0.75rem;
+        }
+
+        .bg-success-subtle {
+          background-color: #d1e7dd !important;
+        }
+
+        .alert-info {
+          background-color: #f8f9fa;
+          border: 1px solid #e9ecef;
+          color: #6c757d;
+        }
+
+        .text-primary {
+          color: #cd2c22 !important;
+        }
+
+        .text-primary:hover {
+          color: #b30000 !important;
+        }
+
+        .btn-link {
+          text-decoration: none;
+          color: #6c757d;
+        }
+
+        .btn-link:hover {
+          color: #343a40;
+        }
+
+        .text-blue {
+          color: #4F46E5 !important;  /* A good accessible blue color */
+        }
+
+        .text-blue:hover {
+          color: #4338CA  !important;  /* Slightly darker blue for hover state */
+          text-decoration: underline !important;
+        }
+
+        /* Custom select styling */
+        .custom-select {
+          position: relative;
+          width: 100%;
+        }
+
+        .custom-select select {
+          appearance: none;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          width: 100%;
+          padding: 12px;
+          border: 1px solid #dee2e6;
+          border-radius: 8px;
+          background: #fff;
+          cursor: pointer;
+        }
+
+        /* Style for select options */
+        select option {
+          margin: 8px;
+          padding: 16px;
+          border-radius: 8px;
+          background-color: #fff;
+          color: #333;
+          font-size: 0.9rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        /* Custom styling for select dropdowns */
+        select.card-select {
+          padding: 12px;
+          border-radius: 8px;
+          border: 1px solid #dee2e6;
+          background-color: white;
+          cursor: pointer;
+          font-size: 0.9rem;
+        }
+
+        /* Styling for option elements */
+        select.card-select option {
+          padding: 16px;
+          margin: 4px;
+          border-radius: 8px;
+          background-color: white;
+          border: 1px solid #f0f0f0;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        select.card-select option:hover,
+        select.card-select option:focus,
+        select.card-select option:active,
+        select.card-select option:checked {
+          background-color: #fff0f0 !important;
+          color: #cd2c22;
+        }
+
+        /* Add arrow icon */
+        .select-wrapper {
+          position: relative;
+        }
+
+        .select-wrapper::after {
+          content: '\\f107';
+          font-family: 'Font Awesome 5 Free';
+          font-weight: 900;
+          position: absolute;
+          right: 15px;
+          top: 50%;
+          transform: translateY(-50%);
+          pointer-events: none;
+          color: #6c757d;
+        }
+
+        /* Style for disabled options */
+        select.card-select option:disabled {
+          background-color: #f8f9fa;
+          color: #6c757d;
+          font-style: italic;
         }
       `}</style>
     </div>
