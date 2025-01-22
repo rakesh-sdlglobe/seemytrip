@@ -716,6 +716,72 @@ const SearchComponent = ({
             --bs-gutter-x: 1rem;
             --bs-gutter-y: 1rem;
           }
+
+          .station-warning-container {
+            position: absolute;
+            top: 78%;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            padding-top: 8px;
+            z-index: 100;
+          }
+
+          .station-warning-message {
+            background: linear-gradient(to right, #fff5f5, #ffe6e6);
+            border-left: 4px solid #cd2c22;
+            color: #842029;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: fit-content;
+            animation: slideDown 0.3s ease-out;
+          }
+
+          .station-warning-message i {
+            color: #cd2c22;
+            font-size: 16px;
+          }
+
+          @keyframes slideDown {
+            from {
+              opacity: 0;
+              transform: translateY(-10px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+
+          .warning-icon-pulse {
+            animation: pulse 1.5s infinite;
+          }
+
+          @keyframes pulse {
+            0% {
+              transform: scale(1);
+            }
+            50% {
+              transform: scale(1.2);
+            }
+            100% {
+              transform: scale(1);
+            }
+          }
+
+          // Adjust the container spacing
+          .new-wrap {
+            position: relative;
+            margin-bottom: ${warningMessage ? '45px' : '0'};
+            transition: margin-bottom 0.3s ease;
+          }
         `}
       </style>
       <div className="search-component" style={{ height:"150px" }}>
@@ -834,17 +900,10 @@ const SearchComponent = ({
                       </div>
                       
                       {warningMessage && (
-                        <div
-                          className="text-danger mt-2 d-flex align-items-center justify-content-end">
-                          <div style={{ 
-                            fontWeight: "500",
-                            backgroundColor: "#ffeeee", 
-                            padding: "10px 15px", 
-                            borderRadius: "8px",
-                            boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" 
-                          }}>
-                            <i className="fa fa-exclamation-circle me-2"></i>
-                            <span >{warningMessage}</span>
+                        <div className="station-warning-container">
+                          <div className="station-warning-message">
+                            <i className="fa fa-exclamation-circle warning-icon-pulse"></i>
+                            <span>{warningMessage}</span>
                           </div>
                         </div>
                       )}
