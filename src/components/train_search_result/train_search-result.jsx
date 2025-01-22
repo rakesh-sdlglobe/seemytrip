@@ -668,7 +668,7 @@ const TrainSearchResultList = ({ filters }) => {
                     {expandedTrainId === train.trainNumber && (
                       <div className="col-12 mt-3">
                         <div className="nearby-dates-container">
-                          {/* Class Selection Tabs - Update display names */}
+                          {/* Class Selection Tabs */}
                           <div className="d-flex mb-3 flex-wrap gap-2">
                             <div className="class-tabs d-flex gap-2">
                               {train.availabilities.map((cls) => (
@@ -705,80 +705,112 @@ const TrainSearchResultList = ({ filters }) => {
                             </div>
                           </div>
 
-                          {/* Date Cards - Update styling and ignore availability filter */}
+                          {/* Date Cards - Show all availability data without filters */}
                           <div className="nearby-dates-list" style={{ maxHeight: "300px", overflowY: "auto" }}>
                             {train.availabilities
                               .filter(cls => cls.enqClass === selectedClass && cls.quota === selectedQuota)
-                              .map((cls) => 
-                                cls.avlDayList.map((dayInfo, dayIndex) => (
-                                  <div 
-                                    key={dayIndex}
-                                    className="date-card mb-2 p-2 rounded-3 d-flex justify-content-between align-items-center"
-                                    style={{
-                                      border: "1px solid #eee",
-                                      backgroundColor: dayIndex === 0 ? (
-                                        dayInfo.availablityType === "1" || dayInfo.availablityType === "2"
-                                          ? "#f8fff8"
-                                          : dayInfo.availablityType === "3"
-                                          ? "#fff8f0"
-                                          : "#fff"
-                                      ) : "#fff",
-                                      transition: "all 0.3s ease",
-                                      minHeight: "60px" // Reduced height
-                                    }}
-                                  >
-                                    <div className="date-info">
-                                      <h6 className="mb-0" style={{ fontSize: "0.9rem" }}>{dayInfo.availablityDate}</h6>
-                                    </div>
-                                    
-                                    <div className="status" style={{
-                                      color: dayIndex === 0 ? (
-                                        dayInfo.availablityType === "1" || dayInfo.availablityType === "2"
-                                          ? "green"
-                                          : dayInfo.availablityType === "3"
-                                          ? "orange"
-                                          : "red"
-                                      ) : (
-                                        dayInfo.availablityType === "1" || dayInfo.availablityType === "2"
-                                          ? "green"
-                                          : dayInfo.availablityType === "3"
-                                          ? "orange"
-                                          : "red"
-                                      ),
-                                      fontWeight: "500",
-                                      fontSize: "0.9rem"
-                                    }}>
-                                      {getFormattedSeatsData(train, cls, dayIndex)}
-                                    </div>
-                                    
-                                    {((dayIndex === 0 && (dayInfo.availablityType === "1" || dayInfo.availablityType === "2")) || 
-                                      (dayIndex !== 0)) && (
-                                      <div className="tag text-muted" style={{ fontSize: "0.8rem" }}>
-                                        <small>
-                                          <i className="fas fa-shield-alt me-1"></i>
-                                          Trip Guarantee
-                                        </small>
+                              .map((cls) => (
+                                <React.Fragment key={cls.enqClass}>
+                                  {cls.avlDayList?.length > 0 ? (
+                                    cls.avlDayList.map((dayInfo, dayIndex) => (
+                                      <div 
+                                        key={dayIndex}
+                                        className="date-card mb-2 p-2 rounded-3 d-flex justify-content-between align-items-center"
+                                        style={{
+                                          border: "1px solid #eee",
+                                          backgroundColor: dayInfo.availablityType === "1" || dayInfo.availablityType === "2"
+                                            ? "#f8fff8"
+                                            : dayInfo.availablityType === "3"
+                                            ? "#fff8f0"
+                                            : "#fff",
+                                          transition: "all 0.3s ease",
+                                          minHeight: "60px"
+                                        }}
+                                      >
+                                        <div className="date-info">
+                                          <h6 className="mb-0" style={{ fontSize: "0.9rem" }}>{dayInfo.availablityDate}</h6>
+                                        </div>
+                                        
+                                        <div className="status" style={{
+                                          color: dayInfo.availablityType === "1" || dayInfo.availablityType === "2"
+                                            ? "green"
+                                            : dayInfo.availablityType === "3"
+                                            ? "orange"
+                                            : "red",
+                                          fontWeight: "500",
+                                          fontSize: "0.9rem"
+                                        }}>
+                                          {getFormattedSeatsData({
+                                            availabilities: [{
+                                              avlDayList: [dayInfo]
+                                            }]
+                                          }, 0)}
+                                        </div>
+                                        
+                                        {(dayInfo.availablityType === "1" || dayInfo.availablityType === "2") && (
+                                          <div className="tag text-muted" style={{ fontSize: "0.8rem" }}>
+                                            <small>
+                                              <i className="fas fa-shield-alt me-1"></i>
+                                              Trip Guarantee
+                                            </small>
+                                          </div>
+                                        )}
+                                        
+                                        <button 
+                                          className="btn btn-sm btn-primary"
+                                          style={{
+                                            background: dayInfo.availablityType === "0" || dayInfo.availablityType === "4" || dayInfo.availablityType === "5"
+                                              ? "#6c757d"
+                                              : "linear-gradient(45deg, #2196F3, #1976D2)",
+                                            border: "none",
+                                            fontSize: "0.85rem",
+                                            padding: "0.25rem 0.75rem"
+                                          }}
+                                          disabled={dayInfo.availablityType === "0" || dayInfo.availablityType === "4" || dayInfo.availablityType === "5"}
+                                          onClick={() => handleBooking(train, cls, dayIndex)}
+                                        >
+                                          Book @₹{cls.totalFare}
+                                          <i className="fas fa-chevron-right ms-2"></i>
+                                        </button>
                                       </div>
-                                    )}
-                                    
-                                    <button 
-                                      className="btn btn-sm btn-primary"
-                                      style={{
-                                        background: dayInfo.availablityType === "0" || dayInfo.availablityType === "4" || dayInfo.availablityType === "5"
-                                          ? "#6c757d"
-                                          : "linear-gradient(45deg, #2196F3, #1976D2)",
-                                        border: "none",
-                                        fontSize: "0.85rem",
-                                        padding: "0.25rem 0.75rem"
-                                      }}
-                                      disabled={dayInfo.availablityType === "0" || dayInfo.availablityType === "4" || dayInfo.availablityType === "5"}
-                                      onClick={() => handleBooking(train, cls, dayIndex)}
-                                    >
-                                      Book @₹{cls.totalFare}
-                                      <i className="fas fa-chevron-right ms-2"></i>
-                                    </button>
-                                  </div>
-                                ))
+                                    ))
+                                  ) : (
+                                    <div className="no-dates-available p-4 text-center bg-light rounded-3">
+                                      <div className="mb-3">
+                                        <i className="fas fa-calendar-times fa-3x text-muted"></i>
+                                      </div>
+                                      <h6 className="mb-2 text-muted">No Availability Information</h6>
+                                      <p className="text-muted mb-0" style={{ fontSize: "0.9rem" }}>
+                                        Currently, there is no booking availability for {selectedClass} class in {
+                                          selectedQuota === "GN" ? "General" :
+                                          selectedQuota === "LD" ? "Ladies" :
+                                          selectedQuota === "TQ" ? "Tatkal" :
+                                          "Premium Tatkal"
+                                        } quota.
+                                        <br />
+                                        Please try a different class or quota.
+                                      </p>
+                                    </div>
+                                  )}
+                                </React.Fragment>
+                              ))}
+                            {train.availabilities.filter(cls => cls.enqClass === selectedClass && cls.quota === selectedQuota).length === 0 && (
+                              <div className="no-dates-available p-4 text-center bg-light rounded-3">
+                                <div className="mb-3">
+                                  <i className="fas fa-ticket-alt fa-3x text-muted"></i>
+                                </div>
+                                <h6 className="mb-2 text-muted">Class/Quota Not Available</h6>
+                                <p className="text-muted mb-0" style={{ fontSize: "0.9rem" }}>
+                                  The selected combination of {selectedClass} class and {
+                                    selectedQuota === "GN" ? "General" :
+                                    selectedQuota === "LD" ? "Ladies" :
+                                    selectedQuota === "TQ" ? "Tatkal" :
+                                    "Premium Tatkal"
+                                  } quota is not available for this train.
+                                  <br />
+                                  Please select a different class or quota option.
+                                </p>
+                              </div>
                             )}
                           </div>
                         </div>
