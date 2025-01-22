@@ -24,6 +24,9 @@ const TrainSearchResultList = ({ filters }) => {
   let trainData = [];
   // const loading = useSelector(selectLoading);
   // const [showSkeleton, setShowSkeleton] = useState(true);
+  const [expandedTrainId, setExpandedTrainId] = useState(null);
+  const [selectedClass, setSelectedClass] = useState(null);
+  const [selectedQuota, setSelectedQuota] = useState("GN");
 
 
   if (trainData?.length === 0 ) { 
@@ -104,18 +107,38 @@ const TrainSearchResultList = ({ filters }) => {
       // If no classes are selected and a quota is selected, return all availabilities that match the quota
       if (noClassSelected && filters.quota) {
         return trains?.filter(train => {
-          const filteredAvailabilities = train.availabilities?.filter(avl => avl.quota === filters.quota);
-          // Only include the train if there is at least one availability matching the quota
+          const filteredAvailabilities = train.availabilities?.filter(avl => {
+            const isQuotaMatch = avl.quota === filters.quota;
+            // Add available filter check
+            const isAvailableMatch = !filters.available || 
+              (avl.avlDayList?.[0]?.availablityType === "1" || 
+               avl.avlDayList?.[0]?.availablityType === "2");
+            return isQuotaMatch && isAvailableMatch;
+          });
+          
           if (filteredAvailabilities?.length > 0) {
-            train.availabilities = filteredAvailabilities; // Update availabilities to only match the quota
+            train.availabilities = filteredAvailabilities;
             return true;
           }
           return false;
         });
       }
   
-      // If no classes are selected and no quota filter is applied, return all trains
+      // If no classes are selected and no quota filter is applied
       if (noClassSelected) {
+        if (filters.available) {
+          return trains?.filter(train => {
+            const filteredAvailabilities = train.availabilities?.filter(avl =>
+              avl.avlDayList?.[0]?.availablityType === "1" || 
+              avl.avlDayList?.[0]?.availablityType === "2"
+            );
+            if (filteredAvailabilities?.length > 0) {
+              train.availabilities = filteredAvailabilities;
+              return true;
+            }
+            return false;
+          });
+        }
         return trains;
       }
   
@@ -138,9 +161,14 @@ const TrainSearchResultList = ({ filters }) => {
   
           // Check if quota matches the selected quota
           const isQuotaMatch = filters.quota ? avl.quota === filters.quota : true;
+
+          // Check availability filter
+          const isAvailableMatch = !filters.available || 
+            (avl.avlDayList?.[0]?.availablityType === "1" || 
+             avl.avlDayList?.[0]?.availablityType === "2");
   
-          // Return true only if both class and quota match
-          return isClassMatch && isQuotaMatch;
+          // Return true only if all conditions match
+          return isClassMatch && isQuotaMatch && isAvailableMatch;
         });
   
         // If no filteredAvailabilities match, exclude this train
@@ -309,6 +337,10 @@ const TrainSearchResultList = ({ filters }) => {
   // if (loading || !trainData) {
   //   return <SkeletonLoader />;
   // }
+
+  const toggleNearbyDates = (trainNumber) => {
+    setExpandedTrainId(expandedTrainId === trainNumber ? null : trainNumber);
+  };
 
   return (
     <div className="row align-items-center g-4 mt-0">
@@ -604,10 +636,7 @@ const TrainSearchResultList = ({ filters }) => {
                                 {(train.availabilities[index]?.avlDayList?.[0]?.availablityType === "1" ||
                                 train.availabilities[index]?.avlDayList?.[0]?.availablityType === "2") ? (
                                   <span style={{ color: "green", display: "flex", alignItems: "center" }}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="15" viewBox="0 0 24 24">
-                                      <path fill="green" d="M12 2L1 5v7c0 8 5 12 11 12s11-4 11-12V5l-11-3z" />
-                                      <path fill="white" d="M14 16.2l-3.4-3.4 1.4-1.4L9 13.4l6.6-6.6 1.4 1.4z" />
-                                    </svg>
+                                    <i className="fas fa-shield-alt me-1"></i>
                                     <span style={{ marginLeft: "5px" }}>Travel Guarantee</span>
                                   </span>
                                 ) : train.availabilities[index]?.avlDayList?.[0]?.availablityType === "3" ? (
@@ -620,6 +649,140 @@ const TrainSearchResultList = ({ filters }) => {
                           </div>
                         </div>
                       ))
+                    )}
+
+                    {/* Nearby Dates Button */}
+                    <div className="w-100 border-top my-2 opacity-25"></div>
+                    <div className="d-flex justify-content-between align-items-center w-100 px-3">
+                      <button 
+                        className="btn btn-link text-primary p-0"
+                        onClick={() => toggleNearbyDates(train.trainNumber)}
+                        style={{ textDecoration: 'none' }}
+                      >
+                        <i className={`fas fa-chevron-${expandedTrainId === train.trainNumber ? 'up' : 'down'} me-2`}></i>
+                        Nearby dates
+                      </button>
+                    </div>
+
+                    {/* Collapsible Nearby Dates Section */}
+                    {expandedTrainId === train.trainNumber && (
+                      <div className="col-12 mt-3">
+                        <div className="nearby-dates-container">
+                          {/* Class Selection Tabs - Update display names */}
+                          <div className="d-flex mb-3 flex-wrap gap-2">
+                            <div className="class-tabs d-flex gap-2">
+                              {train.availabilities.map((cls) => (
+                                <button 
+                                  key={cls.enqClass}
+                                  className={`btn btn-sm ${
+                                    selectedClass === cls.enqClass ? 'btn-primary' : 'btn-outline-primary'
+                                  }`}
+                                  onClick={() => setSelectedClass(cls.enqClass)}
+                                >
+                                  {cls.enqClass === "1A" ? "First Class AC" :
+                                   cls.enqClass === "2A" ? "Second AC" :
+                                   cls.enqClass === "3A" ? "Third AC" :
+                                   cls.enqClass === "3E" ? "AC 3 Economy" :
+                                   cls.enqClass === "SL" ? "Sleeper Class" :
+                                   cls.enqClass}
+                                </button>
+                              ))}
+                            </div>
+                            <div className="ms-auto d-flex gap-2">
+                              {["GN", "LD", "TQ", "PT"].map((quota) => (
+                                <button 
+                                  key={quota}
+                                  className={`btn btn-sm ${
+                                    selectedQuota === quota ? 'btn-primary' : 'btn-outline-primary'
+                                  }`}
+                                  onClick={() => setSelectedQuota(quota)}
+                                >
+                                  {quota === "GN" ? "General" : 
+                                   quota === "LD" ? "Ladies" :
+                                   quota === "TQ" ? "Tatkal" : "Premium"}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Date Cards - Update styling and ignore availability filter */}
+                          <div className="nearby-dates-list" style={{ maxHeight: "300px", overflowY: "auto" }}>
+                            {train.availabilities
+                              .filter(cls => cls.enqClass === selectedClass && cls.quota === selectedQuota)
+                              .map((cls) => 
+                                cls.avlDayList.map((dayInfo, dayIndex) => (
+                                  <div 
+                                    key={dayIndex}
+                                    className="date-card mb-2 p-2 rounded-3 d-flex justify-content-between align-items-center"
+                                    style={{
+                                      border: "1px solid #eee",
+                                      backgroundColor: dayIndex === 0 ? (
+                                        dayInfo.availablityType === "1" || dayInfo.availablityType === "2"
+                                          ? "#f8fff8"
+                                          : dayInfo.availablityType === "3"
+                                          ? "#fff8f0"
+                                          : "#fff"
+                                      ) : "#fff",
+                                      transition: "all 0.3s ease",
+                                      minHeight: "60px" // Reduced height
+                                    }}
+                                  >
+                                    <div className="date-info">
+                                      <h6 className="mb-0" style={{ fontSize: "0.9rem" }}>{dayInfo.availablityDate}</h6>
+                                    </div>
+                                    
+                                    <div className="status" style={{
+                                      color: dayIndex === 0 ? (
+                                        dayInfo.availablityType === "1" || dayInfo.availablityType === "2"
+                                          ? "green"
+                                          : dayInfo.availablityType === "3"
+                                          ? "orange"
+                                          : "red"
+                                      ) : (
+                                        dayInfo.availablityType === "1" || dayInfo.availablityType === "2"
+                                          ? "green"
+                                          : dayInfo.availablityType === "3"
+                                          ? "orange"
+                                          : "red"
+                                      ),
+                                      fontWeight: "500",
+                                      fontSize: "0.9rem"
+                                    }}>
+                                      {getFormattedSeatsData(train, cls, dayIndex)}
+                                    </div>
+                                    
+                                    {((dayIndex === 0 && (dayInfo.availablityType === "1" || dayInfo.availablityType === "2")) || 
+                                      (dayIndex !== 0)) && (
+                                      <div className="tag text-muted" style={{ fontSize: "0.8rem" }}>
+                                        <small>
+                                          <i className="fas fa-shield-alt me-1"></i>
+                                          Trip Guarantee
+                                        </small>
+                                      </div>
+                                    )}
+                                    
+                                    <button 
+                                      className="btn btn-sm btn-primary"
+                                      style={{
+                                        background: dayInfo.availablityType === "0" || dayInfo.availablityType === "4" || dayInfo.availablityType === "5"
+                                          ? "#6c757d"
+                                          : "linear-gradient(45deg, #2196F3, #1976D2)",
+                                        border: "none",
+                                        fontSize: "0.85rem",
+                                        padding: "0.25rem 0.75rem"
+                                      }}
+                                      disabled={dayInfo.availablityType === "0" || dayInfo.availablityType === "4" || dayInfo.availablityType === "5"}
+                                      onClick={() => handleBooking(train, cls, dayIndex)}
+                                    >
+                                      Book @₹{cls.totalFare}
+                                      <i className="fas fa-chevron-right ms-2"></i>
+                                    </button>
+                                  </div>
+                                ))
+                            )}
+                          </div>
+                        </div>
+                      </div>
                     )}
                   </div>
                 </div>
