@@ -14,6 +14,7 @@ const trainData = location.state?.trainData;
 const navigate = useNavigate();
   // Add max travelers constant
 const MAX_TRAVELERS = 6;
+console.log("17 train data from ",trainData)
 
 // State management
 const [travelers, setTravelers] = useState([]);
@@ -90,18 +91,18 @@ const [contactDetails, setContactDetails] = useState({
   };
 
   // Train details object
-  const trainDetails = {
-    trainNumber: trainData?.trainNumber ||'11006',
-    trainName: trainData?.trainName ||'CHALUKYA EXP',
-    from: trainData?.startStation ||'Krishnarajapuram',
-    to: trainData?.endStation ||'Mumbai Dadar Central',
-    class: trainData?.seatClass ||'Second AC • General',
-    departureTime: trainData?.departureTime ||'04:40 AM',
-    departureDate: 'Thu, 14 Nov 24',
-    arrivalTime: trainData?.arrival_time ||'05:35 AM',
-    arrivalDate: 'Fri, 15 Nov 24',
-    duration: trainData?.duration ||'24h 55m',
-  };
+  // const trainData = {
+  //   trainNumber: trainData?.trainNumber ||'11006',
+  //   trainName: trainData?.trainName ||'CHALUKYA EXP',
+  //   from: trainData?.startStation ||'Krishnarajapuram',
+  //   to: trainData?.endStation ||'Mumbai Dadar Central',
+  //   class: trainData?.seatClass ||'Second AC • General',
+  //   departureTime: trainData?.departureTime ||'04:40 AM',
+  //   departureDate: 'Thu, 14 Nov 24',
+  //   arrivalTime: trainData?.arrival_time ||'05:35 AM',
+  //   arrivalDate: 'Fri, 15 Nov 24',
+  //   duration: trainData?.duration ||'24h 55m',
+  // };
 
   // Handler functions
   const handleSave = () => {
@@ -490,14 +491,15 @@ const handleProceedToPayment = (e)=>{
   <div className="row">
     <div className="col">
       <div className="listLayout_midCaps">
-        <h4 className="fs-5 fw-bold mb-1">{trainDetails.trainName}</h4>
-        <ul className="row g-2 p-0">
+        <h6 className="fs-5 fw-bold mb-1 text-muted"># {trainData.trainNumber}</h6>
+        <h4 className="fs-5 fw-bold mb-1">{trainData.trainName}</h4>
+        {/* <ul className="row g-2 p-0">
           <li className="col-auto">
             <p className="text-muted-2 text-md">
-              {trainDetails.from} → {trainDetails.to}
+              {trainData.from} → {trainData.to}
             </p>
           </li>
-        </ul>
+        </ul> */}
 
         <div className="position-relative mt-3">
           <div className="d-flex flex-wrap align-items-center">
@@ -506,7 +508,7 @@ const handleProceedToPayment = (e)=>{
                 <i className="fa-solid fa-chair" />
               </div>
               <div className="export ps-2">
-                <span className="mb-0 text-muted-2 fw-semibold me-1">AC</span>
+                <span className="mb-0 text-muted-2 fw-semibold me-1">{trainData?.classinfo?.enqClass}</span>
                 <span className="mb-0 text-muted-2 text-md">Class</span>
               </div>
             </div>
@@ -515,7 +517,7 @@ const handleProceedToPayment = (e)=>{
                 <i className="fa-solid fa-clock" />
               </div>
               <div className="export ps-2">
-                <span className="mb-0 text-muted-2 fw-semibold me-1">{trainDetails.duration}</span>
+                <span className="mb-0 text-muted-2 fw-semibold me-1">{trainData.duration}</span>
                 <span className="mb-0 text-muted-2 text-md">Duration</span>
               </div>
             </div>
@@ -532,12 +534,12 @@ const handleProceedToPayment = (e)=>{
           <h5 className="mb-3">Journey Details</h5>
           <div className="d-flex justify-content-between mb-3 p-3 bg-light rounded">
             <div>
-              <p className="mb-0 fw-bold">{trainDetails.departureTime}</p>
-              <p className="text-muted small mb-0">{trainDetails.departureDate}</p>
-              <p className="text-muted small">{trainDetails.from}</p>
+              <p className="mb-0 fw-bold">{trainData.departureTime}</p>
+              <p className="text-muted small mb-0">{trainData.departureDate}</p>
+              <p className="text-muted small">{trainData.fromStnName}</p>
             </div>
             <div className="text-center text-muted small">
-              <p className="mb-0">{trainDetails.duration}</p>
+              <p className="mb-0">{trainData.duration}</p>
               <div className="journey-line">
                 <span className="dot start"></span>
                 <span className="line"></span>
@@ -545,9 +547,9 @@ const handleProceedToPayment = (e)=>{
               </div>
             </div>
             <div className="text-end">
-              <p className="mb-0 fw-bold">{trainDetails.arrivalTime}</p>
-              <p className="text-muted small mb-0">{trainDetails.arrivalDate}</p>
-              <p className="text-muted small">{trainDetails.to}</p>
+              <p className="mb-0 fw-bold">{trainData.arrivalTime}</p>
+              <p className="text-muted small mb-0">{trainData.arrivalDate}</p>
+              <p className="text-muted small">{trainData.toStnName}</p>
             </div>
           </div>
 
@@ -572,15 +574,15 @@ const handleProceedToPayment = (e)=>{
           <ul className="list-unstyled">
             <li className="d-flex justify-content-between mb-2">
               <span>Base Fare ({selectedTravelers.length} traveler{selectedTravelers.length !== 1 ? 's' : ''})</span>
-              <span>₹{1200 * (selectedTravelers.length || 1)}</span>
+              <span>₹{trainData.classinfo.baseFare * (selectedTravelers.length || 1)}</span>
             </li>
             <li className="d-flex justify-content-between mb-2">
               <span>Taxes & Fees</span>
-              <span>₹{150 * (selectedTravelers.length || 1)}</span>
+              <span>₹{(trainData.classinfo.totalFare - trainData.classinfo.baseFare) * (selectedTravelers.length || 1)}</span>
             </li>
             <li className="d-flex justify-content-between border-top pt-2 mt-2">
               <strong>Total Amount</strong>
-              <strong>₹{(1350 * (selectedTravelers.length || 1))}</strong>
+              <strong>₹{(trainData.classinfo.totalFare * (selectedTravelers.length || 1))}</strong>
             </li>
           </ul>
 
@@ -710,7 +712,7 @@ const handleProceedToPayment = (e)=>{
       <style jsx>{`
         .journey-line {
           position: relative;
-          width: 100px;
+          width: 150%;
           height: 2px;
           background: #dee2e6;
           margin: 10px auto;

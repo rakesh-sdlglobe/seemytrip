@@ -189,7 +189,7 @@ const TrainSearchResultList = ({ filters }) => {
   console.log("The filters are ", filters)
 
   
-  const handleBooking = useCallback((train, classInfo) => {
+  const handleBooking = useCallback((train, classInfo, index) => {
     const isAvailable = classInfo?.avlDayList?.[0]?.availablityType === "1" || classInfo.avlDayList?.[0]?.availablityType === "2" || classInfo.avlDayList?.[0]?.availablityType === "3";
 
     if (!isAvailable) {
@@ -206,10 +206,20 @@ const TrainSearchResultList = ({ filters }) => {
     }
 
     const bookingData = {
-      ...train,
-      selectedClass: classInfo.enqClass,
-      selectedQuota: classInfo.quota,
-      fare: classInfo.totalFare
+        arrivalTime : getTrainArrival(train,date,"time"),
+        arrivalDate : getTrainArrival(train,date,"date"),
+        departureTime : convertTo12HourFormat(train.departureTime),
+        departureDate : formattedTrainDate,
+        distance : train.distance,
+        duration : totalDuration(train.duration),
+        fromStnCode : train.fromStnCode,
+        toStnCode : train.toStnCode,
+        fromStnName : getStationName(train.fromStnCode),
+        toStnName : getStationName(train.toStnCode),
+        trainName : train.trainName,
+        trainNumber : train.trainNumber,
+        trainType : train.trainType,
+        classinfo : classInfo,
     };
 
     if (isAuthenticated) {
@@ -351,7 +361,7 @@ const TrainSearchResultList = ({ filters }) => {
                           className="mx-1" 
                           style={{
                             fontWeight: train?.runningSun === "Y" ? 'bold' : 'normal',
-                            color: train?.runningSun === "Y" ? '#cd2c22' : 'inherit',
+                            color: train?.runningSun === "Y" ? '#d20000' : 'inherit',
                           }}
                         >
                           S
@@ -360,7 +370,7 @@ const TrainSearchResultList = ({ filters }) => {
                           className="mx-1" 
                           style={{
                             fontWeight: train?.runningMon === "Y" ? 'bold' : 'normal',
-                            color: train?.runningMon === "Y" ? '#cd2c22' : 'inherit',
+                            color: train?.runningMon === "Y" ? '#d20000' : 'inherit',
                           }}
                         >
                           M
@@ -369,7 +379,7 @@ const TrainSearchResultList = ({ filters }) => {
                           className="mx-1" 
                           style={{
                             fontWeight: train?.runningTue === "Y" ? 'bold' : 'normal',
-                            color: train?.runningTue === "Y" ? '#cd2c22' : 'inherit',
+                            color: train?.runningTue === "Y" ? '#d20000' : 'inherit',
                           }}
                         >
                           T
@@ -378,7 +388,7 @@ const TrainSearchResultList = ({ filters }) => {
                           className="mx-1" 
                           style={{
                             fontWeight: train?.runningWed === "Y" ? 'bold' : 'normal',
-                            color: train?.runningWed === "Y" ? '#cd2c22' : 'inherit',
+                            color: train?.runningWed === "Y" ? '#d20000' : 'inherit',
                           }}
                         >
                           W
@@ -387,7 +397,7 @@ const TrainSearchResultList = ({ filters }) => {
                           className="mx-1" 
                           style={{
                             fontWeight: train?.runningThu === "Y" ? 'bold' : 'normal',
-                            color: train?.runningThu === "Y" ? '#cd2c22' : 'inherit',
+                            color: train?.runningThu === "Y" ? '#d20000' : 'inherit',
                           }}
                         >
                           T
@@ -396,7 +406,7 @@ const TrainSearchResultList = ({ filters }) => {
                           className="mx-1" 
                           style={{
                             fontWeight: train?.runningFri === "Y" ? 'bold' : 'normal',
-                            color: train?.runningFri === "Y" ? '#cd2c22' : 'inherit',
+                            color: train?.runningFri === "Y" ? '#d20000' : 'inherit',
                           }}
                         >
                           F
@@ -405,7 +415,7 @@ const TrainSearchResultList = ({ filters }) => {
                           className="mx-1" 
                           style={{
                             fontWeight: train?.runningSat === "Y" ? 'bold' : 'normal',
-                            color: train?.runningSat === "Y" ? '#cd2c22' : 'inherit',
+                            color: train?.runningSat === "Y" ? '#d20000' : 'inherit',
                           }}
                         >
                           S
@@ -546,7 +556,7 @@ const TrainSearchResultList = ({ filters }) => {
                               transition: "transform 0.2s ease",
                               boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
                             }}
-                            onClick={() => handleBooking(train,cls)}
+                            onClick={() => handleBooking(train,cls, index)}
                           >
                             { (train.availabilities[index]?.quota === "TQ" || train.availabilities[index]?.quota === "PT") && (
                               <div
