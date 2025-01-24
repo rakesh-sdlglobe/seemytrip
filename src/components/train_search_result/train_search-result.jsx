@@ -17,15 +17,14 @@ const TrainSearchResultList = ({ filters }) => {
   const isAuthenticated = useSelector(selectUser);
   const stationsList = useSelector(selectStations);
   const loading = JSON.parse(localStorage.getItem('loading'));
-  let searchParams = useSelector(selectSearchParams);
+  // let searchParams = useSelector(selectSearchParams);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTrainNumber, setSelectedTrainNumber] = useState(null);
   const [selectedTrainFromStnCode, setSelectedTrainFromStnCode] = useState(null);
   const [selectedTrainToStnCode, setSelectedTrainToStnCode] = useState(null);
   let trainData = [];
-  // const loading = useSelector(selectLoading);
-  // const [showSkeleton, setShowSkeleton] = useState(true);
   const [expandedTrainId, setExpandedTrainId] = useState(null);
+  let searchParams = { date: "", formattedTrainDate: "" };
 
 
   if (trainData?.length === 0 ) { 
@@ -100,19 +99,11 @@ const TrainSearchResultList = ({ filters }) => {
   const filteredTrainData = useMemo(() => {
     const applyFilters = (trains, filters) => {
       return trains.filter(train => {
-        // Get departure hour from train's departure time
         const [depHours] = train.departureTime?.split(":").map(Number);
-        
-        // Get arrival time using the existing calculateArrival function
         const { formattedArrivalTime } = calculateArrival(train, date);
-        // Extract hour from arrival time (converts "1:30 PM" format to 24-hour)
         const arrivalHour = new Date(`2000/01/01 ${formattedArrivalTime}`).getHours();
 
-        // Check if any departure time filter is selected
-        const isDepartureFilterSelected = filters.departureEarlyMorning || 
-                                        filters.departureMorning || 
-                                        filters.departureMidDay || 
-                                        filters.departureNight;
+        const isDepartureFilterSelected = filters.departureEarlyMorning || filters.departureMorning || filters.departureMidDay || filters.departureNight;
 
         // Apply departure time filters if any are selected
         if (isDepartureFilterSelected) {
@@ -128,10 +119,7 @@ const TrainSearchResultList = ({ filters }) => {
         }
 
         // Check if any arrival time filter is selected
-        const isArrivalFilterSelected = filters.arrivalEarlyMorning || 
-                                      filters.arrivalMorning || 
-                                      filters.arrivalMidDay || 
-                                      filters.arrivalNight;
+        const isArrivalFilterSelected = filters.arrivalEarlyMorning || filters.arrivalMorning || filters.arrivalMidDay || filters.arrivalNight;
 
         // Apply arrival time filters if any are selected
         if (isArrivalFilterSelected) {
@@ -151,8 +139,7 @@ const TrainSearchResultList = ({ filters }) => {
           const seatClass = avl.enqClass;
           
           // Check if any class filter is selected
-          const isAnyClassSelected = filters["1A"] || filters["2A"] || 
-                                   filters["3A"] || filters["3E"] || filters.SL;
+          const isAnyClassSelected = filters["1A"] || filters["2A"] || filters["3A"] || filters["3E"] || filters.SL;
 
           // If no class is selected, don't filter by class
           const isClassMatch = !isAnyClassSelected || (
@@ -188,11 +175,11 @@ const TrainSearchResultList = ({ filters }) => {
     return applyFilters(trainData, filters);
   }, [trainData, filters, date]);
 
-  console.log("Train data after filtered ", filteredTrainData);
+  // console.log("Train data after filtered ", filteredTrainData);
   console.log("The filters are ", filters)
 
   
-  const handleBooking = useCallback((train, classInfo, index) => {
+  const handleBooking = useCallback((train, classInfo) => {
     const isAvailable = classInfo?.avlDayList?.[0]?.availablityType === "1" || classInfo.avlDayList?.[0]?.availablityType === "2" || classInfo.avlDayList?.[0]?.availablityType === "3";
 
     if (!isAvailable) {
@@ -237,23 +224,6 @@ const TrainSearchResultList = ({ filters }) => {
     }
   }, [isAuthenticated, navigate]);
 
-
-  // const handleBooking = (train) =>{
-  //   console.log('Auth status:', isAuthenticated)
-  //   if(isAuthenticated){
-  //     navigate('/trainbookingdetails',{state:{ trainData: train}})
-  //   }
-  //   else{
-  //     navigate('/login',{
-  //       state:{
-  //         redirectTo:'/trainbookingdetails',
-  //         trainData:train,
-  //       }
-  //     });
-  //   }
-  // }
-
-  // console.log('181 filteredTrainData:', filteredTrainData);
   const stateData = useSelector((state) => state);
   console.log('217 stateData from train search result :', stateData);
 
@@ -276,23 +246,7 @@ const TrainSearchResultList = ({ filters }) => {
     } else {
       return "NOT AVAILABLE";
     }
-};
-
-  // if (loading) {
-  //   return (
-  //     <div className="min-h-screen bg-gray-100 p-8">
-  //       <div className="max-w-3xl mx-auto space-y-4">
-  //         <SkeletonLoader />
-  //       </div>
-  //     </div>
-  //   );
-  // }
-  // useEffect(() => {
-  //   if (!loading) {
-  //     const delayTimeout = setTimeout(() => setShowSkeleton(false), 4500); // Adjust delay as needed
-  //     return () => clearTimeout(delayTimeout);
-  //   }
-  // }, [loading]);
+  };
 
   const openModel = useCallback((trainNumber,trainFromStnCode, trainToStnCode) => {
     setSelectedTrainNumber(trainNumber);
@@ -309,27 +263,23 @@ const TrainSearchResultList = ({ filters }) => {
     setSelectedTrainToStnCode(null)
   }, []);
 
-  // if (loading || !trainData) {
-  //   return <SkeletonLoader />;
-  // }
-
   const toggleNearbyDates = (trainNumber) => {
     setExpandedTrainId(expandedTrainId === trainNumber ? null : trainNumber);
   };
 
   // Function to get original unfiltered train data by train number
   const getOriginalTrainData = useCallback((trainNumber) => {
-    // First check the trainData variable
-    let originalTrain = trainData.find(train => train.trainNumber === trainNumber);
+    const localStorageTrains = JSON.parse(localStorage.getItem('trains') || '[]');
+    let originalTrain = localStorageTrains.find(train => train.trainNumber === trainNumber);
     
-    // If not found in trainData, check localStorage
-    if (!originalTrain) {
-      const localStorageTrains = JSON.parse(localStorage.getItem('trains') || '[]');
-      originalTrain = localStorageTrains.find(train => train.trainNumber === trainNumber);
-    }
+    originalTrain.arrivalTime = getTrainArrival(originalTrain,date,"time");
+    originalTrain.departureTime = convertTo12HourFormat(originalTrain.departureTime);
+    originalTrain.duration = totalDuration(originalTrain.duration);
+    originalTrain.fromStnName = getStationName(originalTrain.fromStnCode);
+    originalTrain.toStnName = getStationName(originalTrain.toStnCode);
 
     return originalTrain;
-  }, [trainData]);
+  }, []);
 
   return (
     <div className="row align-items-center g-4 mt-0">
@@ -354,7 +304,7 @@ const TrainSearchResultList = ({ filters }) => {
       </div>
 
       {/* Train list */}
-      {console.log("===========> loading ", loading)}
+      {/* {console.log("===========> loading ", loading)} */}
       
     {
       loading ? (
@@ -656,7 +606,7 @@ const TrainSearchResultList = ({ filters }) => {
                     {/* Collapsible Nearby Dates Section */}
                     {expandedTrainId === train.trainNumber && (
                       <NearbyDates 
-                        train={getOriginalTrainData(train.trainNumber)} // Pass original unfiltered train data
+                        train={getOriginalTrainData(train.trainNumber)} 
                         onClose={() => setExpandedTrainId(null)}
                       />
                     )}

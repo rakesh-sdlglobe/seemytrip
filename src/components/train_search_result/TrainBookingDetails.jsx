@@ -116,19 +116,6 @@ const [contactDetails, setContactDetails] = useState({
     }));
   };
 
-  // Train details object
-  // const trainData = {
-  //   trainNumber: trainData?.trainNumber ||'11006',
-  //   trainName: trainData?.trainName ||'CHALUKYA EXP',
-  //   from: trainData?.startStation ||'Krishnarajapuram',
-  //   to: trainData?.endStation ||'Mumbai Dadar Central',
-  //   class: trainData?.seatClass ||'Second AC • General',
-  //   departureTime: trainData?.departureTime ||'04:40 AM',
-  //   departureDate: 'Thu, 14 Nov 24',
-  //   arrivalTime: trainData?.arrival_time ||'05:35 AM',
-  //   arrivalDate: 'Fri, 15 Nov 24',
-  //   duration: trainData?.duration ||'24h 55m',
-  // };
 
   // Handler functions
   const handleSave = () => {
@@ -1173,7 +1160,7 @@ const handleProceedToPayment = (e)=>{
       <style jsx>{`
         .journey-line {
           position: relative;
-          width: 150%;
+          width: 100%;
           height: 2px;
           background: #dee2e6;
           margin: 10px auto;
