@@ -9,6 +9,7 @@ import { fetchTrainSchedule } from '../../store/Actions/filterActions';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import SkeletonLoader from './SkeletonLoader';
+import NearbyDates from './TrainNearbyDates';
 
 const TrainSearchResultList = ({ filters }) => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const TrainSearchResultList = ({ filters }) => {
   let trainData = [];
   // const loading = useSelector(selectLoading);
   // const [showSkeleton, setShowSkeleton] = useState(true);
+  const [expandedTrainId, setExpandedTrainId] = useState(null);
 
 
   if (trainData?.length === 0 ) { 
@@ -310,6 +312,24 @@ const TrainSearchResultList = ({ filters }) => {
   // if (loading || !trainData) {
   //   return <SkeletonLoader />;
   // }
+
+  const toggleNearbyDates = (trainNumber) => {
+    setExpandedTrainId(expandedTrainId === trainNumber ? null : trainNumber);
+  };
+
+  // Function to get original unfiltered train data by train number
+  const getOriginalTrainData = useCallback((trainNumber) => {
+    // First check the trainData variable
+    let originalTrain = trainData.find(train => train.trainNumber === trainNumber);
+    
+    // If not found in trainData, check localStorage
+    if (!originalTrain) {
+      const localStorageTrains = JSON.parse(localStorage.getItem('trains') || '[]');
+      originalTrain = localStorageTrains.find(train => train.trainNumber === trainNumber);
+    }
+
+    return originalTrain;
+  }, [trainData]);
 
   return (
     <div className="row align-items-center g-4 mt-0">
@@ -618,6 +638,27 @@ const TrainSearchResultList = ({ filters }) => {
                           </div>
                         </div>
                       ))
+                    )}
+
+                    {/* Nearby Dates Button */}
+                    <div className="w-100 border-top my-2 opacity-25"></div>
+                    <div className="d-flex justify-content-between align-items-center w-100 px-3">
+                      <button 
+                        className="btn btn-link text-primary p-0"
+                        onClick={() => toggleNearbyDates(train.trainNumber)}
+                        style={{ textDecoration: 'none' }}
+                      >
+                        <i className={`fas fa-chevron-${expandedTrainId === train.trainNumber ? 'up' : 'down'} me-2`}></i>
+                        Nearby dates
+                      </button>
+                    </div>
+
+                    {/* Collapsible Nearby Dates Section */}
+                    {expandedTrainId === train.trainNumber && (
+                      <NearbyDates 
+                        train={getOriginalTrainData(train.trainNumber)} // Pass original unfiltered train data
+                        onClose={() => setExpandedTrainId(null)}
+                      />
                     )}
                   </div>
                 </div>
