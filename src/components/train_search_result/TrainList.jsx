@@ -45,6 +45,14 @@ const TrainList01 = () => {
           quota: id,
         };
       } else if (type === "checkbox") {
+
+        if (id === "available") {
+          return {
+            ...prevFilters,
+            available: checked,
+          };
+        }
+
         if (id === "ac") {
           // When AC is checked/unchecked, update all AC class filters
           return {
@@ -58,19 +66,23 @@ const TrainList01 = () => {
         }
         // For AC classes, also update the main AC filter if needed
         if (["1A", "2A", "3A", "3E"].includes(id)) {
-          const allAcClasses = ["1A", "2A", "3A", "3E"];
+          
           const updatedFilters = {
             ...prevFilters,
             [id]: checked
           };
+
+
+
+
           // Check if all AC classes are selected/deselected
-          const shouldUpdateAc = checked ? 
-            allAcClasses.every(cls => cls === id || updatedFilters[cls]) :
-            allAcClasses.every(cls => cls === id || !updatedFilters[cls]);
+           const allACClassesSelected = ["1A", "2A", "3A", "3E"].every(
+            cls => cls === id? checked :updatedFilters[cls]);
+            const anyACClassSelected = ["1A", "2A", "3A", "3E"].some(cls => cls === id ? checked :  !updatedFilters[cls]);
           
           return {
             ...updatedFilters,
-            ac: shouldUpdateAc
+            ac: allACClassesSelected
           };
         }
         return {
