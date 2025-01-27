@@ -16,6 +16,9 @@ export const FETCH_TRAINS_FARE_FAILURE = 'FETCH_TRAINS_FARE_FAILURE'
 export const FETCH_TRAINS_SCHEDULE_REQUEST = 'FETCH_TRAINS_SCHEDULE_REQUEST'
 export const FETCH_TRAINS_SCHEDULE_SUCCESS = 'FETCH_TRAINS_SCHEDULE_SUCCESS'
 export const FETCH_TRAINS_SCHEDULE_FAILURE = 'FETCH_TRAINS_SCHEDULE_FAILURE'
+export const FETCH_TRAIN_BOARDING_STATIONS_REQUEST = 'FETCH_TRAIN_BOARDING_STATIONS_REQUEST'
+export const FETCH_TRAIN_BOARDING_STATIONS_SUCCESS = 'FETCH_TRAIN_BOARDING_STATIONS_SUCCESS'
+export const FETCH_TRAIN_BOARDING_STATIONS_FAILURE = 'FETCH_TRAIN_BOARDING_STATIONS_FAILURE'
 
 // Action Creators
 export const fetchStationsRequest = () => ({
@@ -175,3 +178,44 @@ export const fetchTrainSchedule = (trainNumber) => async (dispatch) => {
     dispatch(fetchTrainsScheduleFailure(error.message));
   }
 };
+
+
+
+export const fetchTrainBoardingStationsRequest = () => ({
+  type: FETCH_TRAIN_BOARDING_STATIONS_REQUEST,
+});
+
+export const fetchTrainBoardingStationsSuccess = (trainBoardingStations) => ({
+  type: FETCH_TRAIN_BOARDING_STATIONS_SUCCESS,
+  payload: trainBoardingStations,
+});
+
+export const fetchTrainBoardingStationsFailure = (error) => ({
+  type: FETCH_TRAIN_BOARDING_STATIONS_FAILURE,
+  payload: error,
+});
+
+
+export const fetchTrainBoardingStations = (trainNumber, journeyDate, fromStnCode, toStnCode, jClass) => 
+  async (dispatch) => {
+    console.log("Calling fetchTrainBoardingStations with trainNumber:", trainNumber);
+    
+    dispatch(fetchTrainBoardingStationsRequest());
+    try {
+      const response = await axios.post(`${API_URL}/trains/getBoardingStations`, {
+        trainNumber,
+        journeyDate,
+        fromStnCode,
+        toStnCode,
+        jClass,
+      });
+
+      if (response.data) {
+        console.log("fetchTrainBoardingStationsSuccess:", response.data);
+        dispatch(fetchTrainBoardingStationsSuccess(response.data));
+      }
+    } catch (error) {
+      console.error("Error fetching train boarding stations:", error.message);
+      dispatch(fetchTrainBoardingStationsFailure(error.message));
+    }
+  };

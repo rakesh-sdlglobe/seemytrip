@@ -12,7 +12,10 @@ import {
   FETCH_TRAINS_FARE_FAILURE,
   FETCH_TRAINS_SCHEDULE_REQUEST,
   FETCH_TRAINS_SCHEDULE_SUCCESS,
-  FETCH_TRAINS_SCHEDULE_FAILURE
+  FETCH_TRAINS_SCHEDULE_FAILURE,
+  FETCH_TRAIN_BOARDING_STATIONS_REQUEST,
+  FETCH_TRAIN_BOARDING_STATIONS_SUCCESS,
+  FETCH_TRAIN_BOARDING_STATIONS_FAILURE,
 } from '../Actions/filterActions.js';
 
 const initialState = {
@@ -22,6 +25,7 @@ const initialState = {
   error: null,
   searchParams: {},
   trainSchedule:[],
+  trainBoardingStations : [],
 };
 
 export const filterReducer = (state = initialState, action) => {
@@ -100,6 +104,24 @@ export const filterReducer = (state = initialState, action) => {
             loading: false,
             error: action.payload,
           };
+        case FETCH_TRAIN_BOARDING_STATIONS_REQUEST:
+          return {
+            ...state,
+            loading: true,
+          };
+        case FETCH_TRAIN_BOARDING_STATIONS_SUCCESS:
+          return {
+            ...state,
+            loading: false,
+            trainBoardingStations: action.payload,
+          };
+        case FETCH_TRAIN_BOARDING_STATIONS_FAILURE:
+          return {
+            ...state,
+            loading: false,
+            error: action.payload,
+          };
+        
     default:
       return state;
   }

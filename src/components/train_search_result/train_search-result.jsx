@@ -9,6 +9,7 @@ import { fetchTrainSchedule } from '../../store/Actions/filterActions';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import SkeletonLoader from './SkeletonLoader';
+import NearbyDates from './TrainNearbyDates';
 
 const TrainSearchResultList = ({ filters }) => {
   const navigate = useNavigate();
@@ -16,17 +17,14 @@ const TrainSearchResultList = ({ filters }) => {
   const isAuthenticated = useSelector(selectUser);
   const stationsList = useSelector(selectStations);
   const loading = JSON.parse(localStorage.getItem('loading'));
-  let searchParams = useSelector(selectSearchParams);
+  // let searchParams = useSelector(selectSearchParams);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTrainNumber, setSelectedTrainNumber] = useState(null);
   const [selectedTrainFromStnCode, setSelectedTrainFromStnCode] = useState(null);
   const [selectedTrainToStnCode, setSelectedTrainToStnCode] = useState(null);
   let trainData = [];
-  // const loading = useSelector(selectLoading);
-  // const [showSkeleton, setShowSkeleton] = useState(true);
   const [expandedTrainId, setExpandedTrainId] = useState(null);
-  const [selectedClass, setSelectedClass] = useState(null);
-  const [selectedQuota, setSelectedQuota] = useState("GN");
+  let searchParams = { date: "", formattedTrainDate: "" };
 
 
   if (trainData?.length === 0 ) { 
@@ -100,124 +98,88 @@ const TrainSearchResultList = ({ filters }) => {
   // let filteredTrainData = filteredTrainData ? [] : localStorage.getItem('trains')
   const filteredTrainData = useMemo(() => {
     const applyFilters = (trains, filters) => {
-      const noClassSelected = Object.keys(filters).every(
-        key => !["1A", "2A", "3A", "3E", "SL"].includes(key) || !filters[key]
-      );
-  
-      // If no classes are selected and a quota is selected, return all availabilities that match the quota
-      if (noClassSelected && filters.quota) {
-        return trains?.filter(train => {
-          const filteredAvailabilities = train.availabilities?.filter(avl => {
-            const isQuotaMatch = avl.quota === filters.quota;
-            // Add available filter check
-            const isAvailableMatch = !filters.available || 
-              (avl.avlDayList?.[0]?.availablityType === "1" || 
-               avl.avlDayList?.[0]?.availablityType === "2");
-            return isQuotaMatch && isAvailableMatch;
-          });
-          
-          if (filteredAvailabilities?.length > 0) {
-            train.availabilities = filteredAvailabilities;
-            return true;
-          }
-          return false;
-        });
-      }
-  
-      // If no classes are selected and no quota filter is applied
-      if (noClassSelected) {
-        if (filters.available) {
-          return trains?.filter(train => {
-            const filteredAvailabilities = train.availabilities?.filter(avl =>
-              avl.avlDayList?.[0]?.availablityType === "1" || 
-              avl.avlDayList?.[0]?.availablityType === "2"
-            );
-            if (filteredAvailabilities?.length > 0) {
-              train.availabilities = filteredAvailabilities;
-              return true;
-            }
+      return trains.filter(train => {
+        const [depHours] = train.departureTime?.split(":").map(Number);
+        const { formattedArrivalTime } = calculateArrival(train, date);
+        const arrivalHour = new Date(`2000/01/01 ${formattedArrivalTime}`).getHours();
+
+        const isDepartureFilterSelected = filters.departureEarlyMorning || filters.departureMorning || filters.departureMidDay || filters.departureNight;
+
+        // Apply departure time filters if any are selected
+        if (isDepartureFilterSelected) {
+          const matchesDepartureTime = 
+            (filters.departureEarlyMorning && depHours >= 0 && depHours < 6) ||
+            (filters.departureMorning && depHours >= 6 && depHours < 12) ||
+            (filters.departureMidDay && depHours >= 12 && depHours < 18) ||
+            (filters.departureNight && depHours >= 18 && depHours < 24);
+
+          if (!matchesDepartureTime) {
             return false;
-          });
+          }
         }
-        return trains;
-      }
-  
-      return trains?.filter(train => {
-        let isMatch = true;
-  
-        const departureHour = parseInt(train?.departureTime?.split(":")[0], 10);
-        const arrivalHour = parseInt(train?.arrivalTime?.split(":")[0], 10);
-  
+
+        // Check if any arrival time filter is selected
+        const isArrivalFilterSelected = filters.arrivalEarlyMorning || filters.arrivalMorning || filters.arrivalMidDay || filters.arrivalNight;
+
+        // Apply arrival time filters if any are selected
+        if (isArrivalFilterSelected) {
+          const matchesArrivalTime = 
+            (filters.arrivalEarlyMorning && arrivalHour >= 0 && arrivalHour < 6) ||
+            (filters.arrivalMorning && arrivalHour >= 6 && arrivalHour < 12) ||
+            (filters.arrivalMidDay && arrivalHour >= 12 && arrivalHour < 18) ||
+            (filters.arrivalNight && arrivalHour >= 18 && arrivalHour < 24);
+
+          if (!matchesArrivalTime) {
+            return false;
+          }
+        }
+
+        // Filter availabilities based on selected class and quota
         const filteredAvailabilities = train.availabilities?.filter(avl => {
           const seatClass = avl.enqClass;
-  
-          // Check if seatClass matches any of the selected class filters
-          const isClassMatch =
+          
+          // Check if any class filter is selected
+          const isAnyClassSelected = filters["1A"] || filters["2A"] || filters["3A"] || filters["3E"] || filters.SL;
+
+          // If no class is selected, don't filter by class
+          const isClassMatch = !isAnyClassSelected || (
             (filters["1A"] && seatClass === "1A") ||
             (filters["2A"] && seatClass === "2A") ||
             (filters["3A"] && seatClass === "3A") ||
             (filters["3E"] && seatClass === "3E") ||
-            (filters["SL"] && seatClass === "SL");
-  
-          // Check if quota matches the selected quota
+            (filters.SL && seatClass === "SL")
+          );
+
+          // Check quota match
           const isQuotaMatch = filters.quota ? avl.quota === filters.quota : true;
 
-          // Check availability filter
-          const isAvailableMatch = !filters.available || 
-            (avl.avlDayList?.[0]?.availablityType === "1" || 
-             avl.avlDayList?.[0]?.availablityType === "2");
-  
-          // Return true only if all conditions match
-          return isClassMatch && isQuotaMatch && isAvailableMatch;
-        });
-  
-        // If no filteredAvailabilities match, exclude this train
-        if (!filteredAvailabilities || filteredAvailabilities.length === 0)
-          return false;
-  
-        // Filter based on AC classes if applicable
-        if (filters.ac) {
-          isMatch = isMatch && filteredAvailabilities.some(avl =>
-            ["1A", "2A", "3A", "3E", "CC", "EC"].includes(avl.enqClass)
+          // Check availability if the filter is active
+          const isAvailabilityMatch = !filters.available || (
+            avl.avlDayList?.[0]?.availablityType === "1" || 
+            avl.avlDayList?.[0]?.availablityType === "2"
           );
+
+          return isClassMatch && isQuotaMatch && isAvailabilityMatch;
+        });
+
+        if (!filteredAvailabilities || filteredAvailabilities.length === 0) {
+          return false;
         }
-  
-        // Filter based on departure times
-        if (filters.departureEarlyMorning) 
-          isMatch = isMatch && departureHour >= 0 && departureHour < 6;
-        if (filters.departureMorning) 
-          isMatch = isMatch && departureHour >= 6 && departureHour < 12;
-        if (filters.departureMidDay) 
-          isMatch = isMatch && departureHour >= 12 && departureHour < 18;
-        if (filters.departureNight) 
-          isMatch = isMatch && departureHour >= 18 && departureHour < 24;
-  
-        // Filter based on arrival times
-        if (filters.arrivalEarlyMorning)
-          isMatch = isMatch && arrivalHour >= 0 && arrivalHour < 6;
-        if (filters.arrivalMorning) 
-          isMatch = isMatch && arrivalHour >= 6 && arrivalHour < 12;
-        if (filters.arrivalMidDay) 
-          isMatch = isMatch && arrivalHour >= 12 && arrivalHour < 18;
-        if (filters.arrivalNight)
-          isMatch = isMatch && arrivalHour >= 18 && arrivalHour < 24;
-  
+
         // Update train's availabilities with filtered results
-        if (isMatch)
-          train.availabilities = filteredAvailabilities;
-  
-        return isMatch;
+        train.availabilities = filteredAvailabilities;
+        return true;
       });
     };
-    
-    return applyFilters(trainData, filters);
-  }, [trainData, filters]);
 
-  console.log("Train data after filtered ", filteredTrainData);
+    return applyFilters(trainData, filters);
+  }, [trainData, filters, date]);
+
+  // console.log("Train data after filtered ", filteredTrainData);
   console.log("The filters are ", filters)
 
   
-  const handleBooking = useCallback((train, classInfo, index) => {
+  const handleBooking = useCallback((train, classInfo) => {
     const isAvailable = classInfo?.avlDayList?.[0]?.availablityType === "1" || classInfo.avlDayList?.[0]?.availablityType === "2" || classInfo.avlDayList?.[0]?.availablityType === "3";
 
     if (!isAvailable) {
@@ -262,23 +224,6 @@ const TrainSearchResultList = ({ filters }) => {
     }
   }, [isAuthenticated, navigate]);
 
-
-  // const handleBooking = (train) =>{
-  //   console.log('Auth status:', isAuthenticated)
-  //   if(isAuthenticated){
-  //     navigate('/trainbookingdetails',{state:{ trainData: train}})
-  //   }
-  //   else{
-  //     navigate('/login',{
-  //       state:{
-  //         redirectTo:'/trainbookingdetails',
-  //         trainData:train,
-  //       }
-  //     });
-  //   }
-  // }
-
-  // console.log('181 filteredTrainData:', filteredTrainData);
   const stateData = useSelector((state) => state);
   console.log('217 stateData from train search result :', stateData);
 
@@ -301,23 +246,7 @@ const TrainSearchResultList = ({ filters }) => {
     } else {
       return "NOT AVAILABLE";
     }
-};
-
-  // if (loading) {
-  //   return (
-  //     <div className="min-h-screen bg-gray-100 p-8">
-  //       <div className="max-w-3xl mx-auto space-y-4">
-  //         <SkeletonLoader />
-  //       </div>
-  //     </div>
-  //   );
-  // }
-  // useEffect(() => {
-  //   if (!loading) {
-  //     const delayTimeout = setTimeout(() => setShowSkeleton(false), 4500); // Adjust delay as needed
-  //     return () => clearTimeout(delayTimeout);
-  //   }
-  // }, [loading]);
+  };
 
   const openModel = useCallback((trainNumber,trainFromStnCode, trainToStnCode) => {
     setSelectedTrainNumber(trainNumber);
@@ -334,13 +263,23 @@ const TrainSearchResultList = ({ filters }) => {
     setSelectedTrainToStnCode(null)
   }, []);
 
-  // if (loading || !trainData) {
-  //   return <SkeletonLoader />;
-  // }
-
   const toggleNearbyDates = (trainNumber) => {
     setExpandedTrainId(expandedTrainId === trainNumber ? null : trainNumber);
   };
+
+  // Function to get original unfiltered train data by train number
+  const getOriginalTrainData = useCallback((trainNumber) => {
+    const localStorageTrains = JSON.parse(localStorage.getItem('trains') || '[]');
+    let originalTrain = localStorageTrains.find(train => train.trainNumber === trainNumber);
+    
+    originalTrain.arrivalTime = getTrainArrival(originalTrain,date,"time");
+    originalTrain.departureTime = convertTo12HourFormat(originalTrain.departureTime);
+    originalTrain.duration = totalDuration(originalTrain.duration);
+    originalTrain.fromStnName = getStationName(originalTrain.fromStnCode);
+    originalTrain.toStnName = getStationName(originalTrain.toStnCode);
+
+    return originalTrain;
+  }, []);
 
   return (
     <div className="row align-items-center g-4 mt-0">
@@ -365,7 +304,7 @@ const TrainSearchResultList = ({ filters }) => {
       </div>
 
       {/* Train list */}
-      {console.log("===========> loading ", loading)}
+      {/* {console.log("===========> loading ", loading)} */}
       
     {
       loading ? (
@@ -374,7 +313,7 @@ const TrainSearchResultList = ({ filters }) => {
       filteredTrainData?.length > 0 ? (
         filteredTrainData?.map(train => (
           <div key={train.trainNumber} className="col-xl-12 col-lg-12 col-md-12">
-            <div className="train-availability-card bg-white rounded-3 p-4 hover-shadow" style={{ 
+            <div className="train-availability-card bg-white rounded-3 p-4 pb-2 hover-shadow" style={{ 
               boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
               transition: "all 0.3s ease",
               border: "1px solid #eee"
@@ -666,160 +605,16 @@ const TrainSearchResultList = ({ filters }) => {
 
                     {/* Collapsible Nearby Dates Section */}
                     {expandedTrainId === train.trainNumber && (
-                      <div className="col-12 mt-3">
-                        <div className="nearby-dates-container">
-                          {/* Class Selection Tabs */}
-                          <div className="d-flex mb-3 flex-wrap gap-2">
-                            <div className="class-tabs d-flex gap-2">
-                              {train.availabilities.map((cls) => (
-                                <button 
-                                  key={cls.enqClass}
-                                  className={`btn btn-sm ${
-                                    selectedClass === cls.enqClass ? 'btn-primary' : 'btn-outline-primary'
-                                  }`}
-                                  onClick={() => setSelectedClass(cls.enqClass)}
-                                >
-                                  {cls.enqClass === "1A" ? "First Class AC" :
-                                   cls.enqClass === "2A" ? "Second AC" :
-                                   cls.enqClass === "3A" ? "Third AC" :
-                                   cls.enqClass === "3E" ? "AC 3 Economy" :
-                                   cls.enqClass === "SL" ? "Sleeper Class" :
-                                   cls.enqClass}
-                                </button>
-                              ))}
-                            </div>
-                            <div className="ms-auto d-flex gap-2">
-                              {["GN", "LD", "TQ", "PT"].map((quota) => (
-                                <button 
-                                  key={quota}
-                                  className={`btn btn-sm ${
-                                    selectedQuota === quota ? 'btn-primary' : 'btn-outline-primary'
-                                  }`}
-                                  onClick={() => setSelectedQuota(quota)}
-                                >
-                                  {quota === "GN" ? "General" : 
-                                   quota === "LD" ? "Ladies" :
-                                   quota === "TQ" ? "Tatkal" : "Premium"}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-
-                          {/* Date Cards - Show all availability data without filters */}
-                          <div className="nearby-dates-list" style={{ maxHeight: "300px", overflowY: "auto" }}>
-                            {train.availabilities
-                              .filter(cls => cls.enqClass === selectedClass && cls.quota === selectedQuota)
-                              .map((cls) => (
-                                <React.Fragment key={cls.enqClass}>
-                                  {cls.avlDayList?.length > 0 ? (
-                                    cls.avlDayList.map((dayInfo, dayIndex) => (
-                                      <div 
-                                        key={dayIndex}
-                                        className="date-card mb-2 p-2 rounded-3 d-flex justify-content-between align-items-center"
-                                        style={{
-                                          border: "1px solid #eee",
-                                          backgroundColor: dayInfo.availablityType === "1" || dayInfo.availablityType === "2"
-                                            ? "#f8fff8"
-                                            : dayInfo.availablityType === "3"
-                                            ? "#fff8f0"
-                                            : "#fff",
-                                          transition: "all 0.3s ease",
-                                          minHeight: "60px"
-                                        }}
-                                      >
-                                        <div className="date-info">
-                                          <h6 className="mb-0" style={{ fontSize: "0.9rem" }}>{dayInfo.availablityDate}</h6>
-                                        </div>
-                                        
-                                        <div className="status" style={{
-                                          color: dayInfo.availablityType === "1" || dayInfo.availablityType === "2"
-                                            ? "green"
-                                            : dayInfo.availablityType === "3"
-                                            ? "orange"
-                                            : "red",
-                                          fontWeight: "500",
-                                          fontSize: "0.9rem"
-                                        }}>
-                                          {getFormattedSeatsData({
-                                            availabilities: [{
-                                              avlDayList: [dayInfo]
-                                            }]
-                                          }, 0)}
-                                        </div>
-                                        
-                                        {(dayInfo.availablityType === "1" || dayInfo.availablityType === "2") && (
-                                          <div className="tag text-muted" style={{ fontSize: "0.8rem" }}>
-                                            <small>
-                                              <i className="fas fa-shield-alt me-1"></i>
-                                              Trip Guarantee
-                                            </small>
-                                          </div>
-                                        )}
-                                        
-                                        <button 
-                                          className="btn btn-sm btn-primary"
-                                          style={{
-                                            background: dayInfo.availablityType === "0" || dayInfo.availablityType === "4" || dayInfo.availablityType === "5"
-                                              ? "#6c757d"
-                                              : "linear-gradient(45deg, #2196F3, #1976D2)",
-                                            border: "none",
-                                            fontSize: "0.85rem",
-                                            padding: "0.25rem 0.75rem"
-                                          }}
-                                          disabled={dayInfo.availablityType === "0" || dayInfo.availablityType === "4" || dayInfo.availablityType === "5"}
-                                          onClick={() => handleBooking(train, cls, dayIndex)}
-                                        >
-                                          Book @₹{cls.totalFare}
-                                          <i className="fas fa-chevron-right ms-2"></i>
-                                        </button>
-                                      </div>
-                                    ))
-                                  ) : (
-                                    <div className="no-dates-available p-4 text-center bg-light rounded-3">
-                                      <div className="mb-3">
-                                        <i className="fas fa-calendar-times fa-3x text-muted"></i>
-                                      </div>
-                                      <h6 className="mb-2 text-muted">No Availability Information</h6>
-                                      <p className="text-muted mb-0" style={{ fontSize: "0.9rem" }}>
-                                        Currently, there is no booking availability for {selectedClass} class in {
-                                          selectedQuota === "GN" ? "General" :
-                                          selectedQuota === "LD" ? "Ladies" :
-                                          selectedQuota === "TQ" ? "Tatkal" :
-                                          "Premium Tatkal"
-                                        } quota.
-                                        <br />
-                                        Please try a different class or quota.
-                                      </p>
-                                    </div>
-                                  )}
-                                </React.Fragment>
-                              ))}
-                            {train.availabilities.filter(cls => cls.enqClass === selectedClass && cls.quota === selectedQuota).length === 0 && (
-                              <div className="no-dates-available p-4 text-center bg-light rounded-3">
-                                <div className="mb-3">
-                                  <i className="fas fa-ticket-alt fa-3x text-muted"></i>
-                                </div>
-                                <h6 className="mb-2 text-muted">Class/Quota Not Available</h6>
-                                <p className="text-muted mb-0" style={{ fontSize: "0.9rem" }}>
-                                  The selected combination of {selectedClass} class and {
-                                    selectedQuota === "GN" ? "General" :
-                                    selectedQuota === "LD" ? "Ladies" :
-                                    selectedQuota === "TQ" ? "Tatkal" :
-                                    "Premium Tatkal"
-                                  } quota is not available for this train.
-                                  <br />
-                                  Please select a different class or quota option.
-                                </p>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
+                      <NearbyDates 
+                        train={getOriginalTrainData(train.trainNumber)} 
+                        onClose={() => setExpandedTrainId(null)}
+                      />
                     )}
                   </div>
                 </div>
               </div>
             </div>
+
           </div>
         ))
       ) : (
@@ -836,3 +631,6 @@ const TrainSearchResultList = ({ filters }) => {
 };
 
 export default TrainSearchResultList;
+
+
+
