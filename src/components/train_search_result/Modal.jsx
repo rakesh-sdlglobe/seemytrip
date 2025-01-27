@@ -87,8 +87,8 @@ const Modal = React.memo(({ isOpen, onClose, trainNumber, selectedTrainFromStnCo
             width: '20px',
             height: '20px',
             borderRadius: '50%',
-            backgroundColor: isSearchStation ? '#CD2C22' : 'white',
-            border: '2px solid #CD2C22',
+            backgroundColor: isSearchStation ? '#cd2c22' : 'white',
+            border: '2px solid #cd2c22',
             position: 'absolute',
             top: '50%',
             transform: 'translateY(-50%)',
@@ -108,7 +108,7 @@ const Modal = React.memo(({ isOpen, onClose, trainNumber, selectedTrainFromStnCo
             left: '6%',
             fontSize: '12px',
             fontWeight: 'bold',
-            color: '#CD2C22',
+            color: '#cd2c22',
             fontStyle: 'italic',
         }
     }), []);
