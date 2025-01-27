@@ -196,17 +196,26 @@ export const fetchTrainBoardingStationsFailure = (error) => ({
 });
 
 
-export const fetchTrainBoardingStations = (trainNumber, journeyDate, fromStnCode, toStnCode, jClass ) => async (dispatch) => {
-  console.log("calling fetch trains boarding stations 200 from filter actions", trainNumber)
-  dispatch(fetchTrainBoardingStationsRequest());
-  try {
-    const response = await axios.post(`${API_URL}/trains/getBoardingStations`);
-    if(response.data){
-      console.log("205 fetchTrainBoardingStationsSuccess", response.data)
-      dispatch(fetchTrainBoardingStationsSuccess(response.data))
+export const fetchTrainBoardingStations = (trainNumber, journeyDate, fromStnCode, toStnCode, jClass) => 
+  async (dispatch) => {
+    console.log("Calling fetchTrainBoardingStations with trainNumber:", trainNumber);
+    
+    dispatch(fetchTrainBoardingStationsRequest());
+    try {
+      const response = await axios.post(`${API_URL}/trains/getBoardingStations`, {
+        trainNumber,
+        journeyDate,
+        fromStnCode,
+        toStnCode,
+        jClass,
+      });
+
+      if (response.data) {
+        console.log("fetchTrainBoardingStationsSuccess:", response.data);
+        dispatch(fetchTrainBoardingStationsSuccess(response.data));
+      }
+    } catch (error) {
+      console.error("Error fetching train boarding stations:", error.message);
+      dispatch(fetchTrainBoardingStationsFailure(error.message));
     }
-  } catch (error) {
-    console.error("Error fetching train schedule:", error.message);
-    dispatch(fetchTrainBoardingStationsFailure(error.message));
-  }
-};
+  };

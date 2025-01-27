@@ -36,6 +36,17 @@ const NearbyDates = ({ train, onClose }) => {
         });
     };
 
+    const formattedJourneyDate = (dateString) => {
+        console.log("dateString is ", dateString);
+        const [day, month, year] = dateString.split('-');
+        
+        // Add leading zeros if day or month is a single digit
+        const formattedDay = day.padStart(2, '0');
+        const formattedMonth = month.padStart(2, '0');
+        
+        return `${year}${formattedMonth}${formattedDay}`;
+    };
+    
     const calculateArrivalDate = (startDate, duration) => {
         // Parse the start date (format: "25-1-2025")
         const [day, month, year] = startDate.split('-');
@@ -107,6 +118,7 @@ const NearbyDates = ({ train, onClose }) => {
             arrivalDate: calculateArrivalDate(dayInfo.availablityDate, train.duration),
             departureTime: train.departureTime,
             departureDate: formatTrainDate(dayInfo.availablityDate),
+            journeyDate: formattedJourneyDate(dayInfo.availablityDate),
             distance: train.distance,
             duration: train.duration,
             fromStnCode: train.fromStnCode,

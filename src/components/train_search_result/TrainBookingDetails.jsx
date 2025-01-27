@@ -8,14 +8,35 @@ import 'react-toastify/dist/ReactToastify.css';
 import {useLocation} from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { IRCTC_Logo } from '../../assets/images';
+import { selectTrainBoardingStations }  from '../../store/Selectors/filterSelectors';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { fetchTrainBoardingStations } from '../../store/Actions/filterActions';
 
 const TrainBookingDetails = () => {
 const location = useLocation();
 const trainData = location.state?.trainData;
 const navigate = useNavigate();
-  // Add max travelers constant
+const dispatch = useDispatch();
+// Add max travelers constant
 const MAX_TRAVELERS = 6;
 console.log("17 train data from ",trainData)
+// let boardingAPIReq = {
+//   trainNumber: trainData.trainNumber,
+//   journeyDate: trainData.journeyDate,
+//   fromStnCode: trainData.fromStnCode,
+//   toStnCode: trainData.toStnCode,
+//   classinfo: trainData.classinfo.enqClass
+// }
+// console.log("boading req data is ", boardingAPIReq)
+
+useEffect(() => {
+  dispatch(fetchTrainBoardingStations(trainData.trainNumber, trainData.journeyDate, trainData.fromStnCode, trainData.toStnCode, trainData.classinfo.enqClass));
+},[]);
+
+const boardingStations = useSelector(selectTrainBoardingStations);
+console.log("18 boarding stations from ",boardingStations)
+
 
 // State management
 const [travelers, setTravelers] = useState([]);
