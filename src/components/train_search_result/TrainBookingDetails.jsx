@@ -13,6 +13,9 @@ import { fetchTrainBoardingStations } from '../../store/Actions/filterActions';
 import { fetchIRCTCusername } from '../../store/Actions/filterActions';
 import { selectIRCTCUsernameStatus } from '../../store/Selectors/filterSelectors';
 import { useDispatch, useSelector } from "react-redux";
+import { fetchTrainSchedule } from '../../store/Actions/filterActions';
+import { selectTrainsSchedule } from '../../store/Selectors/filterSelectors';
+
 
 import {
   addTraveler,
@@ -39,11 +42,14 @@ const [isEditing, setIsEditing] = useState(false);
 const MAX_TRAVELERS = 6;
 console.log("17 train data from ",trainData)
 useEffect(() => {
-  dispatch(fetchTrainBoardingStations(trainData.trainNumber, trainData.journeyDate, trainData.fromStnCode, trainData.toStnCode, trainData.classinfo.enqClass));
+  dispatch(fetchTrainBoardingStations(trainData.trainNumber, trainData.journeyDate, trainData.fromStnCode, trainData.toStnCode,trainData.classinfo.enqClass));
+  dispatch(fetchTrainSchedule(trainData.trainNumber));
 },[]);
 const boardingStations = useSelector(selectTrainBoardingStations);
 console.log("18 boarding stations from ",boardingStations)
 console.log("IRCTC response ",irctcUsernameStatus)
+const boardingStationDetails = useSelector(selectTrainsSchedule);
+console.log("19 boarding station details from ", boardingStationDetails)
 // State management
 const [travelers, setTravelers] = useState([]);
 const [currentTraveler, setCurrentTraveler] = useState({
@@ -98,11 +104,13 @@ const [contactDetails, setContactDetails] = useState({
   // Add Redux hooks
   const savedTravelers = useSelector(selectTravelers) || [];
   const loading = useSelector(selectTravelerLoading);
+  const [selectedBoardingStation, setSelectedBoardingStation] = useState('');
 
   // Add useEffect to fetch travelers on component mount
   useEffect(() => {
     dispatch(fetchTravelers());
   }, [dispatch]);
+// Add state for selected boarding station
 
   useEffect(() => {
     if (showTravelerModal) {
@@ -410,6 +418,16 @@ const handleProceedToPayment = (e)=>{
     setIsVerified(false);
   };
 
+  // Add boarding station change handler
+  const handleBoardingStationChange = (e) => {
+    setSelectedBoardingStation(e.target.value);
+  };
+
+  // Helper function to extract station name and code from stnNameCode
+  const parseStationNameCode = (stnNameCode) => {
+    const [name, code] = stnNameCode.split(' - ');
+    return { name, code };
+  };
   // Render functions
   const renderBookingStepper = () => (
     <div className="col-xl-12 col-lg-12 col-md-12">
@@ -756,7 +774,7 @@ const handleProceedToPayment = (e)=>{
             </div>
           </div>
 
-          {/* Add Boarding Station dropdown */}
+          {/* Add Boarding Station dropdown
           <div className="mb-3">
             <label htmlFor="boardingStation" className="form-label">Boarding Station*</label>
             <div className="select-wrapper">
@@ -770,7 +788,8 @@ const handleProceedToPayment = (e)=>{
             <small className="text-muted">
               Select the station from where you will board the train.
             </small>
-          </div>
+          </div> */}
+          {renderBoardingStationDropdown()}
         </div>
 
         {/* Price Summary .*/}
@@ -1255,6 +1274,112 @@ const handleProceedToPayment = (e)=>{
       </div>
       {showForgotPasswordPopup && <div className="modal-backdrop show"></div>}
     </>
+  );
+
+  function convert24To12Hour(time) {
+    // Split the time into hours and minutes
+    let [hour, minute] = time.split(":");
+  
+    // Convert to a number
+    hour = parseInt(hour);
+    minute = parseInt(minute);
+  
+    // Determine AM/PM
+    let period = "AM";
+    if (hour >= 12) {
+      period = "PM";
+      if (hour > 12) {
+        hour = hour - 12; // Convert 24-hour to 12-hour format
+      }
+    } else if (hour === 0) {
+      hour = 12; // Handle midnight case
+    }
+  
+    // Format hour and minute with leading zeros if necessary
+    hour = hour < 10 ? `0${hour}` : hour;
+    minute = minute < 10 ? `0${minute}` : minute;
+  
+    return `${hour}:${minute} ${period}`;
+  }
+  
+  // Update the boarding station dropdown section
+  const renderBoardingStationDropdown = () => (
+    <div className="mb-3">
+      <label htmlFor="boardingStation" className="form-label">Boarding Station*</label>
+      <div className="select-wrapper">
+        <select
+          className="form-select card-select"
+          id="boardingStation"
+          value={selectedBoardingStation}
+          onChange={handleBoardingStationChange}
+          required
+        >
+          <option value="" disabled>Select boarding point</option>
+          {boardingStations?.map((station) => {
+            const { name: stationName, code: stationCode } = parseStationNameCode(station.stnNameCode);
+
+            // Ensure stationList is valid and compare station codes
+            const stationList = boardingStationDetails?.stationList || [];
+            const matchingStation = stationList.find((detail) => detail.stationCode === stationCode);
+
+            // If a match is found, compute the departure date based on the day
+            if (matchingStation) {
+              const { departureTime, dayCount } = matchingStation;
+
+              // Parse trainStartDate and extract the base date
+              const trainStartDate = trainData.departureDate; // Example: "Thu, 30 Jan"
+              const [dayOfWeek, day, month] = trainStartDate.split(" "); // Split into components
+
+              // Create a Date object to handle date arithmetic
+              const baseDate = new Date(`${month} ${day}, 2025`); // Assuming the year is 2025, change if needed
+
+              if (isNaN(baseDate)) {
+                console.error("Invalid train start date:", trainStartDate);
+                return null;
+              }
+
+              // Adjust the date based on routeNumber (dayCount - 1 because routeNumber starts from 1)
+              const adjustedDate = new Date(baseDate);
+              adjustedDate.setDate(baseDate.getDate() + (dayCount - 1));  // Add (dayCount - 1) days
+
+            
+
+              // Format the adjusted date to "30 Jan"
+              const formattedDepartureDate = adjustedDate.toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "short",
+              });
+
+              return (
+                <option key={stationCode} value={stationCode}>
+                  {stationName}({stationCode})-{convert24To12Hour(departureTime)}({formattedDepartureDate})
+                </option>
+              );
+            }
+            return null; // Skip if no match is found
+          })}
+
+
+
+
+
+
+
+
+          {/* {boardingStationDetails?.map((station, index) => {
+            const { name, code } = parseStationNameCode(station.stnNameCode);
+            return (
+              <option key={index} value={code}>
+                {name} - {code}
+              </option>
+            );
+          })} */}
+        </select>
+      </div>
+      <small className="text-muted">
+        Select the station from where you will board the train.
+      </small>
+    </div>
   );
 
   return (

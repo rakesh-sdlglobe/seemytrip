@@ -7,7 +7,7 @@ import TrainSearchResultList from "./train_search-result";
 
 const TrainList01 = () => {
   const location = useLocation();
-  const searchParams = location.state || JSON.parse(localStorage.getItem("searchParams"));
+  const searchParams = location.state || JSON.parse(localStorage.getItem("searchParams") || '{}');
 
   const [filters, setFilters] = useState({
     ac: false,

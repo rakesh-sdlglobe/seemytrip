@@ -30,12 +30,19 @@ const TrainSearchResultList = ({ filters }) => {
   if (trainData?.length === 0 ) { 
     console.log('No trains found in the store. Checking localStorage...');
     trainData = JSON.parse(localStorage.getItem('trains') || '[]');
-    searchParams = JSON.parse(localStorage.getItem('trainSearchParams'));
+    searchParams = JSON.parse(localStorage.getItem('trainSearchParams') || '{}');
   }
   
 
   let {formattedTrainDate, date } = searchParams;  
   
+  const formattedJourneyDate = (dateString) => {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}${month}${day}`;
+  };
 
   const totalDuration = (duration) => {
     // Split the duration into hours and minutes
@@ -196,20 +203,21 @@ const TrainSearchResultList = ({ filters }) => {
     }
 
     const bookingData = {
-        arrivalTime : getTrainArrival(train,date,"time"),
-        arrivalDate : getTrainArrival(train,date,"date"),
-        departureTime : convertTo12HourFormat(train.departureTime),
-        departureDate : formattedTrainDate,
-        distance : train.distance,
-        duration : totalDuration(train.duration),
-        fromStnCode : train.fromStnCode,
-        toStnCode : train.toStnCode,
-        fromStnName : getStationName(train.fromStnCode),
-        toStnName : getStationName(train.toStnCode),
-        trainName : train.trainName,
-        trainNumber : train.trainNumber,
-        trainType : train.trainType,
-        classinfo : classInfo,
+      arrivalTime : getTrainArrival(train,date,"time"),
+      arrivalDate : getTrainArrival(train,date,"date"),
+      departureTime : convertTo12HourFormat(train?.departureTime),
+      departureDate : formattedTrainDate,
+      distance : train?.distance,
+      duration : totalDuration(train?.duration),
+      fromStnCode : train?.fromStnCode,
+      journeyDate : formattedJourneyDate(date),
+      toStnCode : train?.toStnCode,
+      fromStnName : getStationName(train?.fromStnCode),
+      toStnName : getStationName(train?.toStnCode),
+      trainName : train?.trainName,
+      trainNumber : train?.trainNumber,
+      trainType : train?.trainType,
+      classinfo : classInfo,
     };
 
     if (isAuthenticated) {
