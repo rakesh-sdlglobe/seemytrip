@@ -8,36 +8,34 @@ import 'react-toastify/dist/ReactToastify.css';
 import {useLocation} from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { IRCTC_Logo } from '../../assets/images';
-import { selectTrainBoardingStations }  from '../../store/Selectors/filterSelectors';
-import { useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { selectTrainBoardingStations } from '../../store/Selectors/filterSelectors';
 import { fetchTrainBoardingStations } from '../../store/Actions/filterActions';
+import { useDispatch, useSelector } from "react-redux";
+
+import {
+  addTraveler,
+  fetchTravelers,
+  removeTraveler,
+  updateTraveler,
+} from "../../store/Actions/userActions";
+import {
+  selectTravelers,
+  selectTravelerLoading,
+} from "../../store/Selectors/userSelector";
 
 const TrainBookingDetails = () => {
 const location = useLocation();
 const trainData = location.state?.trainData;
 const navigate = useNavigate();
 const dispatch = useDispatch();
-// Add max travelers constant
+  // Add max travelers constant
 const MAX_TRAVELERS = 6;
 console.log("17 train data from ",trainData)
-// let boardingAPIReq = {
-//   trainNumber: trainData.trainNumber,
-//   journeyDate: trainData.journeyDate,
-//   fromStnCode: trainData.fromStnCode,
-//   toStnCode: trainData.toStnCode,
-//   classinfo: trainData.classinfo.enqClass
-// }
-// console.log("boading req data is ", boardingAPIReq)
-
 useEffect(() => {
   dispatch(fetchTrainBoardingStations(trainData.trainNumber, trainData.journeyDate, trainData.fromStnCode, trainData.toStnCode, trainData.classinfo.enqClass));
 },[]);
-
 const boardingStations = useSelector(selectTrainBoardingStations);
 console.log("18 boarding stations from ",boardingStations)
-
-
 // State management
 const [travelers, setTravelers] = useState([]);
 const [currentTraveler, setCurrentTraveler] = useState({
@@ -89,6 +87,15 @@ const [contactDetails, setContactDetails] = useState({
     mobile: ''
   });
 
+  // Add Redux hooks
+  const savedTravelers = useSelector(selectTravelers) || [];
+  const loading = useSelector(selectTravelerLoading);
+
+  // Add useEffect to fetch travelers on component mount
+  useEffect(() => {
+    dispatch(fetchTravelers());
+  }, [dispatch]);
+
   useEffect(() => {
     if (showTravelerModal) {
       document.body.classList.add('modal-open');
@@ -137,6 +144,19 @@ const [contactDetails, setContactDetails] = useState({
     }));
   };
 
+  // Train details object
+  // const trainData = {
+  //   trainNumber: trainData?.trainNumber ||'11006',
+  //   trainName: trainData?.trainName ||'CHALUKYA EXP',
+  //   from: trainData?.startStation ||'Krishnarajapuram',
+  //   to: trainData?.endStation ||'Mumbai Dadar Central',
+  //   class: trainData?.seatClass ||'Second AC • General',
+  //   departureTime: trainData?.departureTime ||'04:40 AM',
+  //   departureDate: 'Thu, 14 Nov 24',
+  //   arrivalTime: trainData?.arrival_time ||'05:35 AM',
+  //   arrivalDate: 'Fri, 15 Nov 24',
+  //   duration: trainData?.duration ||'24h 55m',
+  // };
 
   // Handler functions
   const handleSave = () => {
@@ -146,32 +166,36 @@ const [contactDetails, setContactDetails] = useState({
     }
     
     if (validateForm()) {
-      const travelerWithFullName = {
-        ...currentTraveler,
-        name: `${currentTraveler.firstName} ${currentTraveler.lastName}`.trim()
+      const travelerData = {
+        firstname: currentTraveler.firstName,
+        lastname: currentTraveler.lastName,
+        mobile: '', // You may want to add this field to your form
+        dob: '', // You may want to add this field to your form
+        age: currentTraveler.age,
+        gender: currentTraveler.gender,
+        berth: currentTraveler.berth,
+        country: currentTraveler.country,
       };
 
       if (editingTravelerIndex !== null) {
-        const updatedTravelers = [...travelers];
-        updatedTravelers[editingTravelerIndex] = travelerWithFullName;
-        setTravelers(updatedTravelers);
-        toast.success('Traveler updated successfully');
+        dispatch(updateTraveler({ ...travelerData, id: editingTravelerIndex }))
+          .then(() => {
+            toast.success('Traveler updated successfully');
+            handleModalClose();
+          })
+          .catch(error => {
+            toast.error('Failed to update traveler');
+          });
       } else {
-        setTravelers([...travelers, travelerWithFullName]);
-        toast.success('Traveler added successfully');
+        dispatch(addTraveler(travelerData))
+          .then(() => {
+            toast.success('Traveler added successfully');
+            handleModalClose();
+          })
+          .catch(error => {
+            toast.error('Failed to add traveler');
+          });
       }
-
-      // Reset form and close modal
-      setCurrentTraveler({
-        firstName: '',
-        lastName: '',
-        age: '',
-        gender: 'male',
-        berth: '',
-        country: '',
-      });
-      setEditingTravelerIndex(null);
-      setShowTravelerModal(false);
     }
   };
 
@@ -229,33 +253,40 @@ const handleProceedToPayment = (e)=>{
   };
 
   // Add delete handler
-  const handleDeleteTraveler = (index) => {
-    const updatedTravelers = travelers.filter((_, i) => i !== index);
-    setTravelers(updatedTravelers);
-    toast.error('Traveler deleted successfully');
+  const handleDeleteTraveler = (id) => {
+    if (window.confirm('Are you sure you want to remove this traveler?')) {
+      dispatch(removeTraveler(id))
+        .then(() => {
+          toast.success('Traveler deleted successfully');
+        })
+        .catch(error => {
+          toast.error('Failed to delete traveler');
+        });
+    }
   };
 
   // Update handleEditTraveler function
-  const handleEditTraveler = (index) => {
-    const traveler = travelers[index];
-    const [firstName, ...lastNameParts] = traveler.name.split(' ');
+  const handleEditTraveler = (traveler) => {
     setCurrentTraveler({
-      ...traveler,
-      firstName: firstName || '',
-      lastName: lastNameParts.join(' ') || ''
+      firstName: traveler.firstname,
+      lastName: traveler.lastname,
+      age: traveler.age,
+      gender: traveler.gender || 'male',
+      berth: traveler.berth || '',
+      country: traveler.country || '',
     });
-    setEditingTravelerIndex(index);
+    setEditingTravelerIndex(traveler.id);
     setShowTravelerModal(true);
     toast.info('Edit traveler details');
   };
 
   // Add this function near other handler functions
-  const handleTravelerSelection = (index) => {
+  const handleTravelerSelection = (id) => {
     setSelectedTravelers(prev => {
-      if (prev.includes(index)) {
-        return prev.filter(i => i !== index);
+      if (prev.includes(id)) {
+        return prev.filter(i => i !== id);
       } else {
-        return [...prev, index];
+        return [...prev, id];
       }
     });
   };
@@ -527,7 +558,7 @@ const handleProceedToPayment = (e)=>{
     <div className="card p-4 mb-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4 className="mb-0">Travelers</h4>
-        {travelers.length < MAX_TRAVELERS && (
+        {savedTravelers.length < MAX_TRAVELERS && (
           <button 
             className="btn btn-primary d-flex align-items-center gap-2"
             onClick={() => setShowTravelerModal(true)}
@@ -538,7 +569,7 @@ const handleProceedToPayment = (e)=>{
         )}
       </div>
 
-      {travelers.length === 0 ? (
+      {savedTravelers.length === 0 ? (
         <div className="text-center py-5">
           <div className="empty-state-icon mb-4">
             <i className="fa-solid fa-users-slash fa-4x text-muted"></i>
@@ -557,31 +588,33 @@ const handleProceedToPayment = (e)=>{
         </div>
       ) : (
         <div className="row g-3">
-          {travelers.map((traveler, index) => (
-            <div key={index} className="col-md-6">
-              <div className={`card shadow-sm ${selectedTravelers.includes(index) ? 'border-primary' : ''}`}>
+          {savedTravelers.map((traveler, index) => (
+            <div key={traveler.id} className="col-md-6">
+              <div className={`card shadow-sm ${selectedTravelers.includes(traveler.id) ? 'border-primary' : ''}`}>
                 <div className="card-body">
                   <div className="d-flex align-items-center mb-2">
                     <div className="form-check me-2">
                       <input
                         className="form-check-input"
                         type="checkbox"
-                        checked={selectedTravelers.includes(index)}
-                        onChange={() => handleTravelerSelection(index)}
-                        id={`traveler-${index}`}
+                        checked={selectedTravelers.includes(traveler.id)}
+                        onChange={() => handleTravelerSelection(traveler.id)}
+                        id={`traveler-${traveler.id}`}
                       />
                     </div>
-                    <p className="fw-bold mb-0 flex-grow-1">{traveler.name}</p>
+                    <p className="fw-bold mb-0 flex-grow-1">
+                      {traveler.firstname} {traveler.lastname}
+                    </p>
                     <div>
                       <button 
                         className="btn btn-sm btn-outline-primary me-2"
-                        onClick={() => handleEditTraveler(index)}
+                        onClick={() => handleEditTraveler(traveler)}
                       >
                         <Edit2 size={16} />
                       </button>
                       <button 
                         className="btn btn-sm btn-outline-danger"
-                        onClick={() => handleDeleteTraveler(index)}
+                        onClick={() => handleDeleteTraveler(traveler.id)}
                       >
                         <i className="fa-solid fa-trash-can"></i>
                       </button>
@@ -741,11 +774,10 @@ const handleProceedToPayment = (e)=>{
       <div className="card-body p-4">
         <div className="mb-4">
           <label htmlFor="irctcUsername" className="form-label fw-medium">IRCTC Username*</label>
-          <div className="input-group" style={{ width: '100%' }}>
+          <div className="input-group" style={{ position: 'relative' }}>
             <input
               type="text"
               className="form-control form-control-lg"
-              style={{ flex: '1 1 auto' }}
               id="irctcUsername"
               placeholder="Enter your IRCTC username"
               value={contactDetails.irctcUsername}
@@ -753,9 +785,9 @@ const handleProceedToPayment = (e)=>{
             />
             {contactDetails.irctcUsername && (
               <button 
-                className="btn btn-link position-absolute end-0 top-50 translate-middle-y text-muted px-3"
+                className="btn btn-link clear-button"
                 onClick={() => setContactDetails({ ...contactDetails, irctcUsername: '' })}
-                style={{ zIndex: 5, right: '40px' }}
+                type="button"
               >
                 <i className="fa-solid fa-xmark"></i>
               </button>
@@ -1181,7 +1213,7 @@ const handleProceedToPayment = (e)=>{
       <style jsx>{`
         .journey-line {
           position: relative;
-          width: 100%;
+          width: 150%;
           height: 2px;
           background: #dee2e6;
           margin: 10px auto;
@@ -1450,13 +1482,31 @@ const handleProceedToPayment = (e)=>{
           border-radius: 8px;
         }
 
-        .input-group .form-control {
-          border-right: 0;
+        .input-group {
+          display: flex;
+          align-items: center;
+          width: 100%;
         }
 
-        .input-group-text {
-          border-left: 0;
-          background-color: transparent;
+        .input-group .form-control {
+          border-radius: 8px !important;
+          padding-right: 40px; /* Make space for the clear button */
+        }
+
+        .clear-button {
+          position: absolute;
+          right: 8px;
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 5;
+          color: #6c757d;
+          padding: 0.375rem 0.75rem;
+          background: transparent;
+          border: none;
+        }
+
+        .clear-button:hover {
+          color: #343a40;
         }
 
         .badge {
