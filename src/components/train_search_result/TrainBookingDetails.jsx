@@ -10,6 +10,9 @@ import { useNavigate } from 'react-router-dom';
 import { IRCTC_Logo } from '../../assets/images';
 import { selectTrainBoardingStations } from '../../store/Selectors/filterSelectors';
 import { fetchTrainBoardingStations } from '../../store/Actions/filterActions';
+import LogoutHandler from '../LogOutHandler';
+import { fetchIRCTCusername } from '../../store/Actions/filterActions';
+import { selectIRCTCUsernameStatus } from '../../store/Selectors/filterSelectors';
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -24,6 +27,7 @@ import {
 } from "../../store/Selectors/userSelector";
 
 const TrainBookingDetails = () => {
+
 const location = useLocation();
 const trainData = location.state?.trainData;
 const navigate = useNavigate();
@@ -1178,6 +1182,7 @@ const handleProceedToPayment = (e)=>{
 
   return (
     <div id="main-wrapper">
+      <LogoutHandler />
       <ToastContainer/>
       <Header02 />
       

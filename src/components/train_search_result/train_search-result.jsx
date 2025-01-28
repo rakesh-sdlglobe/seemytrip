@@ -238,7 +238,7 @@ const TrainSearchResultList = ({ filters }) => {
         let seats = parseInt(availabilityStatus.split('-')[1], 10);
         return seats ? `AVL ${seats}` : 'AVL';
     } else if (availablityType === "2" && availabilityStatus.includes("RAC")) {
-        let seats = parseInt(availabilityStatus.split('RAC')[1], 10);
+        let seats = parseInt(availabilityStatus.split('RAC')[2], 10);
         return seats ? `RAC ${seats}` : "RAC";
     } else if (availablityType === "3" && availabilityStatus.includes("WL")) {
           let seats = parseInt(availabilityStatus.split('WL')[2], 10);

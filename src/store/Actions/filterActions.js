@@ -19,6 +19,9 @@ export const FETCH_TRAINS_SCHEDULE_FAILURE = 'FETCH_TRAINS_SCHEDULE_FAILURE'
 export const FETCH_TRAIN_BOARDING_STATIONS_REQUEST = 'FETCH_TRAIN_BOARDING_STATIONS_REQUEST'
 export const FETCH_TRAIN_BOARDING_STATIONS_SUCCESS = 'FETCH_TRAIN_BOARDING_STATIONS_SUCCESS'
 export const FETCH_TRAIN_BOARDING_STATIONS_FAILURE = 'FETCH_TRAIN_BOARDING_STATIONS_FAILURE'
+export const FETCH_IRCTC_USERNAME_REQUEST = 'FETCH_IRCTC_USERNAME_REQUEST'
+export const FETCH_IRCTC_USERNAME_SUCCESS = 'FETCH_IRCTC_USERNAME_SUCCESS'
+export const FETCH_IRCTC_USERNAME_FAILURE = 'FETCH_IRCTC_USERNAME_FAILURE'
 
 // Action Creators
 export const fetchStationsRequest = () => ({
@@ -217,5 +220,40 @@ export const fetchTrainBoardingStations = (trainNumber, journeyDate, fromStnCode
     } catch (error) {
       console.error("Error fetching train boarding stations:", error.message);
       dispatch(fetchTrainBoardingStationsFailure(error.message));
+    }
+  };
+
+
+  
+export const fetchIrctcUsernameRequest = () => ({
+  type: FETCH_IRCTC_USERNAME_REQUEST,
+});
+
+export const fetchIrctcUsernameSuccess = (IRCTC_username_status) => ({
+  type: FETCH_IRCTC_USERNAME_SUCCESS,
+  payload: IRCTC_username_status,
+});
+
+export const fetchIrctcUsernameFailure = (error) => ({
+  type: FETCH_IRCTC_USERNAME_FAILURE,
+  payload: error,
+});
+
+
+export const fetchIRCTCusername = (userName) => 
+  async (dispatch) => {
+    console.log("Calling fetch IRCTC user name valid or not :", userName);
+    
+    dispatch(fetchIrctcUsernameRequest());
+    try {
+      const response = await axios.get(`${API_URL}/trains/getUsernameFromIRCTC/${userName}`);
+
+      if (response.data.success) {
+        console.log("fetchTrainBoardingStationsSuccess:", response.data);
+        dispatch(fetchIrctcUsernameSuccess(response.data));
+      }
+    } catch (error) {
+      console.error("Error fetching train boarding stations:", error.message);
+      dispatch(fetchIrctcUsernameFailure(error.message));
     }
   };

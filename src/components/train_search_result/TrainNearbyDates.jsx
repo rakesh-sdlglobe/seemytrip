@@ -150,17 +150,17 @@ const NearbyDates = ({ train, onClose }) => {
                     const [, seats] = availabilityStatus.split('-');
                     return seats ? `Available ${Number(seats)}` : 'Available';
                 case "2":
-                    if (availabilityStatus.includes("RAC")) {
-                        const seats = parseInt(availabilityStatus.replace(/\D/g, ''), 10);
-                        return seats ? `RAC ${Number(seats)}` : "RAC";
-                    }
-                    return availabilityStatus;
+                if (availabilityStatus.includes("RAC")) {
+                    let seats = parseInt(availabilityStatus.split('RAC')[2], 10);
+                    return seats ? `RAC ${Number(seats)}` : "RAC";
+                }
+                return availabilityStatus;
                 case "3":
-                    if (availabilityStatus.includes("WL")) {
-                        const seats = parseInt(availabilityStatus.replace(/\D/g, ''), 10);
-                        return seats ? `${quota}WL ${Number(seats)}` : `${quota}WL`;
-                    }
-                    return availabilityStatus;
+                if (availabilityStatus.includes("WL")) {
+                    let seats = parseInt(availabilityStatus.split('WL')[2], 10);
+                    return seats ? `${quota}WL ${Number(seats)}` : `${quota}WL`;
+                }
+                return availabilityStatus;
                 default:
                     return "NOT AVAILABLE";
             }
