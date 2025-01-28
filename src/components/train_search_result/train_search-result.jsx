@@ -590,26 +590,52 @@ const TrainSearchResultList = ({ filters }) => {
                       ))
                     )}
 
-                    {/* Nearby Dates Button */}
-                    <div className="w-100 border-top my-2 opacity-25"></div>
+                    {/* Nearby Dates Section */}
+                    <div className="w-100 border-top my-2"></div>
                     <div className="d-flex justify-content-between align-items-center w-100 px-3">
                       <button 
-                        className="btn btn-link text-primary p-0"
+                        className="btn d-flex align-items-center gap-1 py-1 px-2"
                         onClick={() => toggleNearbyDates(train.trainNumber)}
-                        style={{ textDecoration: 'none' }}
+                        style={{ 
+                          background: expandedTrainId === train.trainNumber ? '#e3f2fd' : '#f8f9fa',
+                          border: '1px solid',
+                          borderColor: expandedTrainId === train.trainNumber ? '#90caf9' : '#dee2e6',
+                          borderRadius: '6px',
+                          color: expandedTrainId === train.trainNumber ? '#1976d2' : '#6c757d',
+                          transition: 'all 0.3s ease',
+                          fontSize: '0.9rem'
+                        }}
                       >
-                        <i className={`fas fa-chevron-${expandedTrainId === train.trainNumber ? 'up' : 'down'} me-2`}></i>
-                        Nearby dates
+                        <i className={`fas fa-calendar-alt fa-sm`}></i>
+                        <span className="mx-1">Check Nearby Dates</span>
+                        <i 
+                          className={`fas fa-chevron-${expandedTrainId === train.trainNumber ? 'up' : 'down'} fa-sm`}
+                          style={{
+                            transform: expandedTrainId === train.trainNumber ? 'rotate(180deg)' : 'rotate(0)',
+                            transition: 'transform 0.3s ease'
+                          }}
+                        ></i>
                       </button>
                     </div>
 
                     {/* Collapsible Nearby Dates Section */}
-                    {expandedTrainId === train.trainNumber && (
-                      <NearbyDates 
-                        train={getOriginalTrainData(train.trainNumber)} 
-                        onClose={() => setExpandedTrainId(null)}
-                      />
-                    )}
+                    <div 
+                      style={{
+                        maxHeight: expandedTrainId === train.trainNumber ? '500px' : '0',
+                        overflow: 'hidden',
+                        transition: 'all 0.3s ease-in-out',
+                        width: '100%'
+                      }}
+                    >
+                      {expandedTrainId === train.trainNumber && (
+                        <div className="bg-light p-3 rounded-3 mt-2">
+                          <NearbyDates 
+                            train={getOriginalTrainData(train.trainNumber)} 
+                            onClose={() => setExpandedTrainId(null)}
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
