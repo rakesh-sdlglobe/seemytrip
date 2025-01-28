@@ -1,0 +1,64 @@
+.booking-btn {
+    background: linear-gradient(45deg, #2196F3, #1976D2);
+    border: none;
+    font-size: 0.85rem;
+    padding: 0.25rem 0.75rem;
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.booking-btn:hover:not(:disabled) {
+    background: #d20000 !important;
+    color: white !important;
+}
+
+.booking-btn-disabled {
+    background: #6c757d !important;
+    border: none;
+    font-size: 0.85rem;
+    padding: 0.25rem 0.75rem;
+    transition: all 0.3s ease;
+    color: #fff !important;
+    opacity: 0.65;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.date-card {
+    border: 1px solid #eee;
+    transition: all 0.3s ease;
+    min-height: 50px;
+}
+
+.date-info-text {
+    font-size: 0.9rem;
+}
+
+.status-text {
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.tag-text {
+    font-size: 0.8rem;
+}
+
+.bg-success-light {
+    background-color: #EBF5EA;
+}
+
+.bg-warning-light {
+    background-color: #FDEFDA;
+}
+
+.text-success {
+    color: green;
+}
+
+.text-warning {
+    color: orange;
+}
+
+.text-muted {
+    color: #666;
+} 
