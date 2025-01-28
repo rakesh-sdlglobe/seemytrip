@@ -14,7 +14,6 @@ import {
     verifyOTP,
     resetPassword,
 } from '../store/Actions/verifyEmail';
-import LogoutHandler from './LogOutHandler';
 
 const PersonalInfo = () => {
     const dispatch = useDispatch();
@@ -172,7 +171,6 @@ const PersonalInfo = () => {
     };
     return (
         <>
-            <LogoutHandler />
             <div className="card mb-4">
                 <div className="card-header d-flex justify-content-between align-items-center">
                     <h4><i className="fa-solid fa-file-invoice me-2" />Personal Information</h4>

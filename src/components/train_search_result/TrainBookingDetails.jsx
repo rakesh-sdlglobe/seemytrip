@@ -10,7 +10,6 @@ import { useNavigate } from 'react-router-dom';
 import { IRCTC_Logo } from '../../assets/images';
 import { selectTrainBoardingStations } from '../../store/Selectors/filterSelectors';
 import { fetchTrainBoardingStations } from '../../store/Actions/filterActions';
-import LogoutHandler from '../LogOutHandler';
 import { fetchIRCTCusername } from '../../store/Actions/filterActions';
 import { selectIRCTCUsernameStatus } from '../../store/Selectors/filterSelectors';
 import { useDispatch, useSelector } from "react-redux";
@@ -32,6 +31,10 @@ const location = useLocation();
 const trainData = location.state?.trainData;
 const navigate = useNavigate();
 const dispatch = useDispatch();
+const irctcUsernameStatus = useSelector(selectIRCTCUsernameStatus);
+const [isVerifying, setIsVerifying] = useState(false);
+const [isVerified, setIsVerified] = useState(false);
+const [isEditing, setIsEditing] = useState(false);
   // Add max travelers constant
 const MAX_TRAVELERS = 6;
 console.log("17 train data from ",trainData)
@@ -40,6 +43,7 @@ useEffect(() => {
 },[]);
 const boardingStations = useSelector(selectTrainBoardingStations);
 console.log("18 boarding stations from ",boardingStations)
+console.log("IRCTC response ",irctcUsernameStatus)
 // State management
 const [travelers, setTravelers] = useState([]);
 const [currentTraveler, setCurrentTraveler] = useState({
@@ -367,6 +371,43 @@ const handleProceedToPayment = (e)=>{
     setShowForgotPasswordPopup(false);
     setForgotPasswordError({});
     setForgotPasswordForm({ username: '', mobile: '' });
+  };
+
+  // Add verification handler
+  const handleVerifyUsername = async () => {
+    if (!contactDetails.irctcUsername) {
+      toast.error('Please enter IRCTC username');
+      return;
+    }
+
+    setIsVerifying(true);
+    try {
+      await dispatch(fetchIRCTCusername(contactDetails.irctcUsername));
+    } catch (error) {
+      console.error('Error verifying username:', error);
+      toast.error('Failed to verify username');
+      setIsVerifying(false);
+    }
+  };
+
+  // Add effect to handle API response
+  useEffect(() => {
+    if (irctcUsernameStatus) {
+      console.log("irctcUsernameStatus",irctcUsernameStatus)
+      setIsVerifying(false);
+      if (irctcUsernameStatus.success === contactDetails.irctcUsername) {
+        console.log('Valid IRCTC username:', contactDetails.irctcUsername);
+        setIsVerified(true);;
+      } else if (irctcUsernameStatus.error) {
+        console.log('Invalid IRCTC username:', irctcUsernameStatus.error);
+        setIsVerified(false);
+      }
+    }
+  }, [irctcUsernameStatus, contactDetails.irctcUsername]);
+
+  const handleEditUsername = () => {
+    setIsEditing(true);
+    setIsVerified(false);
   };
 
   // Render functions
@@ -758,7 +799,7 @@ const handleProceedToPayment = (e)=>{
     </div>
   );
 
-  // Add this new function to render IRCTC Details section
+  // Update the IRCTC Details render function
   const renderIRCTCDetails = () => (
     <div className="card mb-4">
       <div className="card-header bg-white p-4 border-bottom">
@@ -781,27 +822,63 @@ const handleProceedToPayment = (e)=>{
           <div className="input-group" style={{ position: 'relative' }}>
             <input
               type="text"
-              className="form-control form-control-lg"
+              className={`form-control form-control-lg ${isVerified ? 'border-success' : ''}`}
               id="irctcUsername"
               placeholder="Enter your IRCTC username"
               value={contactDetails.irctcUsername}
-              onChange={(e) => setContactDetails({ ...contactDetails, irctcUsername: e.target.value })}
+              onChange={(e) => {
+                if (!isVerified || isEditing) {
+                  setContactDetails({ ...contactDetails, irctcUsername: e.target.value });
+                  setIsVerified(false);
+                }
+              }}
+              readOnly={isVerified && !isEditing}
             />
             {contactDetails.irctcUsername && (
-              <button 
-                className="btn btn-link clear-button"
-                onClick={() => setContactDetails({ ...contactDetails, irctcUsername: '' })}
-                type="button"
-              >
-                <i className="fa-solid fa-xmark"></i>
-              </button>
+              isVerified ? (
+                <button 
+                  className="btn btn-outline-primary ms-2"
+                  style={{ borderRadius: "10px" }}
+                  onClick={handleEditUsername}
+                >
+                  <i className="fa-solid fa-pen-to-square me-2"></i>
+                  Change
+                </button>
+              ) : (
+                <button 
+                  className={`btn ${isVerifying ? 'btn-secondary' : 'btn-danger'} ms-2`}
+                  style={{ borderRadius: "10px" }}
+                  onClick={handleVerifyUsername}
+                  disabled={isVerifying}
+                >
+                  {isVerifying ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      Verifying...
+                    </>
+                  ) : (
+                    <>
+                      <i className="fa-solid fa-check me-2"></i>
+                      Verify
+                    </>
+                  )}
+                </button>
+              )
             )}
           </div>
-          {contactDetails.irctcUsername && (
+          {isVerified && (
             <div className="d-flex align-items-center mt-2">
               <span className="badge bg-success-subtle text-success rounded-pill">
                 <i className="fa-solid fa-check-circle me-1"></i>
                 IRCTC ID Verified
+              </span>
+            </div>
+          )}
+          {irctcUsernameStatus?.error && !isVerified && !isVerifying && (
+            <div className="d-flex align-items-center mt-2">
+              <span className="badge bg-danger-subtle text-danger rounded-pill">
+                <i className="fa-solid fa-exclamation-circle me-1"></i>
+                {irctcUsernameStatus.error}
               </span>
             </div>
           )}
@@ -1182,7 +1259,6 @@ const handleProceedToPayment = (e)=>{
 
   return (
     <div id="main-wrapper">
-      <LogoutHandler />
       <ToastContainer/>
       <Header02 />
       
@@ -1635,6 +1711,57 @@ const handleProceedToPayment = (e)=>{
           background-color: #f8f9fa;
           color: #6c757d;
           font-style: italic;
+        }
+
+        .btn-danger {
+          background-color: #cd2c22;
+          border-color: #cd2c22;
+          color: white;
+          transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+          background-color: #cd2c22 !important;
+          border-color: #cd2c22 !important;
+          color: white !important;
+        }
+
+        .btn-danger:active, .btn-danger:focus {
+          background-color: #cd2c22 !important;
+          border-color: #cd2c22 !important;
+          color: white !important;
+          box-shadow: 0 0 0 0.25rem rgba(205, 44, 34, 0.25) !important;
+        }
+
+        .btn-danger:disabled {
+          background-color: rgba(205, 44, 34, 0.65);
+          border-color: transparent;
+          color: white;
+        }
+
+        .spinner-border {
+          width: 1rem;
+          height: 1rem;
+          border-width: 0.15em;
+        }
+
+        .form-control:read-only {
+          background-color: #f8f9fa;
+          cursor: not-allowed;
+        }
+
+        .border-success {
+          border-color: #198754 !important;
+        }
+
+        .btn-outline-primary {
+          color: #cd2c22;
+          border-color: #cd2c22;
+        }
+
+        .btn-outline-primary:hover {
+          background-color: #cd2c22;
+          color: white;
         }
       `}</style>
     </div>

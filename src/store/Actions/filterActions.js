@@ -248,7 +248,7 @@ export const fetchIRCTCusername = (userName) =>
     try {
       const response = await axios.get(`${API_URL}/trains/getUsernameFromIRCTC/${userName}`);
 
-      if (response.data.success) {
+      if (response.data) {
         console.log("fetchTrainBoardingStationsSuccess:", response.data);
         dispatch(fetchIrctcUsernameSuccess(response.data));
       }
