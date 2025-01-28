@@ -16,6 +16,9 @@ import {
   FETCH_TRAIN_BOARDING_STATIONS_REQUEST,
   FETCH_TRAIN_BOARDING_STATIONS_SUCCESS,
   FETCH_TRAIN_BOARDING_STATIONS_FAILURE,
+  FETCH_IRCTC_USERNAME_REQUEST,
+  FETCH_IRCTC_USERNAME_SUCCESS,
+  FETCH_IRCTC_USERNAME_FAILURE, 
 } from '../Actions/filterActions.js';
 
 const initialState = {
@@ -26,6 +29,7 @@ const initialState = {
   searchParams: {},
   trainSchedule:[],
   trainBoardingStations : [],
+  IRCTC_username_status : {}
 };
 
 export const filterReducer = (state = initialState, action) => {
@@ -70,58 +74,75 @@ export const filterReducer = (state = initialState, action) => {
         loading: false,
         searchParams: action.payload,
       };
-      case FETCH_TRAINS_FARE_REQUEST:
-        return {
-          ...state,
-          loading: true,
-        };
-      case FETCH_TRAINS_FARE_SUCCESS:
-        return {
-          ...state,
-          loading: false,
-          trainsFare: action.payload,
-        };
-      case FETCH_TRAINS_FARE_FAILURE:
-        return {
-          ...state,
-          loading: false,
-          error: action.payload,
-        };
-        case FETCH_TRAINS_SCHEDULE_REQUEST:
-          return {
-            ...state,
-            loading: true,
-          };
-        case FETCH_TRAINS_SCHEDULE_SUCCESS:
-          return {
-            ...state,
-            loading: false,
-            trainSchedule: action.payload,
-          };
-        case FETCH_TRAINS_SCHEDULE_FAILURE:
-          return {
-            ...state,
-            loading: false,
-            error: action.payload,
-          };
-        case FETCH_TRAIN_BOARDING_STATIONS_REQUEST:
-          return {
-            ...state,
-            loading: true,
-          };
-        case FETCH_TRAIN_BOARDING_STATIONS_SUCCESS:
-          return {
-            ...state,
-            loading: false,
-            trainBoardingStations: action.payload,
-          };
-        case FETCH_TRAIN_BOARDING_STATIONS_FAILURE:
-          return {
-            ...state,
-            loading: false,
-            error: action.payload,
-          };
-        
+    case FETCH_TRAINS_FARE_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+    case FETCH_TRAINS_FARE_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        trainsFare: action.payload,
+      };
+    case FETCH_TRAINS_FARE_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+    case FETCH_TRAINS_SCHEDULE_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+    case FETCH_TRAINS_SCHEDULE_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        trainSchedule: action.payload,
+      };
+    case FETCH_TRAINS_SCHEDULE_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+    case FETCH_TRAIN_BOARDING_STATIONS_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+    case FETCH_TRAIN_BOARDING_STATIONS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        trainBoardingStations: action.payload,
+      };
+    case FETCH_TRAIN_BOARDING_STATIONS_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+    case FETCH_IRCTC_USERNAME_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+    case FETCH_IRCTC_USERNAME_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        IRCTC_username_status: action.payload,
+      };
+    case FETCH_IRCTC_USERNAME_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+      
     default:
       return state;
   }

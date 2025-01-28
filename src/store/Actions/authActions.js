@@ -135,8 +135,8 @@ export const logout = () => (dispatch) => {
   localStorage.removeItem('authToken');
   localStorage.removeItem('user');
   localStorage.removeItem('googleUserName');
-  localStorage.removeItem('trains');
-  localStorage.removeItem('trainSearchParams');
+  // localStorage.removeItem('trains');
+  // localStorage.removeItem('trainSearchParams');
   dispatch({
     type: LOGOUT,
   });

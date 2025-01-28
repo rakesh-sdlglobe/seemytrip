@@ -12,8 +12,12 @@ import { selectTrainBoardingStations }  from '../../store/Selectors/filterSelect
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { fetchTrainBoardingStations } from '../../store/Actions/filterActions';
+import LogoutHandler from '../LogOutHandler';
+import { fetchIRCTCusername } from '../../store/Actions/filterActions';
+import { selectIRCTCUsernameStatus } from '../../store/Selectors/filterSelectors';
 
 const TrainBookingDetails = () => {
+
 const location = useLocation();
 const trainData = location.state?.trainData;
 const navigate = useNavigate();
@@ -33,6 +37,9 @@ console.log("17 train data from ",trainData)
 useEffect(() => {
   dispatch(fetchTrainBoardingStations(trainData.trainNumber, trainData.journeyDate, trainData.fromStnCode, trainData.toStnCode, trainData.classinfo.enqClass));
 },[]);
+
+
+
 
 const boardingStations = useSelector(selectTrainBoardingStations);
 console.log("18 boarding stations from ",boardingStations)
@@ -1146,6 +1153,7 @@ const handleProceedToPayment = (e)=>{
 
   return (
     <div id="main-wrapper">
+      <LogoutHandler />
       <ToastContainer/>
       <Header02 />
       
