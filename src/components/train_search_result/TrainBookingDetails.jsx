@@ -1294,85 +1294,147 @@ const handleProceedToPayment = (e)=>{
     return `${hour}:${minute} ${period}`;
   }
   
-  // Update the boarding station dropdown section
+  // Add this state for managing custom dropdown
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // Update the renderBoardingStationDropdown function
   const renderBoardingStationDropdown = () => (
-    <div className="mb-3">
-      <label htmlFor="boardingStation" className="form-label">Boarding Station*</label>
-      <div className="select-wrapper">
-        <select
-          className="form-select card-select"
-          id="boardingStation"
-          value={selectedBoardingStation}
-          onChange={handleBoardingStationChange}
-          required
+    <div className="mb-4">
+      <label htmlFor="boardingStation" className="form-label fw-medium">
+        <i className="fa-solid fa-train me-2 text-primary"></i>
+        Boarding Station*
+      </label>
+      <div className="custom-dropdown-container">
+        {/* Dropdown trigger button */}
+        <div 
+          className="dropdown-trigger"
+          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         >
-          <option value="" disabled>Select boarding point</option>
-          {boardingStations?.map((station) => {
-            const { name: stationName, code: stationCode } = parseStationNameCode(station.stnNameCode);
+          <span>
+            {selectedBoardingStation ? 
+              (() => {
+                const selectedStation = boardingStations?.find(station => 
+                  parseStationNameCode(station.stnNameCode).code === selectedBoardingStation
+                );
+                if (selectedStation) {
+                  const { name: stationName, code: stationCode } = parseStationNameCode(selectedStation.stnNameCode);
+                  const matchingStation = boardingStationDetails?.stationList?.find(
+                    detail => detail.stationCode === stationCode
+                  );
+                  if (matchingStation) {
+                    const { departureTime, dayCount } = matchingStation;
+                    const [dayOfWeek, day, month] = trainData.departureDate.split(" ");
+                    const baseDate = new Date(`${month} ${day}, 2025`);
+                    const adjustedDate = new Date(baseDate);
+                    adjustedDate.setDate(baseDate.getDate() + (dayCount - 1));
+                    const formattedDepartureDate = adjustedDate.toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "short",
+                    });
 
-            // Ensure stationList is valid and compare station codes
-            const stationList = boardingStationDetails?.stationList || [];
-            const matchingStation = stationList.find((detail) => detail.stationCode === stationCode);
+                    return (
+                      <div className="selected-station-display">
+                        <span className="selected-station-name">
+                          {stationName} ({stationCode})
+                        </span>
+                        <div className="selected-station-details">
+                          <span className="selected-station-time">
+                            <i className="fa-regular fa-clock me-1"></i>
+                            {convert24To12Hour(departureTime)}
+                          </span>
+                          <span className="selected-station-date">
+                            <i className="fa-regular fa-calendar me-1"></i>
+                            {formattedDepartureDate}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  }
+                }
+                return 'Select boarding point';
+              })()
+            : 'Select boarding point'}
+          </span>
+          <i className={`fa-solid fa-chevron-down ${isDropdownOpen ? 'rotate' : ''}`}></i>
+        </div>
 
-            // If a match is found, compute the departure date based on the day
-            if (matchingStation) {
-              const { departureTime, dayCount } = matchingStation;
+        {/* Custom dropdown options */}
+        {isDropdownOpen && (
+          <div className="custom-dropdown-options">
+            {boardingStations?.map((station) => {
+              const { name: stationName, code: stationCode } = parseStationNameCode(station.stnNameCode);
+              const stationList = boardingStationDetails?.stationList || [];
+              const matchingStation = stationList.find((detail) => detail.stationCode === stationCode);
 
-              // Parse trainStartDate and extract the base date
-              const trainStartDate = trainData?.departureDate; // Example: "Thu, 30 Jan"
-              const [dayOfWeek, day, month] = trainStartDate.split(" "); // Split into components
+              if (matchingStation) {
+                const { departureTime, dayCount } = matchingStation;
+                const [dayOfWeek, day, month] = trainData.departureDate.split(" ");
+                const baseDate = new Date(`${month} ${day}, 2025`);
 
-              // Create a Date object to handle date arithmetic
-              const baseDate = new Date(`${month} ${day}, 2025`); // Assuming the year is 2025, change if needed
+                if (isNaN(baseDate)) {
+                  console.error("Invalid train start date:", trainData.departureDate);
+                  return null;
+                }
 
-              if (isNaN(baseDate)) {
-                console.error("Invalid train start date:", trainStartDate);
-                return null;
+                const adjustedDate = new Date(baseDate);
+                adjustedDate.setDate(baseDate.getDate() + (dayCount - 1));
+                const formattedDepartureDate = adjustedDate.toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "short",
+                });
+
+                return (
+                  <div
+                    key={stationCode}
+                    className={`dropdown-option ${selectedBoardingStation === stationCode ? 'selected' : ''}`}
+                    onClick={() => {
+                      handleBoardingStationChange({ target: { value: stationCode } });
+                      setIsDropdownOpen(false);
+                    }}
+                  >
+                    <div className="station-card-compact">
+                      <div className="station-info">
+                        <span className="station-name">{stationName}</span>
+                        <span className="station-code">{stationCode}</span>
+                      </div>
+                      <div className="time-info">
+                        <span className="departure-time">
+                          <i className="fa-regular fa-clock me-1"></i>
+                          {convert24To12Hour(departureTime)}
+                        </span>
+                        <span className="departure-date">
+                          <i className="fa-regular fa-calendar me-1"></i>
+                          {formattedDepartureDate}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
               }
-
-              // Adjust the date based on routeNumber (dayCount - 1 because routeNumber starts from 1)
-              const adjustedDate = new Date(baseDate);
-              adjustedDate.setDate(baseDate.getDate() + (dayCount - 1));  // Add (dayCount - 1) days
-
-            
-
-              // Format the adjusted date to "30 Jan"
-              const formattedDepartureDate = adjustedDate.toLocaleDateString("en-GB", {
-                day: "numeric",
-                month: "short",
-              });
-
-              return (
-                <option key={stationCode} value={stationCode}>
-                  {stationName}({stationCode})-{convert24To12Hour(departureTime)}({formattedDepartureDate})
-                </option>
-              );
-            }
-            return null; // Skip if no match is found
-          })}
-
-
-
-
-
-
-
-
-          {/* {boardingStationDetails?.map((station, index) => {
-            const { name, code } = parseStationNameCode(station.stnNameCode);
-            return (
-              <option key={index} value={code}>
-                {name} - {code}
-              </option>
-            );
-          })} */}
-        </select>
+              return null;
+            })}
+          </div>
+        )}
       </div>
-      <small className="text-muted">
-        Select the station from where you will board the train.
+      <small className="text-muted mt-2 d-block">
+        <i className="fa-solid fa-info-circle me-1"></i>
+        Select the station from where you will board the train
       </small>
     </div>
   );
+
+  // Add this useEffect to handle clicking outside the dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const dropdown = document.querySelector('.custom-dropdown-container');
+      if (dropdown && !dropdown.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <div id="main-wrapper">
@@ -1879,6 +1941,187 @@ const handleProceedToPayment = (e)=>{
         .btn-outline-primary:hover {
           background-color: #cd2c22;
           color: white;
+        }
+
+        /* Custom Dropdown Styles */
+        .custom-dropdown-container {
+          position: relative;
+          width: 100%;
+        }
+
+        .dropdown-trigger {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 12px 16px;
+          background: white;
+          border: 1px solid #e0e0e0;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .dropdown-trigger:hover {
+          border-color: #cd2c22;
+        }
+
+        .dropdown-trigger .fa-chevron-down {
+          transition: transform 0.3s ease;
+        }
+
+        .dropdown-trigger .fa-chevron-down.rotate {
+          transform: rotate(180deg);
+        }
+
+        .custom-dropdown-options {
+          position: absolute;
+          top: calc(100% + 5px);
+          left: 0;
+          right: 0;
+          background: white;
+          border-radius: 8px;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+          max-height: 300px;
+          overflow-y: auto;
+          z-index: 1000;
+          padding: 8px;
+        }
+
+        .dropdown-option {
+          margin-bottom: 4px;
+        }
+
+        .dropdown-option:last-child {
+          margin-bottom: 0;
+        }
+
+        .station-card-compact {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 8px 12px;
+          background: white;
+          border: 1px solid #e0e0e0;
+          border-radius: 6px;
+          transition: all 0.2s ease;
+        }
+
+        .dropdown-option:hover .station-card-compact {
+          border-color: #cd2c22;
+          background-color: #fff0f0;
+        }
+
+        .dropdown-option.selected .station-card-compact {
+          border-color: #cd2c22;
+          background-color: #fff0f0;
+        }
+
+        .station-info {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .station-name {
+          font-weight: 500;
+          color: #333;
+          font-size: 0.9rem;
+        }
+
+        .station-code {
+          color: #666;
+          font-size: 0.8rem;
+          padding: 2px 6px;
+          background: #f5f5f5;
+          border-radius: 4px;
+        }
+
+        .time-info {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-size: 0.85rem;
+        }
+
+        .departure-time {
+          color: #cd2c22;
+          font-weight: 500;
+        }
+
+        .departure-date {
+          color: #666;
+        }
+
+        .time-info i {
+          font-size: 0.8rem;
+        }
+
+        /* Mobile optimization */
+        @media (max-width: 576px) {
+          .station-card-compact {
+            padding: 6px 10px;
+          }
+
+          .station-name {
+            font-size: 0.85rem;
+          }
+
+          .time-info {
+            font-size: 0.8rem;
+            gap: 8px;
+          }
+        }
+
+        .selected-station-display {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+          gap: 12px;
+        }
+
+        .selected-station-name {
+          font-weight: 500;
+          color: #333;
+        }
+
+        .selected-station-details {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .selected-station-time {
+          color: #cd2c22;
+          font-weight: 500;
+        }
+
+        .selected-station-date {
+          color: #666;
+        }
+
+        .dropdown-trigger {
+          min-height: 42px;
+        }
+
+        /* Update mobile styles */
+        @media (max-width: 576px) {
+          .selected-station-display {
+            gap: 8px;
+          }
+
+          .selected-station-details {
+            gap: 8px;
+          }
+
+          .selected-station-name {
+            font-size: 0.85rem;
+          }
+
+          .selected-station-time,
+          .selected-station-date {
+            font-size: 0.8rem;
+          }
         }
       `}</style>
     </div>
