@@ -609,7 +609,7 @@ const SearchComponent = ({
               left: 16px;
               top: 45%;
               transform: translateY(-50%);
-              z-index: 1;
+              z-index: 10;
               width: 20px;
               height: 20px;
             }
@@ -719,13 +719,19 @@ const SearchComponent = ({
 
           .station-warning-container {
             position: absolute;
-            top: 78%;
-            left: 0;
-            right: 0;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
             justify-content: center;
             padding-top: 8px;
-            z-index: 100;
+            z-index: 1;
+            width: auto;
+            height: ${warningMessage ? 'auto' : '0'};
+            opacity: ${warningMessage ? '1' : '0'};
+            visibility: ${warningMessage ? 'visible' : 'hidden'};
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            pointer-events: none;
           }
 
           .station-warning-message {
@@ -740,19 +746,16 @@ const SearchComponent = ({
             display: flex;
             align-items: center;
             gap: 10px;
-            max-width: fit-content;
-            animation: slideDown 0.3s ease-out;
+            white-space: nowrap;
+            pointer-events: auto;
+            animation: fadeIn 0.3s ease-out;
+            margin-top: 5px;
           }
 
-          .station-warning-message i {
-            color: #cd2c22;
-            font-size: 16px;
-          }
-
-          @keyframes slideDown {
+          @keyframes fadeIn {
             from {
               opacity: 0;
-              transform: translateY(-10px);
+              transform: translateY(-5px);
             }
             to {
               opacity: 1;
@@ -776,11 +779,18 @@ const SearchComponent = ({
             }
           }
 
-          // Adjust the container spacing
-          .new-wrap {
+          // Add these to ensure dropdowns work properly
+          .icon-select {
             position: relative;
-            margin-bottom: ${warningMessage ? '45px' : '0'};
-            transition: margin-bottom 0.3s ease;
+            z-index: 5;
+          }
+
+          .select__menu {
+            z-index: 10 !important;
+          }
+
+          #toStation {
+            z-index: 6;
           }
         `}
       </style>
