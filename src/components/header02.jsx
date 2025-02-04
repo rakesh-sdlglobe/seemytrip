@@ -149,7 +149,7 @@ const Header02 = () => {
                   <li className="nav-item dropdown">
                     <Link className="nav-link dropdown-toggle d-flex align-items-center" to="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                       <i className="fa-regular fa-circle-user fs-5 me-2" />
-                      <span>{googleUser?.name || googleUserName || user || (phoneNumber && "Hi, Traveller") || (emailuser && "Hii, Traveller")}</span>
+                      <span>{googleUser?.firstName || googleUserName || user || (phoneNumber && "Hi, Traveller") || (emailuser && "Hii, Traveller")}</span>
                     </Link>
                     <ul className="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
                       <li>

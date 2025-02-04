@@ -61,14 +61,16 @@ export const googleLoginFailure = (error) => ({
 export const API_URL = process.env.REACT_APP_API_URL ;
 // export const API_URL = 'https://tripadmin.onrender.com/api';
 
-export const register = (name, email, password, navigate) => async (dispatch) => {
+export const register = (firstName, middleName, lastName, email, password, navigate) => async (dispatch) => {
   try {
 
     dispatch(setError(''));
 
 
     const response = await axios.post(`${API_URL}/signup`, {
-      name,
+      firstName,
+      middleName,
+      lastName,
       email,
       password,
     });
@@ -79,14 +81,14 @@ export const register = (name, email, password, navigate) => async (dispatch) =>
     localStorage.setItem('user', JSON.stringify(user)); 
 
     dispatch(setUser(user));
-    dispatch(setName(user.name));
+    dispatch(setName(user.firstName));
     dispatch(setEmail(''));
     dispatch(setPassword('')); 
     dispatch(setConfirmPassword('')); 
 
     // dispatch(clearForm())
 
-    navigate('/');
+    // navigate('/');
 
   } catch (error) {
   
@@ -101,11 +103,12 @@ export const Loginn = (email, password, navigate) => async (dispatch) => {
 
     dispatch(setError(''));
 
-
     const response = await axios.post(`${API_URL}/login`, {
       email,
       password,
     });
+
+    console.log("response from the login action ",response);
     if(response.data){
       const { user, token} = response.data;
   
@@ -113,11 +116,10 @@ export const Loginn = (email, password, navigate) => async (dispatch) => {
       localStorage.setItem('user', JSON.stringify(user));
   
       dispatch(setUser(user));
-      dispatch(setName(user.name));
+      dispatch(setName(user.firstName));
       dispatch(setEmail(''));
       dispatch(setPassword('')); 
   
-      navigate('/');
       return { success : true}
     }
     else{
@@ -159,7 +161,7 @@ export const handleGoogleLogin = (accessToken, navigate) => async (dispatch) => 
       const { token, user } = response.data; // Extract token and user
       const email = user.email;
       
-      localStorage.setItem('googleUserName',JSON.stringify(user.name))
+      localStorage.setItem('googleUserName',JSON.stringify(user.firstName))
 
       if (!user || !token) {
           throw new Error('Invalid response from backend');
@@ -169,12 +171,10 @@ export const handleGoogleLogin = (accessToken, navigate) => async (dispatch) => 
       // Dispatch success action to Redux
       console.log("160 user details are ", user);
       dispatch(setUser(user))
-      dispatch(setName(user.name));
+      dispatch(setName(user.firstName));
       dispatch(setEmail(email));
       dispatch(googleLoginSuccess({ token, user }));
 
-      // Redirect the user to the home page
-      navigate('/');
   } catch (error) {
       console.error('Google login failed:', error.response?.data || error.message);
       const errorMessage = error.response?.data?.message || 'Google login failed.';

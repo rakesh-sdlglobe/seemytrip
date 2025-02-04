@@ -220,6 +220,7 @@ const TrainSearchResultList = ({ filters }) => {
       classinfo : classInfo,
     };
 
+    sessionStorage.setItem('bookingData', JSON.stringify(bookingData));
     if (isAuthenticated) {
       navigate('/trainbookingdetails', { state: { trainData: bookingData } });
     } else {

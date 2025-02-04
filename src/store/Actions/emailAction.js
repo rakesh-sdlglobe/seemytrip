@@ -40,11 +40,13 @@ export const sendVerificationOTP = (email) => async (dispatch) => {
   try {
     dispatch(setOTPError('')); // Clear previous error
     const response = await axios.post(`${API_URL}/send-otp-auth`, { email });
+    console.log("response from the email action 43 ",response);
     if (response.data) {
       dispatch(setOTPSent(true)); // OTP sent successfully
     }
   } catch (error) {
-    const errorMessage = error.response?.data?.message || 'Failed to send OTP';
+    console.log("response from the email action 48 ",error);
+    const errorMessage = error.response?.data || 'Failed to send OTP';
     dispatch(setOTPError(errorMessage)); // Handle error
   }
 };
@@ -100,7 +102,7 @@ export const logoutEmailUser = (navigate) => (dispatch) => {
   localStorage.removeItem('googleUserName')
   dispatch({ type: LOGOUT_EMAIL_USER });
   if (navigate) {
-    navigate('/login');
+    navigate('/');
     window.location.reload();
   }
 };

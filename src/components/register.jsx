@@ -64,7 +64,12 @@ const Register = () => {
       return;
     }
 
-    dispatch(register(name, email, password, navigate));
+    const nameParts = name.trim().split(" ");
+    let firstName = nameParts[0] || "";
+    let middleName = nameParts.length > 2 ? nameParts.slice(1, -1).join(" ") : "";
+    let lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
+
+    dispatch(register(firstName, middleName, lastName, email, password, navigate));
   };
 
   const loginWithGoogle = useGoogleLogin({
@@ -120,7 +125,7 @@ const Register = () => {
                           )}
                           <div className="form py-4">
                             <div className="form-group">
-                              <label className="form-label">Enter Name</label>
+                              <label className="form-label">Enter Fullname</label>
                               <input
                                 type="text"
                                 className="form-control"
@@ -130,6 +135,7 @@ const Register = () => {
                                   dispatch(setName(e.target.value))
                                 }
                                 required
+                                maxLength={50}
                               />
                             </div>
                             <div className="form-group">
@@ -145,6 +151,7 @@ const Register = () => {
                                   dispatch(setEmail(e.target.value))
                                 }
                                 required
+                                maxLength={40}
                               />
                             </div>
                             <div className="form-group">

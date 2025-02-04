@@ -31,6 +31,7 @@ import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
 import { useState } from 'react';
 import OTPModal from './otp-modal'; // Make sure this is correctly implemented
 import EmailOtpModal from './email-otpmodal'; // This should be the email OTP modal
+import { statedata } from '../store/Selectors/emailSelector';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -39,6 +40,7 @@ const Login = () => {
   const email = useSelector(selectEmail);
   const password = useSelector(selectPassword);
   const error = useSelector(selectError);
+  const state = useSelector(statedata);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [showOtpModal, setShowOtpModal] = useState(false); // For phone OTP modal
   const [showEmailOtpModal, setShowEmailOtpModal] = useState(false); // For email OTP modal
@@ -50,8 +52,10 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setIsLoading(true);
     try {
+      console.log("statedata",state);
       const response = await dispatch(Loginn(email, password, navigate));
       if(response.success){
         toast.success('Login successful!', {
@@ -61,14 +65,9 @@ const Login = () => {
         });
 
         // Check for stored train booking data
-        const selectedTrain = sessionStorage.getItem('selectedTrain');
+        const selectedTrain = sessionStorage.getItem('bookingData');
         if (selectedTrain) {
           const train = JSON.parse(selectedTrain);
-          // Clear the stored data
-          sessionStorage.removeItem('selectedTrain');
-          sessionStorage.removeItem('redirectPath');
-          
-          // Redirect to train booking page after a short delay
           setTimeout(() => {
             navigate('/trainbookingdetails', { 
               state: { trainData: train } 
@@ -108,18 +107,18 @@ const Login = () => {
       });
       
       // Check for stored train booking data
-      const selectedTrain = sessionStorage.getItem('selectedTrain');
+      const selectedTrain = sessionStorage.getItem('bookingData');
       if (selectedTrain) {
         const train = JSON.parse(selectedTrain);
-        // Clear the stored data
-        sessionStorage.removeItem('selectedTrain');
-        sessionStorage.removeItem('redirectPath');
         
         setTimeout(() => {
           navigate('/trainbookingdetails', { 
             state: { trainData: train } 
           });
         }, 2000);
+      }
+      else{
+        navigate("/");
       }
     },
     onError: () => {
