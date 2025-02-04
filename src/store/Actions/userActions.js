@@ -21,7 +21,8 @@ export const REMOVE_TRAVELER_FAILURE = 'REMOVE_TRAVELER_FAILURE';
 export const UPDATE_TRAVELER_REQUEST = 'UPDATE_TRAVELER_REQUEST';
 export const UPDATE_TRAVELER_SUCCESS = 'UPDATE_TRAVELER_SUCCESS';
 export const UPDATE_TRAVELER_FAILURE = 'UPDATE_TRAVELER_FAILURE';
-
+export const SHOW_SESSION_EXPIRED_MODAL  = 'SHOW_SESSION_EXPIRED_MODAL';
+export const HIDE_SESSION_EXPIRED_MODAL  = 'HIDE_SESSION_EXPIRED_MODAL';
 
 // Fetch user profile
 // const API_URL = process.env.REACT_APP_API_URL || 'https://tripadmin.onrender.com/api';
@@ -32,6 +33,8 @@ export const getUserProfile = () => {
     try {
       const authToken = localStorage.getItem('authToken');
       if (!authToken) {
+        dispatch({ type: SHOW_SESSION_EXPIRED_MODAL });
+        console.error('No auth token found');
         throw new Error('No auth token found');
       }
 
@@ -47,9 +50,17 @@ export const getUserProfile = () => {
         payload: response.data 
       });
     } catch (error) {
+      console.error('51 Failed to fetch user profile:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to fetch user profile';
+
+      if (error.response?.status === 401) {
+        console.error('Session expired:', error);
+        dispatch({ type: SHOW_SESSION_EXPIRED_MODAL });
+      }
+
       dispatch({ 
         type: FETCH_USER_PROFILE_FAILURE, 
-        payload: error.response?.data?.message || 'Failed to fetch user profile'
+        payload: errorMessage 
       });
     }
   };

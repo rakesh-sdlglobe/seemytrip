@@ -12,7 +12,7 @@ import {
 } from '../Actions/authActions';
 
 const initialState = {
-  name: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).name : '',
+  firstName: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')).firstName : '',
   email: '',
   password: '',
   confirmPassword: '',
@@ -34,7 +34,7 @@ const authReducer = (state = initialState, action) => {
   switch (action.type) {
     case SET_NAME:
       return {
-        ...state, name: action.payload
+        ...state, firstName: action.payload
       };
 
     case SET_EMAIL:
@@ -62,11 +62,11 @@ const authReducer = (state = initialState, action) => {
 
     case SET_USER:
       const {
-        name
+        firstName
       } = action.payload;
       // localStorage.setItem('user', JSON.stringify(action.payload));
       return {
-        ...state, user: action.payload, name: name
+        ...state, user: action.payload, firstName: firstName
       };
 
     case GOOGLE_LOGIN_SUCCESS: {
@@ -100,7 +100,7 @@ const authReducer = (state = initialState, action) => {
       localStorage.removeItem('googleUserName')
 
       return {
-        ...initialState, name: '', user: null
+        ...initialState, firstName: '', user: null
       };
 
     default:

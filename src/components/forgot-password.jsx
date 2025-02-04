@@ -9,6 +9,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useDispatch } from 'react-redux';
 import { resetPassword } from '../store/Actions/verifyEmail';
 import { sendVerificationOTP, verifyEmailOTPForgot } from '../store/Actions/emailAction';
+import { selectOTPError } from '../store/Selectors/emailSelector';
+import { selectOTPSent } from '../store/Selectors/emailSelector';
+import { useSelector } from 'react-redux';
 
 const SendEmailSection = ({ email, setEmail, handleSendOTP }) => (
   <div className="form-group">
@@ -81,6 +84,8 @@ const ForgotPassword = () => {
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const error = useSelector(selectOTPError);
+  const otpSentSelector  = useSelector(selectOTPSent);
 
   // const emailRef = useRef(null);
   const navigate = useNavigate();
@@ -94,9 +99,11 @@ const ForgotPassword = () => {
       return;
     }
     try {
-      await dispatch(sendVerificationOTP(email));
-      toast.success('OTP sent to your email.');
-      setOtpSent(true);
+      dispatch(sendVerificationOTP(email));
+      if(otpSentSelector){
+        toast.success('OTP sent to your email.');
+        setOtpSent(true);
+      }
     } catch (error) {
       toast.error(error.message || 'Failed to send OTP.');
     }
@@ -157,6 +164,9 @@ const ForgotPassword = () => {
                         <h1 className="mb-2 fs-2">Forgot Password?</h1>
                         <p className="mb-0">Enter the email address associated with your account.</p>
                         <form className="mt-4 text-start">
+                        {error && (
+                            <div className="alert alert-danger">{error}</div>
+                          )}
                           <div className="form py-4">
                             {!otpSent ? (
                               <SendEmailSection email={email} setEmail={setEmail} handleSendOTP={handleSendOTP} />

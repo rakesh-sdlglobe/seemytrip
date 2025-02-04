@@ -92,6 +92,6 @@ export const logoutMobileUser = (navigate) => (dispatch) => {
 
   // Navigate to the login page (optional)
   if (navigate) {
-    navigate('/login'); // Adjust the route based on your app's login path
+    navigate('/'); // Adjust the route based on your app's login path
   }
 };

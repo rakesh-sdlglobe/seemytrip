@@ -123,7 +123,7 @@ const NearbyDates = ({ train, onClose }) => {
                 avlDayList: [dayInfo]
             },
         };
-
+        sessionStorage.setItem('bookingData', JSON.stringify(bookingData));
         if (isAuthenticated) {
             navigate('/trainbookingdetails', { state: { trainData: bookingData } });
         } else {

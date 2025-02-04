@@ -16,11 +16,15 @@ import Footer from './footer';
 import SideBarProfilePage from './sidebar_profilepage';
 import PersonalInfo from './personal_info';
 import TopHeader from './topHeader';
-
+import SessionExpiredModal from './sessionExpiredModal';
+import { sessionExpired } from '../store/Selectors/userSelector';
+import { useDispatch, useSelector } from 'react-redux';
 
 const MyProfile = () => {
+    const sessionExpire = useSelector(sessionExpired);
       return (
-        <div>   
+        <div> 
+          { sessionExpire && <SessionExpiredModal /> }  
           {/* Preloader - style you can find in spinners.css */}        
           <div id="preloader">
             <div className="preloader"><span /><span /></div>
@@ -48,7 +52,7 @@ const MyProfile = () => {
                         <h5 className="offcanvas-title" id="offcanvasScrollingLabel">Offcanvas with body scrolling</h5>
                         <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" />
                       </div>
-                     <TopHeader/>
+                      <TopHeader/>
                     </div>
                   </div>
                 </div>

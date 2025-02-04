@@ -18,6 +18,8 @@ import {
   UPDATE_TRAVELER_REQUEST,
   UPDATE_TRAVELER_SUCCESS,
   UPDATE_TRAVELER_FAILURE,
+  SHOW_SESSION_EXPIRED_MODAL,
+  HIDE_SESSION_EXPIRED_MODAL,
 } from "../Actions/userActions";
 
 const initialState = {
@@ -26,10 +28,16 @@ const initialState = {
   error: null,
   travelers: [],
   loading: false,
+  sessionExpired : false,
 };
 
 const userReducer = (state = initialState, action) => {
   switch (action.type) {
+    case SHOW_SESSION_EXPIRED_MODAL:
+      console.log("37 session expired");
+      return { ...state, sessionExpired: true };
+    case HIDE_SESSION_EXPIRED_MODAL:
+      return { ...state, sessionExpired: false };
     case FETCH_USER_PROFILE_SUCCESS:
       return { ...state, user: action.payload, loading: false, error: null };
     case FETCH_USER_PROFILE_FAILURE:

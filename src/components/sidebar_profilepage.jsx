@@ -25,8 +25,8 @@ const SideBarProfilePage = () => {
 
     // Function to render the first letter of the user's name
     const renderInitial = () => {
-        if (userProfile?.name) {
-            return userProfile.name.charAt(0).toUpperCase();
+        if (userProfile?.firstName) {
+            return userProfile.firstName.charAt(0).toUpperCase();
         }
         return "G"; // Default for "Guest User"
     };
@@ -85,7 +85,7 @@ const SideBarProfilePage = () => {
                             </div>
                         </div>
                         <div className="crd-capser text-center mt-4">
-                            <h5 className="mb-0 text-light fw-semibold">{userProfile?.name || "Guest User"}</h5>
+                            <h5 className="mb-0 text-light fw-semibold">{userProfile?.firstName || "Guest User"}</h5>
                             {/* <span className="text-light opacity-75 fw-medium text-md">
                                 <i className="fa-solid fa-location-dot me-2" />Karnataka, India
                             </span> */}

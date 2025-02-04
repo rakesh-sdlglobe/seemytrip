@@ -1,28 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfile, editUserProfile } from '../store/Actions/userActions';
 import { selectGoogleUser } from '../store/Selectors/authSelectors';
 import { selectUserProfile } from '../store/Selectors/userSelector';
 import { Button } from 'react-bootstrap';
-// import {
-//     sendVerificationOTP,
-//     verifyEmailOTP,
-// } from '../store/Actions/emailAction';
-import {
-    sendOTP,
-    verifyOTP,
-    resetPassword,
-} from '../store/Actions/verifyEmail';
+import { sendOTP, verifyOTP, resetPassword } from '../store/Actions/verifyEmail';
 
 const PersonalInfo = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const userProfile = useSelector(selectUserProfile);
-    const googleUser = useSelector(selectGoogleUser); // Google profile
+    const googleUser = useSelector(selectGoogleUser);
 
-    console.log("Google user ", googleUser,"\nUser profile",userProfile);
-    
     const [isEditable, setIsEditable] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [otp, setOtp] = useState('');
@@ -30,30 +20,30 @@ const PersonalInfo = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [formData, setFormData] = useState({
-        name: '',
-        lastname: '',
+        firstName: '',
+        lastName: '',
         mobile: '',
         dob: '',
         gender: 'Male',
         email: '',
-        isEmailVerified : 0,
+        isEmailVerified: 0,
         isMobileVerified: 0,
     });
 
     useEffect(() => {
         dispatch(getUserProfile(navigate));
-    }, [dispatch,navigate]);
+    }, [dispatch, navigate]);
 
     useEffect(() => {
         if (userProfile) {
             setFormData({
-                name: userProfile.name || '',
-                lastname: userProfile.lastname || '',
+                firstName: userProfile.firstName || '',
+                lastName: userProfile.lastName || '',
                 mobile: userProfile.mobile || '',
                 dob: userProfile.dob ? new Date(userProfile.dob).toISOString().split('T')[0] : null,
                 gender: userProfile.gender || 'Male',
                 email: userProfile.email || '',
-                isEmailVerified : userProfile.isEmailVerified || 0,
+                isEmailVerified: userProfile.isEmailVerified || 0,
                 isMobileVerified: userProfile.isMobileVerified || 0,
             });
         }
@@ -61,120 +51,129 @@ const PersonalInfo = () => {
 
     useEffect(() => {
         if (googleUser || userProfile) {
-            setFormData((userProfile) => ({
-                ...userProfile,
-                name: googleUser?.name || userProfile.name,
-                lastname: googleUser?.lastname || userProfile.lastname,
-                email: googleUser?.email || userProfile.email,
-                isEmailVerified : googleUser?.isEmailVerified || userProfile.isEmailVerified
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                firstName: googleUser?.firstName || prevFormData.firstName,
+                lastName: googleUser?.lastName || prevFormData.lastName,
+                email: googleUser?.email || prevFormData.email,
+                isEmailVerified: googleUser?.isEmailVerified || prevFormData.isEmailVerified,
             }));
         }
-    }, [googleUser,userProfile]);
+    }, [googleUser, userProfile]);
 
+    const toggleEdit = useCallback(() => {
+        setIsEditable((prev) => !prev);
+    }, []);
 
-    const toggleEdit = () => {
-        setIsEditable(!isEditable);
-    };
-
-    const handleChange = (e) => {
+    const handleChange = useCallback((e) => {
         const { name, value } = e.target;
-    
+
         if (name === 'mobile') {
-            let formattedValue = value.replace(/[^0-9]/g, ''); 
+            let formattedValue = value.replace(/[^0-9]/g, '');
             if (formattedValue.length > 10) {
                 formattedValue = formattedValue.slice(0, 10);
             }
             if (formattedValue === '' || /^[6-9]/.test(formattedValue)) {
-                setFormData({ ...formData, mobile: formattedValue });
+                setFormData((prevFormData) => ({ ...prevFormData, mobile: formattedValue }));
             }
         } else {
-            setFormData({ ...formData, [name]: value });
+            setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
         }
-    };
-    
-    
+    }, []);
 
-
-    const handleSave = () => {
-
+    const handleSave = useCallback(() => {
         const userData = {
-            name: formData.name,
-            lastname: formData.lastname,
+            firstName: formData.firstName,
+            lastName: formData.lastName,
             mobile: formData.mobile.length === 10 ? formData.mobile : "",
             dob: formData.dob,
             gender: formData.gender,
             email: formData.email,
-            isEmailVerified : formData.isEmailVerified,
+            isEmailVerified: formData.isEmailVerified,
         };
-        setIsEditable(userData.isEmailVerified ? true : false)
-        console.log("93 the userData is ",userData);
-        
+        setIsEditable(userData.isEmailVerified ? true : false);
         dispatch(editUserProfile(userData, navigate));
         setIsEditable(false);
-        // window.location.reload();
-    };
+    }, [formData, dispatch, navigate]);
 
-    const handlePasswordChange = () => {
-        // Basic validation to check if passwords are entered
+    const handlePasswordChange = useCallback(() => {
         if (!newPassword || !confirmPassword) {
             alert('Please enter both password fields.');
             return;
         }
-    
-        // Check if passwords match
         if (newPassword !== confirmPassword) {
             alert('New passwords do not match!');
             return;
         }
-    
-        // Check for password length
         if (newPassword.length < 6) {
             alert('Password must be at least 6 characters long.');
             return;
         }
-    
-        // Dispatch the reset password action
         dispatch(resetPassword(formData.email, newPassword));
-        console.log(formData.email, newPassword);
-        
-    };
+    }, [newPassword, confirmPassword, formData.email, dispatch]);
 
-    const handleMobileVerifyClick = () => {
-        if(formData.mobile){
+    const handleMobileVerifyClick = useCallback(() => {
+        if (formData.mobile) {
             alert("We will send the OTP later");
+        } else if (formData.email) {
+            alert("SS email");
         }
-        else if(formData.email){
-            alert("SS email")
-        }
-    }
-    
+    }, [formData.mobile, formData.email]);
 
-    const handleVerifyClick = () => {
+    const handleVerifyClick = useCallback(() => {
         setShowModal(true);
         if (formData.email) {
             dispatch(sendOTP(formData.email));
         }
-    };
+    }, [formData.email, dispatch]);
 
-    // Example with a success response handling
-    const handleVerifyOTP = async () => {
-        const success = dispatch(verifyOTP(formData.email, otp, navigate));
-        console.log(success);
-
+    const handleVerifyOTP = useCallback(async () => {
+        const success = await dispatch(verifyOTP(formData.email, otp, navigate));
         if (success) {
             setShowModal(false);
         }
-    };
+    }, [formData.email, otp, navigate, dispatch]);
 
-    const handleCloseModal = () => {
+    const handleClose = useCallback(() => {
         setShowModal(false);
-    };
+    }, []);
+
+    const OTPModal = useMemo(() => ({ showModal, handleClose, handleVerifyOTP, setOtp }) => (
+        <div className={`modal fade ${showModal ? 'show' : ''}`} style={{ display: showModal ? 'block' : 'none' }} tabIndex="-1" role="dialog" aria-labelledby="otpModalLabel" aria-hidden="true">
+            <div className="modal-dialog" role="document">
+                <div className="modal-content">
+                    <div className="modal-header">
+                        <h5 className="modal-title" id="otpModalLabel">Enter OTP</h5>
+                        <button type="button" className="btn-close" onClick={handleClose} aria-label="Close"></button>
+                    </div>
+                    <div className="modal-body">
+                        <form>
+                            <div className="form-group">
+                                <label htmlFor="otpInput">OTP</label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    id="otpInput"
+                                    placeholder="Enter OTP"
+                                    onChange={(e) => setOtp(e.target.value)}
+                                />
+                            </div>
+                            <div className="modal-footer">
+                                <Button variant="secondary" onClick={handleClose}>Close</Button>
+                                <Button variant="primary" onClick={handleVerifyOTP}>Verify OTP</Button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    ), [showModal, handleClose, handleVerifyOTP, setOtp]);
+
     return (
         <>
             <div className="card mb-4">
                 <div className="card-header d-flex justify-content-between align-items-center">
                     <h4><i className="fa-solid fa-file-invoice me-2" />Personal Information</h4>
-                    {/* Edit button */}
                     <div>
                         {isEditable ? (
                             <>
@@ -193,31 +192,15 @@ const PersonalInfo = () => {
                             </button>
                         )}
                     </div>
-
                 </div>
                 <div className="card-body">
                     <div className="row align-items-center justify-content-start">
-                        {/* <div className="col-xl-12 col-lg-12 col-md-12 mb-4">
-                            <div className="d-flex align-items-center">
-                                <label className="position-relative me-4 center" htmlFor="uploadfile-1" title="Replace this pic">
-                                    {/* Avatar placeholder 
-                                    <span className="avatar avatar-xl">
-                                        <img id="uploadfile-1-preview" className="avatar-img rounded-circle border border-white border-3 shadow" src="https://placehold.co/500x500" alt="" />
-                                    </span>
-                                </label>
-                                {/* Upload button 
-                                <label className={`btn btn-sm ${isEditable ? 'btn-light-primary' : 'btn-secondary'} px-4 fw-medium mb-0`} htmlFor="uploadfile-1">
-                                    {isEditable ? 'Change' : 'Disabled'}
-                                </label>
-                                <input id="uploadfile-1" className="form-control d-none" type="file" disabled={!isEditable} />
-                            </div>
-                        </div> */}
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">First Name</label>
                                 <input type="text" className="form-control"
-                                    name="name"
-                                    value={formData.name}
+                                    name="firstName"
+                                    value={formData.firstName}
                                     onChange={handleChange}
                                     disabled={!isEditable} />
                             </div>
@@ -226,8 +209,8 @@ const PersonalInfo = () => {
                             <div className="form-group position-relative">
                                 <label className="form-label">Last Name</label>
                                 <input type="text" className="form-control"
-                                    name="lastname"
-                                    value={formData.lastname}
+                                    name="lastName"
+                                    value={formData.lastName}
                                     onChange={handleChange}
                                     disabled={!isEditable} />
                             </div>
@@ -236,107 +219,103 @@ const PersonalInfo = () => {
                             <div className="form-group position-relative">
                                 <label className="form-label">Email ID</label>
                                 <div style={{ position: 'relative' }}>
-                                <input
-                                    type="email"
-                                    className="form-control"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    style={{
-                                    backgroundColor: formData.isEmailVerified && isEditable ? "#e0e0e0" : formData.isEmailVerified === 0 && isEditable ? "white" : "#e0e0e0" , 
-                                    paddingRight: '50px', // Add space for the tick mark
-                                    }}
-                                    disabled={ formData.isEmailVerified || !isEditable }
-                                />
-                                {formData?.isEmailVerified ? (
-                                    <span
-                                    style={{
-                                        position: 'absolute',
-                                        right: '10px',
-                                        top: '50%',
-                                        transform: 'translateY(-50%)',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '5px',
-                                        color: '#28a745', // Green color for text and tick
-                                        fontWeight: 'bold',
-                                    }}
-                                    >
-                                    <span
+                                    <input
+                                        type="email"
+                                        className="form-control"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
                                         style={{
-                                        display: 'inline-flex',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        width: '20px',
-                                        height: '20px',
-                                        borderRadius: '50%',
-                                        backgroundColor: '#28a745', // Green background for the tick
-                                        color: 'white', // White tick mark
-                                        fontSize: '14px',
+                                            backgroundColor: formData.isEmailVerified && isEditable ? "#e0e0e0" : formData.isEmailVerified === 0 && isEditable ? "white" : "#e0e0e0",
+                                            paddingRight: '50px',
                                         }}
-                                    >
-                                        ✓
-                                    </span>
-                                    Verified
-                                    </span>
-                                    ) : formData?.email ? (
-                                            <button style={{
+                                        disabled={formData.isEmailVerified || !isEditable}
+                                    />
+                                    {formData?.isEmailVerified ? (
+                                        <span
+                                            style={{
                                                 position: 'absolute',
-                                                background:"none",
-                                                border:"none",
                                                 right: '10px',
                                                 top: '50%',
                                                 transform: 'translateY(-50%)',
-                                                color: formData.isEmailVerified ? '#28a745' : '#dc3545', // Green if verified, Red if not
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '5px',
+                                                color: '#28a745',
                                                 fontWeight: 'bold',
+                                            }}
+                                        >
+                                            <span
+                                                style={{
+                                                    display: 'inline-flex',
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
+                                                    width: '20px',
+                                                    height: '20px',
+                                                    borderRadius: '50%',
+                                                    backgroundColor: '#28a745',
+                                                    color: 'white',
+                                                    fontSize: '14px',
                                                 }}
-                                                onClick = {handleVerifyClick}
-                                            > Verify </button>
-                                        ) : ""
-                                }
+                                            >
+                                                ✓
+                                            </span>
+                                            Verified
+                                        </span>
+                                    ) : formData?.email ? (
+                                        <button style={{
+                                            position: 'absolute',
+                                            background: "none",
+                                            border: "none",
+                                            right: '10px',
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            color: formData.isEmailVerified ? '#28a745' : '#dc3545',
+                                            fontWeight: 'bold',
+                                        }}
+                                            onClick={handleVerifyClick}
+                                        > Verify </button>
+                                    ) : ""
+                                    }
                                 </div>
                             </div>
                         </div>
-
-
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">Mobile</label>
                                 <div style={{ position: 'relative' }}>
-                                <input
-                                    type="number"
-                                    className="form-control"
-                                    name="mobile"
-                                    value={formData.mobile}
-                                    pattern="[0-9]*"
-                                    inputMode="numeric"
-                                    disabled={!isEditable}
-                                    onChange={handleChange}
-                                    style={{
-                                        backgroundColor: !isEditable ? "#e0e0e0" : "white", // Cement color for disabled input
-                                        paddingRight: "70px", 
-                                    }}
-                                />
-
-                                <button
-                                    style={{
-                                    position: 'absolute',
-                                    background:"none",
-                                    border:"none",
-                                    right: '10px',
-                                    top: '50%',
-                                    transform: 'translateY(-50%)',
-                                    color: formData.isMobileVerified ? '#28a745' : '#dc3545', // Green if verified, Red if not
-                                    fontWeight: 'bold',
-                                }}
-                                onClick = {handleMobileVerifyClick}
-                                >
-                                    {formData.isMobileVerified === 1 ? 'Verified' : (formData.mobile && formData.mobile.length === 10) ?  'Verify' : null }
-                                </button>
+                                    <input
+                                        type="number"
+                                        className="form-control"
+                                        name="mobile"
+                                        value={formData.mobile}
+                                        pattern="[0-9]*"
+                                        inputMode="numeric"
+                                        disabled={!isEditable}
+                                        onChange={handleChange}
+                                        style={{
+                                            backgroundColor: !isEditable ? "#e0e0e0" : "white",
+                                            paddingRight: "70px",
+                                        }}
+                                    />
+                                    <button
+                                        style={{
+                                            position: 'absolute',
+                                            background: "none",
+                                            border: "none",
+                                            right: '10px',
+                                            top: '50%',
+                                            transform: 'translateY(-50%)',
+                                            color: formData.isMobileVerified ? '#28a745' : '#dc3545',
+                                            fontWeight: 'bold',
+                                        }}
+                                        onClick={handleMobileVerifyClick}
+                                    >
+                                        {formData.isMobileVerified === 1 ? 'Verified' : (formData.mobile && formData.mobile.length === 10) ? 'Verify' : null}
+                                    </button>
                                 </div>
                             </div>
                         </div>
-
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">Date of Birth</label>
@@ -350,7 +329,7 @@ const PersonalInfo = () => {
                                     name="gender"
                                     value={formData.gender}
                                     onChange={handleChange}
-                                    disabled={!isEditable }>
+                                    disabled={!isEditable}>
                                     <option value="Male">Male</option>
                                     <option value="Female">Female</option>
                                     <option value="Other">Other</option>
@@ -361,26 +340,6 @@ const PersonalInfo = () => {
                     </div>
                 </div>
             </div>
-            {/* <div className="card mb-4">
-                <div className="card-header">
-                    <h4><i className="fa-solid fa-envelope-circle-check me-2" />Update Your Email</h4>
-                </div>
-                <div className="card-body">
-                    <div className="row align-items-center justify-content-start">
-                        <div className="col-xl-12 col-lg-12 col-md-12">
-                            <div className="form-group">
-                                <label className="form-label">Email Address</label>
-                                <input type="email" className="form-control" placeholder="update your new email" />
-                            </div>
-                        </div>
-                        <div className="col-xl-12 col-lg-12 col-md-12">
-                            <div className="text-end">
-                                <Link to="#" className="btn btn-md btn-primary mb-0">Update Email</Link>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div> */}
             <div className="card">
                 <div className="card-header">
                     <h4><i className="fa-solid fa-lock me-2" />Update Password</h4>
@@ -398,14 +357,14 @@ const PersonalInfo = () => {
                             <div className="form-group">
                                 <label className="form-label">New Password</label>
                                 <input type="password" className="form-control" placeholder="*********" value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)} autoComplete='current-password'/>
+                                    onChange={(e) => setNewPassword(e.target.value)} autoComplete='current-password' />
                             </div>
                         </div>
                         <div className="col-xl-12 col-lg-12 col-md-12">
                             <div className="form-group">
                                 <label className="form-label">Confirm Password</label>
                                 <input type="password" className="form-control" placeholder="*********" value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}  autoComplete='current-password'/>
+                                    onChange={(e) => setConfirmPassword(e.target.value)} autoComplete='current-password' />
                             </div>
                         </div>
                         <div className="col-xl-12 col-lg-12 col-md-12">
@@ -475,50 +434,9 @@ const PersonalInfo = () => {
                     opacity: 0.8;
                 }
             `}</style>
-            <OTPModal
-                showModal={showModal}
-                handleClose={handleCloseModal}
-                handleVerifyOTP={handleVerifyOTP}
-                setOtp={setOtp}
-            />
+            {OTPModal}
         </>
-    );
-}
-
-const OTPModal = ({ showModal, handleClose, handleVerifyOTP, setOtp, navigate }) => {
-    return (
-        <div className={`modal fade ${showModal ? 'show' : ''}`} style={{ display: showModal ? 'block' : 'none' }} tabIndex="-1" role="dialog" aria-labelledby="otpModalLabel" aria-hidden="true">
-            <div className="modal-dialog" role="document">
-                <div className="modal-content">
-                    <div className="modal-header">
-                        <h5 className="modal-title" id="otpModalLabel">Enter OTP</h5>
-                        <button type="button" className="btn-close" onClick={handleClose} aria-label="Close"></button>
-                    </div>
-                    <div className="modal-body">
-                        <form>
-                            <div className="form-group">
-                                <label htmlFor="otpInput">OTP</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    id="otpInput"
-                                    placeholder="Enter OTP"
-                                    onChange={(e) => setOtp(e.target.value)}
-                                />
-                            </div>
-                            <div className="modal-footer">
-                                <Button variant="secondary" onClick={handleClose}>Close</Button>
-                                <Button variant="primary" onClick={handleVerifyOTP}>Verify OTP</Button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
     );
 };
 
-
-
-
-export default PersonalInfo;
+export default React.memo(PersonalInfo);

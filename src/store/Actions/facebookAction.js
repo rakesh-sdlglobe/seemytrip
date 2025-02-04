@@ -45,6 +45,6 @@ export const logoutFacebookUser = (navigate) => (dispatch) => {
   localStorage.removeItem('user');
   dispatch({ type: LOGOUT_FACEBOOK_USER });
   if (navigate) {
-    navigate('/login'); // Redirect to login page
+    navigate('/'); // Redirect to login page
   }
 };
