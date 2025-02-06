@@ -392,6 +392,7 @@ const SearchComponent = ({
               overflow: hidden;
               padding: 15px;
               margin-top: 5px; // Add some space between input and calendar
+              
             }
 
             .react-calendar {
@@ -400,6 +401,7 @@ const SearchComponent = ({
               background: white;
               font-family: Arial, sans-serif;
               line-height: 1.125em;
+              
             }
               .react-calendar__navigation {
                 margin-bottom: 20px;

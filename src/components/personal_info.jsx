@@ -6,6 +6,8 @@ import { selectGoogleUser } from '../store/Selectors/authSelectors';
 import { selectUserProfile } from '../store/Selectors/userSelector';
 import { Button } from 'react-bootstrap';
 import { sendOTP, verifyOTP, resetPassword } from '../store/Actions/verifyEmail';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 
 const PersonalInfo = () => {
     const dispatch = useDispatch();
@@ -14,14 +16,14 @@ const PersonalInfo = () => {
     const googleUser = useSelector(selectGoogleUser);
 
     const [isEditable, setIsEditable] = useState(false);
-    const [showModal, setShowModal] = useState(false);
+    const [showOTPModal, setShowOTPModal] = useState(false);
+    const [showPasswordModal, setShowPasswordModal] = useState(false);
     const [otp, setOtp] = useState('');
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
+        fullName: '',
         mobile: '',
         dob: '',
         gender: 'Male',
@@ -29,6 +31,7 @@ const PersonalInfo = () => {
         isEmailVerified: 0,
         isMobileVerified: 0,
     });
+    const [calendarOpen, setCalendarOpen] = useState(false);
 
     useEffect(() => {
         dispatch(getUserProfile(navigate));
@@ -37,8 +40,7 @@ const PersonalInfo = () => {
     useEffect(() => {
         if (userProfile) {
             setFormData({
-                firstName: userProfile.firstName || '',
-                lastName: userProfile.lastName || '',
+                fullName: `${userProfile.firstName || ''} ${userProfile.lastName || ''}`.trim(),
                 mobile: userProfile.mobile || '',
                 dob: userProfile.dob ? new Date(userProfile.dob).toISOString().split('T')[0] : null,
                 gender: userProfile.gender || 'Male',
@@ -53,13 +55,32 @@ const PersonalInfo = () => {
         if (googleUser || userProfile) {
             setFormData((prevFormData) => ({
                 ...prevFormData,
-                firstName: googleUser?.firstName || prevFormData.firstName,
-                lastName: googleUser?.lastName || prevFormData.lastName,
+                fullName: googleUser ? `${googleUser.firstName || ''} ${googleUser.lastName || ''}`.trim() : prevFormData.fullName,
                 email: googleUser?.email || prevFormData.email,
                 isEmailVerified: googleUser?.isEmailVerified || prevFormData.isEmailVerified,
             }));
         }
     }, [googleUser, userProfile]);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            const calendarWrapper = document.querySelector('.calendar-wrapper');
+            const calendarPopup = document.querySelector('.calendar-popup');
+            
+            if (calendarOpen && 
+                calendarWrapper && 
+                calendarPopup && 
+                !calendarWrapper.contains(event.target) && 
+                !calendarPopup.contains(event.target)) {
+                setCalendarOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [calendarOpen]);
 
     const toggleEdit = useCallback(() => {
         setIsEditable((prev) => !prev);
@@ -82,9 +103,12 @@ const PersonalInfo = () => {
     }, []);
 
     const handleSave = useCallback(() => {
+        const [firstName, ...lastNameParts] = formData.fullName.split(' ');
+        const lastName = lastNameParts.join(' ');
+        
         const userData = {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
+            firstName,
+            lastName,
             mobile: formData.mobile.length === 10 ? formData.mobile : "",
             dob: formData.dob,
             gender: formData.gender,
@@ -121,7 +145,7 @@ const PersonalInfo = () => {
     }, [formData.mobile, formData.email]);
 
     const handleVerifyClick = useCallback(() => {
-        setShowModal(true);
+        setShowOTPModal(true);
         if (formData.email) {
             dispatch(sendOTP(formData.email));
         }
@@ -130,44 +154,167 @@ const PersonalInfo = () => {
     const handleVerifyOTP = useCallback(async () => {
         const success = await dispatch(verifyOTP(formData.email, otp, navigate));
         if (success) {
-            setShowModal(false);
+            setShowOTPModal(false);
         }
     }, [formData.email, otp, navigate, dispatch]);
 
     const handleClose = useCallback(() => {
-        setShowModal(false);
+        setShowOTPModal(false);
     }, []);
 
-    const OTPModal = useMemo(() => ({ showModal, handleClose, handleVerifyOTP, setOtp }) => (
-        <div className={`modal fade ${showModal ? 'show' : ''}`} style={{ display: showModal ? 'block' : 'none' }} tabIndex="-1" role="dialog" aria-labelledby="otpModalLabel" aria-hidden="true">
-            <div className="modal-dialog" role="document">
-                <div className="modal-content">
-                    <div className="modal-header">
-                        <h5 className="modal-title" id="otpModalLabel">Enter OTP</h5>
-                        <button type="button" className="btn-close" onClick={handleClose} aria-label="Close"></button>
-                    </div>
-                    <div className="modal-body">
-                        <form>
-                            <div className="form-group">
-                                <label htmlFor="otpInput">OTP</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    id="otpInput"
-                                    placeholder="Enter OTP"
-                                    onChange={(e) => setOtp(e.target.value)}
-                                />
+    const handleDateSelect = (date) => {
+        const localDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+        const formattedDate = localDate.toISOString().split('T')[0];
+        setFormData(prev => ({ ...prev, dob: formattedDate }));
+        setCalendarOpen(false);
+    };
+
+    const OTPModal = useMemo(() => {
+        if (!showOTPModal) return null;
+        
+        return (
+            <>
+                <div className="modal-backdrop fade show"></div>
+                <div className="modal fade show" style={{ display: 'block' }} tabIndex="-1" role="dialog">
+                    <div className="modal-dialog modal-dialog-centered" role="document">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">Email Verification</h5>
+                                <button type="button" className="btn-close" onClick={handleClose} aria-label="Close"></button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="text-center mb-4">
+                                    <i className="fas fa-envelope-open-text fa-3x text-primary mb-3"></i>
+                                    <p className="mb-1">We've sent a verification code to:</p>
+                                    <p className="fw-bold">{formData.email}</p>
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="otpInput" className="form-label">Enter Verification Code</label>
+                                    <input
+                                        type="text"
+                                        className="form-control form-control-lg text-center"
+                                        id="otpInput"
+                                        maxLength="6"
+                                        placeholder="Enter 6-digit code"
+                                        onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, ''))}
+                                        style={{
+                                            letterSpacing: otp ? '0.5rem' : 'normal'
+                                        }}
+                                    />
+                                </div>
+                                <div className="text-center mt-3">
+                                    <p className="text-muted small">Didn't receive the code? 
+                                        <button 
+                                            className="btn btn-link p-0 ms-1" 
+                                            onClick={() => dispatch(sendOTP(formData.email))}
+                                        >
+                                            Resend
+                                        </button>
+                                    </p>
+                                </div>
                             </div>
                             <div className="modal-footer">
-                                <Button variant="secondary" onClick={handleClose}>Close</Button>
-                                <Button variant="primary" onClick={handleVerifyOTP}>Verify OTP</Button>
+                                <Button variant="secondary" onClick={handleClose}>Cancel</Button>
+                                <Button 
+                                    variant="primary" 
+                                    onClick={handleVerifyOTP}
+                                    disabled={otp.length !== 6}
+                                >
+                                    Verify Email
+                                </Button>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    ), [showModal, handleClose, handleVerifyOTP, setOtp]);
+                <style jsx>{`
+                    .modal-backdrop {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100vw;
+                        height: 100vh;
+                        background-color: rgba(0, 0, 0, 0.5);
+                        z-index: 1040;
+                    }
+                    .modal {
+                        z-index: 1045;
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        overflow-x: hidden;
+                        overflow-y: auto;
+                        outline: 0;
+                    }
+                    .modal-dialog {
+                        max-width: 400px;
+                        margin: 1.75rem auto;
+                    }
+                    .form-control-lg {
+                        font-size: 1.5rem;
+                        letter-spacing: 0.5rem;
+                        font-weight: bold;
+                    }
+                    .btn-link {
+                        text-decoration: none;
+                    }
+                    .btn-link:hover {
+                        text-decoration: underline;
+                    }
+                    .form-control::placeholder {
+                        color: #6c757d;
+                        opacity: 0.8;
+                        letter-spacing: normal;
+                        font-size: 1rem;
+                        font-weight: normal;
+                    }
+                    .form-control:focus::placeholder {
+                        opacity: 0.6;
+                    }
+                `}</style>
+            </>
+        );
+    }, [showOTPModal, handleClose, handleVerifyOTP, setOtp, formData.email, otp, dispatch]);
+
+    const PasswordModal = useMemo(() => (
+        showPasswordModal ? (
+            <>
+                <div className="modal-backdrop fade show"></div>
+                <div className={`modal fade show`} style={{ display: 'block' }} tabIndex="-1">
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">Update Password</h5>
+                                <button type="button" className="btn-close" onClick={() => setShowPasswordModal(false)}></button>
+                            </div>
+                            <div className="modal-body">
+                                <div className="form-group">
+                                    <label className="form-label">Old Password</label>
+                                    <input type="password" className="form-control" placeholder="*********" 
+                                        value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">New Password</label>
+                                    <input type="password" className="form-control" placeholder="*********" 
+                                        value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+                                </div>
+                                <div className="form-group">
+                                    <label className="form-label">Confirm Password</label>
+                                    <input type="password" className="form-control" placeholder="*********" 
+                                        value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                                </div>
+                            </div>
+                            <div className="modal-footer">
+                                <button className="btn btn-secondary" onClick={() => setShowPasswordModal(false)}>Cancel</button>
+                                <button className="btn btn-primary" onClick={handlePasswordChange}>Update Password</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </>
+        ) : null
+    ), [showPasswordModal, oldPassword, newPassword, confirmPassword, handlePasswordChange]);
 
     return (
         <>
@@ -178,17 +325,13 @@ const PersonalInfo = () => {
                         {isEditable ? (
                             <>
                                 <button className="btn btn-primary" onClick={handleSave}>
-                                    <i className="fa fa-save me-2" />
-                                    Save
+                                    <i className="fa fa-save me-2" />Save
                                 </button>
-                                <button className="btn btn-secondary ms-2" onClick={toggleEdit}>
-                                    Cancel
-                                </button>
+                                <button className="btn btn-secondary ms-2" onClick={toggleEdit}>Cancel</button>
                             </>
                         ) : (
                             <button className="btn btn-primary" onClick={toggleEdit}>
-                                <i className="fa fa-edit me-2" />
-                                Edit
+                                <i className="fa fa-edit me-2" />Edit
                             </button>
                         )}
                     </div>
@@ -197,20 +340,10 @@ const PersonalInfo = () => {
                     <div className="row align-items-center justify-content-start">
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
-                                <label className="form-label">First Name</label>
+                                <label className="form-label">Full Name</label>
                                 <input type="text" className="form-control"
-                                    name="firstName"
-                                    value={formData.firstName}
-                                    onChange={handleChange}
-                                    disabled={!isEditable} />
-                            </div>
-                        </div>
-                        <div className="col-xl-6 col-lg-6 col-md-6">
-                            <div className="form-group position-relative">
-                                <label className="form-label">Last Name</label>
-                                <input type="text" className="form-control"
-                                    name="lastName"
-                                    value={formData.lastName}
+                                    name="fullName"
+                                    value={formData.fullName}
                                     onChange={handleChange}
                                     disabled={!isEditable} />
                             </div>
@@ -319,7 +452,33 @@ const PersonalInfo = () => {
                         <div className="col-xl-6 col-lg-6 col-md-6">
                             <div className="form-group position-relative">
                                 <label className="form-label">Date of Birth</label>
-                                <input type="date" className="form-control" name="dob" value={formData.dob} onChange={handleChange} disabled={!isEditable} />
+                                <div className="calendar-wrapper">
+                                    <input
+                                        type="text"
+                                        readOnly
+                                        className="form-control"
+                                        value={formData.dob ? new Date(formData.dob).toLocaleDateString('en-GB') : ''}
+                                        onClick={() => isEditable && setCalendarOpen(!calendarOpen)}
+                                        placeholder="Select Date"
+                                        style={{
+                                            backgroundColor: !isEditable ? "#e0e0e0" : "white",
+                                            cursor: isEditable ? 'pointer' : 'not-allowed'
+                                        }}
+                                    />
+                                    {calendarOpen && (
+                                        <div className="calendar-popup">
+                                            <Calendar
+                                                onChange={handleDateSelect}
+                                                value={formData.dob ? new Date(formData.dob) : null}
+                                                maxDate={new Date()}
+                                                minDetail="decade"
+                                                showNeighboringMonth={true}
+                                                showFixedNumberOfWeeks={false}
+                                            />
+                                        </div>
+                                    )}
+                                    <i className="fa fa-calendar" style={{ color: '#666', position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)' }}></i>
+                                </div>
                             </div>
                         </div>
                         <div className="col-xl-6 col-lg-6 col-md-6">
@@ -337,44 +496,19 @@ const PersonalInfo = () => {
                                 <i className="fa fa-chevron-down select-icon"></i>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div className="card">
-                <div className="card-header">
-                    <h4><i className="fa-solid fa-lock me-2" />Update Password</h4>
-                </div>
-                <div className="card-body">
-                    <div className="row align-items-center justify-content-start">
-                        <div className="col-xl-12 col-lg-12 col-md-12">
-                            <div className="form-group">
-                                <label className="form-label">Old Password</label>
-                                <input type="password" className="form-control" placeholder="*********" value={oldPassword}
-                                    onChange={(e) => setOldPassword(e.target.value)} autoComplete='current-password' />
-                            </div>
-                        </div>
-                        <div className="col-xl-12 col-lg-12 col-md-12">
-                            <div className="form-group">
-                                <label className="form-label">New Password</label>
-                                <input type="password" className="form-control" placeholder="*********" value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)} autoComplete='current-password' />
-                            </div>
-                        </div>
-                        <div className="col-xl-12 col-lg-12 col-md-12">
-                            <div className="form-group">
-                                <label className="form-label">Confirm Password</label>
-                                <input type="password" className="form-control" placeholder="*********" value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)} autoComplete='current-password' />
-                            </div>
-                        </div>
-                        <div className="col-xl-12 col-lg-12 col-md-12">
-                            <div className="text-end">
-                                <Link to="#" className="btn btn-md btn-primary mb-0" onClick={handlePasswordChange}>Change Password</Link>
-                            </div>
+                        <div className="col-12 mt-4">
+                            <button 
+                                className="btn btn-outline-primary" 
+                                onClick={() => setShowPasswordModal(true)}
+                            >
+                                <i className="fa fa-key me-2" />Change Password
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
+            {OTPModal}
+            {PasswordModal}
             <style jsx>{`
                 .form-group {
                     position: relative;
@@ -433,8 +567,191 @@ const PersonalInfo = () => {
                 .verify-link:hover {
                     opacity: 0.8;
                 }
+
+                .modal-backdrop {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100vw;
+                    height: 100vh;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    z-index: 9997;
+                }
+                
+                .modal {
+                    z-index: 9998;
+                }
+                
+                .modal-dialog-centered {
+                    display: flex;
+                    align-items: center;
+                    min-height: calc(100% - 1rem);
+                }
+                
+                .modal-content {
+                    border-radius: 0.5rem;
+                    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+                }
+                
+                .btn-outline-primary {
+                    border: 1px solid #007bff;
+                    color: #007bff;
+                    background: transparent;
+                    transition: all 0.3s ease;
+                }
+                
+                .btn-outline-primary:hover {
+                    background: #007bff;
+                    color: white;
+                }
+
+                .date-input {
+                    padding: 25px 10px;
+                    background-color: white;
+                    cursor: pointer;
+                    border: 1px solid #ced4da;
+                    border-radius: 0.25rem;
+                }
+
+                .date-input:disabled {
+                    background-color: #e0e0e0;
+                    cursor: not-allowed;
+                }
+
+                .date-input:hover:not(:disabled) {
+                    border-color: #80bdff;
+                    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+                }
+
+                /* Calendar Styling */
+                .calendar-wrapper {
+                    position: relative;
+                    z-index: 1000;
+                }
+
+                .input-icon {
+                    position: absolute;
+                    left: 12px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    z-index: 1;
+                }
+
+                .form-control {
+                    padding-left: 35px !important;
+                }
+
+                .calendar-popup {
+                    position: fixed;
+                    top: 83%;
+                    left: 78%;
+                    transform: translate(-50%, -50%);
+                    width: 350px;
+                    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+                    border-radius: 12px;
+                    background: white;
+                    z-index: 100000;
+                    padding: 15px;
+                    margin-top: 0;
+                }
+
+                .react-calendar {
+                    width: 100%;
+                    border: none;
+                    background: white;
+                    font-family: Arial, sans-serif;
+                    line-height: 1.125em;
+                    position: relative;
+                    z-index: 100000;
+                }
+
+                .react-calendar__navigation {
+                    margin-bottom: 20px;
+                }
+
+                .react-calendar__navigation button {
+                    min-width: 44px;
+                    background: none;
+                    font-size: 16px;
+                    padding: 8px;
+                    border-radius: 8px;
+                }
+
+                .react-calendar__navigation button:enabled:hover,
+                .react-calendar__navigation button:enabled:focus {
+                    background-color: #f8f8f8;
+                }
+
+                .react-calendar__month-view__weekdays {
+                    text-align: center;
+                    text-transform: uppercase;
+                    font-weight: bold;
+                    font-size: 0.9em;
+                    padding: 8px 0;
+                }
+
+                .react-calendar__month-view__days__day {
+                    padding: 12px 8px !important;
+                    font-size: 14px;
+                }
+
+                .react-calendar__tile {
+                    border-radius: 8px;
+                    padding: 12px;
+                    margin: 4px;
+                    font-weight: 500;
+                }
+
+                .react-calendar__tile:disabled {
+                    background: transparent !important;
+                    color: #ccc !important;
+                    cursor: not-allowed;
+                    opacity: 0.5;
+                }
+
+                .react-calendar__tile--active {
+                    background: #cd2c22 !important;
+                    color: white;
+                }
+
+                .react-calendar__tile--now {
+                    background: #ffe8e8;
+                }
+
+                .react-calendar__month-view__days__day--weekend {
+                    color: #cd2c22;
+                }
+
+                .react-calendar__month-view__days__day--neighboringMonth {
+                    color: #969696;
+                }
+
+                @media (max-width: 768px) {
+                    .calendar-popup {
+                        width: 90%;
+                        max-width: 320px;
+                    }
+                }
+
+                .react-calendar__viewContainer {
+                    max-height: 300px;
+                    overflow: visible;
+                }
+
+                .react-calendar__month-view__days {
+                    display: grid !important;
+                    grid-template-columns: repeat(7, 1fr);
+                }
+
+                .react-calendar__month-view__days__day {
+                    aspect-ratio: 1;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 8px !important;
+                }
+
             `}</style>
-            {OTPModal}
         </>
     );
 };
