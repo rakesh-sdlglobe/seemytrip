@@ -226,53 +226,6 @@ const PersonalInfo = () => {
                         </div>
                     </div>
                 </div>
-                <style jsx>{`
-                    .modal-backdrop {
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        width: 100vw;
-                        height: 100vh;
-                        background-color: rgba(0, 0, 0, 0.5);
-                        z-index: 1040;
-                    }
-                    .modal {
-                        z-index: 1045;
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                        overflow-x: hidden;
-                        overflow-y: auto;
-                        outline: 0;
-                    }
-                    .modal-dialog {
-                        max-width: 400px;
-                        margin: 1.75rem auto;
-                    }
-                    .form-control-lg {
-                        font-size: 1.5rem;
-                        letter-spacing: 0.5rem;
-                        font-weight: bold;
-                    }
-                    .btn-link {
-                        text-decoration: none;
-                    }
-                    .btn-link:hover {
-                        text-decoration: underline;
-                    }
-                    .form-control::placeholder {
-                        color: #6c757d;
-                        opacity: 0.8;
-                        letter-spacing: normal;
-                        font-size: 1rem;
-                        font-weight: normal;
-                    }
-                    .form-control:focus::placeholder {
-                        opacity: 0.6;
-                    }
-                `}</style>
             </>
         );
     }, [showOTPModal, handleClose, handleVerifyOTP, setOtp, formData.email, otp, dispatch]);
@@ -493,7 +446,7 @@ const PersonalInfo = () => {
                                     <option value="Female">Female</option>
                                     <option value="Other">Other</option>
                                 </select>
-                                <i className="fa fa-chevron-down select-icon"></i>
+                                {/* <i className="fa fa-chevron-down select-icon"></i> */}
                             </div>
                         </div>
                         <div className="col-12 mt-4">
@@ -511,8 +464,19 @@ const PersonalInfo = () => {
             {PasswordModal}
             <style jsx>{`
                 .form-group {
+                    position: static !important;
+                }
+
+                .col-xl-6, .col-lg-6, .col-md-6 {
+                    position: static !important;
+                }
+
+                .row {
+                    position: static !important;
+                }
+
+                .card-body {
                     position: relative;
-                    margin-bottom: 1rem;
                 }
 
                 .form-control {
@@ -575,11 +539,11 @@ const PersonalInfo = () => {
                     width: 100vw;
                     height: 100vh;
                     background-color: rgba(0, 0, 0, 0.5);
-                    z-index: 9997;
+                    z-index: 9999;
                 }
                 
                 .modal {
-                    z-index: 9998;
+                    z-index: 10000;
                 }
                 
                 .modal-dialog-centered {
@@ -626,33 +590,40 @@ const PersonalInfo = () => {
                 /* Calendar Styling */
                 .calendar-wrapper {
                     position: relative;
-                    z-index: 1000;
-                }
-
-                .input-icon {
-                    position: absolute;
-                    left: 12px;
-                    top: 50%;
-                    transform: translateY(-50%);
-                    z-index: 1;
-                }
-
-                .form-control {
-                    padding-left: 35px !important;
+                    z-index: 9999;
                 }
 
                 .calendar-popup {
-                    position: fixed;
-                    top: 83%;
-                    left: 78%;
-                    transform: translate(-50%, -50%);
+                    position: absolute;
+                    top: calc(100% + 5px);
+                    left: 0;
                     width: 350px;
                     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
                     border-radius: 12px;
                     background: white;
-                    z-index: 100000;
+                    z-index: 99999;
                     padding: 15px;
-                    margin-top: 0;
+                }
+
+                /* Add these new styles */
+                .card {
+                    overflow: visible !important;
+                }
+
+                .card-body {
+                    overflow: visible !important;
+                }
+
+                .row {
+                    overflow: visible !important;
+                }
+
+                .col-xl-6, .col-lg-6, .col-md-6 {
+                    overflow: visible !important;
+                }
+
+                .form-group {
+                    overflow: visible !important;
                 }
 
                 .react-calendar {
@@ -662,7 +633,7 @@ const PersonalInfo = () => {
                     font-family: Arial, sans-serif;
                     line-height: 1.125em;
                     position: relative;
-                    z-index: 100000;
+                    z-index: 99999;
                 }
 
                 .react-calendar__navigation {
@@ -734,7 +705,7 @@ const PersonalInfo = () => {
                 }
 
                 .react-calendar__viewContainer {
-                    max-height: 300px;
+                    max-height: none;
                     overflow: visible;
                 }
 
@@ -750,7 +721,6 @@ const PersonalInfo = () => {
                     justify-content: center;
                     padding: 8px !important;
                 }
-
             `}</style>
         </>
     );

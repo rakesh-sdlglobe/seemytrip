@@ -54,12 +54,12 @@ console.log("19 boarding station details from ", boardingStationDetails)
 // State management
 const [travelers, setTravelers] = useState([]);
 const [currentTraveler, setCurrentTraveler] = useState({
-  firstName: '',
-  lastName: '',
+  fullName: '',
   age: '',
   gender: 'male',
   berth: '',
   country: '',
+  berthRequired: false
 });
 const [selectedTravelers, setSelectedTravelers] = useState([]);
 
@@ -173,18 +173,20 @@ const [contactDetails, setContactDetails] = useState({
     }
     
     if (validateForm()) {
+      const [firstName, ...lastNameParts] = currentTraveler.fullName.trim().split(' ');
+      const lastName = lastNameParts.join(' ');
+      
       const travelerData = {
-        firstname: currentTraveler.firstName,
-        lastname: currentTraveler.lastName,
-        mobile: '', // You may want to add this field to your form
-        dob: null, // You may want to add this field to your form
+        firstname: firstName,
+        lastname: lastName || '',
+        mobile: '', 
+        dob: null,
         age: currentTraveler.age,
         gender: currentTraveler.gender,
         berth: currentTraveler.berth,
         country: currentTraveler.country,
+        berthRequired: currentTraveler.berthRequired,
       };
-
-      console.log(' 196 Traveler data:', travelerData);
 
       if (editingTravelerIndex !== null) {
         dispatch(updateTraveler({ ...travelerData, id: editingTravelerIndex }))
@@ -231,24 +233,20 @@ const handleProceedToPayment = (e)=>{
   const validateForm = () => {
     const errors = {};
     
-    if (!currentTraveler.firstName.trim()) {
-      errors.firstName = 'First name is required';
-    } else if (!/^[a-zA-Z\s]+$/.test(currentTraveler.firstName.trim())) {
-      errors.firstName = 'First name should only contain letters';
-    }
-
-    if (!currentTraveler.lastName.trim()) {
-      errors.lastName = 'Last name is required';
-    } else if (!/^[a-zA-Z\s]+$/.test(currentTraveler.lastName.trim())) {
-      errors.lastName = 'Last name should only contain letters';
+    if (!currentTraveler.fullName.trim()) {
+      errors.fullName = 'Full name is required';
+    } else if (!/^[a-zA-Z\s]+$/.test(currentTraveler.fullName.trim())) {
+      errors.fullName = 'Full name should only contain letters';
     }
 
     if (!currentTraveler.age) {
       errors.age = 'Age is required';
     }
     
-    // Only validate berth and country for age >= 5
-    if (!currentTraveler.age || parseInt(currentTraveler.age) >= 5) {
+    // Only validate berth and country for age >= 12 or if berth is required for age 5-11
+    if (!currentTraveler.age || 
+        parseInt(currentTraveler.age) >= 12 || 
+        (parseInt(currentTraveler.age) >= 5 && parseInt(currentTraveler.age) <= 11 && currentTraveler.berthRequired)) {
       if (!currentTraveler.berth) {
         errors.berth = 'Berth preference is required';
       }
@@ -277,12 +275,12 @@ const handleProceedToPayment = (e)=>{
   // Update handleEditTraveler function
   const handleEditTraveler = (traveler) => {
     setCurrentTraveler({
-      firstName: traveler.firstname,
-      lastName: traveler.lastname,
+      fullName: `${traveler.firstname} ${traveler.lastname}`.trim(),
       age: traveler.age,
       gender: traveler.gender || 'male',
       berth: traveler.berth || '',
       country: traveler.country || '',
+      berthRequired: traveler.berthRequired || false,
     });
     setEditingTravelerIndex(traveler.id);
     setShowTravelerModal(true);
@@ -304,12 +302,12 @@ const handleProceedToPayment = (e)=>{
   const handleModalClose = () => {
     setShowTravelerModal(false);
     setCurrentTraveler({
-      firstName: '',
-      lastName: '',
+      fullName: '',
       age: '',
       gender: 'male',
       berth: '',
       country: '',
+      berthRequired: false
     });
     setEditingTravelerIndex(null);
   };
@@ -460,7 +458,7 @@ const handleProceedToPayment = (e)=>{
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">
-                {editingTravelerIndex !== null ? `Edit Traveler: ${currentTraveler.name}` : 'Add Traveler'}
+                {editingTravelerIndex !== null ? `Edit Traveler: ${currentTraveler.fullName}` : 'Add Traveler'}
               </h5>
               <button 
                 type="button" 
@@ -500,31 +498,19 @@ const handleProceedToPayment = (e)=>{
                   ))}
                 </div>
 
-                {/* Name and Age Fields */}
+                {/* Full Name and Age Fields */}
                 <div className="row mb-4">
-                  <div className="col-md-4 mb-3 ps-4">
-                    <label htmlFor="firstName" className="form-label">First Name*</label>
+                  <div className="col-md-8 mb-3 ps-4">
+                    <label htmlFor="fullName" className="form-label">Full Name*</label>
                     <input
-                      id="firstName"
+                      id="fullName"
                       type="text"
                       className="form-control"
-                      value={currentTraveler.firstName}
-                      onChange={(e) => setCurrentTraveler({ ...currentTraveler, firstName: e.target.value })}
+                      value={currentTraveler.fullName}
+                      onChange={(e) => setCurrentTraveler({ ...currentTraveler, fullName: e.target.value })}
                       required
                     />
-                    {formErrors.firstName && <div className="text-danger small mt-1">{formErrors.firstName}</div>}
-                  </div>
-                  <div className="col-md-4 mb-3">
-                    <label htmlFor="lastName" className="form-label">Last Name*</label>
-                    <input
-                      id="lastName"
-                      type="text"
-                      className="form-control"
-                      value={currentTraveler.lastName}
-                      onChange={(e) => setCurrentTraveler({ ...currentTraveler, lastName: e.target.value })}
-                      required
-                    />
-                    {formErrors.lastName && <div className="text-danger small mt-1">{formErrors.lastName}</div>}
+                    {formErrors.fullName && <div className="text-danger small mt-1">{formErrors.fullName}</div>}
                   </div>
                   <div className="col-md-4 mb-3">
                     <label htmlFor="age" className="form-label">Age*</label>
@@ -538,7 +524,8 @@ const handleProceedToPayment = (e)=>{
                         setCurrentTraveler({ 
                           ...currentTraveler, 
                           age: newAge,
-                          ...(parseInt(newAge) < 5 ? { berth: '', country: '' } : {})
+                          ...(parseInt(newAge) < 5 ? { berth: '', country: '', berthRequired: false } : {}),
+                          ...(parseInt(newAge) >= 5 && parseInt(newAge) <= 11 ? { berthRequired: false, berth: '' } : {})
                         });
                       }}
                       required
@@ -554,8 +541,37 @@ const handleProceedToPayment = (e)=>{
                   </div>
                 )}
 
-                {/* Only show Berth and Country for age 5 and above */}
-                {(!currentTraveler.age || parseInt(currentTraveler.age) >= 5) && (
+                {/* Show berth requirement checkbox for age 5-11 */}
+                {currentTraveler.age && parseInt(currentTraveler.age) >= 5 && parseInt(currentTraveler.age) <= 11 && (
+                  <div className="mb-4">
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="berthRequired"
+                        checked={currentTraveler.berthRequired}
+                        onChange={(e) => setCurrentTraveler({ 
+                          ...currentTraveler, 
+                          berthRequired: e.target.checked,
+                          berth: '', // Clear berth when unchecked
+                          country: e.target.checked ? currentTraveler.country : '' // Clear country when unchecked
+                        })}
+                      />
+                      <label className="form-check-label" htmlFor="berthRequired">
+                        Berth Required
+                      </label>
+                      <div className="text-muted small mt-1">
+                        No berth alloted and half adult fare charged if not opted
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Show Berth and Country fields based on age and berth requirement */}
+                {currentTraveler.age && (
+                  (parseInt(currentTraveler.age) >= 12) || 
+                  (parseInt(currentTraveler.age) >= 5 && parseInt(currentTraveler.age) <= 11 && currentTraveler.berthRequired)
+                ) && (
                   <div className="row mb-4">
                     <div className="col-md-6 mb-3 mb-md-0 ps-4">
                       <label htmlFor="berth" className="form-label">Berth Preference*</label>
@@ -678,7 +694,10 @@ const handleProceedToPayment = (e)=>{
                   </div>
                   <p className="text-muted small mb-0">
                     {traveler.age} years • {traveler.gender}
-                    {parseInt(traveler.age) >= 5 ? ` • ${traveler.berth} berth` : ' • No berth (under 5)'}
+                    {parseInt(traveler.age) < 5 ? ' • No berth (under 5)' : 
+                     parseInt(traveler.age) >= 5 && parseInt(traveler.age) <= 11 ? 
+                      (traveler.berthRequired ? ` • ${traveler.berth} berth` : ' • No berth (child fare)') :
+                      ` • ${traveler.berth} berth`}
                   </p>
                 </div>
               </div>
