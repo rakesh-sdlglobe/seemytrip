@@ -10,6 +10,8 @@ import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import SkeletonLoader from './SkeletonLoader';
 import NearbyDates from './TrainNearbyDates';
+import CalendarNearbyDates from './CalendarNearbyDates';
+import { fetchTrains } from '../../store/Actions/filterActions';
 
 const TrainSearchResultList = ({ filters }) => {
   const navigate = useNavigate();
@@ -25,6 +27,10 @@ const TrainSearchResultList = ({ filters }) => {
   let trainData = [];
   const [expandedTrainId, setExpandedTrainId] = useState(null);
   let searchParams = { date: "", formattedTrainDate: "" };
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const params = JSON.parse(localStorage.getItem('trainSearchParams') || '{}');
+    return params.date ? new Date(params.date) : new Date();
+  });
 
 
   if (trainData?.length === 0 ) { 
@@ -42,6 +48,53 @@ const TrainSearchResultList = ({ filters }) => {
     const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}${month}${day}`;
+  };
+
+
+// Helper functions
+const formatDateToYYYYMMDD = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}${month}${day}`;
+};
+
+const formatDateToDayDDMONTH = (date) => {
+  return date.toLocaleDateString('en-GB', { 
+    weekday: 'short', 
+    day: 'numeric', 
+    month: 'short' 
+  });
+};
+
+  const handleDateSelect = async (newDate) => {
+    try {
+      const searchParams = JSON.parse(localStorage.getItem('trainSearchParams') || '{}');
+      const { fromStnCode, toStnCode } = searchParams;
+
+      // Format date for API
+      const formattedDate = formattedJourneyDate(newDate);
+      console.log("formattedDate=====>>>>>>>>", formattedDate);
+      const formattedTrainDate = formatDateToDayDDMONTH(newDate);
+      console.log("formattedTrainDate=====>>>>>>>>", formattedTrainDate);
+      // Update localStorage with new date
+      const updatedSearchParams = {
+        ...searchParams,
+        date: newDate.toISOString(),
+        formattedTrainDate
+      };
+      localStorage.setItem('trainSearchParams', JSON.stringify(updatedSearchParams));
+      localStorage.setItem('loading', 'true');
+
+      // Fetch new train data
+      await dispatch(fetchTrains(formattedDate, fromStnCode, toStnCode));
+      setSelectedDate(newDate);
+
+      localStorage.setItem('loading', 'false');
+    } catch (error) {
+      console.error('Error fetching trains:', error);
+      localStorage.setItem('loading', 'false');
+    }
   };
 
   const totalDuration = (duration) => {
@@ -311,6 +364,18 @@ const TrainSearchResultList = ({ filters }) => {
           </div>
         </div>
       </div>
+
+      {/* Add Suggested Dates Section */}
+      <div className="col-12">
+        <div className="bg-white rounded-3 p-4">
+          
+          <CalendarNearbyDates 
+            selectedDate={selectedDate}
+            onDateSelect={handleDateSelect}
+          />
+        </div>
+      </div>
+
 
       {/* Train list */}
       {/* {console.log("===========> loading ", loading)} */}
@@ -664,6 +729,8 @@ const TrainSearchResultList = ({ filters }) => {
     </div>
   );
 };
+
+
 
 export default TrainSearchResultList;
 
