@@ -22,6 +22,9 @@ export const FETCH_TRAIN_BOARDING_STATIONS_FAILURE = 'FETCH_TRAIN_BOARDING_STATI
 export const FETCH_IRCTC_USERNAME_REQUEST = 'FETCH_IRCTC_USERNAME_REQUEST'
 export const FETCH_IRCTC_USERNAME_SUCCESS = 'FETCH_IRCTC_USERNAME_SUCCESS'
 export const FETCH_IRCTC_USERNAME_FAILURE = 'FETCH_IRCTC_USERNAME_FAILURE'
+export const FETCH_COUNTRY_LIST_REQUEST = 'FETCH_COUNTRY_LIST_REQUEST'
+export const FETCH_COUNTRY_LIST_SUCCESS = 'FETCH_COUNTRY_LIST_SUCCESS'
+export const FETCH_COUNTRY_LIST_FAILURE = 'FETCH_COUNTRY_LIST_FAILURE'
 
 // Action Creators
 export const fetchStationsRequest = () => ({
@@ -257,3 +260,35 @@ export const fetchIRCTCusername = (userName) =>
       dispatch(fetchIrctcUsernameFailure(error.message));
     }
   };
+
+
+  
+export const fetchCountryListRequest = () => ({
+  type: FETCH_COUNTRY_LIST_REQUEST,
+});
+
+export const fetchCountryListSuccess = (countryList) => ({
+  type: FETCH_COUNTRY_LIST_SUCCESS,
+  payload: countryList,
+});
+
+export const fetchCountryListFailure = (error) => ({
+  type: FETCH_COUNTRY_LIST_FAILURE,
+  payload: error,
+});
+
+
+export const fetchCountryList = () =>  async (dispatch) => {
+    dispatch(fetchCountryListRequest());
+    try {
+      const response = await axios.get(`${API_URL}/trains/getCountryList`);
+
+      if (response.data) {
+        console.log("fetch country list:", response.data);
+        dispatch(fetchCountryListSuccess(response.data));
+      }
+    } catch (error) {
+      console.error("Error fetching train boarding stations:", error.message);
+      dispatch(fetchCountryListFailure(error.message));
+    }
+};

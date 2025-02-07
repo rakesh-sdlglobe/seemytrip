@@ -56,7 +56,7 @@ const [travelers, setTravelers] = useState([]);
 const [currentTraveler, setCurrentTraveler] = useState({
   fullName: '',
   age: '',
-  gender: 'male',
+  gender: '',
   berth: '',
   country: '',
   berthRequired: false
@@ -277,7 +277,7 @@ const handleProceedToPayment = (e)=>{
     setCurrentTraveler({
       fullName: `${traveler.firstname} ${traveler.lastname}`.trim(),
       age: traveler.age,
-      gender: traveler.gender || 'male',
+      gender: traveler.gender || '',
       berth: traveler.berth || '',
       country: traveler.country || '',
       berthRequired: traveler.berthRequired || false,
@@ -304,7 +304,7 @@ const handleProceedToPayment = (e)=>{
     setCurrentTraveler({
       fullName: '',
       age: '',
-      gender: 'male',
+      gender: '',
       berth: '',
       country: '',
       berthRequired: false
@@ -478,29 +478,9 @@ const handleProceedToPayment = (e)=>{
                   </p>
                 )}
 
-                {/* Gender Selection */}
-                <div className="mb-4">
-                  {['male', 'female', 'transgender'].map((gender) => (
-                    <div className="form-check form-check-inline" key={gender}>
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="gender"
-                        id={gender}
-                        value={gender}
-                        checked={currentTraveler.gender === gender}
-                        onChange={(e) => setCurrentTraveler({ ...currentTraveler, gender: e.target.value })}
-                      />
-                      <label className="form-check-label" htmlFor={gender}>
-                        {gender.charAt(0).toUpperCase() + gender.slice(1)}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Full Name and Age Fields */}
-                <div className="row mb-4">
-                  <div className="col-md-8 mb-3 ps-4">
+                <div className="row ">
+                  {/* Full Name */}
+                  <div className="col-md-6 mb-3 ps-4">
                     <label htmlFor="fullName" className="form-label">Full Name*</label>
                     <input
                       id="fullName"
@@ -512,11 +492,13 @@ const handleProceedToPayment = (e)=>{
                     />
                     {formErrors.fullName && <div className="text-danger small mt-1">{formErrors.fullName}</div>}
                   </div>
-                  <div className="col-md-4 mb-3">
+
+                  {/* Age */}
+                  <div className="col-md-3 mb-3">
                     <label htmlFor="age" className="form-label">Age*</label>
                     <input
                       id="age"
-                      type="number"
+                      type="text"
                       className="form-control"
                       value={currentTraveler.age}
                       onChange={(e) => {
@@ -532,11 +514,28 @@ const handleProceedToPayment = (e)=>{
                     />
                     {formErrors.age && <div className="text-danger small mt-1">{formErrors.age}</div>}
                   </div>
+
+                  {/* Gender Dropdown (Styled Consistently) */}
+                  <div className="col-md-3 mb-3">
+                    <label htmlFor="gender" className="form-label">Gender*</label>
+                    <select
+                      className="form-control"
+                      id="gender"
+                      name="gender"
+                      value={currentTraveler.gender}
+                      onChange={(e) => setCurrentTraveler({ ...currentTraveler, gender: e.target.value })}
+                    >
+                      <option value="" disabled hidden >Select Gender</option>
+                      <option value="M">Male</option>
+                      <option value="F">Female</option>
+                      <option value="T">Transgender</option>
+                    </select>
+                  </div>
                 </div>
 
                 {/* Show warning message for under 5 */}
                 {currentTraveler.age && parseInt(currentTraveler.age) < 5 && (
-                  <div className="alert alert-warning mb-4">
+                  <div className="alert alert-success mb-4 font-small" style={{ fontSize:"0.8rem" }}>
                     Children below 5 years will not appear on the ticket as they can travel free of charge (without berth). Please carry age proof in the train.
                   </div>
                 )}
@@ -583,13 +582,28 @@ const handleProceedToPayment = (e)=>{
                           onChange={(e) => setCurrentTraveler({ ...currentTraveler, berth: e.target.value })}
                           required
                         >
-                          <option value="" disabled>Select berth preference</option>
-                          <option value="lower">Lower Berth</option>
-                          <option value="upper">Upper Berth</option>
-                          <option value="middle">Middle Berth</option>
-                          <option value="side-lower">Side Lower Berth</option>
-                          <option value="side-upper">Side Upper Berth</option>
-                          <option value="no-preference">No Preference</option>
+                          <option value="" disabled selected>Select berth preference</option>
+                          {trainData.classinfo.applicableBerthTypes?.map((berth, index) => {
+                            // Define mapping of short codes to full names
+                            const berthMap = {
+                              UB: "Upper Berth",
+                              LB: "Lower Berth",
+                              MB: "Middle Berth",
+                              SL: "Side Lower Berth",
+                              SU: "Side Upper Berth",
+                              WS: "Window Side Berth",
+                              CB: "Cabin Berth",
+                              CP: "Coupé Berth",
+                              SM: "Side Middle",
+                              NP: "No Preference" // If applicable
+                            };
+
+                            return (
+                              <option key={index} value={berth}>
+                                {berthMap[berth] || berth}
+                              </option>
+                            );
+                          })}
                         </select>
                       </div>
                       {formErrors.berth && <div className="text-danger small mt-1">{formErrors.berth}</div>}
@@ -628,7 +642,7 @@ const handleProceedToPayment = (e)=>{
 
   const renderSavedTravelers = () => (
     <div className="card p-4 mb-4">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="d-flex justify-content-between align-items-center">
         <h4 className="mb-0">Travelers</h4>
         {savedTravelers.length < MAX_TRAVELERS && (
           <button 
@@ -643,20 +657,13 @@ const handleProceedToPayment = (e)=>{
 
       {savedTravelers.length === 0 ? (
         <div className="text-center">
-          <div className="empty-state-icon mb-4">
+          <div className="empty-state-icon">
             <i className="fa-solid fa-users-slash fa-4x text-muted"></i>
           </div>
-          <h5 className="mb-3">No Travelers Added</h5>
-          <p className="text-muted mb-4">
+          <h5 className="">No Travelers Added</h5>
+          <p className="text-muted">
             Add travelers to proceed with your booking. You can add up to 6 travelers.
           </p>
-          <button 
-            className="btn btn-primary d-flex align-items-center gap-2 mx-auto"
-            onClick={() => setShowTravelerModal(true)}
-          >
-            <PlusCircle size={20} />
-            Add Your First Traveler
-          </button>
         </div>
       ) : (
         <div className="row g-3">
@@ -1945,7 +1952,7 @@ const handleProceedToPayment = (e)=>{
 
         .form-control:read-only {
           background-color: #f8f9fa;
-          cursor: not-allowed;
+          // cursor: not-allowed;
         }
 
         .border-success {

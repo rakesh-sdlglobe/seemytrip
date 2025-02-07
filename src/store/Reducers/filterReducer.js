@@ -19,6 +19,9 @@ import {
   FETCH_IRCTC_USERNAME_REQUEST,
   FETCH_IRCTC_USERNAME_SUCCESS,
   FETCH_IRCTC_USERNAME_FAILURE, 
+  FETCH_COUNTRY_LIST_REQUEST,
+  FETCH_COUNTRY_LIST_SUCCESS,
+  FETCH_COUNTRY_LIST_FAILURE
 } from '../Actions/filterActions.js';
 
 const initialState = {
@@ -29,7 +32,8 @@ const initialState = {
   searchParams: {},
   trainSchedule:[],
   trainBoardingStations : [],
-  IRCTC_username_status : {}
+  IRCTC_username_status : {},
+  countryList : [],
 };
 
 export const filterReducer = (state = initialState, action) => {
@@ -142,7 +146,23 @@ export const filterReducer = (state = initialState, action) => {
         loading: false,
         error: action.payload,
       };
-      
+    case FETCH_COUNTRY_LIST_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+    case FETCH_COUNTRY_LIST_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        countryList: action.payload,
+      };
+    case FETCH_COUNTRY_LIST_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
     default:
       return state;
   }
