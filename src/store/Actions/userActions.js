@@ -224,8 +224,3 @@ export const imageUpload = async (file) => {
     throw error; // Rethrow the error for further handling if needed
   }
 };
-
-export const updateTraveler = (travelerData) => ({
-  type: 'UPDATE_TRAVELER',
-  payload: travelerData
-});

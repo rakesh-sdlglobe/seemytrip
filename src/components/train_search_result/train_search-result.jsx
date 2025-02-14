@@ -51,21 +51,21 @@ const TrainSearchResultList = ({ filters }) => {
   };
 
 
-// Helper functions
-const formatDateToYYYYMMDD = (date) => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}${month}${day}`;
-};
+  // Helper functions
+  const formatDateToYYYYMMDD = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}${month}${day}`;
+  };
 
-const formatDateToDayDDMONTH = (date) => {
-  return date.toLocaleDateString('en-GB', { 
-    weekday: 'short', 
-    day: 'numeric', 
-    month: 'short' 
-  });
-};
+  const formatDateToDayDDMONTH = (date) => {
+    return date.toLocaleDateString('en-GB', { 
+      weekday: 'short', 
+      day: 'numeric', 
+      month: 'short' 
+    });
+  };
 
   const handleDateSelect = async (newDate) => {
     try {

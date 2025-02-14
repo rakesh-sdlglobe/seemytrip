@@ -245,11 +245,16 @@ export const fetchIrctcUsernameFailure = (error) => ({
 
 export const fetchIRCTCusername = (userName) => 
   async (dispatch) => {
+    const authToken = localStorage.authToken;
     console.log("Calling fetch IRCTC user name valid or not :", userName);
     
     dispatch(fetchIrctcUsernameRequest());
     try {
-      const response = await axios.get(`${API_URL}/trains/getUsernameFromIRCTC/${userName}`);
+      const response = await axios.get(`${API_URL}/trains/getUsernameFromIRCTC/${userName}`, {
+        headers : {
+          'Authorization': `Bearer ${authToken}`,
+        }
+      });
 
       if (response.data) {
         console.log("fetchTrainBoardingStationsSuccess:", response.data);
