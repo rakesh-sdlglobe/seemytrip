@@ -17,7 +17,6 @@ import 'react-toastify/dist/ReactToastify.css';
 const PersonalTravel = () => {
   const navigate = useNavigate();
   const [firstname, setFirstName] = useState("");
-  const [lastname, setLastName] = useState("");
   const [mobile, setMobile] = useState("");
   const [dob, setBirthDate] = useState("");
   const [isEditing, setIsEditing] = useState(false);
@@ -32,7 +31,7 @@ const PersonalTravel = () => {
   }, [dispatch]);
 
   const handleAddTraveler = () => {
-    if (!firstname || !lastname || !mobile || !dob) {
+    if (!firstname || !mobile || !dob) {
       toast.error("Please fill all required fields");
       return;
     }
@@ -45,13 +44,12 @@ const PersonalTravel = () => {
 
     const travelerData = {
       firstname,
-      lastname,
       mobile,
       dob,
     };
 
     if (isEditing) {
-      dispatch(updateTraveler({ ...travelerData, id: editingId }));
+      dispatch(addTraveler({ ...travelerData, passengerId: editingId }));
       toast.success("Traveler updated successfully!");
       setIsEditing(false);
       setEditingId(null);
@@ -61,16 +59,14 @@ const PersonalTravel = () => {
     }
     
     setFirstName("");
-    setLastName("");
     setMobile("");
     setBirthDate("");
   };
 
   const handleEdit = (traveler) => {
     setIsEditing(true);
-    setEditingId(traveler.id);
+    setEditingId(traveler.passengerId);
     setFirstName(traveler.firstname);
-    setLastName(traveler.lastname);
     setMobile(traveler.mobile);
     setBirthDate(formatDOB(traveler.dob));
     toast.info("Editing traveler details");
@@ -85,7 +81,6 @@ const PersonalTravel = () => {
         setIsEditing(false);
         setEditingId(null);
         setFirstName("");
-        setLastName("");
         setMobile("");
         setBirthDate("");
       }
@@ -130,17 +125,6 @@ const PersonalTravel = () => {
                   className="form-control"
                   value={firstname}
                   onChange={(e) => setFirstName(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="col-md-6">
-              <div className="form-group">
-                <label>Last Name*</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={lastname}
-                  onChange={(e) => setLastName(e.target.value)}
                 />
               </div>
             </div>
@@ -210,11 +194,11 @@ const PersonalTravel = () => {
                       <div className="d-flex justify-content-between align-items-center mb-3">
                         <div className="d-flex align-items-center">
                           <div className="avatar-circle me-3">
-                            {(traveler.firstname?.[0] || '') + (traveler.lastname?.[0] || '')}
+                            {(traveler.firstname?.[0] || '')}
                           </div>
                           <div>
                             <h5 className="mb-1">
-                              {traveler.firstname} {traveler.lastname}
+                              {traveler.firstname}
                             </h5>
                             <p className="text-muted small mb-0">
                               <i className="fa-solid fa-phone me-2"></i>
@@ -261,7 +245,6 @@ const PersonalTravel = () => {
             setIsEditing(false);
             setEditingId(null);
             setFirstName("");
-            setLastName("");
             setMobile("");
             setBirthDate("");
           }}

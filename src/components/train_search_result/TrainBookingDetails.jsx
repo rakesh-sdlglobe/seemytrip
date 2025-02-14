@@ -21,7 +21,6 @@ import {
   addTraveler,
   fetchTravelers,
   removeTraveler,
-  updateTraveler,
 } from "../../store/Actions/userActions";
 import {
   selectTravelers,
@@ -41,14 +40,14 @@ const [isVerified, setIsVerified] = useState(false);
 const [isEditing, setIsEditing] = useState(false);
   // Add max travelers constant
 const MAX_TRAVELERS = 6;
-console.log("17 train data from ",trainData)
+// console.log("17 train data from ",trainData)
 useEffect(() => {
   dispatch(fetchTrainBoardingStations(trainData?.trainNumber, trainData?.journeyDate, trainData?.fromStnCode, trainData?.toStnCode,trainData?.classinfo.enqClass));
   dispatch(fetchTrainSchedule(trainData?.trainNumber));
 },[]);
 const boardingStations = useSelector(selectTrainBoardingStations);
-console.log("18 boarding stations from ",boardingStations)
-console.log("IRCTC response ",irctcUsernameStatus)
+// console.log("18 boarding stations from ",boardingStations)
+// console.log("IRCTC response ",irctcUsernameStatus)
 const boardingStationDetails = useSelector(selectTrainsSchedule);
 console.log("19 boarding station details from ", boardingStationDetails)
 // State management
@@ -173,39 +172,24 @@ const [contactDetails, setContactDetails] = useState({
     }
     
     if (validateForm()) {
-      const [firstName, ...lastNameParts] = currentTraveler.fullName.trim().split(' ');
-      const lastName = lastNameParts.join(' ');
-      
       const travelerData = {
-        firstname: firstName,
-        lastname: lastName || '',
-        mobile: '', 
-        dob: null,
-        age: currentTraveler.age,
-        gender: currentTraveler.gender,
-        berth: currentTraveler.berth,
+        passengerName: currentTraveler.fullName.trim(),
+        passengerAge: currentTraveler.age,
+        passengerGender: currentTraveler.gender,
+        passengerBerthChoice: currentTraveler.berth,
         country: currentTraveler.country,
-        berthRequired: currentTraveler.berthRequired,
+        passengerBedrollChoice: currentTraveler.berthRequired,
+        passengerNationality : "IN",
       };
-
+      console.log("traveler data ==> from 184 : ",travelerData)
       if (editingTravelerIndex !== null) {
-        dispatch(updateTraveler({ ...travelerData, id: editingTravelerIndex }))
-          .then(() => {
-            toast.success('Traveler updated successfully');
-            handleModalClose();
-          })
-          .catch(error => {
-            toast.error('Failed to update traveler');
-          });
+        dispatch(addTraveler({ ...travelerData, passengerId: editingTravelerIndex }));
+        toast.success('Traveler updated successfully');
+        handleModalClose();
       } else {
-        dispatch(addTraveler(travelerData))
-          .then(() => {
-            toast.success('Traveler added successfully');
-            handleModalClose();
-          })
-          .catch(error => {
-            toast.error('Failed to add traveler');
-          });
+        dispatch(addTraveler(travelerData));
+        toast.success('Traveler added successfully');
+        handleModalClose();
       }
     }
   };
@@ -275,14 +259,14 @@ const handleProceedToPayment = (e)=>{
   // Update handleEditTraveler function
   const handleEditTraveler = (traveler) => {
     setCurrentTraveler({
-      fullName: `${traveler.firstname} ${traveler.lastname}`.trim(),
-      age: traveler.age,
-      gender: traveler.gender || '',
-      berth: traveler.berth || '',
-      country: traveler.country || '',
-      berthRequired: traveler.berthRequired || false,
+      fullName: traveler.passengerName,
+      age: traveler.passengerAge,
+      gender: traveler.passengerGender || '',
+      berth: traveler.passengerBerthChoice || '',
+      country: traveler.passengerNationality || '',
+      berthRequired: traveler.passengerBedrollChoice || false,
     });
-    setEditingTravelerIndex(traveler.id);
+    setEditingTravelerIndex(traveler.passengerId);
     setShowTravelerModal(true);
     toast.info('Edit traveler details');
   };
@@ -542,7 +526,7 @@ const handleProceedToPayment = (e)=>{
 
                 {/* Show berth requirement checkbox for age 5-11 */}
                 {currentTraveler.age && parseInt(currentTraveler.age) >= 5 && parseInt(currentTraveler.age) <= 11 && (
-                  <div className="mb-4">
+                  <div className="mb-4 py-2 ms-3">
                     <div className="form-check">
                       <input
                         className="form-check-input"
@@ -557,11 +541,13 @@ const handleProceedToPayment = (e)=>{
                         })}
                       />
                       <label className="form-check-label" htmlFor="berthRequired">
-                        Berth Required
+                        Berth Required { currentTraveler.berthRequired ? '(Full Ticket)' : '(Half Ticket)' }
                       </label>
-                      <div className="text-muted small mt-1">
-                        No berth alloted and half adult fare charged if not opted
-                      </div>
+                      {!currentTraveler.berthRequired && 
+                        <div className="text-muted small mt-1">
+                          No berth alloted and half adult fare charged if not opted
+                        </div>
+                      }
                     </div>
                   </div>
                 )}
@@ -668,21 +654,21 @@ const handleProceedToPayment = (e)=>{
       ) : (
         <div className="row g-3">
           {savedTravelers.map((traveler, index) => (
-            <div key={traveler.id} className="col-md-6">
-              <div className={`card shadow-sm ${selectedTravelers.includes(traveler.id) ? 'border-primary' : ''}`}>
+            <div key={traveler.passengerId} className="col-md-6">
+              <div className={`card shadow-sm ${selectedTravelers.includes(traveler.passengerId) ? 'border-primary' : ''}`}>
                 <div className="card-body">
                   <div className="d-flex align-items-center mb-2">
                     <div className="form-check me-2">
                       <input
                         className="form-check-input"
                         type="checkbox"
-                        checked={selectedTravelers.includes(traveler.id)}
-                        onChange={() => handleTravelerSelection(traveler.id)}
-                        id={`traveler-${traveler.id}`}
+                        checked={selectedTravelers.includes(traveler.passengerId)}
+                        onChange={() => handleTravelerSelection(traveler.passengerId)}
+                        id={`traveler-${traveler.passengerId}`}
                       />
                     </div>
                     <p className="fw-bold mb-0 flex-grow-1">
-                      {traveler.firstname} {traveler.lastname}
+                      {traveler.passengerName} 
                     </p>
                     <div>
                       <button 
@@ -693,18 +679,18 @@ const handleProceedToPayment = (e)=>{
                       </button>
                       <button 
                         className="btn btn-sm btn-outline-danger"
-                        onClick={() => handleDeleteTraveler(traveler.id)}
+                        onClick={() => handleDeleteTraveler(traveler.passengerId)}
                       >
                         <i className="fa-solid fa-trash-can"></i>
                       </button>
                     </div>
                   </div>
                   <p className="text-muted small mb-0">
-                    {traveler.age} years • {traveler.gender}
-                    {parseInt(traveler.age) < 5 ? ' • No berth (under 5)' : 
-                     parseInt(traveler.age) >= 5 && parseInt(traveler.age) <= 11 ? 
-                      (traveler.berthRequired ? ` • ${traveler.berth} berth` : ' • No berth (child fare)') :
-                      ` • ${traveler.berth} berth`}
+                    {traveler.passengerAge} years • {traveler.passengerGender === "M" ? "Male" : traveler.passengerGender === "F" ? "Female" : "Others"}
+                    {parseInt(traveler.passengerAge) < 5 ? ' • No berth (under 5)' : 
+                      parseInt(traveler.passengerAge) >= 5 && parseInt(traveler.passengerAge) <= 11 ? 
+                      (traveler.passengerBedrollChoice ? ` • ${traveler.passengerBerthChoice} berth` : ' • No berth (child fare)') :
+                      ` • ${traveler.passengerBerthChoice} berth`}
                   </p>
                 </div>
               </div>
