@@ -368,7 +368,98 @@ const SearchComponent = ({
           }
 
           .swap-button i {
-            font-size: 1.2em; 
+            background: none;
+            border: none;
+            color: #17181c;
+            cursor: pointer;
+            padding: 8px;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+          } 
+            .swap-button:hover {
+            transform: scale(1.1);
+          }
+
+          @media (max-width: 991px) {
+            .new-wrap {
+              padding: 15px;
+            }
+            
+            .swap-button {
+              margin: 10px 0;
+              transform: rotate(90deg);
+            }
+
+            .swap-button:hover {
+              transform: rotate(90deg) scale(1.1);
+            }
+          }
+
+          @media (max-width: 767px) {
+            .search-component {
+              height: auto !important;
+              padding: 25px 0;
+            }
+
+            .highlights-container {
+            display:none;
+              position: relative;
+              left: 0;
+              margin-bottom: 15px;
+            }
+
+            .authorized-partner {
+              position: relative;
+              right: 0;
+              justify-content: center;
+              margin-top: 15px;
+            }
+
+            .form-group {
+              margin-bottom: 15px;
+            }
+
+            .calendar-popup {
+              width: calc(100vw - 30px);
+              left: 15px;
+            }
+          }
+
+          @media (max-width: 576px) {
+            .new-wrap {
+              padding: 10px;
+            }
+
+            .swap-button {
+              display: flex;
+              margin: 5px auto;
+            }
+
+            .station-warning-container {
+              position: relative;
+              transform: none;
+              left: 0;
+              margin-top: 10px;
+            }
+
+            .station-warning-message {
+              width: 100%;
+              white-space: normal;
+              text-align: center;
+            }
+
+            .form-control, 
+            .select__control {
+              font-size: 14px;
+            }
+
+            .input-icon {
+              width: 24px;
+              height: 24px;
+            }
           }
             // .react-datepicker-wrapper .form-control:focus,
             // .react-datepicker-wrapper .form-control:active {
