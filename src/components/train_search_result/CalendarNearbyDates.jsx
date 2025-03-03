@@ -1,38 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { fetchTrains } from '../../store/Actions/filterActions';
 
 const CalendarNearbyDates = () => {
   const dispatch = useDispatch();
-  
-  // Get current search params including the selected date from localStorage
   const searchParams = JSON.parse(localStorage.getItem('trainSearchParams') || '{}');
   const { fromStnCode, toStnCode, date } = searchParams;
-  
-  // Convert the stored date string to Date object
   const currentDate = date ? new Date(date) : new Date();
+  
+  // State to track visible dates
+  const [baseDate, setBaseDate] = useState(currentDate);
 
   const getNearbyDates = (date, range = 4) => {
     const dates = [];
-    const baseDate = new Date(date);
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset time part for accurate date comparison
+    today.setHours(0, 0, 0, 0);
     
-    // Calculate the start index to ensure we don't show past dates
-    let startIndex = -range;
+    // Calculate max date (63 days from today)
+    const maxDate = new Date(today);
+    maxDate.setDate(today.getDate() + 63);
+
     for (let i = -range; i <= range; i++) {
-      const tempDate = new Date(baseDate);
-      tempDate.setDate(baseDate.getDate() + i);
-      if (tempDate >= today) {
+      const tempDate = new Date(date);
+      tempDate.setDate(date.getDate() + i);
+      if (tempDate >= today && tempDate <= maxDate) {
         dates.push(tempDate);
       }
     }
 
-    // If we have less than 9 dates (because some were in the past),
-    // add more future dates to maintain the count
     while (dates.length < 9) {
       const lastDate = new Date(dates[dates.length - 1]);
       lastDate.setDate(lastDate.getDate() + 1);
+      if (lastDate > maxDate) break;
       dates.push(lastDate);
     }
 
@@ -46,14 +45,12 @@ const CalendarNearbyDates = () => {
     return `${year}${month}${day}`;
   };
 
+  // Handle date selection and API call
   const handleDateClick = async (selectedDate) => {
     try {
       localStorage.setItem('loading', 'true');
-
-      // Format date for API
       const formattedDate = formatDateToYYYYMMDD(selectedDate);
       
-      // Update searchParams with new date
       const updatedSearchParams = {
         ...searchParams,
         date: selectedDate.toISOString(),
@@ -64,21 +61,9 @@ const CalendarNearbyDates = () => {
         })
       };
       
-      // Update localStorage
       localStorage.setItem('trainSearchParams', JSON.stringify(updatedSearchParams));
-
-      // Fetch new train data
-      console.log('Fetching trains for:', {
-        date: formattedDate,
-        fromStnCode,
-        toStnCode
-      });
-      console.log('==> from calendeer file Formatted date:', formattedDate, fromStnCode, toStnCode);
       await dispatch(fetchTrains(fromStnCode, toStnCode, formattedDate));
       
-      // Force reload to update the UI with new data
-      // window.location.reload();
-
     } catch (error) {
       console.error('Error fetching trains:', error);
     } finally {
@@ -86,31 +71,53 @@ const CalendarNearbyDates = () => {
     }
   };
 
-  const nearbyDates = getNearbyDates(currentDate);
+  // Handle navigation without API call
+  const handleNavigation = (direction) => {
+    const newDate = new Date(baseDate);
+    // console.log("==> last date is : ", nearbyDates[nearbyDates.length - 1],"==> max date is : ", maxDate);
+    const isLastDate = nearbyDates[nearbyDates.length - 1]?.getDate() === maxDate.getDate();
+    if (!isLastDate && direction === 'next') {
+      newDate.setDate(baseDate.getDate() + 2);
+      // console.log('==> newDate:', newDate);
+    }else if (isLastDate && direction === 'next') {
+      newDate.setDate(baseDate.getDate() + 1);
+    }else {
+      newDate.setDate(baseDate.getDate() - 2);
+    }
+    setBaseDate(newDate);
+  };
+
+  const nearbyDates = getNearbyDates(baseDate);
+  // console.log("===> nearbyDates:", nearbyDates);
+  const today = new Date();
+  const maxDate = new Date(today);
+  maxDate.setDate(today.getDate() + 63);
+
+  // console.log("===> maxDate:", maxDate);
 
   return (
     <div style={{ 
       display: 'flex', 
       alignItems: 'center',
       justifyContent: 'center',
-      gap: '5px',
-      padding: '10px 0',
+      // gap: '5px',
+      // padding: '5px 0',
       backgroundColor: '#fff',
       borderRadius: '8px',
       boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
     }}>
       {/* Previous Arrow */}
       <button
-        onClick={() => handleDateClick(new Date(currentDate.setDate(currentDate.getDate() - 1)))}
-        disabled={nearbyDates[0].toDateString() === currentDate.toDateString()}
+        onClick={() => handleNavigation('prev')}
+        disabled={nearbyDates[0]?.toDateString() === today.toDateString()}
         style={{
           border: 'none',
           background: 'transparent',
-          cursor: nearbyDates[0].toDateString() === currentDate.toDateString() ? 'pointer' : 'not-allowed',
+          cursor: 'pointer',
           padding: '0 15px',
-          opacity: nearbyDates[0].toDateString() === currentDate.toDateString() ? 1 : 0.5,
+          opacity: nearbyDates[0]?.toDateString() === today.toDateString() ? 0.5 : 1,
           color: '#dc3545',
-          fontSize: '20px'
+          fontSize: '50px'
         }}
       >
         ‹
@@ -125,7 +132,7 @@ const CalendarNearbyDates = () => {
       }}>
         {nearbyDates.map((date, index) => {
           const isSelected = date.toDateString() === currentDate.toDateString();
-          const isToday = date.toDateString() === new Date().toDateString();
+          const isToday = date.toDateString() === today.toDateString();
           
           return (
             <div
@@ -168,16 +175,16 @@ const CalendarNearbyDates = () => {
 
       {/* Next Arrow */}
       <button
-        onClick={() => handleDateClick(new Date(currentDate.setDate(currentDate.getDate() + 1)))}
-        disabled={nearbyDates[nearbyDates.length - 1].toDateString() === currentDate.toDateString()}
+        onClick={() => handleNavigation('next')}
+        disabled={nearbyDates[nearbyDates.length - 1]?.getDate() >= maxDate.getDate() + 1}
         style={{
           border: 'none',
           background: 'transparent',
-          cursor: nearbyDates[nearbyDates.length - 1].toDateString() === currentDate.toDateString() ? 'pointer' : 'not-allowed',
+          cursor: nearbyDates.length <= 8 ? 'not-allowed' : 'pointer',
           padding: '0 15px',
-          opacity: nearbyDates[nearbyDates.length - 1].toDateString() === currentDate.toDateString() ? 1 : 0.5,
+          opacity: nearbyDates[nearbyDates.length - 1]?.getTime() >= maxDate.getTime() ? 0.5 : 1,
           color: '#dc3545',
-          fontSize: '20px'
+          fontSize: '50px'
         }}
       >
         ›

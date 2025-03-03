@@ -282,6 +282,21 @@ const SearchComponent = ({
   }, [highlights.length]);
   
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (calendarOpen && journeyDateRef.current && 
+          !journeyDateRef.current.contains(event.target) &&
+          !event.target.closest('.calendar-popup')) {
+        setCalendarOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [calendarOpen]);
+
   return (
     <>
       <style>
@@ -1045,7 +1060,8 @@ const SearchComponent = ({
                                   minDate={new Date()}
                                   maxDate={(() => {
                                     const today = new Date();
-                                    const maxDate = new Date(today.getFullYear(), today.getMonth() + 3, 0); // Get last day of second month
+                                    const maxDate = new Date(today);
+                                    maxDate.setDate(today.getDate() + 63)
                                     return maxDate;
                                   })()}
                                   selectRange={false}
