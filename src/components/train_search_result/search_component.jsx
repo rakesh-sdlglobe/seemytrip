@@ -473,17 +473,17 @@ const SearchComponent = ({
 
             .calendar-popup {
               position: absolute;
-              top: 100%; // Changed from bottom: 100% to top: 100%
+              top: 100%;
               left: 0;
-              width: 320px; // Reduced width for single month
-              box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+              width: 320px;
+              box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 3px 8px rgba(0, 0, 0, 0.1);
               border-radius: 12px;
               background: white;
-              z-index: 1000; // Increased z-index to ensure it stays on top
+              z-index: 1000;
               overflow: hidden;
               padding: 15px;
-              margin-top: 5px; // Add some space between input and calendar
-              
+              margin-top: 5px;
+              border: 1px solid rgba(0, 0, 0, 0.08);
             }
 
             .react-calendar {
@@ -531,11 +531,11 @@ const SearchComponent = ({
                 font-weight: 500;
               }
               .calendar-popup .react-calendar__tile:disabled {
-                background: transparent !important;
+                background-color: #f5f5f5 !important;
                 color: #ccc !important;
                 cursor: not-allowed;
-                opacity: 0.5;
-          }
+                opacity: 0.6;
+              }
               // .react-calendar__tile:enabled:hover,
               // .react-calendar__tile:enabled:focus {
               //   background-color: #f8f8f8;
@@ -1043,6 +1043,11 @@ const SearchComponent = ({
                                   }}
                                   value={journeyDate}
                                   minDate={new Date()}
+                                  maxDate={(() => {
+                                    const today = new Date();
+                                    const maxDate = new Date(today.getFullYear(), today.getMonth() + 3, 0); // Get last day of second month
+                                    return maxDate;
+                                  })()}
                                   selectRange={false}
                                   showNeighboringMonth={true}
                                   showFixedNumberOfWeeks={false}
