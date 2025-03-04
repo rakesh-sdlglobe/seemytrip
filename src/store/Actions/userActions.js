@@ -83,7 +83,6 @@ export const editUserProfile = (userData,navigate) => {
       
       dispatch({ type: EDIT_USER_PROFILE_SUCCESS, payload: response.data.user });
        // Navigate to home page
-      navigate('/');  // This will redirect to the home page
     } catch (error) {    
       dispatch({ type: EDIT_USER_PROFILE_FAILURE, payload: error.response.data.message });
     }

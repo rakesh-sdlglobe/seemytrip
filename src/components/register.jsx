@@ -70,6 +70,7 @@ const Register = () => {
     let lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
 
     dispatch(register(firstName, middleName, lastName, email, password, navigate));
+    navigate('/login');
   };
 
   const loginWithGoogle = useGoogleLogin({
