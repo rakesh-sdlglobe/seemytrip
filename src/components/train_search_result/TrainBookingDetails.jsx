@@ -183,6 +183,7 @@ const [contactDetails, setContactDetails] = useState({
       };
 
       if (editingTravelerIndex !== null) {
+        console.log("traveler data from 186 :== ",travelerData, "came for edit")
         dispatch(addTraveler({ ...travelerData, passengerId: editingTravelerIndex }))
           .then(() => {
             dispatch(fetchTravelers()); // Fetch updated list after adding
@@ -193,6 +194,7 @@ const [contactDetails, setContactDetails] = useState({
             toast.error('Failed to update traveler');
           });
       } else {
+        console.log("traveler data from 186 :== ",travelerData, "came for add")
         dispatch(addTraveler(travelerData))
           .then(() => {
             dispatch(fetchTravelers()); // Fetch updated list after adding
@@ -271,6 +273,7 @@ const handleProceedToPayment = (e)=>{
 
   // Update handleEditTraveler function
   const handleEditTraveler = (traveler) => {
+    console.log("traveler from 274 :== ",traveler)
     setCurrentTraveler({
       fullName: traveler.passengerName,
       age: traveler.passengerAge,
@@ -539,6 +542,7 @@ const handleProceedToPayment = (e)=>{
                       className="form-control"
                       id="gender"
                       name="gender"
+                      required
                       value={currentTraveler.gender}
                       onChange={(e) => setCurrentTraveler({ ...currentTraveler, gender: e.target.value })}
                     >
@@ -976,7 +980,7 @@ const handleProceedToPayment = (e)=>{
       </h4>
       
       <div className="row g-3">
-        <div className="col-xl-6 col-md-6 col-sm-12">
+        <div className="col-xl-5 col-md-5 col-sm-12">
           <label htmlFor="email" className="form-label">
             <i className="fa-solid fa-envelope me-2"></i>
             Email ID*
@@ -993,7 +997,7 @@ const handleProceedToPayment = (e)=>{
           {errors.email && <small className="text-danger">{errors.email}</small>}
         </div>
 
-        <div className="col-xl-6 col-md-6 col-sm-12">
+        <div className="col-xl-4 col-md-4 col-sm-12">
           <label htmlFor="phone" className="form-label">
             <i className="fa-solid fa-phone me-2"></i>
             Phone Number*
@@ -1010,7 +1014,7 @@ const handleProceedToPayment = (e)=>{
           {errors.phone && <small className="text-danger">{errors.phone}</small>}
         </div>
 
-        <div className="col-12">
+        <div className="col-xl-3 col-md-3 col-sm-12">
           <label htmlFor="state" className="form-label">
             <i className="fa-solid fa-location-dot me-2"></i>
             State*
@@ -1019,6 +1023,7 @@ const handleProceedToPayment = (e)=>{
             <select
               className="form-select card-select"
               id="state"
+              style={{ fontSize: '0.95rem', padding: '0.95rem' }}
               value={contactDetails.state}
               onChange={(e) => setContactDetails({ ...contactDetails, state: e.target.value })}
             >
