@@ -26,7 +26,24 @@ const SearchComponent = ({
   dropdownHindden = 'auto',
   checklabelColor = 'auto',
   hindenswap = 'auto',
-  initialValues = (() => { try { return JSON.parse(localStorage.getItem('trainSearchParams')) || {}; } catch (e) { return {}; } })(),
+  initialValues = (() => { 
+    try { 
+      const stored = JSON.parse(localStorage.getItem('trainSearchParams')) || {};
+      // Check if stored date is in the past
+      if (stored.date) {
+        const storedDate = new Date(stored.date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time to start of day
+        
+        if (storedDate < today) {
+          stored.date = today.toISOString();
+        }
+      }
+      return stored;
+    } catch (e) { 
+      return {}; 
+    } 
+  })(),
   customStyles = {},
 }) => {
   const dispatch = useDispatch();
