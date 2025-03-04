@@ -214,7 +214,7 @@ const NearbyDates = ({ train, onClose }) => {
                                     cls.avlDayList.map((dayInfo, dayIndex) => (
                                         <div 
                                             key={dayIndex}
-                                            className={`date-card mb-2 p-2 rounded-3 d-flex justify-content-between align-items-center ${
+                                            className={`date-card p-2 rounded-3 d-flex justify-content-between align-items-center ${
                                                 dayInfo.availablityType === "1" || dayInfo.availablityType === "2"
                                                 ? "bg-success-light"
                                                 : dayInfo.availablityType === "3"

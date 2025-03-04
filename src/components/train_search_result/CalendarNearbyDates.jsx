@@ -9,15 +9,19 @@ const CalendarNearbyDates = () => {
   const currentDate = date ? new Date(date) : new Date();
   const scrollContainerRef = useRef(null);
   
-  // Generate all 63 dates (today + 62 days)
-  const [allDates] = useState(() => {
+  // Generate dates centered around the selected date
+  const [allDates, setAllDates] = useState(() => {
     const dates = [];
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     
+    const selectedDate = date ? new Date(date) : today;
+    const startDate = new Date(today); // Start from today
+    
+    // Generate 63 dates
     for (let i = 0; i < 63; i++) {
-      const newDate = new Date(today);
-      newDate.setDate(today.getDate() + i);
+      const newDate = new Date(startDate);
+      newDate.setDate(startDate.getDate() + i);
       dates.push(newDate);
     }
     return dates;
@@ -25,7 +29,48 @@ const CalendarNearbyDates = () => {
 
   // State for visible range
   const [visibleStartIndex, setVisibleStartIndex] = useState(0);
-  const VISIBLE_DATES = 9; // Number of dates to show at once
+  const VISIBLE_DATES = 9;
+
+  // Function to reorganize dates around selected date
+  const reorganizeDatesAroundSelected = (selectedDate) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Find the index of selected date
+    const selectedIndex = allDates.findIndex(date => 
+      date.toDateString() === selectedDate.toDateString()
+    );
+
+    if (selectedIndex === -1) return;
+
+    // Calculate the index that would put the selected date in the middle
+    // VISIBLE_DATES is 9, so we want the selected date to be at index 4 (middle)
+    const middleOffset = Math.floor(VISIBLE_DATES / 2); // This will be 4
+    const newStartIndex = Math.max(0, selectedIndex - middleOffset);
+
+    // Adjust if we're near the end of the list
+    const maxStartIndex = allDates.length - VISIBLE_DATES;
+    const finalStartIndex = Math.min(newStartIndex, maxStartIndex);
+
+    setVisibleStartIndex(finalStartIndex);
+
+    // Scroll to position
+    if (scrollContainerRef.current) {
+      const scrollPosition = finalStartIndex * 120; // 120px per date item
+      scrollContainerRef.current.scrollTo({
+        left: scrollPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Listen for changes in searchParams date
+  useEffect(() => {
+    if (date) {
+      const newDate = new Date(date);
+      reorganizeDatesAroundSelected(newDate);
+    }
+  }, [date]);
 
   const formatDateToYYYYMMDD = (date) => {
     const year = date.getFullYear();
@@ -52,6 +97,7 @@ const CalendarNearbyDates = () => {
       
       localStorage.setItem('trainSearchParams', JSON.stringify(updatedSearchParams));
       await dispatch(fetchTrains(fromStnCode, toStnCode, formattedDate));
+      reorganizeDatesAroundSelected(selectedDate);
       
     } catch (error) {
       console.error('Error fetching trains:', error);
@@ -68,10 +114,10 @@ const CalendarNearbyDates = () => {
     
     setVisibleStartIndex(newIndex);
     
-    // Smooth scroll to the new position
     if (scrollContainerRef.current) {
+      const scrollAmount = direction === 'next' ? 800 : -800;
       scrollContainerRef.current.scrollTo({
-        left: direction === 'next' ? scrollContainerRef.current.scrollLeft + 800 : scrollContainerRef.current.scrollLeft - 800,
+        left: scrollContainerRef.current.scrollLeft + scrollAmount,
         behavior: 'smooth'
       });
     }

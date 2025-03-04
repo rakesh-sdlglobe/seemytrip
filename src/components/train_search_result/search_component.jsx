@@ -1078,7 +1078,7 @@ const SearchComponent = ({
                                   maxDate={(() => {
                                     const today = new Date();
                                     const maxDate = new Date(today);
-                                    maxDate.setDate(today.getDate() + 63)
+                                    maxDate.setDate(today.getDate() + 62)
                                     return maxDate;
                                   })()}
                                   selectRange={false}
