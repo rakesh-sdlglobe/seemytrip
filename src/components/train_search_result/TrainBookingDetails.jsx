@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Edit2, PlusCircle } from 'lucide-react';
 import Header02 from '../header02';
 import FooterDark from '../footer-dark';
@@ -179,17 +179,29 @@ const [contactDetails, setContactDetails] = useState({
         passengerBerthChoice: currentTraveler.berth,
         country: currentTraveler.country,
         passengerBedrollChoice: currentTraveler.berthRequired,
-        passengerNationality : "IN",
+        passengerNationality: "IN",
       };
-      console.log("traveler data ==> from 184 : ",travelerData)
+
       if (editingTravelerIndex !== null) {
-        dispatch(addTraveler({ ...travelerData, passengerId: editingTravelerIndex }));
-        toast.success('Traveler updated successfully');
-        handleModalClose();
+        dispatch(addTraveler({ ...travelerData, passengerId: editingTravelerIndex }))
+          .then(() => {
+            dispatch(fetchTravelers()); // Fetch updated list after adding
+            toast.success('Traveler updated successfully');
+            handleModalClose();
+          })
+          .catch((error) => {
+            toast.error('Failed to update traveler');
+          });
       } else {
-        dispatch(addTraveler(travelerData));
-        toast.success('Traveler added successfully');
-        handleModalClose();
+        dispatch(addTraveler(travelerData))
+          .then(() => {
+            dispatch(fetchTravelers()); // Fetch updated list after adding
+            toast.success('Traveler added successfully');
+            handleModalClose();
+          })
+          .catch((error) => {
+            toast.error('Failed to add traveler');
+          });
       }
     }
   };
@@ -248,6 +260,7 @@ const handleProceedToPayment = (e)=>{
     if (window.confirm('Are you sure you want to remove this traveler?')) {
       dispatch(removeTraveler(id))
         .then(() => {
+          dispatch(fetchTravelers()); // Fetch updated list after deletion
           toast.success('Traveler deleted successfully');
         })
         .catch(error => {
@@ -430,6 +443,25 @@ const handleProceedToPayment = (e)=>{
     </div>
   );
 
+  const modalRef = useRef(null);
+
+  // Add useEffect for click outside handling
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        handleModalClose();
+      }
+    };
+
+    if (showTravelerModal) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showTravelerModal]);
+
   const renderTravelerModal = () => (
     <>
       <div 
@@ -439,7 +471,7 @@ const handleProceedToPayment = (e)=>{
         role="dialog"
       >
         <div className="modal-dialog modal-lg modal-dialog-centered">
-          <div className="modal-content">
+          <div className="modal-content" ref={modalRef}>
             <div className="modal-header">
               <h5 className="modal-title">
                 {editingTravelerIndex !== null ? `Edit Traveler: ${currentTraveler.fullName}` : 'Add Traveler'}
@@ -473,6 +505,7 @@ const handleProceedToPayment = (e)=>{
                       value={currentTraveler.fullName}
                       onChange={(e) => setCurrentTraveler({ ...currentTraveler, fullName: e.target.value })}
                       required
+                      maxLength={16}
                     />
                     {formErrors.fullName && <div className="text-danger small mt-1">{formErrors.fullName}</div>}
                   </div>
