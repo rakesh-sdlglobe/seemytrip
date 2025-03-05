@@ -29,9 +29,9 @@ const NearbyDates = ({ train, onClose }) => {
         const [day, month, year] = dateString.split('-');
         const date = new Date(year, month - 1, day);
         return date.toLocaleDateString('en-US', {
-          weekday: 'short',
-          day: '2-digit',
-          month: 'short',
+            weekday: 'short',
+            day: '2-digit',
+            month: 'short',
         });
     };
 
@@ -172,7 +172,7 @@ const NearbyDates = ({ train, onClose }) => {
 
     // Render component
     return (
-        <div className="col-12 mt-3">
+        <div className="col-12">
             <div className="nearby-dates-container">
                 {/* Class Selection Tabs */}
                 <div className="d-flex mb-3 flex-wrap gap-2">
@@ -214,7 +214,7 @@ const NearbyDates = ({ train, onClose }) => {
                                     cls.avlDayList.map((dayInfo, dayIndex) => (
                                         <div 
                                             key={dayIndex}
-                                            className={`date-card mb-2 p-2 rounded-3 d-flex justify-content-between align-items-center ${
+                                            className={`date-card p-2 rounded-3 d-flex justify-content-between align-items-center ${
                                                 dayInfo.availablityType === "1" || dayInfo.availablityType === "2"
                                                 ? "bg-success-light"
                                                 : dayInfo.availablityType === "3"

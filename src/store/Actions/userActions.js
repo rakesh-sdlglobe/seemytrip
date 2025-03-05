@@ -83,7 +83,6 @@ export const editUserProfile = (userData,navigate) => {
       
       dispatch({ type: EDIT_USER_PROFILE_SUCCESS, payload: response.data.user });
        // Navigate to home page
-      navigate('/');  // This will redirect to the home page
     } catch (error) {    
       dispatch({ type: EDIT_USER_PROFILE_FAILURE, payload: error.response.data.message });
     }
@@ -128,56 +127,65 @@ export const myBookings = () => {
   };
 }
 
-export const addTraveler = (travelerData,navigate) => async (dispatch) => {
-  
+export const addTraveler = (travelerData) => async (dispatch) => {
   try {
-    
     dispatch({ type: ADD_TRAVELER_REQUEST });
-      const authToken = localStorage.getItem('authToken'); 
-      const response = await axios.post(`${API_URL}/users/addTraveler`, travelerData,{
-        
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
+    const authToken = localStorage.getItem('authToken'); 
+    
+    const response = await axios.post(`${API_URL}/users/addTraveler`, travelerData, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
 
+    dispatch({
+      type: ADD_TRAVELER_SUCCESS,
+      payload: response.data,
+    });
 
-      dispatch({
-          type: ADD_TRAVELER_SUCCESS,
-          payload: response.data,
-      });
-      navigate('/');
+    // Return a promise that resolves when the action is complete
+    return Promise.resolve(response.data);
 
   } catch (error) {
-      dispatch({
-          type: ADD_TRAVELER_FAILURE,
-          payload: error.message || 'Failed to add traveler',
-      });
+    dispatch({
+      type: ADD_TRAVELER_FAILURE,
+      payload: error.message || 'Failed to add traveler',
+    });
+    // Return a rejected promise to handle the error in the component
+    return Promise.reject(error);
   }
 };
 
-export const fetchTravelers = () => {
-  return async (dispatch) => {
-    dispatch({ type: FETCH_TRAVELERS_REQUEST });
-    const authToken = localStorage.getItem('authToken'); 
+export const fetchTravelers = () => async (dispatch) => {
+  dispatch({ type: FETCH_TRAVELERS_REQUEST });
+  const authToken = localStorage.getItem('authToken'); 
+  
+  try {
+    const response = await axios.get(`${API_URL}/users/getTravelers`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
     
-    try {
-      const response = await axios.get(`${API_URL}/users/getTravelers`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
-      dispatch({ type: FETCH_TRAVELERS_SUCCESS, payload: response.data });
-    } catch (error) {
-      dispatch({ type: FETCH_TRAVELERS_FAILURE, payload: error.message || 'Failed to fetch travelers' });
-    }
-  };
+    dispatch({ 
+      type: FETCH_TRAVELERS_SUCCESS, 
+      payload: response.data 
+    });
+    return response.data;
+  } catch (error) {
+    dispatch({ 
+      type: FETCH_TRAVELERS_FAILURE, 
+      payload: error.message || 'Failed to fetch travelers' 
+    });
+    throw error;
+  }
 };
 
-export const removeTraveler = (id, navigate) => async (dispatch) => {
+export const removeTraveler = (id) => async (dispatch) => {
   try {
     dispatch({ type: REMOVE_TRAVELER_REQUEST });
     const authToken = localStorage.getItem("authToken");
+    
     await axios.delete(`${API_URL}/users/traveller/${id}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
@@ -188,12 +196,16 @@ export const removeTraveler = (id, navigate) => async (dispatch) => {
       type: REMOVE_TRAVELER_SUCCESS,
       payload: id,
     });
-    navigate("/");
+
+    // Return a promise that resolves when deletion is complete
+    return Promise.resolve();
+
   } catch (error) {
     dispatch({
       type: REMOVE_TRAVELER_FAILURE,
-      payload: error.message || "Failed to add traveler",
+      payload: error.message || "Failed to delete traveler",
     });
+    return Promise.reject(error);
   }
 };
 

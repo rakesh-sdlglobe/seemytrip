@@ -1,43 +1,76 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { fetchTrains } from '../../store/Actions/filterActions';
 
 const CalendarNearbyDates = () => {
   const dispatch = useDispatch();
-  
-  // Get current search params including the selected date from localStorage
   const searchParams = JSON.parse(localStorage.getItem('trainSearchParams') || '{}');
   const { fromStnCode, toStnCode, date } = searchParams;
-  
-  // Convert the stored date string to Date object
   const currentDate = date ? new Date(date) : new Date();
-
-  const getNearbyDates = (date, range = 4) => {
+  const scrollContainerRef = useRef(null);
+  
+  // Generate dates centered around the selected date
+  const [allDates, setAllDates] = useState(() => {
     const dates = [];
-    const baseDate = new Date(date);
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset time part for accurate date comparison
+    today.setHours(0, 0, 0, 0);
     
-    // Calculate the start index to ensure we don't show past dates
-    let startIndex = -range;
-    for (let i = -range; i <= range; i++) {
-      const tempDate = new Date(baseDate);
-      tempDate.setDate(baseDate.getDate() + i);
-      if (tempDate >= today) {
-        dates.push(tempDate);
-      }
+    const selectedDate = date ? new Date(date) : today;
+    const startDate = new Date(today); // Start from today
+    
+    // Generate 63 dates
+    for (let i = 0; i < 63; i++) {
+      const newDate = new Date(startDate);
+      newDate.setDate(startDate.getDate() + i);
+      dates.push(newDate);
     }
-
-    // If we have less than 9 dates (because some were in the past),
-    // add more future dates to maintain the count
-    while (dates.length < 9) {
-      const lastDate = new Date(dates[dates.length - 1]);
-      lastDate.setDate(lastDate.getDate() + 1);
-      dates.push(lastDate);
-    }
-
     return dates;
+  });
+
+  // State for visible range
+  const [visibleStartIndex, setVisibleStartIndex] = useState(0);
+  const VISIBLE_DATES = 9;
+
+  // Function to reorganize dates around selected date
+  const reorganizeDatesAroundSelected = (selectedDate) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Find the index of selected date
+    const selectedIndex = allDates.findIndex(date => 
+      date.toDateString() === selectedDate.toDateString()
+    );
+
+    if (selectedIndex === -1) return;
+
+    // Calculate the index that would put the selected date in the middle
+    // VISIBLE_DATES is 9, so we want the selected date to be at index 4 (middle)
+    const middleOffset = Math.floor(VISIBLE_DATES / 2); // This will be 4
+    const newStartIndex = Math.max(0, selectedIndex - middleOffset);
+
+    // Adjust if we're near the end of the list
+    const maxStartIndex = allDates.length - VISIBLE_DATES;
+    const finalStartIndex = Math.min(newStartIndex, maxStartIndex);
+
+    setVisibleStartIndex(finalStartIndex);
+
+    // Scroll to position
+    if (scrollContainerRef.current) {
+      const scrollPosition = finalStartIndex * 120; // 120px per date item
+      scrollContainerRef.current.scrollTo({
+        left: scrollPosition,
+        behavior: 'smooth'
+      });
+    }
   };
+
+  // Listen for changes in searchParams date
+  useEffect(() => {
+    if (date) {
+      const newDate = new Date(date);
+      reorganizeDatesAroundSelected(newDate);
+    }
+  }, [date]);
 
   const formatDateToYYYYMMDD = (date) => {
     const year = date.getFullYear();
@@ -46,14 +79,12 @@ const CalendarNearbyDates = () => {
     return `${year}${month}${day}`;
   };
 
+  // Handle date selection and API call
   const handleDateClick = async (selectedDate) => {
     try {
       localStorage.setItem('loading', 'true');
-
-      // Format date for API
       const formattedDate = formatDateToYYYYMMDD(selectedDate);
       
-      // Update searchParams with new date
       const updatedSearchParams = {
         ...searchParams,
         date: selectedDate.toISOString(),
@@ -64,21 +95,10 @@ const CalendarNearbyDates = () => {
         })
       };
       
-      // Update localStorage
       localStorage.setItem('trainSearchParams', JSON.stringify(updatedSearchParams));
-
-      // Fetch new train data
-      console.log('Fetching trains for:', {
-        date: formattedDate,
-        fromStnCode,
-        toStnCode
-      });
-      console.log('==> from calendeer file Formatted date:', formattedDate, fromStnCode, toStnCode);
       await dispatch(fetchTrains(fromStnCode, toStnCode, formattedDate));
+      reorganizeDatesAroundSelected(selectedDate);
       
-      // Force reload to update the UI with new data
-      // window.location.reload();
-
     } catch (error) {
       console.error('Error fetching trains:', error);
     } finally {
@@ -86,44 +106,90 @@ const CalendarNearbyDates = () => {
     }
   };
 
-  const nearbyDates = getNearbyDates(currentDate);
+  // Handle navigation
+  const handleNavigation = (direction) => {
+    const newIndex = direction === 'next' 
+      ? Math.min(visibleStartIndex + VISIBLE_DATES, allDates.length - VISIBLE_DATES)
+      : Math.max(visibleStartIndex - VISIBLE_DATES, 0);
+    
+    setVisibleStartIndex(newIndex);
+    
+    if (scrollContainerRef.current) {
+      const scrollAmount = direction === 'next' ? 800 : -800;
+      scrollContainerRef.current.scrollTo({
+        left: scrollContainerRef.current.scrollLeft + scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Handle scroll
+  const handleScroll = (e) => {
+    const container = e.target;
+    const scrollPercentage = (container.scrollLeft / (container.scrollWidth - container.clientWidth)) * 100;
+    
+    // Update visible start index based on scroll position
+    const newIndex = Math.floor((scrollPercentage / 100) * (allDates.length - VISIBLE_DATES));
+    setVisibleStartIndex(Math.max(0, Math.min(newIndex, allDates.length - VISIBLE_DATES)));
+  };
 
   return (
     <div style={{ 
       display: 'flex', 
       alignItems: 'center',
       justifyContent: 'center',
-      gap: '5px',
-      padding: '10px 0',
       backgroundColor: '#fff',
       borderRadius: '8px',
-      boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+      boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+      position: 'relative',
+      overflow: 'hidden'
     }}>
       {/* Previous Arrow */}
       <button
-        onClick={() => handleDateClick(new Date(currentDate.setDate(currentDate.getDate() - 1)))}
-        disabled={nearbyDates[0].toDateString() === currentDate.toDateString()}
+        onClick={() => handleNavigation('prev')}
+        disabled={visibleStartIndex === 0}
         style={{
           border: 'none',
-          background: 'transparent',
-          cursor: nearbyDates[0].toDateString() === currentDate.toDateString() ? 'pointer' : 'not-allowed',
+          background: 'linear-gradient(to right, #fff 60%, transparent)',
+          cursor: visibleStartIndex === 0 ? 'not-allowed' : 'pointer',
           padding: '0 15px',
-          opacity: nearbyDates[0].toDateString() === currentDate.toDateString() ? 1 : 0.5,
+          opacity: visibleStartIndex === 0 ? 0.5 : 1,
           color: '#dc3545',
-          fontSize: '20px'
+          fontSize: '50px',
+          position: 'absolute',
+          left: 0,
+          zIndex: 2,
+          height: '100%',
+          width: '60px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
         }}
       >
         ‹
       </button>
 
       {/* Dates Display */}
-      <div className="calendar-dates" style={{ 
-        display: 'flex',
-        overflowX: 'hidden',
-        whiteSpace: 'nowrap',
-        gap: '10px'
-      }}>
-        {nearbyDates.map((date, index) => {
+      <div 
+        ref={scrollContainerRef}
+        onScroll={handleScroll}
+        style={{ 
+          display: 'flex',
+          overflowX: 'auto',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+          whiteSpace: 'nowrap',
+          gap: '10px',
+          padding: '10px 70px',
+          scrollBehavior: 'smooth',
+          maxWidth: '100%',
+          margin: '0 auto',
+          position: 'relative',
+          maskImage: 'linear-gradient(to right, transparent, #000 70px, #000 calc(100% - 70px), transparent)',
+          WebkitMaskImage: 'linear-gradient(to right, transparent, #000 70px, #000 calc(100% - 70px), transparent)'
+        }}
+      >
+        {allDates.map((date, index) => {
           const isSelected = date.toDateString() === currentDate.toDateString();
           const isToday = date.toDateString() === new Date().toDateString();
           
@@ -140,7 +206,8 @@ const CalendarNearbyDates = () => {
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
                 textAlign: 'center',
-                minWidth: '100px'
+                minWidth: '100px',
+                userSelect: 'none'
               }}
             >
               <div style={{ 
@@ -168,20 +235,43 @@ const CalendarNearbyDates = () => {
 
       {/* Next Arrow */}
       <button
-        onClick={() => handleDateClick(new Date(currentDate.setDate(currentDate.getDate() + 1)))}
-        disabled={nearbyDates[nearbyDates.length - 1].toDateString() === currentDate.toDateString()}
+        onClick={() => handleNavigation('next')}
+        disabled={visibleStartIndex >= allDates.length - VISIBLE_DATES}
         style={{
           border: 'none',
-          background: 'transparent',
-          cursor: nearbyDates[nearbyDates.length - 1].toDateString() === currentDate.toDateString() ? 'pointer' : 'not-allowed',
+          background: 'linear-gradient(to left, #fff 60%, transparent)',
+          cursor: visibleStartIndex >= allDates.length - VISIBLE_DATES ? 'not-allowed' : 'pointer',
           padding: '0 15px',
-          opacity: nearbyDates[nearbyDates.length - 1].toDateString() === currentDate.toDateString() ? 1 : 0.5,
+          opacity: visibleStartIndex >= allDates.length - VISIBLE_DATES ? 0.5 : 1,
           color: '#dc3545',
-          fontSize: '20px'
+          fontSize: '50px',
+          position: 'absolute',
+          right: 0,
+          zIndex: 2,
+          height: '100%',
+          width: '60px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
         }}
       >
         ›
       </button>
+
+      <style>
+        {`
+          /* Hide scrollbar for Chrome, Safari and Opera */
+          div::-webkit-scrollbar {
+            display: none;
+          }
+          
+          /* Hide scrollbar for IE, Edge and Firefox */
+          div {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
+        `}
+      </style>
     </div>
   );
 };

@@ -31,7 +31,8 @@ const TrainSearchResultList = ({ filters }) => {
     const params = JSON.parse(localStorage.getItem('trainSearchParams') || '{}');
     return params.date ? new Date(params.date) : new Date();
   });
-
+  const [sortBy, setSortBy] = useState('departure');
+  const [sortOrder, setSortOrder] = useState('asc');
 
   if (trainData?.length === 0 ) { 
     console.log('No trains found in the store. Checking localStorage...');
@@ -343,6 +344,37 @@ const TrainSearchResultList = ({ filters }) => {
     return originalTrain;
   }, []);
 
+  const getSortedTrains = (trains) => {
+    return [...trains].sort((a, b) => {
+      switch (sortBy) {
+        case 'departure':
+          const depTimeA = new Date(`2000/01/01 ${a.departureTime}`).getTime();
+          const depTimeB = new Date(`2000/01/01 ${b.departureTime}`).getTime();
+          return sortOrder === 'asc' ? depTimeA - depTimeB : depTimeB - depTimeA;
+        
+        case 'arrival':
+          const arrivalA = new Date(`2000/01/01 ${getTrainArrival(a, date, "time")}`).getTime();
+          const arrivalB = new Date(`2000/01/01 ${getTrainArrival(b, date, "time")}`).getTime();
+          return sortOrder === 'asc' ? arrivalA - arrivalB : arrivalB - arrivalA;
+        
+        case 'duration':
+          const [hoursA, minsA] = a.duration.split(':').map(Number);
+          const [hoursB, minsB] = b.duration.split(':').map(Number);
+          const durationA = hoursA * 60 + minsA;
+          const durationB = hoursB * 60 + minsB;
+          return sortOrder === 'asc' ? durationA - durationB : durationB - durationA;
+        
+        case 'name':
+          return sortOrder === 'asc' 
+            ? a.trainName.localeCompare(b.trainName)
+            : b.trainName.localeCompare(a.trainName);
+        
+        default:
+          return 0;
+      }
+    });
+  };
+
   return (
     <div className="row align-items-center g-4 mt-0">
       {/* Offer Coupon Box */}
@@ -367,7 +399,7 @@ const TrainSearchResultList = ({ filters }) => {
 
       {/* Add Suggested Dates Section */}
       <div className="col-12">
-        <div className="bg-white rounded-3 p-4">
+        <div className="bg-white rounded-3">
           
           <CalendarNearbyDates 
             selectedDate={selectedDate}
@@ -376,6 +408,58 @@ const TrainSearchResultList = ({ filters }) => {
         </div>
       </div>
 
+      {/* Add sorting section */}
+      <div className="col-12 mb-3">
+        <div className="bg-white rounded-3 p-3">
+          <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div className="d-flex align-items-center">
+              <span className="me-3 text-muted">Sort by:</span>
+              <div className="btn-group" role="group">
+                {[
+                  { id: 'departure', label: 'Departure', icon: 'fa-clock' },
+                  { id: 'arrival', label: 'Arrival', icon: 'fa-clock' },
+                  { id: 'duration', label: 'Duration', icon: 'fa-hourglass-half' },
+                  { id: 'name', label: 'Train Name', icon: 'fa-train' }
+                ].map((option) => (
+                  <button
+                    key={option.id}
+                    type="button"
+                    className={`btn btn-sm ${sortBy === option.id ? 'btn-primary' : 'btn-outline-primary'}`}
+                    onClick={() => {
+                      if (sortBy === option.id) {
+                        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                      } else {
+                        setSortBy(option.id);
+                        setSortOrder('asc');
+                      }
+                    }}
+                    style={{
+                      borderRadius: '6px',
+                      margin: '0 3px',
+                      padding: '4px 12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      fontSize: '0.875rem'
+                    }}
+                  >
+                    <i className={`fas ${option.icon}`}></i>
+                    {option.label}
+                    {sortBy === option.id && (
+                      <i className={`fas fa-sort-${sortOrder === 'asc' ? 'up' : 'down'} ms-1`}></i>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <div className="text-muted">
+              <i className="fas fa-train me-2"></i>
+              {filteredTrainData.length} Trains found
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Train list */}
       {/* {console.log("===========> loading ", loading)} */}
@@ -385,7 +469,7 @@ const TrainSearchResultList = ({ filters }) => {
         <SkeletonLoader />
       ) : 
       filteredTrainData?.length > 0 ? (
-        filteredTrainData?.map(train => (
+        getSortedTrains(filteredTrainData)?.map(train => (
           <div key={train.trainNumber} className="col-xl-12 col-lg-12 col-md-12">
             <div className="train-availability-card bg-white rounded-3 p-4 pb-2 hover-shadow" style={{ 
               boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
@@ -556,7 +640,6 @@ const TrainSearchResultList = ({ filters }) => {
                       train.availabilities?.[0].avlDayList?.[0]?.availabilityStatus === "TRAIN DEPARTED" 
                     </button> */}
 
-                <div className="w-100 border-top my-2 opacity-25"></div>
                 <div className="col-xl-12 col-lg-12 col-md-12">
                   <div className="row text-center g-3 justify-content-start">
                     {train.availabilities?.[0]?.avlDayList?.[0]?.availablityStatus === "TRAIN DEPARTED" ? (
@@ -665,19 +748,22 @@ const TrainSearchResultList = ({ filters }) => {
                     )}
 
                     {/* Nearby Dates Section */}
-                    <div className="w-100 border-top my-2"></div>
-                    <div className="d-flex justify-content-between align-items-center w-100 px-3">
+                    <div className="d-flex justify-content-between align-items-center w-100 px-2 mt-4">
                       <button 
-                        className="btn d-flex align-items-center gap-1 py-1 px-2"
+                        className=" d-flex align-items-center gap-1 py-0 px-1"
                         onClick={() => toggleNearbyDates(train.trainNumber)}
                         style={{ 
-                          background: expandedTrainId === train.trainNumber ? '#e3f2fd' : '#f8f9fa',
-                          border: '1px solid',
-                          borderColor: expandedTrainId === train.trainNumber ? '#90caf9' : '#dee2e6',
+                          // background: expandedTrainId === train.trainNumber ? '#e3f2fd' : '#f8f9fa',
+                          border: 'none',
+                          background : "none",
+                          // borderColor: expandedTrainId === train.trainNumber ? '#90caf9' : '#dee2e6',
                           borderRadius: '6px',
                           color: expandedTrainId === train.trainNumber ? '#1976d2' : '#6c757d',
                           transition: 'all 0.3s ease',
-                          fontSize: '0.9rem'
+                          fontSize: '0.95rem',
+                          // color: '#e74c3',
+                          padding: '10px',
+                          fontWeight: 'bold'
                         }}
                       >
                         <i className={`fas fa-calendar-alt fa-sm`}></i>

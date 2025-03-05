@@ -26,7 +26,24 @@ const SearchComponent = ({
   dropdownHindden = 'auto',
   checklabelColor = 'auto',
   hindenswap = 'auto',
-  initialValues = (() => { try { return JSON.parse(localStorage.getItem('trainSearchParams')) || {}; } catch (e) { return {}; } })(),
+  initialValues = (() => { 
+    try { 
+      const stored = JSON.parse(localStorage.getItem('trainSearchParams')) || {};
+      // Check if stored date is in the past
+      if (stored.date) {
+        const storedDate = new Date(stored.date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time to start of day
+        
+        if (storedDate < today) {
+          stored.date = today.toISOString();
+        }
+      }
+      return stored;
+    } catch (e) { 
+      return {}; 
+    } 
+  })(),
   customStyles = {},
 }) => {
   const dispatch = useDispatch();
@@ -282,6 +299,21 @@ const SearchComponent = ({
   }, [highlights.length]);
   
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (calendarOpen && journeyDateRef.current && 
+          !journeyDateRef.current.contains(event.target) &&
+          !event.target.closest('.calendar-popup')) {
+        setCalendarOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [calendarOpen]);
+
   return (
     <>
       <style>
@@ -368,7 +400,98 @@ const SearchComponent = ({
           }
 
           .swap-button i {
-            font-size: 1.2em; 
+            background: none;
+            border: none;
+            color: #17181c;
+            cursor: pointer;
+            padding: 8px;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease;
+          } 
+            .swap-button:hover {
+            transform: scale(1.1);
+          }
+
+          @media (max-width: 991px) {
+            .new-wrap {
+              padding: 15px;
+            }
+            
+            .swap-button {
+              margin: 10px 0;
+              transform: rotate(90deg);
+            }
+
+            .swap-button:hover {
+              transform: rotate(90deg) scale(1.1);
+            }
+          }
+
+          @media (max-width: 767px) {
+            .search-component {
+              height: auto !important;
+              padding: 25px 0;
+            }
+
+            .highlights-container {
+            display:none;
+              position: relative;
+              left: 0;
+              margin-bottom: 15px;
+            }
+
+            .authorized-partner {
+              position: relative;
+              right: 0;
+              justify-content: center;
+              margin-top: 15px;
+            }
+
+            .form-group {
+              margin-bottom: 15px;
+            }
+
+            .calendar-popup {
+              width: calc(100vw - 30px);
+              left: 15px;
+            }
+          }
+
+          @media (max-width: 576px) {
+            .new-wrap {
+              padding: 10px;
+            }
+
+            .swap-button {
+              display: flex;
+              margin: 5px auto;
+            }
+
+            .station-warning-container {
+              position: relative;
+              transform: none;
+              left: 0;
+              margin-top: 10px;
+            }
+
+            .station-warning-message {
+              width: 100%;
+              white-space: normal;
+              text-align: center;
+            }
+
+            .form-control, 
+            .select__control {
+              font-size: 14px;
+            }
+
+            .input-icon {
+              width: 24px;
+              height: 24px;
+            }
           }
             // .react-datepicker-wrapper .form-control:focus,
             // .react-datepicker-wrapper .form-control:active {
@@ -382,17 +505,17 @@ const SearchComponent = ({
 
             .calendar-popup {
               position: absolute;
-              top: 100%; // Changed from bottom: 100% to top: 100%
+              top: 100%;
               left: 0;
-              width: 320px; // Reduced width for single month
-              box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+              width: 320px;
+              box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 3px 8px rgba(0, 0, 0, 0.1);
               border-radius: 12px;
               background: white;
-              z-index: 1000; // Increased z-index to ensure it stays on top
+              z-index: 1000;
               overflow: hidden;
               padding: 15px;
-              margin-top: 5px; // Add some space between input and calendar
-              
+              margin-top: 5px;
+              border: 1px solid rgba(0, 0, 0, 0.08);
             }
 
             .react-calendar {
@@ -440,11 +563,11 @@ const SearchComponent = ({
                 font-weight: 500;
               }
               .calendar-popup .react-calendar__tile:disabled {
-                background: transparent !important;
+                background-color: #f5f5f5 !important;
                 color: #ccc !important;
                 cursor: not-allowed;
-                opacity: 0.5;
-          }
+                opacity: 0.6;
+              }
               // .react-calendar__tile:enabled:hover,
               // .react-calendar__tile:enabled:focus {
               //   background-color: #f8f8f8;
@@ -952,6 +1075,12 @@ const SearchComponent = ({
                                   }}
                                   value={journeyDate}
                                   minDate={new Date()}
+                                  maxDate={(() => {
+                                    const today = new Date();
+                                    const maxDate = new Date(today);
+                                    maxDate.setDate(today.getDate() + 62)
+                                    return maxDate;
+                                  })()}
                                   selectRange={false}
                                   showNeighboringMonth={true}
                                   showFixedNumberOfWeeks={false}

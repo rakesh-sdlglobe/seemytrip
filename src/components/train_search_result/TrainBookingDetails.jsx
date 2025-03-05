@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Edit2, PlusCircle } from 'lucide-react';
 import Header02 from '../header02';
 import FooterDark from '../footer-dark';
@@ -179,17 +179,31 @@ const [contactDetails, setContactDetails] = useState({
         passengerBerthChoice: currentTraveler.berth,
         country: currentTraveler.country,
         passengerBedrollChoice: currentTraveler.berthRequired,
-        passengerNationality : "IN",
+        passengerNationality: "IN",
       };
-      console.log("traveler data ==> from 184 : ",travelerData)
+
       if (editingTravelerIndex !== null) {
-        dispatch(addTraveler({ ...travelerData, passengerId: editingTravelerIndex }));
-        toast.success('Traveler updated successfully');
-        handleModalClose();
+        console.log("traveler data from 186 :== ",travelerData, "came for edit")
+        dispatch(addTraveler({ ...travelerData, passengerId: editingTravelerIndex }))
+          .then(() => {
+            dispatch(fetchTravelers()); // Fetch updated list after adding
+            toast.success('Traveler updated successfully');
+            handleModalClose();
+          })
+          .catch((error) => {
+            toast.error('Failed to update traveler');
+          });
       } else {
-        dispatch(addTraveler(travelerData));
-        toast.success('Traveler added successfully');
-        handleModalClose();
+        console.log("traveler data from 186 :== ",travelerData, "came for add")
+        dispatch(addTraveler(travelerData))
+          .then(() => {
+            dispatch(fetchTravelers()); // Fetch updated list after adding
+            toast.success('Traveler added successfully');
+            handleModalClose();
+          })
+          .catch((error) => {
+            toast.error('Failed to add traveler');
+          });
       }
     }
   };
@@ -248,6 +262,7 @@ const handleProceedToPayment = (e)=>{
     if (window.confirm('Are you sure you want to remove this traveler?')) {
       dispatch(removeTraveler(id))
         .then(() => {
+          dispatch(fetchTravelers()); // Fetch updated list after deletion
           toast.success('Traveler deleted successfully');
         })
         .catch(error => {
@@ -258,6 +273,7 @@ const handleProceedToPayment = (e)=>{
 
   // Update handleEditTraveler function
   const handleEditTraveler = (traveler) => {
+    console.log("traveler from 274 :== ",traveler)
     setCurrentTraveler({
       fullName: traveler.passengerName,
       age: traveler.passengerAge,
@@ -430,6 +446,25 @@ const handleProceedToPayment = (e)=>{
     </div>
   );
 
+  const modalRef = useRef(null);
+
+  // Add useEffect for click outside handling
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        handleModalClose();
+      }
+    };
+
+    if (showTravelerModal) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showTravelerModal]);
+
   const renderTravelerModal = () => (
     <>
       <div 
@@ -439,7 +474,7 @@ const handleProceedToPayment = (e)=>{
         role="dialog"
       >
         <div className="modal-dialog modal-lg modal-dialog-centered">
-          <div className="modal-content">
+          <div className="modal-content" ref={modalRef}>
             <div className="modal-header">
               <h5 className="modal-title">
                 {editingTravelerIndex !== null ? `Edit Traveler: ${currentTraveler.fullName}` : 'Add Traveler'}
@@ -473,6 +508,7 @@ const handleProceedToPayment = (e)=>{
                       value={currentTraveler.fullName}
                       onChange={(e) => setCurrentTraveler({ ...currentTraveler, fullName: e.target.value })}
                       required
+                      maxLength={16}
                     />
                     {formErrors.fullName && <div className="text-danger small mt-1">{formErrors.fullName}</div>}
                   </div>
@@ -506,6 +542,7 @@ const handleProceedToPayment = (e)=>{
                       className="form-control"
                       id="gender"
                       name="gender"
+                      required
                       value={currentTraveler.gender}
                       onChange={(e) => setCurrentTraveler({ ...currentTraveler, gender: e.target.value })}
                     >
@@ -943,7 +980,7 @@ const handleProceedToPayment = (e)=>{
       </h4>
       
       <div className="row g-3">
-        <div className="col-xl-6 col-md-6 col-sm-12">
+        <div className="col-xl-5 col-md-5 col-sm-12">
           <label htmlFor="email" className="form-label">
             <i className="fa-solid fa-envelope me-2"></i>
             Email ID*
@@ -960,7 +997,7 @@ const handleProceedToPayment = (e)=>{
           {errors.email && <small className="text-danger">{errors.email}</small>}
         </div>
 
-        <div className="col-xl-6 col-md-6 col-sm-12">
+        <div className="col-xl-4 col-md-4 col-sm-12">
           <label htmlFor="phone" className="form-label">
             <i className="fa-solid fa-phone me-2"></i>
             Phone Number*
@@ -977,7 +1014,7 @@ const handleProceedToPayment = (e)=>{
           {errors.phone && <small className="text-danger">{errors.phone}</small>}
         </div>
 
-        <div className="col-12">
+        <div className="col-xl-3 col-md-3 col-sm-12">
           <label htmlFor="state" className="form-label">
             <i className="fa-solid fa-location-dot me-2"></i>
             State*
@@ -986,6 +1023,7 @@ const handleProceedToPayment = (e)=>{
             <select
               className="form-select card-select"
               id="state"
+              style={{ fontSize: '0.95rem', padding: '0.95rem' }}
               value={contactDetails.state}
               onChange={(e) => setContactDetails({ ...contactDetails, state: e.target.value })}
             >

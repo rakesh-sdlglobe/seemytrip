@@ -40,7 +40,7 @@ const PersonalInfo = () => {
     useEffect(() => {
         if (userProfile) {
             setFormData({
-                fullName: `${userProfile.firstName || ''} ${userProfile.lastName || ''}`.trim(),
+                fullName: `${userProfile.firstName || ''} ${userProfile.middleName || ''} ${userProfile.lastName || ''}`.trim(),
                 mobile: userProfile.mobile || '',
                 dob: userProfile.dob ? new Date(userProfile.dob).toISOString().split('T')[0] : null,
                 gender: userProfile.gender || 'Male',
@@ -55,7 +55,7 @@ const PersonalInfo = () => {
         if (googleUser || userProfile) {
             setFormData((prevFormData) => ({
                 ...prevFormData,
-                fullName: googleUser ? `${googleUser.firstName || ''} ${googleUser.lastName || ''}`.trim() : prevFormData.fullName,
+                fullName: googleUser ? `${googleUser.firstName || ''} ${googleUser.middleName} ${googleUser.lastName || ''}`.trim() : prevFormData.fullName,
                 email: googleUser?.email || prevFormData.email,
                 isEmailVerified: googleUser?.isEmailVerified || prevFormData.isEmailVerified,
             }));
@@ -103,11 +103,11 @@ const PersonalInfo = () => {
     }, []);
 
     const handleSave = useCallback(() => {
-        const [firstName, ...lastNameParts] = formData.fullName.split(' ');
-        const lastName = lastNameParts.join(' ');
+        const [firstName, ...middleLast] = formData.fullName.split(" "), lastName = middleLast.pop() || "", middleName = middleLast.join(" ");
         
         const userData = {
             firstName,
+            middleName,
             lastName,
             mobile: formData.mobile.length === 10 ? formData.mobile : "",
             dob: formData.dob,
