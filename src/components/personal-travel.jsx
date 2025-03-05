@@ -21,11 +21,12 @@ const PersonalTravel = () => {
   const [dob, setBirthDate] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   const dispatch = useDispatch();
   const travelers = useSelector(selectTravelers) || [];
   const loading = useSelector(selectTravelerLoading);
-
+  
   useEffect(() => {
     dispatch(fetchTravelers());
   }, [dispatch]);
@@ -58,9 +59,16 @@ const PersonalTravel = () => {
       toast.success("Traveler added successfully!");
     }
     
+    resetForm();
+    setShowModal(false);
+  };
+
+  const resetForm = () => {
     setFirstName("");
     setMobile("");
     setBirthDate("");
+    setIsEditing(false);
+    setEditingId(null);
   };
 
   const handleEdit = (traveler) => {
@@ -69,6 +77,7 @@ const PersonalTravel = () => {
     setFirstName(traveler.firstname);
     setMobile(traveler.mobile);
     setBirthDate(formatDOB(traveler.dob));
+    setShowModal(true);
     toast.info("Editing traveler details");
   };
 
@@ -78,11 +87,7 @@ const PersonalTravel = () => {
       toast.success("Traveler removed successfully");
       
       if (editingId === id) {
-        setIsEditing(false);
-        setEditingId(null);
-        setFirstName("");
-        setMobile("");
-        setBirthDate("");
+        resetForm();
       }
     }
   };
@@ -107,77 +112,23 @@ const PersonalTravel = () => {
         theme="colored"
       />
 
-      {/* Add Traveler Card */}
-      <div className="card mb-4">
-        <div className="card-header">
-          <h4 className="mb-0">
-            <i className="fa-solid fa-user-plus me-2 text-primary"></i>
-            {isEditing ? 'Edit Traveler' : 'Add New Traveler'}
-          </h4>
-        </div>
-        <div className="card-body">
-          <div className="row g-3">
-            <div className="col-md-6">
-              <div className="form-group">
-                <label>First Name*</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={firstname}
-                  onChange={(e) => setFirstName(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="col-md-6">
-              <div className="form-group">
-                <label>Mobile No.*</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={mobile}
-                  onChange={(e) => setMobile(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="col-md-6">
-              <div className="form-group">
-                <label>Date of Birth*</label>
-                <input
-                  type="date"
-                  className="form-control"
-                  value={dob}
-                  onChange={(e) => setBirthDate(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="col-12 text-end">
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={handleAddTraveler}
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <span className="spinner-border spinner-border-sm me-2"></span>
-                    {isEditing ? 'Updating...' : 'Adding...'}
-                  </>
-                ) : (
-                  isEditing ? 'Update Traveler' : 'Add Traveler'
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Saved Travelers Card */}
       <div className="card">
-        <div className="card-header">
+        <div className="card-header d-flex justify-content-between align-items-center">
           <h4 className="mb-0">
             <i className="fa-solid fa-users me-2 text-primary"></i>
             Saved Travelers
           </h4>
+          <button 
+            className="btn btn-primary" 
+            onClick={() => {
+              resetForm();
+              setShowModal(true);
+            }}
+          >
+            <i className="fa-solid fa-plus me-2"></i>
+            Add Traveler
+          </button>
         </div>
         <div className="card-body">
           {travelers.length === 0 ? (
@@ -198,7 +149,7 @@ const PersonalTravel = () => {
                           </div>
                           <div>
                             <h5 className="mb-1">
-                              {traveler.firstname}
+                              {traveler.passengerName}
                             </h5>
                             <p className="text-muted small mb-0">
                               <i className="fa-solid fa-phone me-2"></i>
@@ -238,19 +189,91 @@ const PersonalTravel = () => {
         </div>
       </div>
 
-      {isEditing && (
-        <button
-          className="btn btn-secondary me-2"
-          onClick={() => {
-            setIsEditing(false);
-            setEditingId(null);
-            setFirstName("");
-            setMobile("");
-            setBirthDate("");
-          }}
-        >
-          Cancel
-        </button>
+      {/* Add/Edit Traveler Modal */}
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  {isEditing ? 'Edit Traveler' : 'Add New Traveler'}
+                </h5>
+                <button 
+                  type="button" 
+                  className="btn-close" 
+                  onClick={() => {
+                    setShowModal(false);
+                    resetForm();
+                  }}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <div className="row g-3">
+                  <div className="col-md-12">
+                    <div className="form-group">
+                      <label>First Name*</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={firstname}
+                        onChange={(e) => setFirstName(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-12">
+                    <div className="form-group">
+                      <label>Mobile No.*</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={mobile}
+                        onChange={(e) => setMobile(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-md-12">
+                    <div className="form-group">
+                      <label>Date of Birth*</label>
+                      <input
+                        type="date"
+                        className="form-control"
+                        value={dob}
+                        onChange={(e) => setBirthDate(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    setShowModal(false);
+                    resetForm();
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleAddTraveler}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2"></span>
+                      {isEditing ? 'Updating...' : 'Adding...'}
+                    </>
+                  ) : (
+                    isEditing ? 'Update Traveler' : 'Add Traveler'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       <style jsx>{`
@@ -292,6 +315,51 @@ const PersonalTravel = () => {
 
         .text-primary {
           color: #cd2c22 !important;
+        }
+
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: rgba(0, 0, 0, 0.5);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 1050;
+        }
+
+        .modal-dialog {
+          width: 100%;
+          max-width: 500px;
+          margin: 1.75rem auto;
+        }
+
+        .modal-content {
+          background-color: #fff;
+          border-radius: 0.3rem;
+          box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+          padding: 1rem;
+          border-bottom: 1px solid #dee2e6;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .modal-body {
+          padding: 1rem;
+        }
+
+        .modal-footer {
+          padding: 1rem;
+          border-top: 1px solid #dee2e6;
+          display: flex;
+          justify-content: flex-end;
+          gap: 0.5rem;
         }
       `}</style>
     </div>
