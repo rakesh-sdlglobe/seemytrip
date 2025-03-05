@@ -669,7 +669,7 @@ const handleProceedToPayment = (e)=>{
         <h4 className="mb-0">Travelers</h4>
         {savedTravelers.length < MAX_TRAVELERS && (
           <button 
-            className="btn btn-primary d-flex align-items-center gap-2"
+            className="btn btn-primary d-flex align-items-center gap-2 mb-3"
             onClick={() => setShowTravelerModal(true)}
           >
             <PlusCircle size={20} />
