@@ -257,7 +257,7 @@ export const fetchIRCTCusername = (userName) =>
       });
 
       if (response.data) {
-        console.log("fetchTrainBoardingStationsSuccess:", response.data);
+        console.log("fetch IRCTC user name is success :", response.data);
         dispatch(fetchIrctcUsernameSuccess(response.data));
       }
     } catch (error) {
@@ -286,11 +286,16 @@ export const fetchCountryListFailure = (error) => ({
 export const fetchCountryList = () =>  async (dispatch) => {
     dispatch(fetchCountryListRequest());
     try {
-      const response = await axios.get(`${API_URL}/trains/getCountryList`);
-
-      if (response.data) {
-        console.log("fetch country list:", response.data);
-        dispatch(fetchCountryListSuccess(response.data));
+      const countryList = localStorage.getItem('countryList');
+      if(countryList){
+        dispatch(fetchCountryListSuccess(JSON.parse(countryList)));
+      } else {
+        const response = await axios.get(`${API_URL}/trains/getCountryList`);
+        if (response.data) {
+          console.log("fetch country list:", response.data);
+          localStorage.setItem('countryList', JSON.stringify(response.data));
+          dispatch(fetchCountryListSuccess(response.data));
+        }
       }
     } catch (error) {
       console.error("Error fetching train boarding stations:", error.message);

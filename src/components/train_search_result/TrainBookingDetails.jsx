@@ -8,8 +8,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import {useLocation} from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { IRCTC_Logo } from '../../assets/images';
-import { selectStations, selectTrainBoardingStations } from '../../store/Selectors/filterSelectors';
-import { fetchTrainBoardingStations } from '../../store/Actions/filterActions';
+import { selectCountryList, selectStations, selectTrainBoardingStations } from '../../store/Selectors/filterSelectors';
+import { fetchCountryList, fetchTrainBoardingStations } from '../../store/Actions/filterActions';
 import { fetchIRCTCusername } from '../../store/Actions/filterActions';
 import { selectIRCTCUsernameStatus } from '../../store/Selectors/filterSelectors';
 import { useDispatch, useSelector } from "react-redux";
@@ -29,68 +29,45 @@ import {
 
 const TrainBookingDetails = () => {
 
-const location = useLocation();
-const trainData = location.state?.trainData;
-const navigate = useNavigate();
-const dispatch = useDispatch();
-const stationsList = useSelector(selectStations);
-const irctcUsernameStatus = useSelector(selectIRCTCUsernameStatus);
-const [isVerifying, setIsVerifying] = useState(false);
-const [isVerified, setIsVerified] = useState(false);
-const [isEditing, setIsEditing] = useState(false);
-  // Add max travelers constant
-const MAX_TRAVELERS = 6;
-// console.log("17 train data from ",trainData)
-useEffect(() => {
-  dispatch(fetchTrainBoardingStations(trainData?.trainNumber, trainData?.journeyDate, trainData?.fromStnCode, trainData?.toStnCode,trainData?.classinfo.enqClass));
-  dispatch(fetchTrainSchedule(trainData?.trainNumber));
-},[]);
-const boardingStations = useSelector(selectTrainBoardingStations);
-// console.log("18 boarding stations from ",boardingStations)
-// console.log("IRCTC response ",irctcUsernameStatus)
-const boardingStationDetails = useSelector(selectTrainsSchedule);
-console.log("19 boarding station details from ", boardingStationDetails)
-// State management
-const [travelers, setTravelers] = useState([]);
-const [currentTraveler, setCurrentTraveler] = useState({
-  fullName: '',
-  age: '',
-  gender: '',
-  berth: '',
-  country: '',
-  berthRequired: false
-});
-const [selectedTravelers, setSelectedTravelers] = useState([]);
-
-// Add new state for form validation and contact details
-const [formErrors, setFormErrors] = useState({});
-const [errors, setErrors] = useState({ email: '', phone: '' });
-const [contactDetails, setContactDetails] = useState({
-  irctcUsername: '',
-  email: '',
-  phone: '',
-  state: '',
+  const MAX_TRAVELERS = 6;
+  const location = useLocation();
+  const trainData = location.state?.trainData;
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const stationsList = useSelector(selectStations);
+  const irctcUsernameStatus = useSelector(selectIRCTCUsernameStatus);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const boardingStations = useSelector(selectTrainBoardingStations);
+  const boardingStationDetails = useSelector(selectTrainsSchedule);
+  const [travelers, setTravelers] = useState([]);
+  const [currentTraveler, setCurrentTraveler] = useState({
+    fullName: '',
+    age: '',
+    gender: '',
+    berth: '',
+    country: '',
+    berthRequired: false
   });
-
+  const [selectedTravelers, setSelectedTravelers] = useState([]);
+  const [formErrors, setFormErrors] = useState({});
+  const [errors, setErrors] = useState({ email: '', phone: '' });
+  const [contactDetails, setContactDetails] = useState({
+    irctcUsername: '',
+    email: '',
+    phone: '',
+    state: '',
+  });
   const [showTravelerModal, setShowTravelerModal] = useState(false);
-
-  // Add a new state to track if we're editing
   const [editingTravelerIndex, setEditingTravelerIndex] = useState(null);
-
-  // Add this state near other state declarations
   const [showIRCTCPopup, setShowIRCTCPopup] = useState(false);
-
-  // Add this new state near other state declarations
   const [showForgotUsernamePopup, setShowForgotUsernamePopup] = useState(false);
   const [forgotUsernameForm, setForgotUsernameForm] = useState({
     contact: '',
     dob: ''
   });
-
-  // Add validation state
   const [forgotUsernameError, setForgotUsernameError] = useState('');
-
-  // Add these new states near other state declarations
   const [showForgotPasswordPopup, setShowForgotPasswordPopup] = useState(false);
   const [forgotPasswordForm, setForgotPasswordForm] = useState({
     username: '',
@@ -100,17 +77,22 @@ const [contactDetails, setContactDetails] = useState({
     username: '',
     mobile: ''
   });
-
-  // Add Redux hooks
   const savedTravelers = useSelector(selectTravelers) || [];
   const loading = useSelector(selectTravelerLoading);
   const [selectedBoardingStation, setSelectedBoardingStation] = useState('');
+  const countryList = useSelector(selectCountryList);
 
-  // Add useEffect to fetch travelers on component mount
+  console.log("country list is ", countryList)
+
+  useEffect(() => {
+    dispatch(fetchTrainBoardingStations(trainData?.trainNumber, trainData?.journeyDate, trainData?.fromStnCode, trainData?.toStnCode,trainData?.classinfo.enqClass));
+    dispatch(fetchTrainSchedule(trainData?.trainNumber));
+  },[]);
+  
   useEffect(() => {
     dispatch(fetchTravelers());
+    dispatch(fetchCountryList())
   }, [dispatch]);
-// Add state for selected boarding station
 
   useEffect(() => {
     if (showTravelerModal) {
@@ -448,7 +430,6 @@ const handleProceedToPayment = (e)=>{
 
   const modalRef = useRef(null);
 
-  // Add useEffect for click outside handling
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -642,8 +623,11 @@ const handleProceedToPayment = (e)=>{
                           required
                         >
                           <option value="" disabled>Select country</option>
-                          <option value="india">India</option>
-                          <option value="other">Other Countries</option>
+                          {countryList.map((country, index) => (
+                            <option key={index} value={country.countryCode}>
+                              {country.country}
+                            </option>
+                          ))}
                         </select>
                       </div>
                       {formErrors.country && <div className="text-danger small mt-1">{formErrors.country}</div>}
@@ -741,7 +725,7 @@ const handleProceedToPayment = (e)=>{
   const renderBookingSummary = () => (
     <div className="booking-summary-sticky">
       <div className="card p-4">
-        <div className="d-flex justify-content-between align-items-center mb-4">
+        <div className="d-flex justify-content-between align-items-center mb-1">
           <h4 className="mb-0">Booking Summary</h4>
           <Link to="/Train-list-01" className="btn btn-outline-primary btn-sm">
             <Edit2 size={16} className="me-2" />
@@ -750,20 +734,20 @@ const handleProceedToPayment = (e)=>{
         </div>
 
         {/* Train Details Card */}
-        <div className="card-box list-layout-block border br-dashed rounded-3 p-3 mb-4">
+        <div className="card-box list-layout-block border br-dashed rounded-3 p-3">
   <div className="row">
     <div className="col">
       <div className="listLayout_midCaps">
         <div className="d-flex justify-content-between align-items-center flex-wrap">
-          <h6 className="fs-5 fw-bold text-muted"># {trainData?.trainNumber}</h6>
-          <p className="text-muted-2 text-md text-bold">
+          <b className="fs-8 fw-bold text-muted"># {trainData?.trainNumber}</b>
+          <p className="text-muted-2 text-md text-bold" style={{ border: '1px solid rgb(220, 218, 218)', padding: '5px 10px 1px', borderRadius: '5px' }}>
             {getStationName(boardingStationDetails?.stationFrom)} → {getStationName(boardingStationDetails?.stationTo)}
           </p>
         </div>
-        <h4 className="fs-5 fw-bold mb-1">{trainData?.trainName}</h4>
+        <h4 className="fs-5 fw-bold mb-1 text-muted">{trainData?.trainName}</h4>
 
 
-        <div className="position-relative mt-3">
+        <div className="position-relative">
           <div className="d-flex flex-wrap align-items-center">
             <div className="d-inline-flex align-items-center border br-dashed rounded-2 p-2 me-2 mb-2">
               <div className="export-icon text-muted-2">
@@ -792,7 +776,7 @@ const handleProceedToPayment = (e)=>{
 
 
         {/* Journey Details */}
-        <div className="journey-details mb-4">
+        <div className="journey-details">
           <h5 className="mb-3">Journey Details</h5>
           <div className="d-flex justify-content-between mb-3 p-3 bg-light rounded">
             <div>
