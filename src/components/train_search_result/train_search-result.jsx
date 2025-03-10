@@ -641,161 +641,257 @@ const TrainSearchResultList = ({ filters }) => {
                     </button> */}
 
                 <div className="col-xl-12 col-lg-12 col-md-12">
-                  <div className="row text-center g-3 justify-content-start">
-                    {train.availabilities?.[0]?.avlDayList?.[0]?.availablityStatus === "TRAIN DEPARTED" ? (
-                      <div
-                        style={{
-                          width: "100%",
-                          backgroundColor: "#F1F5F8",
-                          color: "gray",
-                          fontWeight :"bold",
-                          textAlign: "center",
-                          fontSize:"1.1rem",
-                          padding: "5px",
-                          borderRadius: "10px",
-                        }}
-                      >
-                        TRAIN DEPARTED
-                      </div>
-                      ) : (
-                      train.availabilities?.map((cls, index) => (
-                        <div key={index} className="col-auto">
+                  <div className="availability-section position-relative">
+                    <button 
+                      className="scroll-arrow scroll-left"
+                      onClick={(e) => {
+                        const container = e.target.closest('.availability-section').querySelector('.scroll-container');
+                        container.scrollBy({ left: -200, behavior: 'smooth' });
+                      }}
+                    >
+                      <i className="fas fa-chevron-left"></i>
+                    </button>
+                    
+                    <div className="scroll-container">
+                      <div className="row text-center g-3 justify-content-start flex-nowrap">
+                        {train.availabilities?.[0]?.avlDayList?.[0]?.availablityStatus === "TRAIN DEPARTED" ? (
                           <div
-                            className="availability-card p-2 position-relative"
                             style={{
-                              minWidth: "140px",
-                              background:
-                                train.availabilities[index]?.avlDayList?.[0]?.availablityType === "1" ||
-                                train.availabilities[index]?.avlDayList?.[0]?.availablityType === "2"
-                                  ? "linear-gradient(125deg, #e8f5e9, #F2F7EC)"
-                                  : train.availabilities[index]?.avlDayList?.[0]?.availablityType === "3"
-                                  ? "linear-gradient(145deg, #fff3e0,rgb(249, 231, 204))"
-                                  : "linear-gradient(145deg, rgb(247, 247, 247), rgb(255, 255, 255))",
-                              border: `0.3px solid ${
-                                train.availabilities[index]?.avlDayList?.[0]?.availablityType === "1" ||
-                                train.availabilities[index]?.avlDayList?.[0]?.availablityType === "2"
-                                  ? "green"
-                                  : train.availabilities[index]?.avlDayList?.[0]?.availablityType === "3"
-                                  ? "orange"
-                                  : "gray"
-                              }`,
+                              width: "100%",
+                              backgroundColor: "#F1F5F8",
+                              color: "gray",
+                              fontWeight: "bold",
+                              textAlign: "center",
+                              fontSize: "1.1rem",
+                              padding: "5px",
                               borderRadius: "10px",
-                              cursor: "pointer",
-                              transition: "transform 0.2s ease",
-                              boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
                             }}
-                            onClick={() => handleBooking(train,cls, index)}
                           >
-                            { (train.availabilities[index]?.quota === "TQ" || train.availabilities[index]?.quota === "PT") && (
+                            TRAIN DEPARTED
+                          </div>
+                        ) : (
+                          train.availabilities?.map((cls, index) => (
+                            <div key={index} className="col-auto">
                               <div
-                                className="position-absolute badge bg-danger"
+                                className="availability-card p-2 position-relative"
                                 style={{
-                                  top: "-10px",
-                                  right: "10px",
-                                  fontSize: "0.7rem",
-                                  padding: "4px 8px",
-                                  zIndex: "1",
-                                }}
-                              >
-                              {train.availabilities[index]?.quota === "TQ" ? "TATKAL" : "PREMIUM"}                              </div>
-                            )}
-                            <div className="d-flex justify-content-between align-items-center">
-                              <h6 className="mb-0 " style={{ color: "black" }}>
-                                {train.availabilities[index]?.enqClass}
-                              </h6>
-                              {train.availabilities[index]?.totalFare > 0 && (
-                                <div className="price">₹ {train.availabilities[index]?.totalFare}</div>
-                              )}
-                            </div>
-                            <div className="availability">
-                              <b
-                                style={{
-                                  fontSize: "1.1rem",
-                                  color:
+                                  minWidth: "140px",
+                                  background:
+                                    train.availabilities[index]?.avlDayList?.[0]?.availablityType === "1" ||
+                                    train.availabilities[index]?.avlDayList?.[0]?.availablityType === "2"
+                                      ? "linear-gradient(125deg, #e8f5e9, #F2F7EC)"
+                                      : train.availabilities[index]?.avlDayList?.[0]?.availablityType === "3"
+                                      ? "linear-gradient(145deg, #fff3e0,rgb(249, 231, 204))"
+                                      : "linear-gradient(145deg, rgb(247, 247, 247), rgb(255, 255, 255))",
+                                  border: `0.3px solid ${
                                     train.availabilities[index]?.avlDayList?.[0]?.availablityType === "1" ||
                                     train.availabilities[index]?.avlDayList?.[0]?.availablityType === "2"
                                       ? "green"
                                       : train.availabilities[index]?.avlDayList?.[0]?.availablityType === "3"
-                                      ? "#E86716"
-                                      : "gray",
+                                      ? "orange"
+                                      : "gray"
+                                  }`,
+                                  borderRadius: "10px",
+                                  cursor: "pointer",
+                                  transition: "transform 0.2s ease",
+                                  boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                                  margin: "0 4px"
                                 }}
+                                onClick={() => handleBooking(train,cls, index)}
                               >
-                                {getFormattedSeatsData(train, index)}
-                              </b>
-                              <div
-                                className="status-badge mb-1"
-                                style={{
-                                  color: cls.availableSeats ? "#2e7d32" : "#c62828",
-                                  fontSize: "0.7rem",
-                                }}
-                              >
-                                {(train.availabilities[index]?.avlDayList?.[0]?.availablityType === "1" ||
-                                train.availabilities[index]?.avlDayList?.[0]?.availablityType === "2") ? (
-                                  <span style={{ color: "green", display: "flex", alignItems: "center" }}>
-                                    <i className="fas fa-shield-alt me-1"></i>
-                                    <span style={{ marginLeft: "5px" }}>Travel Guarantee</span>
-                                  </span>
-                                ) : train.availabilities[index]?.avlDayList?.[0]?.availablityType === "3" ? (
-                                  "50% chances"
-                                ) : (
-                                  "."
+                                { (train.availabilities[index]?.quota === "TQ" || train.availabilities[index]?.quota === "PT") && (
+                                  <div
+                                    className="position-absolute badge bg-danger"
+                                    style={{
+                                      top: "-10px",
+                                      right: "10px",
+                                      fontSize: "0.7rem",
+                                      padding: "4px 8px",
+                                      zIndex: "1",
+                                    }}
+                                  >
+                                  {train.availabilities[index]?.quota === "TQ" ? "TATKAL" : "PREMIUM"}                              </div>
                                 )}
+                                <div className="d-flex justify-content-between align-items-center">
+                                  <h6 className="mb-0 " style={{ color: "black" }}>
+                                    {train.availabilities[index]?.enqClass}
+                                  </h6>
+                                  {train.availabilities[index]?.totalFare > 0 && (
+                                    <div className="price">₹ {train.availabilities[index]?.totalFare}</div>
+                                  )}
+                                </div>
+                                <div className="availability">
+                                  <b
+                                    style={{
+                                      fontSize: "1.1rem",
+                                      color:
+                                        train.availabilities[index]?.avlDayList?.[0]?.availablityType === "1" ||
+                                        train.availabilities[index]?.avlDayList?.[0]?.availablityType === "2"
+                                          ? "green"
+                                          : train.availabilities[index]?.avlDayList?.[0]?.availablityType === "3"
+                                          ? "#E86716"
+                                          : "gray",
+                                    }}
+                                  >
+                                    {getFormattedSeatsData(train, index)}
+                                  </b>
+                                  <div
+                                    className="status-badge mb-1"
+                                    style={{
+                                      color: cls.availableSeats ? "#2e7d32" : "#c62828",
+                                      fontSize: "0.7rem",
+                                    }}
+                                  >
+                                    {(train.availabilities[index]?.avlDayList?.[0]?.availablityType === "1" ||
+                                    train.availabilities[index]?.avlDayList?.[0]?.availablityType === "2") ? (
+                                      <span style={{ color: "green", display: "flex", alignItems: "center" }}>
+                                        <i className="fas fa-shield-alt me-1"></i>
+                                        <span style={{ marginLeft: "5px" }}>Travel Guarantee</span>
+                                      </span>
+                                    ) : train.availabilities[index]?.avlDayList?.[0]?.availablityType === "3" ? (
+                                      "50% chances"
+                                    ) : (
+                                      "."
+                                    )}
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </div>
-                      ))
-                    )}
-
-                    {/* Nearby Dates Section */}
-                    <div className="d-flex justify-content-between align-items-center w-100 px-2 mt-4">
-                      <button 
-                        className=" d-flex align-items-center gap-1 py-0 px-1"
-                        onClick={() => toggleNearbyDates(train.trainNumber)}
-                        style={{ 
-                          // background: expandedTrainId === train.trainNumber ? '#e3f2fd' : '#f8f9fa',
-                          border: 'none',
-                          background : "none",
-                          // borderColor: expandedTrainId === train.trainNumber ? '#90caf9' : '#dee2e6',
-                          borderRadius: '6px',
-                          color: expandedTrainId === train.trainNumber ? '#1976d2' : '#6c757d',
-                          transition: 'all 0.3s ease',
-                          fontSize: '0.95rem',
-                          // color: '#e74c3',
-                          padding: '10px',
-                          fontWeight: 'bold'
-                        }}
-                      >
-                        <i className={`fas fa-calendar-alt fa-sm`}></i>
-                        <span className="mx-1">Check Nearby Dates</span>
-                        <i 
-                          className={`fas fa-chevron-${expandedTrainId === train.trainNumber ? 'up' : 'down'} fa-sm`}
-                          style={{
-                            transform: expandedTrainId === train.trainNumber ? 'rotate(180deg)' : 'rotate(0)',
-                            transition: 'transform 0.3s ease'
-                          }}
-                        ></i>
-                      </button>
+                          ))
+                        )}
+                      </div>
                     </div>
 
-                    {/* Collapsible Nearby Dates Section */}
-                    <div 
-                      style={{
-                        maxHeight: expandedTrainId === train.trainNumber ? '500px' : '0',
-                        overflow: 'hidden',
-                        transition: 'all 0.3s ease-in-out',
-                        width: '100%'
+                    <button 
+                      className="scroll-arrow scroll-right"
+                      onClick={(e) => {
+                        const container = e.target.closest('.availability-section').querySelector('.scroll-container');
+                        container.scrollBy({ left: 200, behavior: 'smooth' });
                       }}
                     >
-                      {expandedTrainId === train.trainNumber && (
-                        <div className="bg-light p-3 rounded-3 mt-2">
-                          <NearbyDates 
-                            train={getOriginalTrainData(train.trainNumber)} 
-                            onClose={() => setExpandedTrainId(null)}
-                          />
-                        </div>
-                      )}
-                    </div>
+                      <i className="fas fa-chevron-right"></i>
+                    </button>
+                  </div>
+
+                  <style>
+                    {`
+                      .availability-section {
+                        position: relative;
+                        
+                      }
+
+                      .scroll-container {
+                        overflow-x: auto;
+                        scrollbar-width: none; /* Firefox */
+                        -ms-overflow-style: none; /* IE and Edge */
+                        scroll-behavior: smooth;
+                        padding: 10px 0;
+                      }
+
+                      .scroll-container::-webkit-scrollbar {
+                        display: none; /* Chrome, Safari, Opera */
+                      }
+
+                      .scroll-arrow {
+                        position: absolute;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        width: 32px;
+                        height: 32px;
+                        border-radius: 50%;
+                        background: white;
+                        border: 1px solid #e0e0e0;
+                        color: #666;
+                        display: none;
+                        align-items: center;
+                        justify-content: center;
+                        cursor: pointer;
+                        z-index: 10;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                      }
+
+                      .scroll-arrow:hover {
+                        background: #f8f9fa;
+                        color: #333;
+                      }
+
+                      .scroll-left {
+                        left: 0;
+                      }
+
+                      .scroll-right {
+                        right: 0;
+                      }
+
+                      @media (max-width: 768px) {
+                        .scroll-arrow {
+                          display: flex;
+                        }
+
+                        .availability-section {
+                          margin: 0 -10px;
+                        }
+
+                        .scroll-container {
+                          padding: 10px;
+                        }
+
+                        .availability-card {
+                          margin: 0 4px !important;
+                        }
+                      }
+                    `}
+                  </style>
+
+                  {/* Nearby Dates Section */}
+                  <div className="d-flex justify-content-between align-items-center w-100 px-1">
+                    <button 
+                      className=" d-flex align-items-center gap-1 py-0 px-1"
+                      onClick={() => toggleNearbyDates(train.trainNumber)}
+                      style={{ 
+                        // background: expandedTrainId === train.trainNumber ? '#e3f2fd' : '#f8f9fa',
+                        border: 'none',
+                        background : "none",
+                        // borderColor: expandedTrainId === train.trainNumber ? '#90caf9' : '#dee2e6',
+                        borderRadius: '6px',
+                        color: expandedTrainId === train.trainNumber ? '#1976d2' : '#6c757d',
+                        transition: 'all 0.3s ease',
+                        fontSize: '0.95rem',
+                        // color: '#e74c3',
+                        padding: '10px',
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      <i className={`fas fa-calendar-alt fa-sm`}></i>
+                      <span className="mx-1 mt-1">Check Nearby Dates</span>
+                      <i 
+                        className={`fas fa-chevron-${expandedTrainId === train.trainNumber ? 'up' : 'down'} fa-sm`}
+                        style={{
+                          transform: expandedTrainId === train.trainNumber ? 'rotate(180deg)' : 'rotate(0)',
+                          transition: 'transform 0.3s ease'
+                        }}
+                      ></i>
+                    </button>
+                  </div>
+
+                  {/* Collapsible Nearby Dates Section */}
+                  <div 
+                    style={{
+                      maxHeight: expandedTrainId === train.trainNumber ? '500px' : '0',
+                      overflow: 'hidden',
+                      transition: 'all 0.3s ease-in-out',
+                      width: '100%'
+                    }}
+                  >
+                    {expandedTrainId === train.trainNumber && (
+                      <div className="bg-light p-3 rounded-3 mt-2">
+                        <NearbyDates 
+                          train={getOriginalTrainData(train.trainNumber)} 
+                          onClose={() => setExpandedTrainId(null)}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -816,7 +912,180 @@ const TrainSearchResultList = ({ filters }) => {
   );
 };
 
+// Add mobile-specific styles
+const mobileStyles = `
+@media screen and (max-width: 768px) {
+  /* Train card styles */
+  .train-availability-card {
+    padding: 15px !important;
+    margin-bottom: 15px !important;
+  }
 
+  /* Train info header */
+  .train-name {
+    text-align: left !important;
+    margin-right: 0 !important;
+    margin-bottom: 15px !important;
+  }
+
+  .train-name h5 {
+    font-size: 1.1rem !important;
+  }
+
+  .train-name .text-muted {
+    font-size: 0.75rem !important;
+  }
+
+  /* Journey details section */
+  .journey-details {
+    margin: 10px 0 !important;
+    padding: 12px !important;
+  }
+
+  .journey-details .d-flex {
+    gap: 8px !important;
+  }
+
+  .journey-details .text-primary {
+    font-size: 0.7rem !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80px;
+  }
+
+  .journey-details .h4 {
+    font-size: 0.9rem !important;
+    margin: 4px 0 !important;
+  }
+
+  .journey-details .text-black-50 {
+    font-size: 0.65rem !important;
+  }
+
+  /* Duration badge */
+  .duration .badge {
+    font-size: 0.7rem !important;
+    padding: 4px 8px !important;
+  }
+
+  /* View route button */
+  .view-route .badge {
+    font-size: 0.7rem !important;
+    padding: 4px 10px !important;
+  }
+
+  /* Availability cards */
+  .availability-card {
+    min-width: 110px !important;
+    padding: 8px !important;
+    margin: 4px !important;
+  }
+
+  .availability-card h6 {
+    font-size: 0.8rem !important;
+  }
+
+  .availability-card .price {
+    font-size: 0.8rem !important;
+  }
+
+  .availability-card b {
+    font-size: 0.9rem !important;
+  }
+
+  .availability-card .status-badge {
+    font-size: 0.6rem !important;
+  }
+
+  .position-absolute.badge {
+    font-size: 0.6rem !important;
+    padding: 3px 6px !important;
+    top: -8px !important;
+    right: 5px !important;
+  }
+
+  /* Nearby dates section */
+  .d-flex.justify-content-between.align-items-center.w-100 {
+    padding: 0 10px !important;
+  }
+
+  .d-flex.justify-content-between.align-items-center.w-100 button {
+    font-size: 0.85rem !important;
+    padding: 8px !important;
+  }
+
+  /* Running days display */
+  .text-muted.small.d-flex {
+    flex-wrap: wrap !important;
+    gap: 2px !important;
+  }
+
+  .text-muted.small.d-flex span {
+    font-size: 0.7rem !important;
+    margin: 0 1px !important;
+  }
+
+  .text-muted.small.d-flex b {
+    font-size: 0.7rem !important;
+    margin-right: 4px !important;
+  }
+
+  /* Sort section responsiveness */
+  .bg-white.rounded-3.p-3 .btn-group {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 5px !important;
+    width: 100% !important;
+  }
+
+  .bg-white.rounded-3.p-3 .btn-group button {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 6px !important;
+    font-size: 0.75rem !important;
+  }
+
+  /* Train departed message */
+  div[style*="backgroundColor: #F1F5F8"] {
+    font-size: 0.9rem !important;
+    padding: 8px !important;
+  }
+
+  /* Row spacing */
+  .row.gy-4 {
+    gap: 10px !important;
+  }
+
+  /* Offer banner responsiveness */
+  .bg-success.rounded-2 {
+    padding: 12px !important;
+  }
+
+  .bg-success.rounded-2 h6 {
+    font-size: 1rem !important;
+  }
+
+  .bg-success.rounded-2 p {
+    font-size: 0.8rem !important;
+  }
+
+  .square--60 {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .square--60 i {
+    font-size: 1.2rem !important;
+  }
+}
+`;
+
+// Add styles to document
+const styleSheet = document.createElement("style");
+styleSheet.type = "text/css";
+styleSheet.innerText = mobileStyles;
+document.head.appendChild(styleSheet);
 
 export default TrainSearchResultList;
 
