@@ -20,12 +20,16 @@ import { selectTrainsSchedule } from '../../store/Selectors/filterSelectors';
 import {
   addTraveler,
   fetchTravelers,
+  getUserProfile,
   removeTraveler,
 } from "../../store/Actions/userActions";
 import {
   selectTravelers,
   selectTravelerLoading,
+  sessionExpired,
+  selectIRCTCusername,
 } from "../../store/Selectors/userSelector";
+import { statedata } from '../../store/Selectors/emailSelector';
 
 const TrainBookingDetails = () => {
 
@@ -36,6 +40,9 @@ const TrainBookingDetails = () => {
   const dispatch = useDispatch();
   const stationsList = useSelector(selectStations);
   const irctcUsernameStatus = useSelector(selectIRCTCUsernameStatus);
+  console.log("===> IRCTC username is ",irctcUsernameStatus)
+  const IRCTCUsernamefromDB  = useSelector(selectIRCTCusername) || "";
+  console.log("===> session expired is from user data  ",IRCTCUsernamefromDB)
   const [isVerifying, setIsVerifying] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -53,8 +60,9 @@ const TrainBookingDetails = () => {
   const [selectedTravelers, setSelectedTravelers] = useState([]);
   const [formErrors, setFormErrors] = useState({});
   const [errors, setErrors] = useState({ email: '', phone: '' });
+  const [irctcUser, setIrctcUser] = useState('');
+
   const [contactDetails, setContactDetails] = useState({
-    irctcUsername: '',
     email: '',
     phone: '',
     state: '',
@@ -82,8 +90,7 @@ const TrainBookingDetails = () => {
   const [selectedBoardingStation, setSelectedBoardingStation] = useState('');
   const countryList = useSelector(selectCountryList);
 
-  console.log("country list is ", countryList)
-
+  // console.log("country list is ", countryList)
   useEffect(() => {
     dispatch(fetchTrainBoardingStations(trainData?.trainNumber, trainData?.journeyDate, trainData?.fromStnCode, trainData?.toStnCode,trainData?.classinfo.enqClass));
     dispatch(fetchTrainSchedule(trainData?.trainNumber));
@@ -92,7 +99,14 @@ const TrainBookingDetails = () => {
   useEffect(() => {
     dispatch(fetchTravelers());
     dispatch(fetchCountryList())
+    dispatch(getUserProfile())
   }, [dispatch]);
+
+  useEffect(() => {
+    if (IRCTCUsernamefromDB) {
+      setIrctcUser(IRCTCUsernamefromDB);
+    }
+  }, [IRCTCUsernamefromDB]);
 
   useEffect(() => {
     if (showTravelerModal) {
@@ -196,7 +210,7 @@ const TrainBookingDetails = () => {
       toast.error('Please select at least one traveler')
       return false;
     }
-    if(!contactDetails.irctcUsername || !contactDetails.email || !contactDetails.phone || !contactDetails.state){
+    if(!irctcUser || !contactDetails.email || !contactDetails.phone || !contactDetails.state){
       toast.error('Please fill all the required fields')
       return false;
     }
@@ -356,14 +370,14 @@ const handleProceedToPayment = (e)=>{
 
   // Add verification handler
   const handleVerifyUsername = async () => {
-    if (!contactDetails.irctcUsername) {
+    if (!irctcUser) {
       toast.error('Please enter IRCTC username');
       return;
     }
 
     setIsVerifying(true);
     try {
-      await dispatch(fetchIRCTCusername(contactDetails.irctcUsername));
+      await dispatch(fetchIRCTCusername(irctcUser));
     } catch (error) {
       console.error('Error verifying username:', error);
       toast.error('Failed to verify username');
@@ -373,18 +387,22 @@ const handleProceedToPayment = (e)=>{
 
   // Add effect to handle API response
   useEffect(() => {
-    if (irctcUsernameStatus) {
+    if(irctcUser){
+      console.log("402 IRCTC username from DB is ",irctcUser);      
+      setIsVerified(true);
+    }else if (irctcUsernameStatus) {
+      console.log("Contact details are ",contactDetails)
       console.log("irctcUsernameStatus",irctcUsernameStatus)
       setIsVerifying(false);
-      if (irctcUsernameStatus.success === contactDetails.irctcUsername) {
-        console.log('Valid IRCTC username:', contactDetails.irctcUsername);
-        setIsVerified(true);;
+      if (irctcUsernameStatus.success === irctcUser) {
+        console.log('Valid IRCTC username:', irctcUser);
+        setIsVerified(true);
       } else if (irctcUsernameStatus.error) {
         console.log('Invalid IRCTC username:', irctcUsernameStatus.error);
         setIsVerified(false);
       }
     }
-  }, [irctcUsernameStatus, contactDetails.irctcUsername]);
+  }, [irctcUsernameStatus, irctcUser]);
 
   const handleEditUsername = () => {
     setIsEditing(true);
@@ -869,7 +887,7 @@ const handleProceedToPayment = (e)=>{
               className={`form-control form-control-lg ${isVerified ? 'border-success' : ''}`}
               id="irctcUsername"
               placeholder="Enter your IRCTC username"
-              value={contactDetails.irctcUsername}
+              value={irctcUser}
               onChange={(e) => {
                 if (!isVerified || isEditing) {
                   setContactDetails({ ...contactDetails, irctcUsername: e.target.value });
@@ -878,7 +896,7 @@ const handleProceedToPayment = (e)=>{
               }}
               readOnly={isVerified && !isEditing}
             />
-            {contactDetails.irctcUsername && (
+            {irctcUser && (
               isVerified ? (
                 <button 
                   className="btn btn-outline-primary ms-2"
@@ -886,7 +904,7 @@ const handleProceedToPayment = (e)=>{
                   onClick={handleEditUsername}
                 >
                   <i className="fa-solid fa-pen-to-square me-2"></i>
-                  Change
+                  Change 
                 </button>
               ) : (
                 <button 

@@ -8,3 +8,4 @@ export const selectTravelerLoading = (state) => state.user.loading;
 export const selectTravelerError = (state) => state.user.error;
 export const selectUserName = (state) => state.user.name;
 export const sessionExpired = (state) => state.user.sessionExpired;
+export const selectIRCTCusername = (state) => state.user.user?.userName;
