@@ -27,7 +27,7 @@ const WelcomePopup = () => {
 
   return (
     <>
-      <Modal show={show} onHide={handleClose} centered dialogClassName="custom-modal-60w">
+      <Modal show={show} onHide={handleClose} centered dialogClassName="custom-modal-60w" className='welcome-popup'>
         <div className="modal-header-container">
           <FaTimes className="close-icon" onClick={handleClose} />
           <div className="modal-image">
@@ -321,6 +321,13 @@ const WelcomePopup = () => {
       font-size: 0.95rem;
       line-height: 1.5;
       margin-bottom: 20px;
+    }
+
+    /* Hide modal on mobile and tablet screens */
+    @media (max-width: 991px) {
+      .welcome-popup {
+        display: none !important;
+      }
     }
 
   `}

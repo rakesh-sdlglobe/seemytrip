@@ -266,6 +266,7 @@ const SearchComponent = ({
       minWidth: '250px',
       fontSize: '15px',
       overflow: 'hidden', // Ensures content respects border radius
+      zIndex: 10001
     }),
     option: (provided, state) => ({
       ...provided,
@@ -282,9 +283,12 @@ const SearchComponent = ({
       ...provided,
       color: '#333',
       fontSize: '15px'
+    }),
+    container: (provided) => ({
+      ...provided,
+      zIndex: 1000
     })
   };
-  
 
   useEffect(() => {
     let frameId;
@@ -968,8 +972,20 @@ const SearchComponent = ({
                     <div className="row g-3 align-items-center">
                       <div className="col">
                         <div className="form-group mb-0 position-relative">
-                          <div className="input-icon">
-                            <img src={Entering} alt="From" style={{width:'30px'}}/>
+                          <div className="input-icon" style={{  zIndex: '99999',
+                            width: '30px',
+                            height: '30px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            pointerEvents: 'none' }}>
+                              
+                            <img src={Entering} alt="From"  style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'contain',
+                                display: 'block'
+                              }}/>
                           </div>
                           {leavingLabel && (
                             <label className="text-light text-uppercase opacity-75">{leavingLabel}</label>
