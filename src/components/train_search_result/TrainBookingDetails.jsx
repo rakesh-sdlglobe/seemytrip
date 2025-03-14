@@ -213,6 +213,10 @@ const TrainBookingDetails = () => {
       toast.error('Please select at least one traveler')
       return false;
     }
+    if(!selectedBoardingStation) {
+      toast.error('Please select a boarding station')
+      return false;
+    }
     if(!irctcUser || !contactDetails.email || !contactDetails.phone || !contactDetails.state){
       toast.error('Please fill all the required fields')
       return false;
