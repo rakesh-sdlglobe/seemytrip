@@ -30,10 +30,50 @@ const Header02 = () => {
   
   
   const handleLogout = () => {
-    dispatch(logout());
-    dispatch(logoutMobileUser(navigate));
-    dispatch(logoutEmailUser(navigate));
+    try {
+      // First dispatch regular logout to clear auth state
+      dispatch(logout());
+      
+      // Then handle specific user type logouts
+      // Wrap these in try-catch to prevent errors from stopping the process
+      try {
+        dispatch(logoutMobileUser(navigate));
+      } catch (error) {
+        console.error("Error in mobile logout:", error);
+      }
+      
+      try {
+        dispatch(logoutEmailUser(navigate));
+      } catch (error) {
+        console.error("Error in email logout:", error);
+      }
+      
+      // Clear any remaining localStorage items that might cause issues
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('googleUser');
+      localStorage.removeItem('googleUserName');
+      
+      // Use setTimeout to ensure navigation happens after state updates
+      setTimeout(() => {
+        navigate('/');
+      }, 100);
+    } catch (error) {
+      console.error("Logout failed:", error);
+      // Fallback solution - force page reload as last resort
+      window.location.href = '/';
+    }
   };
+
+  // Improved conditional auto-logout
+  useEffect(() => {
+    const authToken = localStorage.getItem('authToken');
+    // Only auto-logout if token exists but user isn't logged in
+    if (authToken && !isLoggedIn) {
+      // Use clean-up approach instead of full logout to avoid navigation issues
+      localStorage.removeItem('authToken');
+      window.location.reload();
+    }
+  }, [isLoggedIn]);
 
   // useEffect(() => {
   //   console.log("isLoggedIn ?? ",isLoggedIn)
@@ -42,9 +82,10 @@ const Header02 = () => {
   //   }
   // }, [isLoggedIn, navigate]);
 
-  if(!isLoggedIn && localStorage.getItem('authToken')){
-    handleLogout();
-  }
+  // Commented out since this is now handled by the useEffect above
+  // if(!isLoggedIn && localStorage.getItem('authToken')){
+  //   handleLogout();
+  // }
 
   return (
     <>
