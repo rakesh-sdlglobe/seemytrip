@@ -39,6 +39,7 @@ const TrainBookingDetails = () => {
   const dispatch = useDispatch();
   const stationsList = useSelector(selectStations);
   const irctcUsernameStatus = useSelector(selectIRCTCUsernameStatus);
+  console.log("===> IRCTC username status is ",irctcUsernameStatus)
   const IRCTCUsernamefromDB  = useSelector(selectIRCTCusername) || "";
   const [isVerifying, setIsVerifying] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
@@ -51,7 +52,7 @@ const TrainBookingDetails = () => {
     age: '',
     gender: '',
     berth: '',
-    country: '',
+    country: 'IN', // Set default country to India
     berthRequired: false
   });
   const [selectedTravelers, setSelectedTravelers] = useState([]);
@@ -86,6 +87,14 @@ const TrainBookingDetails = () => {
   const loading = useSelector(selectTravelerLoading);
   const [selectedBoardingStation, setSelectedBoardingStation] = useState('');
   const countryList = useSelector(selectCountryList);
+
+  // Create a localStorage key based on train number and date to make it unique per trip
+  const getBoardingStationStorageKey = () => {
+    if (trainData) {
+      return `boarding_station_${trainData.trainNumber}_${trainData.journeyDate.replace(/\s/g, '')}`;
+    }
+    return 'boarding_station';
+  };
 
   useEffect(() => {
     dispatch(fetchTrainBoardingStations(trainData?.trainNumber, trainData?.journeyDate, trainData?.fromStnCode, trainData?.toStnCode,trainData?.classinfo.enqClass));
@@ -163,6 +172,20 @@ const TrainBookingDetails = () => {
     }));
   };
 
+  // Add console logging for debugging country data
+  useEffect(() => {
+    if (countryList.length > 0) {
+      // Find India in country list for consistency
+      const india = countryList.find(c => c.countryCode === "IN");
+      if (india) {
+        console.log("Default country (India):", india);
+      }
+      
+      // Log the format of country objects for reference
+      console.log("Country data format example:", countryList[0]);
+    }
+  }, [countryList]);
+
   // Handler functions
   const handleSave = () => {
     if (travelers.length >= MAX_TRAVELERS && editingTravelerIndex === null) {
@@ -171,14 +194,17 @@ const TrainBookingDetails = () => {
     }
     
     if (validateForm()) {
+      // Log the country value for debugging
+      console.log("Saving traveler with country code:", currentTraveler.country);
+      
       const travelerData = {
         passengerName: currentTraveler.fullName.trim(),
         passengerAge: currentTraveler.age,
         passengerGender: currentTraveler.gender,
         passengerBerthChoice: currentTraveler.berth,
-        country: currentTraveler.country,
+        country: currentTraveler.country, // This is the countryCode (e.g., "IN")
         passengerBedrollChoice: currentTraveler.berthRequired,
-        passengerNationality: "IN",
+        passengerNationality: currentTraveler.country || "IN", // Use selected country code or default to India
       };
 
       if (editingTravelerIndex !== null) {
@@ -221,6 +247,26 @@ const TrainBookingDetails = () => {
       toast.error('Please fill all the required fields')
       return false;
     }
+    
+    // Log selected values for debugging
+    console.log('Proceeding to payment with:');
+    console.log('Selected boarding station code:', selectedBoardingStation);
+    
+    // Find and log station name
+    const selectedStation = boardingStations?.find(station => {
+      const { code } = parseStationNameCode(station.stnNameCode);
+      return code === selectedBoardingStation;
+    });
+    
+    if (selectedStation) {
+      const { name } = parseStationNameCode(selectedStation.stnNameCode);
+      console.log('Boarding station name:', name);
+    }
+    
+    console.log('Selected travelers:', selectedTravelers);
+    console.log('IRCTC Username:', irctcUser);
+    console.log('Contact details:', contactDetails);
+    
     return true;
   }
 // handle proceed to payment
@@ -251,6 +297,7 @@ const handleProceedToPayment = (e)=>{
       if (!currentTraveler.berth) {
         errors.berth = 'Berth preference is required';
       }
+      // Country validation not needed since we have a default
       if (!currentTraveler.country) {
         errors.country = 'Country is required';
       }
@@ -309,7 +356,7 @@ const handleProceedToPayment = (e)=>{
       age: '',
       gender: '',
       berth: '',
-      country: '',
+      country: 'IN', // Set default country to India
       berthRequired: false
     });
     setEditingTravelerIndex(null);
@@ -394,22 +441,29 @@ const handleProceedToPayment = (e)=>{
 
   // Add effect to handle API response
   useEffect(() => {
-    if(irctcUser){
-      console.log("402 IRCTC username from DB is ",irctcUser);      
-      setIsVerified(true);
-    }else if (irctcUsernameStatus) {
-      console.log("Contact details are ",contactDetails)
-      console.log("irctcUsernameStatus",irctcUsernameStatus)
+    if (isVerifying && irctcUsernameStatus) {
       setIsVerifying(false);
       if (irctcUsernameStatus.success === irctcUser) {
-        console.log('Valid IRCTC username:', irctcUser);
         setIsVerified(true);
+        setIsEditing(false);
+        // Save to contact details
+        setContactDetails(prev => ({ ...prev, irctcUsername: irctcUser }));
+        toast.success('IRCTC username verified successfully');
       } else if (irctcUsernameStatus.error) {
-        console.log('Invalid IRCTC username:', irctcUsernameStatus.error);
         setIsVerified(false);
+        toast.error(irctcUsernameStatus.error || 'Invalid IRCTC username');
       }
     }
   }, [irctcUsernameStatus, irctcUser]);
+
+  // Load IRCTC username from DB when available
+  useEffect(() => {
+    if (IRCTCUsernamefromDB && !irctcUser) {
+      setIrctcUser(IRCTCUsernamefromDB);
+      setIsVerified(true);
+      setContactDetails(prev => ({ ...prev, irctcUsername: IRCTCUsernamefromDB }));
+    }
+  }, [IRCTCUsernamefromDB]);
 
   const handleEditUsername = () => {
     setIsEditing(true);
@@ -418,7 +472,50 @@ const handleProceedToPayment = (e)=>{
 
   // Add boarding station change handler
   const handleBoardingStationChange = (e) => {
-    setSelectedBoardingStation(e.target.value);
+    const stationCode = e.target.value;
+    setSelectedBoardingStation(stationCode);
+    // Save to localStorage
+    localStorage.setItem(getBoardingStationStorageKey(), stationCode);
+    
+    // Find the station name for better logging
+    const selectedStation = boardingStations?.find(station => {
+      const { code } = parseStationNameCode(station.stnNameCode);
+      return code === stationCode;
+    });
+    
+    if (selectedStation) {
+      const { name, code } = parseStationNameCode(selectedStation.stnNameCode);
+      console.log(`Boarding station selected: ${name} (${code})`);
+    }
+  };
+
+  // Load selected boarding station from localStorage on component mount
+  useEffect(() => {
+    if (boardingStations && boardingStations.length > 0) {
+      const savedStation = localStorage.getItem(getBoardingStationStorageKey());
+      if (savedStation) {
+        // Verify that the saved station is still in the available stations list
+        const isValid = boardingStations.some(station => {
+          const { code } = parseStationNameCode(station.stnNameCode);
+          return code === savedStation;
+        });
+        
+        if (isValid) {
+          setSelectedBoardingStation(savedStation);
+          console.log(`Loaded saved boarding station: ${savedStation}`);
+        } else {
+          // If the saved station is no longer valid, clear it
+          localStorage.removeItem(getBoardingStationStorageKey());
+        }
+      }
+    }
+  }, [boardingStations]);
+
+  // Add function to get country name from countryCode
+  const getCountryNameByCode = (code) => {
+    if (!code) return '';
+    const country = countryList.find(c => c.countryCode === code);
+    return country ? country.country : '';
   };
 
   // Helper function to extract station name and code from stnNameCode
@@ -525,6 +622,7 @@ const handleProceedToPayment = (e)=>{
                     <input
                       id="age"
                       type="text"
+                      maxLength={2}
                       className="form-control"
                       value={currentTraveler.age}
                       onChange={(e) => {
@@ -649,7 +747,10 @@ const handleProceedToPayment = (e)=>{
                         >
                           <option value="" disabled>Select country</option>
                           {countryList.map((country, index) => (
-                            <option key={index} value={country.countryCode}>
+                            <option 
+                              key={index} 
+                              value={country.countryCode}
+                            >
                               {country.country}
                             </option>
                           ))}
@@ -737,6 +838,7 @@ const handleProceedToPayment = (e)=>{
                       parseInt(traveler.passengerAge) >= 5 && parseInt(traveler.passengerAge) <= 11 ? 
                       (traveler.passengerBedrollChoice ? ` • ${traveler.passengerBerthChoice} berth` : ' • No berth (child fare)') :
                       ` • ${traveler.passengerBerthChoice} berth`}
+                    {traveler.country && traveler.country !== "IN" && ` • ${getCountryNameByCode(traveler.country)}`}
                   </p>
                 </div>
               </div>
@@ -901,43 +1003,42 @@ const handleProceedToPayment = (e)=>{
               placeholder="Enter your IRCTC username"
               value={irctcUser}
               onChange={(e) => {
-                if (!isVerified || isEditing) {
-                  setContactDetails({ ...contactDetails, irctcUsername: e.target.value });
+                setIrctcUser(e.target.value);
+                if (isVerified) {
                   setIsVerified(false);
                 }
               }}
               readOnly={isVerified && !isEditing}
             />
-            {irctcUser && (
-              isVerified ? (
-                <button 
-                  className="btn btn-outline-primary ms-2"
-                  style={{ borderRadius: "10px" }}
-                  onClick={handleEditUsername}
-                >
-                  <i className="fa-solid fa-pen-to-square me-2"></i>
-                  Change 
-                </button>
-              ) : (
-                <button 
-                  className={`btn ${isVerifying ? 'btn-secondary' : 'btn-danger'} ms-2`}
-                  style={{ borderRadius: "10px" }}
-                  onClick={handleVerifyUsername}
-                  disabled={isVerifying}
-                >
-                  {isVerifying ? (
-                    <>
-                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                      Verifying...
-                    </>
-                  ) : (
-                    <>
-                      <i className="fa-solid fa-check me-2"></i>
-                      Verify
-                    </>
-                  )}
-                </button>
-              )
+            {irctcUser && !isVerified && !isVerifying && (
+              <button 
+                className="btn btn-primary ms-2"
+                style={{ borderRadius: "10px" }}
+                onClick={handleVerifyUsername}
+              >
+                <i className="fa-solid fa-check me-2"></i>
+                Verify
+              </button>
+            )}
+            {isVerifying && (
+              <button 
+                className="btn btn-secondary ms-2"
+                style={{ borderRadius: "10px" }}
+                disabled
+              >
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Verifying...
+              </button>
+            )}
+            {isVerified && (
+              <button 
+                className="btn btn-outline-primary ms-2"
+                style={{ borderRadius: "10px" }}
+                onClick={handleEditUsername}
+              >
+                <i className="fa-solid fa-pen-to-square me-2"></i>
+                Change 
+              </button>
             )}
           </div>
           {isVerified && (
