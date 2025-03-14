@@ -4,6 +4,7 @@ import {
   SET_PASSWORD,
   SET_CONFIRM_PASSWORD,
   SET_ERROR,
+  CLEAR_ERROR,
   CLEAR_FORM,
   LOGOUT,
   SET_USER,
@@ -55,6 +56,11 @@ const authReducer = (state = initialState, action) => {
     case SET_ERROR:
       return {
         ...state, error: action.payload
+      };
+
+    case CLEAR_ERROR:
+      return {
+        ...state, error: ''
       };
 
     case CLEAR_FORM:

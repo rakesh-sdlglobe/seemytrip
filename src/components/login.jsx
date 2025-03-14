@@ -19,6 +19,7 @@ import {
   setEmail,
   setPassword,
   handleGoogleLogin,
+  clearError,
   Loginn,
 } from "../store/Actions/authActions";
 import {
@@ -28,7 +29,7 @@ import {
 } from "../store/Selectors/authSelectors";
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import OTPModal from './otp-modal'; // Make sure this is correctly implemented
 import EmailOtpModal from './email-otpmodal'; // This should be the email OTP modal
 import { statedata } from '../store/Selectors/emailSelector';
@@ -45,6 +46,17 @@ const Login = () => {
   const [showOtpModal, setShowOtpModal] = useState(false); // For phone OTP modal
   const [showEmailOtpModal, setShowEmailOtpModal] = useState(false); // For email OTP modal
   const [isLoading, setIsLoading] = useState(false);
+
+  // Clear errors when this component unmounts or when user navigates away
+  useEffect(() => {
+    // Clear errors when component mounts (in case they came from another page)
+    dispatch(clearError());
+    
+    // Return cleanup function to clear errors when component unmounts
+    return () => {
+      dispatch(clearError());
+    };
+  }, [dispatch]);
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
@@ -153,6 +165,11 @@ const Login = () => {
     }
   };
 
+  // Add a function to handle navigation to register
+  const handleNavigateToRegister = () => {
+    dispatch(clearError());
+  };
+
   return (
     <div>
       <ToastContainer />
@@ -177,7 +194,7 @@ const Login = () => {
                         <Link to="/">
                           <img className="img-fluid mb-4" src={trainImage} width={200} alt="logo" />
                         </Link>
-                        <p className="mb-0">Are you new here?<Link to="/register" className="fw-medium text-primary"> Create an account</Link></p>
+                        <p className="mb-0">Are you new here?<Link to="/register" onClick={handleNavigateToRegister} className="fw-medium text-primary"> Create an account</Link></p>
                         <form className="mt-4 text-start" onSubmit={handleSubmit}>
                           {error && (
                             <div className="alert alert-danger">{error}</div>

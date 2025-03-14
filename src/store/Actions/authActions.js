@@ -6,6 +6,7 @@ export const SET_EMAIL = 'SET_EMAIL';
 export const SET_PASSWORD = 'SET_PASSWORD';
 export const SET_CONFIRM_PASSWORD = 'SET_CONFIRM_PASSWORD';
 export const SET_ERROR = 'SET_ERROR';
+export const CLEAR_ERROR = 'CLEAR_ERROR';
 export const CLEAR_FORM = 'CLEAR_FORM';
 export const SET_USER = 'SET_USER';
 export const LOGOUT = 'LOGOUT';
@@ -36,6 +37,10 @@ export const setConfirmPassword = (confirmPassword) => ({
 export const setError = (error) => ({
   type: SET_ERROR,
   payload: error,
+});
+
+export const clearError = () => ({
+  type: CLEAR_ERROR,
 });
 
 export const setUser = (user) => ({
