@@ -26,7 +26,6 @@ import {
 import {
   selectTravelers,
   selectTravelerLoading,
-  sessionExpired,
   selectIRCTCusername,
 } from "../../store/Selectors/userSelector";
 import { statedata } from '../../store/Selectors/emailSelector';
@@ -40,14 +39,12 @@ const TrainBookingDetails = () => {
   const dispatch = useDispatch();
   const stationsList = useSelector(selectStations);
   const irctcUsernameStatus = useSelector(selectIRCTCUsernameStatus);
-  console.log("===> IRCTC username is ",irctcUsernameStatus)
   const IRCTCUsernamefromDB  = useSelector(selectIRCTCusername) || "";
-  console.log("===> session expired is from user data  ",IRCTCUsernamefromDB)
   const [isVerifying, setIsVerifying] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const boardingStations = useSelector(selectTrainBoardingStations);
-  const boardingStationDetails = useSelector(selectTrainsSchedule);
+  const boardingStationDetails = useSelector(selectTrainsSchedule);  
   const [travelers, setTravelers] = useState([]);
   const [currentTraveler, setCurrentTraveler] = useState({
     fullName: '',
@@ -90,17 +87,27 @@ const TrainBookingDetails = () => {
   const [selectedBoardingStation, setSelectedBoardingStation] = useState('');
   const countryList = useSelector(selectCountryList);
 
-  // console.log("country list is ", countryList)
   useEffect(() => {
     dispatch(fetchTrainBoardingStations(trainData?.trainNumber, trainData?.journeyDate, trainData?.fromStnCode, trainData?.toStnCode,trainData?.classinfo.enqClass));
     dispatch(fetchTrainSchedule(trainData?.trainNumber));
-  },[]);
+  },[
+    dispatch, 
+    trainData?.trainNumber, 
+    trainData?.journeyDate, 
+    trainData?.fromStnCode, 
+    trainData?.toStnCode, 
+    trainData?.classinfo?.enqClass
+  ]);
   
   useEffect(() => {
     dispatch(fetchTravelers());
     dispatch(fetchCountryList())
     dispatch(getUserProfile())
   }, [dispatch]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  },[])
 
   useEffect(() => {
     if (IRCTCUsernamefromDB) {
@@ -155,10 +162,6 @@ const TrainBookingDetails = () => {
       phone: phone.slice(0, maxPhoneLength),
     }));
   };
-  const getStationName = (stationCode) => {
-    const station = stationsList?.find((stn) => stn?.split(" - ")[1] === stationCode);
-    return station?.split(" - ")[0];
-  }
 
   // Handler functions
   const handleSave = () => {
@@ -759,7 +762,12 @@ const handleProceedToPayment = (e)=>{
         <div className="d-flex justify-content-between align-items-center flex-wrap">
           <b className="fs-8 fw-bold text-muted"># {trainData?.trainNumber}</b>
           <p className="text-muted-2 text-md text-bold" style={{ border: '1px solid rgb(220, 218, 218)', padding: '5px 10px 1px', borderRadius: '5px' }}>
-            {getStationName(boardingStationDetails?.stationFrom)} → {getStationName(boardingStationDetails?.stationTo)}
+            {/* {getStationName(boardingStationDetails?.stationFrom)} → {getStationName(boardingStationDetails?.stationTo)} */}
+            {boardingStationDetails?.stationList &&
+          boardingStationDetails.stationList.length > 0 &&
+          `${boardingStationDetails.stationList[0].stationName} → ${
+            boardingStationDetails.stationList[boardingStationDetails.stationList.length - 1].stationName
+          }`}
           </p>
         </div>
         <h4 className="fs-5 fw-bold mb-1 text-muted">{trainData?.trainName}</h4>

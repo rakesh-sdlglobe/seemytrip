@@ -40,6 +40,9 @@ const TrainSearchResultList = ({ filters }) => {
     searchParams = JSON.parse(localStorage.getItem('trainSearchParams') || '{}');
   }
   
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  },[]);
 
   let {formattedTrainDate, date } = searchParams;  
   
