@@ -52,7 +52,7 @@ const TrainBookingDetails = () => {
     age: '',
     gender: '',
     berth: '',
-    country: '',
+    country: 'IN', // Set default country to India
     berthRequired: false
   });
   const [selectedTravelers, setSelectedTravelers] = useState([]);
@@ -172,6 +172,20 @@ const TrainBookingDetails = () => {
     }));
   };
 
+  // Add console logging for debugging country data
+  useEffect(() => {
+    if (countryList.length > 0) {
+      // Find India in country list for consistency
+      const india = countryList.find(c => c.countryCode === "IN");
+      if (india) {
+        console.log("Default country (India):", india);
+      }
+      
+      // Log the format of country objects for reference
+      console.log("Country data format example:", countryList[0]);
+    }
+  }, [countryList]);
+
   // Handler functions
   const handleSave = () => {
     if (travelers.length >= MAX_TRAVELERS && editingTravelerIndex === null) {
@@ -180,14 +194,17 @@ const TrainBookingDetails = () => {
     }
     
     if (validateForm()) {
+      // Log the country value for debugging
+      console.log("Saving traveler with country code:", currentTraveler.country);
+      
       const travelerData = {
         passengerName: currentTraveler.fullName.trim(),
         passengerAge: currentTraveler.age,
         passengerGender: currentTraveler.gender,
         passengerBerthChoice: currentTraveler.berth,
-        country: currentTraveler.country,
+        country: currentTraveler.country, // This is the countryCode (e.g., "IN")
         passengerBedrollChoice: currentTraveler.berthRequired,
-        passengerNationality: "IN",
+        passengerNationality: currentTraveler.country || "IN", // Use selected country code or default to India
       };
 
       if (editingTravelerIndex !== null) {
@@ -280,6 +297,7 @@ const handleProceedToPayment = (e)=>{
       if (!currentTraveler.berth) {
         errors.berth = 'Berth preference is required';
       }
+      // Country validation not needed since we have a default
       if (!currentTraveler.country) {
         errors.country = 'Country is required';
       }
@@ -338,7 +356,7 @@ const handleProceedToPayment = (e)=>{
       age: '',
       gender: '',
       berth: '',
-      country: '',
+      country: 'IN', // Set default country to India
       berthRequired: false
     });
     setEditingTravelerIndex(null);
@@ -493,6 +511,13 @@ const handleProceedToPayment = (e)=>{
     }
   }, [boardingStations]);
 
+  // Add function to get country name from countryCode
+  const getCountryNameByCode = (code) => {
+    if (!code) return '';
+    const country = countryList.find(c => c.countryCode === code);
+    return country ? country.country : '';
+  };
+
   // Helper function to extract station name and code from stnNameCode
   const parseStationNameCode = (stnNameCode) => {
     const [name, code] = stnNameCode.split(' - ');
@@ -597,6 +622,7 @@ const handleProceedToPayment = (e)=>{
                     <input
                       id="age"
                       type="text"
+                      maxLength={2}
                       className="form-control"
                       value={currentTraveler.age}
                       onChange={(e) => {
@@ -721,7 +747,10 @@ const handleProceedToPayment = (e)=>{
                         >
                           <option value="" disabled>Select country</option>
                           {countryList.map((country, index) => (
-                            <option key={index} value={country.countryCode}>
+                            <option 
+                              key={index} 
+                              value={country.countryCode}
+                            >
                               {country.country}
                             </option>
                           ))}
@@ -809,6 +838,7 @@ const handleProceedToPayment = (e)=>{
                       parseInt(traveler.passengerAge) >= 5 && parseInt(traveler.passengerAge) <= 11 ? 
                       (traveler.passengerBedrollChoice ? ` • ${traveler.passengerBerthChoice} berth` : ' • No berth (child fare)') :
                       ` • ${traveler.passengerBerthChoice} berth`}
+                    {traveler.country && traveler.country !== "IN" && ` • ${getCountryNameByCode(traveler.country)}`}
                   </p>
                 </div>
               </div>
