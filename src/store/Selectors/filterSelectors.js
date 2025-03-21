@@ -8,3 +8,4 @@ export const selectTrainsSchedule = (state) => state.filters.trainSchedule;
 export const selectTrainBoardingStations = (state) => state.filters.trainBoardingStations;
 export const selectIRCTCUsernameStatus = (state) => state.filters.IRCTC_username_status;
 export const selectCountryList = (state) => state.filters.countryList;
+export const selectIRCTCForgotDetails = (state) => state.filters.IRCTC_forgot_details;

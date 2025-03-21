@@ -21,7 +21,10 @@ import {
   FETCH_IRCTC_USERNAME_FAILURE, 
   FETCH_COUNTRY_LIST_REQUEST,
   FETCH_COUNTRY_LIST_SUCCESS,
-  FETCH_COUNTRY_LIST_FAILURE
+  FETCH_COUNTRY_LIST_FAILURE,
+  FETCH_IRCTC_FORGOT_DETAILS_REQUEST,
+  FETCH_IRCTC_FORGOT_DETAILS_SUCCESS,
+  FETCH_IRCTC_FORGOT_DETAILS_FAILURE,
 } from '../Actions/filterActions.js';
 
 const initialState = {
@@ -158,6 +161,23 @@ export const filterReducer = (state = initialState, action) => {
         countryList: action.payload,
       };
     case FETCH_COUNTRY_LIST_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+    case FETCH_IRCTC_FORGOT_DETAILS_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+    case FETCH_IRCTC_FORGOT_DETAILS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        IRCTC_forgot_details: action.payload,
+      };
+    case FETCH_IRCTC_FORGOT_DETAILS_FAILURE:
       return {
         ...state,
         loading: false,
