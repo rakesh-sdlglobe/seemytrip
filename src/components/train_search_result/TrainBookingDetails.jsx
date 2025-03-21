@@ -213,6 +213,10 @@ const TrainBookingDetails = () => {
           .then(() => {
             dispatch(fetchTravelers()); // Fetch updated list after adding
             toast.success('Traveler updated successfully');
+            // Make sure the edited traveler is selected
+            if (!selectedTravelers.includes(editingTravelerIndex)) {
+              setSelectedTravelers(prev => [...prev, editingTravelerIndex]);
+            }
             handleModalClose();
           })
           .catch((error) => {
@@ -221,10 +225,31 @@ const TrainBookingDetails = () => {
       } else {
         console.log("traveler data from 186 :== ",travelerData, "came for add")
         dispatch(addTraveler(travelerData))
-          .then(() => {
-            dispatch(fetchTravelers()); // Fetch updated list after adding
-            toast.success('Traveler added successfully');
-            handleModalClose();
+          .then((response) => {
+            // Get the new traveler ID from the response if available
+            const newTravelerId = response?.payload?.passengerId;
+            
+            dispatch(fetchTravelers()) // Fetch updated list after adding
+              .then(() => {
+                // If we have the ID from the response, use it directly
+                if (newTravelerId) {
+                  // Select ONLY the newly added traveler
+                  setSelectedTravelers([newTravelerId]);
+                } else {
+                  // Fallback: try to get the latest traveler
+                  const latestTravelers = savedTravelers.length > 0 ? [...savedTravelers] : [];
+                  if (latestTravelers.length > 0) {
+                    // Find the latest added traveler (usually the last one with the highest ID)
+                    const latestTraveler = latestTravelers[latestTravelers.length - 1];
+                    if (latestTraveler && latestTraveler.passengerId) {
+                      // Select ONLY the newly added traveler
+                      setSelectedTravelers([latestTraveler.passengerId]);
+                    }
+                  }
+                }
+                toast.success('Traveler added successfully');
+                handleModalClose();
+              });
           })
           .catch((error) => {
             toast.error('Failed to add traveler');
@@ -552,21 +577,39 @@ const handleProceedToPayment = (e)=>{
 
   const modalRef = useRef(null);
 
+  const irctcModalRef = useRef(null);
+  const forgotUsernameModalRef = useRef(null);
+  const forgotPasswordModalRef = useRef(null)
+
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
         handleModalClose();
       }
+      if (irctcModalRef.current && !irctcModalRef.current.contains(event.target)) {
+        setShowIRCTCPopup(false);
+      }
+      if (forgotUsernameModalRef.current && !forgotUsernameModalRef.current.contains(event.target)) {
+        setShowForgotUsernamePopup(false);
+        setForgotUsernameError('');
+      }
+      if (forgotPasswordModalRef.current && !forgotPasswordModalRef.current.contains(event.target)) {
+        setShowForgotPasswordPopup(false);
+        setForgotPasswordError({});
+        setForgotPasswordForm({ username: '', mobile: '' });
+      }
+      
     };
 
-    if (showTravelerModal) {
+    if (showTravelerModal || showIRCTCPopup || showForgotUsernamePopup || showForgotPasswordPopup) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showTravelerModal]);
+  }, [showTravelerModal, showIRCTCPopup, showForgotUsernamePopup, showForgotPasswordPopup]);
 
   const renderTravelerModal = () => (
     <>
@@ -689,74 +732,6 @@ const handleProceedToPayment = (e)=>{
                           No berth alloted and half adult fare charged if not opted
                         </div>
                       }
-                    </div>
-                  </div>
-                )}
-
-                {/* Show Berth and Country fields based on age and berth requirement */}
-                {currentTraveler.age && (
-                  (parseInt(currentTraveler.age) >= 12) || 
-                  (parseInt(currentTraveler.age) >= 5 && parseInt(currentTraveler.age) <= 11 && currentTraveler.berthRequired)
-                ) && (
-                  <div className="row mb-4">
-                    <div className="col-md-6 mb-3 mb-md-0 ps-4">
-                      <label htmlFor="berth" className="form-label">Berth Preference*</label>
-                      <div className="select-wrapper">
-                        <select
-                          id="berth"
-                          className="form-select card-select"
-                          value={currentTraveler.berth}
-                          onChange={(e) => setCurrentTraveler({ ...currentTraveler, berth: e.target.value })}
-                          required
-                        >
-                          <option value="" disabled selected>Select berth preference</option>
-                          {trainData.classinfo.applicableBerthTypes?.map((berth, index) => {
-                            // Define mapping of short codes to full names
-                            const berthMap = {
-                              UB: "Upper Berth",
-                              LB: "Lower Berth",
-                              MB: "Middle Berth",
-                              SL: "Side Lower Berth",
-                              SU: "Side Upper Berth",
-                              WS: "Window Side Berth",
-                              CB: "Cabin Berth",
-                              CP: "Coupé Berth",
-                              SM: "Side Middle",
-                              NP: "No Preference" // If applicable
-                            };
-
-                            return (
-                              <option key={index} value={berth}>
-                                {berthMap[berth] || berth}
-                              </option>
-                            );
-                          })}
-                        </select>
-                      </div>
-                      {formErrors.berth && <div className="text-danger small mt-1">{formErrors.berth}</div>}
-                    </div>
-                    <div className="col-md-6">
-                      <label htmlFor="country" className="form-label">Country*</label>
-                      <div className="select-wrapper">
-                        <select
-                          id="country"
-                          className="form-select card-select"
-                          value={currentTraveler.country}
-                          onChange={(e) => setCurrentTraveler({ ...currentTraveler, country: e.target.value })}
-                          required
-                        >
-                          <option value="" disabled>Select country</option>
-                          {countryList.map((country, index) => (
-                            <option 
-                              key={index} 
-                              value={country.countryCode}
-                            >
-                              {country.country}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      {formErrors.country && <div className="text-danger small mt-1">{formErrors.country}</div>}
                     </div>
                   </div>
                 )}
@@ -1143,13 +1118,45 @@ const handleProceedToPayment = (e)=>{
               onChange={(e) => setContactDetails({ ...contactDetails, state: e.target.value })}
             >
               <option value="" disabled>Select State</option>
-              <option value="maharashtra">Maharashtra</option>
-              <option value="karnataka">Karnataka</option>
+              {/* States */}
+              <option value="andhra-pradesh">Andhra Pradesh</option>
+              <option value="arunachal-pradesh">Arunachal Pradesh</option>
+              <option value="assam">Assam</option>
+              <option value="bihar">Bihar</option>
+              <option value="chhattisgarh">Chhattisgarh</option>
               <option value="delhi">Delhi</option>
-              <option value="tamil-nadu">Tamil Nadu</option>
+              <option value="goa">Goa</option>
+              <option value="gujarat">Gujarat</option>
+              <option value="haryana">Haryana</option>
+              <option value="himachal-pradesh">Himachal Pradesh</option>
+              <option value="jammu-kashmir">Jammu & Kashmir</option>
+              <option value="jharkhand">Jharkhand</option>
+              <option value="karnataka">Karnataka</option>
               <option value="kerala">Kerala</option>
+              <option value="ladakh">Ladakh</option>
+              <option value="madhya-pradesh">Madhya Pradesh</option>
+              <option value="maharashtra">Maharashtra</option>
+              <option value="manipur">Manipur</option>
+              <option value="meghalaya">Meghalaya</option>
+              <option value="mizoram">Mizoram</option>
+              <option value="nagaland">Nagaland</option>
+              <option value="odisha">Odisha</option>
+              <option value="puducherry">Puducherry</option>
+              <option value="punjab">Punjab</option>
+              <option value="rajasthan">Rajasthan</option>
+              <option value="sikkim">Sikkim</option>
+              <option value="tamil-nadu">Tamil Nadu</option>
+              <option value="telangana">Telangana</option>
+              <option value="tripura">Tripura</option>
               <option value="uttar-pradesh">Uttar Pradesh</option>
-              {/* Add more states as needed */}
+              <option value="uttarakhand">Uttarakhand</option>
+              <option value="west-bengal">West Bengal</option>
+              {/* Union Territories */}
+              <option value="andaman-nicobar">Andaman & Nicobar Islands</option>
+              <option value="chandigarh">Chandigarh</option>
+              <option value="dadra-nagar-haveli">Dadra & Nagar Haveli</option>
+              <option value="daman-diu">Daman & Diu</option>
+              <option value="lakshadweep">Lakshadweep</option>
             </select>
           </div>
         </div>
@@ -1167,7 +1174,7 @@ const handleProceedToPayment = (e)=>{
         role="dialog"
       >
         <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content">
+          <div className="modal-content" ref={irctcModalRef}>
             <div className="modal-header border-bottom">
               <h5 className="modal-title">Create IRCTC Account</h5>
               <button 
@@ -1220,7 +1227,7 @@ const handleProceedToPayment = (e)=>{
         role="dialog"
       >
         <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content">
+          <div className="modal-content" ref={forgotUsernameModalRef}>
             <div className="modal-header border-bottom">
               <h5 className="modal-title">Forgot IRCTC Username</h5>
               <button 
@@ -1325,7 +1332,7 @@ const handleProceedToPayment = (e)=>{
         role="dialog"
       >
         <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content">
+          <div className="modal-content" ref={forgotPasswordModalRef}>
             <div className="modal-header border-bottom">
               <h5 className="modal-title">Forgot IRCTC Password</h5>
               <button 
@@ -1808,17 +1815,7 @@ const handleProceedToPayment = (e)=>{
           border-radius: 12px;
           box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
           outline: 0;
-        }
-
-        .modal-backdrop {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100vw;
-          height: 100vh;
-          background-color: #000;
-          opacity: 0.5;
-          z-index: 1054;
+          z-index: 1056; /* Ensure modal content is above backdrop */
         }
 
         .modal-header {
