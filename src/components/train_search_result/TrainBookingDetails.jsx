@@ -9,12 +9,13 @@ import {useLocation} from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { IRCTC_Logo } from '../../assets/images';
 import { selectCountryList, selectStations, selectTrainBoardingStations } from '../../store/Selectors/filterSelectors';
-import { fetchCountryList, fetchTrainBoardingStations } from '../../store/Actions/filterActions';
+import { fetchCountryList, fetchIRCTCForgotDetails, fetchTrainBoardingStations } from '../../store/Actions/filterActions';
 import { fetchIRCTCusername } from '../../store/Actions/filterActions';
 import { selectIRCTCUsernameStatus } from '../../store/Selectors/filterSelectors';
 import { useDispatch, useSelector } from "react-redux";
 import { fetchTrainSchedule } from '../../store/Actions/filterActions';
 import { selectTrainsSchedule } from '../../store/Selectors/filterSelectors';
+import { selectIRCTCForgotDetails } from '../../store/Selectors/filterSelectors';
 
 
 import {
@@ -46,6 +47,9 @@ const TrainBookingDetails = () => {
   const [isEditing, setIsEditing] = useState(false);
   const boardingStations = useSelector(selectTrainBoardingStations);
   const boardingStationDetails = useSelector(selectTrainsSchedule);  
+  const forgotIRCTCdetails = useSelector(selectIRCTCForgotDetails);
+  console.log("===>  forgotIRCTCdetails is ",forgotIRCTCdetails);
+  
   const [travelers, setTravelers] = useState([]);
   const [currentTraveler, setCurrentTraveler] = useState({
     fullName: '',
@@ -399,6 +403,37 @@ const handleProceedToPayment = (e)=>{
     setShowForgotUsernamePopup(true);
   };
 
+  const setIRCTCUserDetails = (forgotUsernameForm) => {
+      const DOB = forgotUsernameForm.dob;
+      console.log(DOB);
+      const formattedDOB = DOB?.split('-').join('');
+      console.log(formattedDOB);
+
+      const contact = forgotUsernameForm.contact;
+      console.log(contact);
+
+      let email = "";
+      let mobile = ""; 
+
+      if (contact.includes('@')) {
+        console.log("User provided an Email:", contact);
+        email = contact ;
+        
+      } else if (/^\d{10}$/.test(contact)) {
+          console.log("User provided a Mobile Number:", contact);
+          mobile = contact ;
+      }
+
+      console.log("Username is ", irctcUser);
+
+      return {
+        userName : irctcUser,
+        dob : formattedDOB,
+        email,
+        mobile
+      }
+  }
+
   const handleForgotUsernameSubmit = (e) => {
     e.preventDefault();
     
@@ -414,6 +449,18 @@ const handleProceedToPayment = (e)=>{
     toast.success('If the details match, your username will be sent to your registered contact');
     setShowForgotUsernamePopup(false);
     setForgotUsernameError('');
+
+    console.log("===> 418 :== ",forgotUsernameForm);
+
+    const resultantDetails = setIRCTCUserDetails(forgotUsernameForm);
+    console.log("The resultant detials are ===>",resultantDetails);
+    
+    resultantDetails.IRCTC_req_type = 'U'; 
+    resultantDetails.otpType = resultantDetails.email ? 'E' : resultantDetails.mobile ? 'M' : ''; 
+
+    console.log("456 The resultant detials are ===>",resultantDetails);
+    
+    dispatch(fetchIRCTCForgotDetails(resultantDetails));
   };
 
   // Add these handler functions near other handlers
@@ -1298,6 +1345,7 @@ const handleProceedToPayment = (e)=>{
                   <button 
                     type="submit" 
                     className="btn btn-primary"
+                    onClick={handleForgotUsernameSubmit}
                   >
                     <i className="fa-solid fa-paper-plane me-2"></i>
                     Send IRCTC Username
