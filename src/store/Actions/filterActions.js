@@ -1,6 +1,7 @@
 // actions/stationActions.js
 import axios from "axios";
 import { API_URL, } from "./authActions";
+import { auth } from "../../assets/images";
 
 // Action Types
 export const FETCH_STATIONS_REQUEST = 'FETCH_STATIONS_REQUEST';
@@ -25,6 +26,9 @@ export const FETCH_IRCTC_USERNAME_FAILURE = 'FETCH_IRCTC_USERNAME_FAILURE'
 export const FETCH_COUNTRY_LIST_REQUEST = 'FETCH_COUNTRY_LIST_REQUEST'
 export const FETCH_COUNTRY_LIST_SUCCESS = 'FETCH_COUNTRY_LIST_SUCCESS'
 export const FETCH_COUNTRY_LIST_FAILURE = 'FETCH_COUNTRY_LIST_FAILURE'
+export const FETCH_IRCTC_FORGOT_DETAILS_REQUEST = 'FETCH_IRCTC_FORGOT_DETAILS_REQUEST'
+export const FETCH_IRCTC_FORGOT_DETAILS_SUCCESS = 'FETCH_IRCTC_FORGOT_DETAILS_SUCCESS'
+export const FETCH_IRCTC_FORGOT_DETAILS_FAILURE = 'FETCH_IRCTC_FORGOT_DETAILS_FAILURE'
 
 // Action Creators
 export const fetchStationsRequest = () => ({
@@ -301,4 +305,40 @@ export const fetchCountryList = () =>  async (dispatch) => {
       console.error("Error fetching train boarding stations:", error.message);
       dispatch(fetchCountryListFailure(error.message));
     }
+};
+
+
+  
+export const fetchIRCTCForgotDetailsRequest = () => ({
+  type: FETCH_IRCTC_FORGOT_DETAILS_REQUEST,
+});
+
+export const fetchIRCTCForgotDetailsSuccess = (details) => ({
+  type: FETCH_IRCTC_FORGOT_DETAILS_SUCCESS,
+  payload: details,
+});
+
+export const fetchIRCTCForgotDetailsFailure = (error) => ({
+  type: FETCH_IRCTC_FORGOT_DETAILS_FAILURE,
+  payload: error,
+});
+
+export const fetchIRCTCForgotDetails = (userDetails) =>  async (dispatch) => {
+  console.log("===>  327 Calling the forgot details api");
+  dispatch(fetchIRCTCForgotDetailsRequest());
+  try {
+      const URL = `${API_URL}/trains/getForgotDetails`;
+      const response = await axios.post(URL,userDetails,auth);
+      console.log("331 response from the IRCTC forgot details ", response.data);
+      
+      if (response.data.Success) {
+        console.log("333 response from the IRCTC forgot details ", response.data);
+        dispatch(fetchIRCTCForgotDetailsSuccess(response.data));
+      }else{
+        console.log("Some thing error in the response from the IRCTC forgot details ", response.data);        
+      }
+  } catch (error) {
+    console.error("Error in Forgot IRCTC user details :", error.message.error);
+    dispatch(fetchIRCTCForgotDetailsFailure(error.message.error));
+  }
 };
