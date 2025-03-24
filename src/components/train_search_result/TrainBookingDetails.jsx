@@ -782,7 +782,74 @@ const handleProceedToPayment = (e)=>{
                     </div>
                   </div>
                 )}
-
+          {/* Show Berth and Country fields based on age and berth requirement */}
+          {currentTraveler.age && (
+                   (parseInt(currentTraveler.age) >= 12) || 
+                   (parseInt(currentTraveler.age) >= 5 && parseInt(currentTraveler.age) <= 11 && currentTraveler.berthRequired)
+                 ) && (
+                   <div className="row mb-4">
+                     <div className="col-md-6 mb-3 mb-md-0 ps-4">
+                       <label htmlFor="berth" className="form-label">Berth Preference*</label>
+                       <div className="select-wrapper">
+                         <select
+                           id="berth"
+                           className="form-select card-select"
+                           value={currentTraveler.berth}
+                           onChange={(e) => setCurrentTraveler({ ...currentTraveler, berth: e.target.value })}
+                           required
+                         >
+                           <option value="" disabled selected>Select berth preference</option>
+                           {trainData.classinfo.applicableBerthTypes?.map((berth, index) => {
+                             // Define mapping of short codes to full names
+                             const berthMap = {
+                               UB: "Upper Berth",
+                               LB: "Lower Berth",
+                               MB: "Middle Berth",
+                               SL: "Side Lower Berth",
+                               SU: "Side Upper Berth",
+                               WS: "Window Side Berth",
+                               CB: "Cabin Berth",
+                               CP: "Coupé Berth",
+                               SM: "Side Middle",
+                               NP: "No Preference" // If applicable
+                             };
+ 
+                             return (
+                               <option key={index} value={berth}>
+                                 {berthMap[berth] || berth}
+                               </option>
+                             );
+                           })}
+                         </select>
+                       </div>
+                       {formErrors.berth && <div className="text-danger small mt-1">{formErrors.berth}</div>}
+                     </div>
+                     <div className="col-md-6">
+                       <label htmlFor="country" className="form-label">Country*</label>
+                       <div className="select-wrapper">
+                         <select
+                           id="country"
+                           className="form-select card-select"
+                           value={currentTraveler.country}
+                           onChange={(e) => setCurrentTraveler({ ...currentTraveler, country: e.target.value })}
+                           required
+                         >
+                           <option value="" disabled>Select country</option>
+                           {countryList.map((country, index) => (
+                             <option 
+                               key={index} 
+                               value={country.countryCode}
+                             >
+                               {country.country}
+                             </option>
+                           ))}
+                         </select>
+                       </div>
+                       {formErrors.country && <div className="text-danger small mt-1">{formErrors.country}</div>}
+                     </div>
+                   </div>
+                 )}
+ 
                 <button className="btn btn-primary" onClick={handleSave}>
                   {editingTravelerIndex !== null ? 'Update Traveler Details' : 'Save Traveler Details'}
                 </button>
@@ -1571,9 +1638,9 @@ const handleProceedToPayment = (e)=>{
                     );
                   }
                 }
-                return 'Select boarding point';
+                return 'Select boarding Station';
               })()
-            : 'Select boarding point'}
+            : 'Select boarding Station'}
           </span>
           <i className={`fa-solid fa-chevron-down ${isDropdownOpen ? 'rotate' : ''}`}></i>
         </div>
