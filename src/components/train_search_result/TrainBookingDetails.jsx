@@ -57,7 +57,8 @@ const TrainBookingDetails = () => {
     gender: '',
     berth: '',
     country: 'IN', // Set default country to India
-    berthRequired: false
+    berthRequired: false,
+    foodPreference: '' // Add food preference field
   });
   const [selectedTravelers, setSelectedTravelers] = useState([]);
   const [formErrors, setFormErrors] = useState({});
@@ -79,6 +80,8 @@ const TrainBookingDetails = () => {
   });
   const [forgotUsernameError, setForgotUsernameError] = useState('');
   const [showForgotPasswordPopup, setShowForgotPasswordPopup] = useState(false);
+  const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
+  const [confirmationMessage, setConfirmationMessage] = useState('');
   const [forgotPasswordForm, setForgotPasswordForm] = useState({
     username: '',
     mobile: ''
@@ -209,6 +212,7 @@ const TrainBookingDetails = () => {
         country: currentTraveler.country, // This is the countryCode (e.g., "IN")
         passengerBedrollChoice: currentTraveler.berthRequired,
         passengerNationality: currentTraveler.country || "IN", // Use selected country code or default to India
+        foodPreference: currentTraveler.foodPreference // Add food preference to traveler data
       };
 
       if (editingTravelerIndex !== null) {
@@ -319,16 +323,18 @@ const handleProceedToPayment = (e)=>{
       errors.age = 'Age is required';
     }
     
-    // Only validate berth and country for age >= 12 or if berth is required for age 5-11
+    // Only validate berth, country, and food preference for age >= 12 or if berth is required for age 5-11
     if (!currentTraveler.age || 
         parseInt(currentTraveler.age) >= 12 || 
         (parseInt(currentTraveler.age) >= 5 && parseInt(currentTraveler.age) <= 11 && currentTraveler.berthRequired)) {
       if (!currentTraveler.berth) {
         errors.berth = 'Berth preference is required';
       }
-      // Country validation not needed since we have a default
       if (!currentTraveler.country) {
         errors.country = 'Country is required';
+      }
+      if (!currentTraveler.foodPreference) {
+        errors.foodPreference = 'Food preference is required';
       }
     }
 
@@ -360,6 +366,7 @@ const handleProceedToPayment = (e)=>{
       berth: traveler.passengerBerthChoice || '',
       country: traveler.passengerNationality || '',
       berthRequired: traveler.passengerBedrollChoice || false,
+      foodPreference: traveler.foodPreference || '' // Add food preference to traveler data
     });
     setEditingTravelerIndex(traveler.passengerId);
     setShowTravelerModal(true);
@@ -386,7 +393,8 @@ const handleProceedToPayment = (e)=>{
       gender: '',
       berth: '',
       country: 'IN', // Set default country to India
-      berthRequired: false
+      berthRequired: false,
+      foodPreference: '' // Reset food preference
     });
     setEditingTravelerIndex(null);
   };
@@ -446,8 +454,6 @@ const handleProceedToPayment = (e)=>{
       return;
     }
 
-    toast.success('If the details match, your username will be sent to your registered contact');
-    setShowForgotUsernamePopup(false);
     setForgotUsernameError('');
 
     console.log("===> 418 :== ",forgotUsernameForm);
@@ -461,6 +467,30 @@ const handleProceedToPayment = (e)=>{
     console.log("456 The resultant detials are ===>",resultantDetails);
     
     dispatch(fetchIRCTCForgotDetails(resultantDetails));
+
+    // Check forgotIRCTCdetails for success or error
+    if (forgotIRCTCdetails?.Success) {
+      // Show success message in confirmation popup
+      setConfirmationMessage(forgotIRCTCdetails.Success);
+      setShowConfirmationPopup(true);
+      setShowForgotUsernamePopup(false);
+    } else if (forgotIRCTCdetails?.Error) {
+      // Show error in toast
+      toast.error(forgotIRCTCdetails.Error, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      
+      // Show error in the form
+      setForgotUsernameError(forgotIRCTCdetails.Error);
+      
+      // Keep the popup open
+      setShowForgotUsernamePopup(true);
+    }
   };
 
   // Add these handler functions near other handlers
@@ -692,7 +722,7 @@ const handleProceedToPayment = (e)=>{
 
                 <div className="row ">
                   {/* Full Name */}
-                  <div className="col-md-6 mb-3 ps-4">
+                  <div className="col-md-4 mb-3 ps-4">
                     <label htmlFor="fullName" className="form-label">Full Name*</label>
                     <input
                       id="fullName"
@@ -707,22 +737,32 @@ const handleProceedToPayment = (e)=>{
                   </div>
 
                   {/* Age */}
-                  <div className="col-md-3 mb-3">
+                  <div className="col-md-2 mb-3">
                     <label htmlFor="age" className="form-label">Age*</label>
                     <input
                       id="age"
-                      type="text"
-                      maxLength={2}
+                      type="number"
+                      min="0"
+                      max="125"
                       className="form-control"
                       value={currentTraveler.age}
                       onChange={(e) => {
                         const newAge = e.target.value;
-                        setCurrentTraveler({ 
-                          ...currentTraveler, 
-                          age: newAge,
-                          ...(parseInt(newAge) < 5 ? { berth: '', country: '', berthRequired: false } : {}),
-                          ...(parseInt(newAge) >= 5 && parseInt(newAge) <= 11 ? { berthRequired: false, berth: '' } : {})
-                        });
+                        // Only allow numbers and limit to 125
+                        if (newAge === '' || (parseInt(newAge) >= 0 && parseInt(newAge) <= 125)) {
+                          setCurrentTraveler({ 
+                            ...currentTraveler, 
+                            age: newAge,
+                            ...(parseInt(newAge) < 5 ? { berth: '', country: '', berthRequired: false } : {}),
+                            ...(parseInt(newAge) >= 5 && parseInt(newAge) <= 11 ? { berthRequired: false, berth: '' } : {})
+                          });
+                        }
+                      }}
+                      onKeyPress={(e) => {
+                        // Allow only numbers
+                        if (!/[0-9]/.test(e.key)) {
+                          e.preventDefault();
+                        }
                       }}
                       required
                     />
@@ -746,6 +786,30 @@ const handleProceedToPayment = (e)=>{
                       <option value="T">Transgender</option>
                     </select>
                   </div>
+                  <div className="col-md-3">
+                       <label htmlFor="country" className="form-label">Country*</label>
+                       <div className="select-wrapper">
+                         <select
+                           id="country"
+                           className="form-select card-select country-select"
+                           value={currentTraveler.country}
+                           onChange={(e) => setCurrentTraveler({ ...currentTraveler, country: e.target.value })}
+                           required
+                         >
+                           <option value="" disabled>Select country</option>
+                           {countryList.map((country, index) => (
+                             <option 
+                               key={index} 
+                               value={country.countryCode}
+                               selected={country.countryCode === 'IN'}
+                             >
+                               {country.country}
+                             </option>
+                           ))}
+                         </select>
+                       </div>
+                       {formErrors.country && <div className="text-danger small mt-1">{formErrors.country}</div>}
+                     </div>
                 </div>
 
                 {/* Show warning message for under 5 */}
@@ -824,28 +888,25 @@ const handleProceedToPayment = (e)=>{
                        </div>
                        {formErrors.berth && <div className="text-danger small mt-1">{formErrors.berth}</div>}
                      </div>
-                     <div className="col-md-6">
-                       <label htmlFor="country" className="form-label">Country*</label>
+
+                     {/* Add Food Preference field */}
+                     <div className="col-md-6 mb-3 mb-md-0 ps-4">
+                       <label htmlFor="foodPreference" className="form-label">Food Preference*</label>
                        <div className="select-wrapper">
                          <select
-                           id="country"
+                           id="foodPreference"
                            className="form-select card-select"
-                           value={currentTraveler.country}
-                           onChange={(e) => setCurrentTraveler({ ...currentTraveler, country: e.target.value })}
+                           value={currentTraveler.foodPreference}
+                           onChange={(e) => setCurrentTraveler({ ...currentTraveler, foodPreference: e.target.value })}
                            required
                          >
-                           <option value="" disabled>Select country</option>
-                           {countryList.map((country, index) => (
-                             <option 
-                               key={index} 
-                               value={country.countryCode}
-                             >
-                               {country.country}
-                             </option>
-                           ))}
+                           <option value="" disabled selected>Select food preference</option>
+                           <option value="V">VEG</option>
+                           <option value="N">NON-VEG</option>
+                           <option value="D">NO FOOD</option>
                          </select>
                        </div>
-                       {formErrors.country && <div className="text-danger small mt-1">{formErrors.country}</div>}
+                       {formErrors.foodPreference && <div className="text-danger small mt-1">{formErrors.foodPreference}</div>}
                      </div>
                    </div>
                  )}
@@ -1122,7 +1183,12 @@ const handleProceedToPayment = (e)=>{
             {isVerified && (
               <button 
                 className="btn btn-outline-primary ms-2"
-                style={{ borderRadius: "10px" }}
+                style={{ 
+                  borderRadius: "10px",
+                  height: "38px",
+                  padding: "0 12px",
+                  fontSize: "0.875rem"
+                }}
                 onClick={handleEditUsername}
               >
                 <i className="fa-solid fa-pen-to-square me-2"></i>
@@ -1398,34 +1464,33 @@ const handleProceedToPayment = (e)=>{
                     })}
                     required
                     max={new Date().toISOString().split('T')[0]}
+                    style={{
+                      appearance: 'none',
+                      WebkitAppearance: 'none',
+                      MozAppearance: 'none',
+                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236c757d' viewBox='0 0 16 16'%3E%3Cpath d='M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z'/%3E%3C/svg%3E")`,
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'right 0.75rem center',
+                      backgroundSize: '16px 16px',
+                      paddingRight: '2.5rem'
+                    }}
                   />
                 </div>
 
-                <div className="alert alert-info d-flex" role="alert">
-                  <i className="fa-solid fa-info-circle me-2 mt-1"></i>
-                  <div className="small">
-                    Your IRCTC username will be sent to your registered mobile number/email ID if the details match our records.
-                  </div>
-                </div>
-
-                <div className="d-grid gap-2">
+                <div className="d-flex justify-content-end">
                   <button 
                     type="submit" 
-                    className="btn btn-primary"
+                    className="btn btn-primary px-3 py-1"
+                    style={{
+                      fontSize: '0.875rem',
+                      borderRadius: '6px',
+                      backgroundColor: '#cd2c22',
+                      borderColor: '#cd2c22'
+                    }}
                     onClick={handleForgotUsernameSubmit}
                   >
                     <i className="fa-solid fa-paper-plane me-2"></i>
-                    Send IRCTC Username
-                  </button>
-                  <button 
-                    type="button" 
-                    className="btn btn-outline-secondary"
-                    onClick={() => {
-                      setShowForgotUsernamePopup(false);
-                      setForgotUsernameError('');
-                    }}
-                  >
-                    Cancel
+                    Send
                   </button>
                 </div>
               </form>
@@ -1552,6 +1617,59 @@ const handleProceedToPayment = (e)=>{
         </div>
       </div>
       {showForgotPasswordPopup && <div className="modal-backdrop show"></div>}
+    </>
+  );
+
+  // Update the renderConfirmationPopup function to properly show success message
+  const renderConfirmationPopup = () => (
+    <>
+      <div 
+        className={`modal ${showConfirmationPopup ? 'show' : ''}`} 
+        style={{ display: showConfirmationPopup ? 'block' : 'none' }}
+        tabIndex="-1"
+        role="dialog"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            setShowConfirmationPopup(false);
+          }
+        }}
+      >
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content" style={{ background: 'white', border: 'none', boxShadow: '0 0 20px rgba(0,0,0,0.1)' }}>
+            <div className="modal-header border-0">
+              <h5 className="modal-title text-success">
+                <i className="fa-solid fa-circle-check me-2"></i>
+                Success
+              </h5>
+              <button 
+                type="button" 
+                className="btn-close" 
+                onClick={() => setShowConfirmationPopup(false)}
+              ></button>
+            </div>
+            <div className="modal-body text-center py-4">
+              <div className="mb-4">
+                <i className="fa-solid fa-envelope-circle-check fa-3x text-success mb-3"></i>
+                <p className="mb-0">{forgotIRCTCdetails?.Success}</p>
+              </div>
+              <div className="d-flex justify-content-center align-items-center gap-2">
+                <span className="text-muted small">Didn't receive password?</span>
+                <button 
+                  className="btn btn-link p-0 text-primary"
+                  onClick={() => {
+                    setShowConfirmationPopup(false);
+                    handleForgotUsernameSubmit({ preventDefault: () => {} });
+                  }}
+                  style={{ textDecoration: 'none', fontSize: '0.875rem' }}
+                >
+                  Resend
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {showConfirmationPopup && <div className="modal-backdrop show" style={{ background: 'rgba(0,0,0,0.1)' }}></div>}
     </>
   );
 
@@ -1756,6 +1874,7 @@ const handleProceedToPayment = (e)=>{
       {renderIRCTCPopup()}
       {renderForgotUsernamePopup()}
       {renderForgotPasswordPopup()}
+      {renderConfirmationPopup()}
 
       <style jsx>{`
         .journey-line {
@@ -2399,6 +2518,46 @@ const handleProceedToPayment = (e)=>{
           .selected-station-date {
             font-size: 0.8rem;
           }
+        }
+
+        /* Country Select Styles */
+        .country-select {
+          height: 42px !important;
+          padding: 8px 12px !important;
+          font-size: 0.95rem;
+          line-height: 1.5;
+        }
+
+        .country-select option {
+          height: 12px;
+          padding: 8px 12px;
+          font-size: 0.95rem;
+          line-height: 1.5;
+        }
+
+        /* Update select wrapper styles */
+        .select-wrapper {
+          position: relative;
+          width: 100%;
+        }
+
+        .select-wrapper::after {
+          content: '\\f107';
+          font-family: 'Font Awesome 5 Free';
+          font-weight: 900;
+          position: absolute;
+          right: 15px;
+          top: 50%;
+          transform: translateY(-50%);
+          pointer-events: none;
+          color: #6c757d;
+        }
+
+        /* Ensure consistent height across all form controls */
+        .form-control,
+        .form-select {
+          height: 42px !important;
+          padding: 8px 12px !important;
         }
       `}</style>
     </div>

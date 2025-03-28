@@ -181,7 +181,7 @@ export const filterReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        error: action.payload,
+        IRCTC_forgot_details: action.payload,
       };
     default:
       return state;
