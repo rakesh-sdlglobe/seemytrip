@@ -454,7 +454,6 @@ const handleProceedToPayment = (e)=>{
       return;
     }
 
-    setShowForgotUsernamePopup(false);
     setForgotUsernameError('');
 
     console.log("===> 418 :== ",forgotUsernameForm);
@@ -467,13 +466,31 @@ const handleProceedToPayment = (e)=>{
 
     console.log("456 The resultant detials are ===>",resultantDetails);
     
-    dispatch(fetchIRCTCForgotDetails(resultantDetails))
-      .then(() => {
-        if (forgotIRCTCdetails?.Success) {
-          setConfirmationMessage(forgotIRCTCdetails.Success);
-          setShowConfirmationPopup(true);
-        }
+    dispatch(fetchIRCTCForgotDetails(resultantDetails));
+
+    // Check forgotIRCTCdetails for success or error
+    if (forgotIRCTCdetails?.Success) {
+      // Show success message in confirmation popup
+      setConfirmationMessage(forgotIRCTCdetails.Success);
+      setShowConfirmationPopup(true);
+      setShowForgotUsernamePopup(false);
+    } else if (forgotIRCTCdetails?.Error) {
+      // Show error in toast
+      toast.error(forgotIRCTCdetails.Error, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
       });
+      
+      // Show error in the form
+      setForgotUsernameError(forgotIRCTCdetails.Error);
+      
+      // Keep the popup open
+      setShowForgotUsernamePopup(true);
+    }
   };
 
   // Add these handler functions near other handlers
@@ -1603,7 +1620,7 @@ const handleProceedToPayment = (e)=>{
     </>
   );
 
-  // Add new render function for confirmation popup
+  // Update the renderConfirmationPopup function to properly show success message
   const renderConfirmationPopup = () => (
     <>
       <div 
@@ -1633,7 +1650,7 @@ const handleProceedToPayment = (e)=>{
             <div className="modal-body text-center py-4">
               <div className="mb-4">
                 <i className="fa-solid fa-envelope-circle-check fa-3x text-success mb-3"></i>
-                <p className="mb-0">{confirmationMessage}</p>
+                <p className="mb-0">{forgotIRCTCdetails?.Success}</p>
               </div>
               <div className="d-flex justify-content-center align-items-center gap-2">
                 <span className="text-muted small">Didn't receive password?</span>
