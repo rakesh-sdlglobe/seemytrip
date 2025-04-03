@@ -46,8 +46,8 @@ const TrainBookingDetails = () => {
   const [isVerified, setIsVerified] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const boardingStations = useSelector(selectTrainBoardingStations);
-  const boardingStationDetails = useSelector(selectTrainsSchedule);  
-  const forgotIRCTCdetails = useSelector(selectIRCTCForgotDetails);
+  const boardingStationDetails = useSelector(selectTrainsSchedule);   
+  const forgotIRCTCdetails = useSelector(selectIRCTCForgotDetails) || {};
   console.log("===>  forgotIRCTCdetails is ",forgotIRCTCdetails);
   
   const [travelers, setTravelers] = useState([]);
@@ -130,6 +130,10 @@ const TrainBookingDetails = () => {
       setIrctcUser(IRCTCUsernamefromDB);
     }
   }, [IRCTCUsernamefromDB]);
+
+  useEffect(() => {
+    console.log("Updated forgotIRCTCdetails:", forgotIRCTCdetails);
+  }, [forgotIRCTCdetails]); // Runs whenever the state changes
 
   useEffect(() => {
     if (showTravelerModal) {
@@ -469,14 +473,14 @@ const handleProceedToPayment = (e)=>{
     dispatch(fetchIRCTCForgotDetails(resultantDetails));
 
     // Check forgotIRCTCdetails for success or error
-    if (forgotIRCTCdetails?.Success) {
+    if (forgotIRCTCdetails?.success) {
       // Show success message in confirmation popup
-      setConfirmationMessage(forgotIRCTCdetails.Success);
+      setConfirmationMessage(forgotIRCTCdetails.success);
       setShowConfirmationPopup(true);
       setShowForgotUsernamePopup(false);
-    } else if (forgotIRCTCdetails?.Error) {
+    } else if (forgotIRCTCdetails?.error) {
       // Show error in toast
-      toast.error(forgotIRCTCdetails.Error, {
+      toast.error(forgotIRCTCdetails.error, {
         position: "top-center",
         autoClose: 5000,
         hideProgressBar: false,
@@ -486,7 +490,7 @@ const handleProceedToPayment = (e)=>{
       });
       
       // Show error in the form
-      setForgotUsernameError(forgotIRCTCdetails.Error);
+      setForgotUsernameError(forgotIRCTCdetails.error);
       
       // Keep the popup open
       setShowForgotUsernamePopup(true);
@@ -1163,7 +1167,7 @@ const handleProceedToPayment = (e)=>{
             {irctcUser && !isVerified && !isVerifying && (
               <button 
                 className="btn btn-primary ms-2"
-                style={{ borderRadius: "10px" }}
+                style={{ borderRadius: "10px",height: "2.9rem", padding: "0 12px", fontSize: "0.875rem" }}
                 onClick={handleVerifyUsername}
               >
                 <i className="fa-solid fa-check me-2"></i>
@@ -1173,7 +1177,7 @@ const handleProceedToPayment = (e)=>{
             {isVerifying && (
               <button 
                 className="btn btn-secondary ms-2"
-                style={{ borderRadius: "10px" }}
+                style={{ borderRadius: "10px", height: "3rem", padding: "0 12px", fontSize: "0.875rem" }}
                 disabled
               >
                 <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
@@ -1185,7 +1189,7 @@ const handleProceedToPayment = (e)=>{
                 className="btn btn-outline-primary ms-2"
                 style={{ 
                   borderRadius: "10px",
-                  height: "38px",
+                  height: "2.7rem",
                   padding: "0 12px",
                   fontSize: "0.875rem"
                 }}
@@ -1424,12 +1428,12 @@ const handleProceedToPayment = (e)=>{
                 <div className="mb-3">
                   <label className="form-label">
                     <i className="fa-solid fa-address-card me-2 text-primary"></i>
-                    Mobile Number or Email ID*
+                    Mobile or Email*
                   </label>
                   <input
                     type="text"
                     className={`form-control ${forgotUsernameError ? 'is-invalid' : ''}`}
-                    placeholder="Enter mobile number or email ID"
+                    placeholder="Please enter IRCTC Registered Email ID or Mobile Number"
                     value={forgotUsernameForm.contact}
                     onChange={(e) => {
                       setForgotUsernameForm({
@@ -1442,11 +1446,7 @@ const handleProceedToPayment = (e)=>{
                   />
                   {forgotUsernameError ? (
                     <div className="invalid-feedback">{forgotUsernameError}</div>
-                  ) : (
-                    <small className="text-muted">
-                      Enter your registered mobile number or email ID
-                    </small>
-                  )}
+                  ) : ""}
                 </div>
 
                 <div className="mb-4">
@@ -1480,10 +1480,10 @@ const handleProceedToPayment = (e)=>{
                 <div className="d-flex justify-content-end">
                   <button 
                     type="submit" 
-                    className="btn btn-primary px-3 py-1"
+                    className="btn btn-primary px-5 py-1"
                     style={{
                       fontSize: '0.875rem',
-                      borderRadius: '6px',
+                      borderRadius: '10px',
                       backgroundColor: '#cd2c22',
                       borderColor: '#cd2c22'
                     }}
@@ -1650,7 +1650,7 @@ const handleProceedToPayment = (e)=>{
             <div className="modal-body text-center py-4">
               <div className="mb-4">
                 <i className="fa-solid fa-envelope-circle-check fa-3x text-success mb-3"></i>
-                <p className="mb-0">{forgotIRCTCdetails?.Success}</p>
+                <p className="mb-0">{forgotIRCTCdetails?.success}</p>
               </div>
               <div className="d-flex justify-content-center align-items-center gap-2">
                 <span className="text-muted small">Didn't receive password?</span>
@@ -1879,7 +1879,7 @@ const handleProceedToPayment = (e)=>{
       <style jsx>{`
         .journey-line {
           position: relative;
-          width: 150%;
+          width: 100%;
           height: 2px;
           background: #dee2e6;
           margin: 10px auto;
@@ -2027,7 +2027,7 @@ const handleProceedToPayment = (e)=>{
 
         .modal.show {
           display: block;
-          background-color: rgba(0, 0, 0, 0.5);
+          background-color: rgba(0, 0, 0, 0.1);
         }
 
         .modal-dialog {

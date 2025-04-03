@@ -331,11 +331,13 @@ export const fetchIRCTCForgotDetails = (userDetails) =>  async (dispatch) => {
       const response = await axios.post(URL,userDetails,auth);
       console.log("331 response from the IRCTC forgot details ", response.data);
       
-      if (response.data.Success) {
+      if (response.data.success) {
         console.log("333 response from the IRCTC forgot details ", response.data);
         dispatch(fetchIRCTCForgotDetailsSuccess(response.data));
       }else{
-        console.log("Some thing error in the response from the IRCTC forgot details ", response.data);        
+        console.log("338 error in forgot irctc username ", response.data);   
+        dispatch(fetchIRCTCForgotDetailsFailure(response.data));
+        
       }
   } catch (error) {
     console.error("Error in Forgot IRCTC user details :", error.message.error);
