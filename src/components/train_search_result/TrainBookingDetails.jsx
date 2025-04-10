@@ -460,42 +460,40 @@ const handleProceedToPayment = (e)=>{
 
     setForgotUsernameError('');
 
-    console.log("===> 418 :== ",forgotUsernameForm);
-
     const resultantDetails = setIRCTCUserDetails(forgotUsernameForm);
-    console.log("The resultant detials are ===>",resultantDetails);
-    
     resultantDetails.IRCTC_req_type = 'U'; 
     resultantDetails.otpType = resultantDetails.email ? 'E' : resultantDetails.mobile ? 'M' : ''; 
 
-    console.log("456 The resultant detials are ===>",resultantDetails);
-    
     dispatch(fetchIRCTCForgotDetails(resultantDetails));
-
-    // Check forgotIRCTCdetails for success or error
-    if (forgotIRCTCdetails?.success) {
-      // Show success message in confirmation popup
-      setConfirmationMessage(forgotIRCTCdetails.success);
-      setShowConfirmationPopup(true);
-      setShowForgotUsernamePopup(false);
-    } else if (forgotIRCTCdetails?.error) {
-      // Show error in toast
-      toast.error(forgotIRCTCdetails.error, {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
-      
-      // Show error in the form
-      setForgotUsernameError(forgotIRCTCdetails.error);
-      
-      // Keep the popup open
-      setShowForgotUsernamePopup(true);
-    }
   };
+
+  // Add this useEffect to handle forgotIRCTCdetails changes
+  useEffect(() => {
+    if (forgotIRCTCdetails) {
+      if (forgotIRCTCdetails.success) {
+        // Show success message in confirmation popup
+        setConfirmationMessage(forgotIRCTCdetails.success);
+        setShowConfirmationPopup(true);
+        setShowForgotUsernamePopup(false);
+      } else if (forgotIRCTCdetails.error) {
+        // Show error in toast
+        toast.error(forgotIRCTCdetails.error, {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        
+        // Show error in the form
+        setForgotUsernameError(forgotIRCTCdetails.error);
+        
+        // Keep the popup open
+        setShowForgotUsernamePopup(true);
+      }
+    }
+  }, [forgotIRCTCdetails]);
 
   // Add these handler functions near other handlers
   const handleForgotPasswordClick = (e) => {
