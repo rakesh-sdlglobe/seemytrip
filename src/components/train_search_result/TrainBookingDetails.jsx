@@ -475,6 +475,8 @@ const handleProceedToPayment = (e)=>{
         setConfirmationMessage(forgotIRCTCdetails.success);
         setShowConfirmationPopup(true);
         setShowForgotUsernamePopup(false);
+        forgotUsernameForm.contact = "";
+        forgotUsernameForm.dob = "";
       } else if (forgotIRCTCdetails.error) {
         // Show error in toast
         toast.error(forgotIRCTCdetails.error, {
@@ -1441,6 +1443,7 @@ const handleProceedToPayment = (e)=>{
                       setForgotUsernameError('');
                     }}
                     required
+                    maxLength={40}
                   />
                   {forgotUsernameError ? (
                     <div className="invalid-feedback">{forgotUsernameError}</div>
@@ -1703,10 +1706,11 @@ const handleProceedToPayment = (e)=>{
   // Update the renderBoardingStationDropdown function
   const renderBoardingStationDropdown = () => (
     <div className="mb-4">
-      <label htmlFor="boardingStation" className="form-label fw-medium">
-        <i className="fa-solid fa-train me-2 text-primary"></i>
-        Boarding Station*
-      </label>
+    <label htmlFor="boardingStation" className="form-label fw-bold fs-6">
+  <i className="fa-solid fa-train me-2 text-primary"></i>
+  Boarding Station*
+</label>
+
       <div className="custom-dropdown-container">
         {/* Dropdown trigger button */}
         <div 
