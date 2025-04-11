@@ -260,7 +260,7 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
           right: 0;
           bottom: 0;
           background: rgba(0, 0, 0, 0.4);
-          backdrop-filter: blur(1px);
+        //   backdrop-filter: blur(1px);
           z-index: 1001;
           animation: fadeIn 0.3s ease-out;
         }

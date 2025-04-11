@@ -1531,6 +1531,12 @@ const handleProceedToPayment = (e)=>{
               ></button>
             </div>
             <div className="modal-body p-4">
+              <div className="alert alert-info d-flex" role="alert">
+                  <i className="fa-solid fa-info-circle me-2 mt-1"></i>
+                  <div style={{ fontSize: '0.75rem' }}>
+                    Reset instructions will be sent to your registered mobile number.
+                  </div>
+                </div>
               <form onSubmit={handleForgotPasswordSubmit}>
                 <div className="mb-3">
                   <label className="form-label">
@@ -1584,38 +1590,20 @@ const handleProceedToPayment = (e)=>{
                   />
                   {forgotPasswordError.mobile ? (
                     <div className="invalid-feedback">{forgotPasswordError.mobile}</div>
-                  ) : (
-                    <small className="text-muted">Enter 10-digit number starting with 6-9</small>
-                  )}
+                  ) : ""}
                 </div>
 
-                <div className="alert alert-info d-flex" role="alert">
-                  <i className="fa-solid fa-info-circle me-2 mt-1"></i>
-                  <div className="small">
-                    Password reset instructions will be sent to your registered mobile number if the details match our records.
-                  </div>
-                </div>
 
-                <div className="d-grid gap-2">
+                <div className="d-flex justify-content-end w-100">
                   <button 
                     type="submit" 
                     className="btn btn-primary"
                   >
                     <i className="fa-solid fa-paper-plane me-2"></i>
-                    Send Reset Instructions
-                  </button>
-                  <button 
-                    type="button" 
-                    className="btn btn-outline-secondary"
-                    onClick={() => {
-                      setShowForgotPasswordPopup(false);
-                      setForgotPasswordError({});
-                      setForgotPasswordForm({ username: '', mobile: '' });
-                    }}
-                  >
-                    Cancel
+                    Send
                   </button>
                 </div>
+
               </form>
             </div>
           </div>
