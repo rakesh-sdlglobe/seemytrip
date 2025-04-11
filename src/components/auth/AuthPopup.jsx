@@ -1,89 +1,76 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import { useGoogleLogin } from '@react-oauth/google';
 import {
   setEmail,
-  setPassword,
-  setName,
-  setConfirmPassword,
   handleGoogleLogin,
   clearError,
-  Loginn,
-  register,
 } from "../../store/Actions/authActions";
 import {
   selectEmail,
-  selectPassword,
-  selectName,
-  selectConfirmPassword,
   selectError,
 } from "../../store/Selectors/authSelectors";
-import EmailOtpModal from '../email-otpmodal';
+import { trainImage } from '../../assets/images';
 
 const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
   const dispatch = useDispatch();
   const [isLoginMode, setIsLoginMode] = useState(mode === 'login');
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const [showEmailOtpModal, setShowEmailOtpModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [currentStep, setCurrentStep] = useState('email');
   const [otp, setOtp] = useState('');
   const [showOtpField, setShowOtpField] = useState(false);
   const [otpTimer, setOtpTimer] = useState(60);
   const [canResendOtp, setCanResendOtp] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [loginMethod, setLoginMethod] = useState('email');
-  const [emailValue, setEmailValue] = useState('');
-  const [mobileValue, setMobileValue] = useState('');
+  const [inputValue, setInputValue] = useState('');
+  const [storedValue, setStoredValue] = useState('');
 
   const email = useSelector(selectEmail);
-  const password = useSelector(selectPassword);
-  const name = useSelector(selectName);
-  const confirmPassword = useSelector(selectConfirmPassword);
   const error = useSelector(selectError);
 
-  const togglePasswordVisibility = () => {
-    setPasswordVisible(!passwordVisible);
-  };
+  useEffect(() => {
+    if (isOpen) {
+      setInputValue(storedValue);
+    }
+  }, [isOpen, storedValue]);
 
-  const handleEmailContinue = () => {
-    if (loginMethod === 'email' && !emailValue) {
-      setErrorMessage('Please enter your email');
-      return;
-    }
-    if (loginMethod === 'mobile' && !mobileValue) {
-      setErrorMessage('Please enter your mobile number');
-      return;
-    }
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setInputValue(value);
+    setStoredValue(value);
     setErrorMessage('');
-    setCurrentStep('password');
   };
 
-  const handlePasswordLogin = async (e) => {
-    e.preventDefault();
+  const validateInput = (value) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const mobileRegex = /^[0-9]{10}$/;
+    
+    if (emailRegex.test(value)) {
+      return 'email';
+    } else if (mobileRegex.test(value)) {
+      return 'mobile';
+    }
+    return null;
+  };
+
+  const handleContinue = async () => {
+    if (!inputValue) {
+      setErrorMessage('Please enter your email or mobile number');
+      return;
+    }
+
+    const inputType = validateInput(inputValue);
+    if (!inputType) {
+      setErrorMessage('Please enter a valid email or mobile number');
+      return;
+    }
+
     setIsLoading(true);
     setErrorMessage('');
+    
     try {
-      const response = await dispatch(Loginn(email, password));
-      if (response.success) {
-        toast.success('Login successful!');
-        onClose();
-      } else {
-        setErrorMessage(response.error || 'Invalid credentials');
-      }
-    } catch (error) {
-      setErrorMessage('Login failed. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleOtpLogin = async () => {
-    try {
-      setErrorMessage('');
-      toast.success('OTP sent to your email');
+      // Here you would typically make an API call to send OTP
+      await new Promise(resolve => setTimeout(resolve, 1000));
       setShowOtpField(true);
       setOtpTimer(60);
       setCanResendOtp(false);
@@ -100,6 +87,8 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
       }, 1000);
     } catch (error) {
       setErrorMessage('Failed to send OTP. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -113,7 +102,6 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
     setIsLoading(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      toast.success('Login successful!');
       onClose();
     } catch (error) {
       setErrorMessage('Invalid OTP. Please try again.');
@@ -123,49 +111,29 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
   };
 
   const handleBack = () => {
-    if (currentStep === 'password' || currentStep === 'otp') {
-      setCurrentStep('email');
+    if (showOtpField) {
+      setShowOtpField(false);
+      setOtp('');
       setErrorMessage('');
     } else {
-      onClose();
-    }
-  };
-
-  const toggleLoginMethod = () => {
-    setLoginMethod(loginMethod === 'email' ? 'mobile' : 'email');
-    setErrorMessage('');
-  };
-
-  const toggleAuthMethod = () => {
-    setCurrentStep(currentStep === 'password' ? 'otp' : 'password');
-    setShowOtpField(false);
-    setOtp('');
-    if (currentStep === 'password') {
-      handleOtpLogin();
+      handleClose();
     }
   };
 
   const handleClose = () => {
-    dispatch(setPassword(''));
+    setOtp('');
+    setErrorMessage('');
+    setShowOtpField(false);
     onClose();
   };
 
   const loginWithGoogle = useGoogleLogin({
     onSuccess: (credentialResponse) => {
       dispatch(handleGoogleLogin(credentialResponse.access_token));
-      toast.success('Google Login Successful!', {
-        position: "top-center",
-        autoClose: 2000,
-        theme: "colored"
-      });
       onClose();
     },
     onError: () => {
-      toast.error('Google Login Failed', {
-        position: "top-center",
-        autoClose: 3000,
-        theme: "colored"
-      });
+      setErrorMessage('Google login failed. Please try again.');
     }
   });
 
@@ -188,8 +156,7 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
           <div className="auth-popup-body">
             <div className="auth-form-section">
               <div className="auth-popup-header">
-                <h2>Welcome Back</h2>
-                <p className="text-muted">Sign in to continue</p>
+                <img className="img-fluid mb-4" src={trainImage} width={200} alt="logo" />
               </div>
 
               {errorMessage && (
@@ -198,83 +165,36 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
                 </div>
               )}
 
-              {currentStep === 'email' && (
-                <form onSubmit={(e) => { e.preventDefault(); handleEmailContinue(); }}>
+              {!showOtpField ? (
+                <form onSubmit={(e) => { e.preventDefault(); handleContinue(); }}>
                   <div className="form-group">
-                    <label>{loginMethod === 'email' ? 'Email' : 'Mobile Number'}</label>
+                    <label>Email or Mobile Number</label>
                     <input
-                      type={loginMethod === 'email' ? 'email' : 'tel'}
-                      value={loginMethod === 'email' ? emailValue : mobileValue}
-                      onChange={(e) => {
-                        if (loginMethod === 'email') {
-                          setEmailValue(e.target.value);
-                        } else {
-                          setMobileValue(e.target.value);
-                        }
-                      }}
-                      placeholder={loginMethod === 'email' ? 'Enter your email' : 'Enter your mobile number'}
+                      type="text"
+                      value={inputValue}
+                      onChange={handleInputChange}
+                      placeholder="Enter your email or mobile number"
                       required
                       autoFocus
                     />
                   </div>
                   <button 
                     type="submit" 
-                    className="auth-submit-btn"
-                  >
-                    Continue
-                  </button>
-                  <div className="auth-switch-method">
-                    <button type="button" onClick={toggleLoginMethod}>
-                      {loginMethod === 'email' ? 'Login with Mobile' : 'Login with Email'}
-                    </button>
-                  </div>
-                </form>
-              )}
-
-              {currentStep === 'password' && (
-                <form onSubmit={handlePasswordLogin}>
-                  <div className="form-group">
-                    <label>Password</label>
-                    <div className="password-input">
-                      <input
-                        type={passwordVisible ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => dispatch(setPassword(e.target.value))}
-                        placeholder="Enter your password"
-                        required
-                      />
-                      <span
-                        className={`password-toggle ${passwordVisible ? "visible" : ""}`}
-                        onClick={togglePasswordVisibility}
-                      >
-                        <i className={`fa-solid ${passwordVisible ? "fa-eye-slash" : "fa-eye"}`}></i>
-                      </span>
-                    </div>
-                  </div>
-                  <div className="auth-options">
-                    <Link to="/forgot-password" className="text-primary">Forgot Password?</Link>
-                  </div>
-                  <button 
-                    type="submit" 
-                    className="auth-submit-btn"
-                    disabled={isLoading}
+                    className={`auth-submit-btn ${!inputValue ? 'disabled' : ''}`}
+                    disabled={isLoading || !inputValue}
                   >
                     {isLoading ? (
                       <div className="spinner"></div>
                     ) : (
-                      'Sign In'
+                      'Send OTP'
                     )}
                   </button>
-                  <div className="auth-switch-method">
-                    <button type="button" onClick={toggleAuthMethod}>
-                      Login with OTP
-                    </button>
-                  </div>
                 </form>
-              )}
-
-              {currentStep === 'otp' && (
+              ) : (
                 <form onSubmit={handleOtpSubmit}>
+                  <div className="otp-sent-message">
+                    Sent to {validateInput(inputValue) === 'email' ? 'email' : 'mobile'} {inputValue}
+                  </div>
                   <div className="form-group">
                     <label>Enter OTP</label>
                     <div className="otp-input-container">
@@ -289,7 +209,7 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
                       <button 
                         type="button" 
                         className={`resend-otp-btn ${canResendOtp ? 'active' : ''}`}
-                        onClick={handleOtpLogin}
+                        onClick={handleContinue}
                         disabled={!canResendOtp}
                       >
                         {canResendOtp ? 'Resend OTP' : `${otpTimer}s`}
@@ -298,8 +218,8 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
                   </div>
                   <button 
                     type="submit" 
-                    className="auth-submit-btn"
-                    disabled={isLoading}
+                    className={`auth-submit-btn ${!otp ? 'disabled' : ''}`}
+                    disabled={isLoading || !otp}
                   >
                     {isLoading ? (
                       <div className="spinner"></div>
@@ -307,16 +227,15 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
                       'Verify OTP'
                     )}
                   </button>
-                  <div className="auth-switch-method">
-                    <button type="button" onClick={toggleAuthMethod}>
-                      Login with Password
-                    </button>
-                  </div>
                 </form>
               )}
 
               <div className="auth-social-login">
-                <p className="text-center text-muted">Or continue with</p>
+                <div className="divider-with-text">
+                  <hr />
+                  <span>Other login options</span>
+                  <hr />
+                </div>
                 <div className="social-buttons">
                   <button 
                     type="button" 
@@ -324,18 +243,9 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
                     onClick={() => loginWithGoogle()}
                   >
                     <i className="fa-brands fa-google"></i>
-                    Google
+                    Login with Google
                   </button>
                 </div>
-              </div>
-
-              <div className="auth-switch-mode">
-                <p>
-                  Don't have an account?
-                  <button type="button" onClick={() => setIsLoginMode(false)}>
-                    Sign Up
-                  </button>
-                </p>
               </div>
             </div>
           </div>
@@ -349,9 +259,9 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
           left: 0;
           right: 0;
           bottom: 0;
-          background: rgba(0, 0, 0, 0.5);
-          backdrop-filter: blur(8px);
-          z-index: 1000;
+          background: rgba(0, 0, 0, 0.4);
+          backdrop-filter: blur(1px);
+          z-index: 1001;
           animation: fadeIn 0.3s ease-out;
         }
 
@@ -369,7 +279,7 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
           backdrop-filter: blur(10px);
           border-radius: 20px;
           width: 90%;
-          max-width: 450px;
+          max-width: 500px;
           box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
           z-index: 1001;
           border: 1px solid rgba(255, 255, 255, 0.2);
@@ -473,7 +383,6 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
 
         .auth-popup-header {
           text-align: center;
-          margin-bottom: 2rem;
         }
 
         .auth-popup-header h2 {
@@ -517,19 +426,6 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
           box-shadow: 0 0 0 2px rgba(205, 44, 34, 0.1);
         }
 
-        .password-input {
-          position: relative;
-        }
-
-        .password-toggle {
-          position: absolute;
-          right: 1rem;
-          top: 50%;
-          transform: translateY(-50%);
-          color: #666;
-          cursor: pointer;
-        }
-
         .auth-submit-btn {
           width: 100%;
           padding: 1rem;
@@ -543,14 +439,15 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
           margin-bottom: 1.5rem;
         }
 
-        .auth-submit-btn:hover {
-          background: #b31b1b;
-          transform: translateY(-2px);
+        .auth-submit-btn.disabled {
+          background: #e0e0e0;
+          color: #999;
+          cursor: not-allowed;
         }
 
-        .auth-submit-btn:disabled {
-          opacity: 0.7;
-          cursor: not-allowed;
+        .auth-submit-btn:not(.disabled):hover {
+          background: #b31b1b;
+          transform: translateY(-2px);
         }
 
         .spinner {
@@ -565,29 +462,6 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
 
         @keyframes spin {
           to { transform: rotate(360deg); }
-        }
-
-        .auth-options {
-          text-align: right;
-          margin-bottom: 1rem;
-        }
-
-        .auth-switch-method {
-          text-align: center;
-          margin-top: 1rem;
-        }
-
-        .auth-switch-method button {
-          background: none;
-          border: none;
-          color: #cd2c22;
-          font-weight: 600;
-          cursor: pointer;
-          padding: 0;
-        }
-
-        .auth-switch-method button:hover {
-          text-decoration: underline;
         }
 
         .auth-social-login {
@@ -620,7 +494,33 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
         }
 
         .social-btn.google {
+          width: 100%;
+          padding: 0.75rem;
+          border: 1px solid #e0e0e0;
+          border-radius: 10px;
+          background: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          cursor: pointer;
+          transition: all 0.3s;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .social-btn.google:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .social-btn.google i {
           color: #DB4437;
+          font-size: 1.2rem;
+        }
+
+        .social-btn.google span {
+          color: #333;
+          font-weight: 500;
         }
 
         .auth-switch-mode {
@@ -674,6 +574,34 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
 
         .resend-otp-btn.active:hover {
           text-decoration: underline;
+        }
+
+        .divider-with-text {
+          display: flex;
+          align-items: center;
+        }
+
+        .divider-with-text hr {
+          flex: 1;
+          border: none;
+          border-top: 2px solid #e0e0e0;
+          margin: 0;
+        }
+
+        .divider-with-text span {
+          padding: 0 1rem;
+          color: #666;
+          font-size: 0.9rem;
+          white-space: nowrap;
+        }
+
+        .otp-sent-message {
+          text-align: center;
+          color: #666;
+          margin-bottom: 1.5rem;
+          font-size: 0.9rem;
+          font-weight: 500;
+          border-radius: 8px;
         }
       `}</style>
     </>
