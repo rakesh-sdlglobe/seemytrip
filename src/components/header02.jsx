@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { trainImage } from '../assets/images';
 import { NavLink, Link, useNavigate  } from 'react-router-dom';
 import { useSelector,useDispatch } from 'react-redux';
@@ -8,6 +8,7 @@ import { selectPhoneNumber } from '../store/Selectors/mobileSelector';
 import { selectEmail, statedata } from '../store/Selectors/emailSelector'; 
 import { logoutMobileUser } from '../store/Actions/mobileOtpAction';
 import { logoutEmailUser } from '../store/Actions/emailAction';
+import AuthPopup from './auth/AuthPopup';
 // import {ReactComponent as Trainicon} from '../assets/images/Navbaricons/Train.svg'
 // import {ReactComponent as Flighticon} from '../assets/images/Navbaricons/Flight.svg'
 // import {ReactComponent as Hotelicon} from '../assets/images/Navbaricons/Hotel.svg'
@@ -27,6 +28,7 @@ const Header02 = () => {
   // const statdata = useSelector(statedata)
   const isLoggedIn = Boolean(user || googleUser || phoneNumber|| emailuser);
   const googleUserName = localStorage.googleUser || localStorage.googleUserName?.replace(/["']/g, '')
+  const [showAuthPopup, setShowAuthPopup] = useState(false);
   
   
   const handleLogout = () => {
@@ -211,7 +213,7 @@ const Header02 = () => {
                   </li>
                 ) : (
                   <li className="list-buttons">
-                    <Link to="/login">
+                    <Link to="#" onClick={() => setShowAuthPopup(true)}>
                       <i className="fa-regular fa-circle-user fs-6 me-2" />Sign In / Register
                     </Link>
                   </li>
@@ -223,63 +225,11 @@ const Header02 = () => {
       </div>
       {/* End Navigation */}
 
+      <AuthPopup 
+        isOpen={showAuthPopup} 
+        onClose={() => setShowAuthPopup(false)} 
+      />
       {/* Log In Modal */}
-      <div className="modal fade" id="login" tabIndex={-1} role="dialog" aria-labelledby="loginmodal" aria-hidden="true">
-        <div className="modal-dialog modal-dialog-centered login-pop-form" role="document">
-          <div className="modal-content" id="loginmodal">
-            <div className="modal-header">
-              <h4 className="modal-title fs-6">Sign In / Register</h4>
-              <Link to="#" className="text-muted fs-4" data-bs-dismiss="modal" aria-label="Close"><i className="fa-solid fa-square-xmark" /></Link>
-            </div>
-            <div className="modal-body">
-              <div className="modal-login-form py-4 px-md-3 px-0">
-                <form>
-                  <div className="form-floating mb-4">
-                    <input type="email" className="form-control" placeholder="name@example.com" autoComplete='email'/>
-                    <label>User Name</label>
-                  </div>
-                  <div className="form-floating mb-4">
-                    <input type="password" className="form-control" placeholder="Password" autoComplete='current-password'/>
-                    <label>Password</label>
-                  </div>
-                  <div className="form-group">
-                    <button type="submit" className="btn btn-primary full-width font--bold btn-lg">Log In</button>
-                  </div>
-                  <div className="modal-flex-item d-flex align-items-center justify-content-between mb-3">
-                    <div className="modal-flex-first">
-                      <div className="form-check form-check-inline">
-                        <input className="form-check-input" type="checkbox" id="savepassword" defaultValue="option1" />
-                        <label className="form-check-label" htmlFor="savepassword">Save Password</label>
-                      </div>
-                    </div>
-                    <div className="modal-flex-last">
-                      <Link to="#" onClick={(e) => { e.preventDefault() }} className="text-primary fw-medium">Forget Password?</Link>
-                    </div>
-                  </div>
-                </form>
-              </div>
-              <div className="prixer px-3">
-                <div className="devider-wraps position-relative">
-                  <div className="devider-text text-muted-2 text-md">Sign In with More Methods</div>
-                </div>
-              </div>
-              <div className="social-login py-4 px-2">
-                <ul className="row align-items-center justify-content-between g-3 p-0 m-0">
-                  <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 full-width"><i className="fa-brands fa-facebook color--facebook fs-2" /></Link></li>
-                  <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-whatsapp color--whatsapp fs-2" /></Link></li>
-                  <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-linkedin color--linkedin fs-2" /></Link></li>
-                  <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-dribbble color--dribbble fs-2" /></Link></li>
-                  <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2"><i className="fa-brands fa-twitter color--twitter fs-2" /></Link></li>
-                </ul>
-              </div>
-            </div>
-            <div className="modal-footer align-items-center justify-content-center">
-              <p>Don't have an account yet?<Link to="signup.html" className="text-primary fw-medium ms-1">Sign Up</Link></p>
-              
-            </div>
-          </div>
-        </div>
-      </div>
       {/* End Modal */}
       {/* Choose Currency Modal */}
       {/* Choose Countries Modal */}

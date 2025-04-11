@@ -99,7 +99,7 @@ const Register = () => {
           <div className="container">
             <div className="row justify-content-center align-items-center m-auto">
               <div className="col-12">
-                <div className="bg-mode shadow rounded-3 overflow-hidden">
+                <div className="glass-morphism shadow rounded-3 overflow-hidden">
                   <div className="row g-0">
                     {/* Vector Image */}
                     <div className="col-lg-6 d-flex align-items-center order-2 order-lg-1">
@@ -129,7 +129,7 @@ const Register = () => {
                               <label className="form-label">Enter Fullname</label>
                               <input
                                 type="text"
-                                className="form-control"
+                                className="form-control glass-input"
                                 placeholder="Your Name"
                                 value={name}
                                 onChange={(e) =>
@@ -145,7 +145,7 @@ const Register = () => {
                               </label>
                               <input
                                 type="Email"
-                                className="form-control"
+                                className="form-control glass-input"
                                 placeholder="name@example.com"
                                 value={email}
                                 onChange={(e) =>
@@ -162,7 +162,7 @@ const Register = () => {
                               <div className="position-relative">
                                 <input
                                   type={passwordVisible ? "text" : "password"}
-                                  className="form-control"
+                                  className="form-control glass-input"
                                   name="password"
                                   placeholder="Password"
                                   value={password}
@@ -182,7 +182,7 @@ const Register = () => {
                               </label>
                               <input
                                 type="password"
-                                className="form-control"
+                                className="form-control glass-input"
                                 placeholder="Confirm Password"
                                 value={confirmPassword}
                                 onChange={(e) =>
@@ -194,7 +194,7 @@ const Register = () => {
                             <div className="form-group">
                               <button
                                 type="submit"
-                                className="btn btn-primary full-width font--bold btn-lg"
+                                className="btn btn-primary full-width font--bold btn-lg glass-button"
                               >
                                 Create An Account
                               </button>
@@ -219,12 +219,12 @@ const Register = () => {
                           <ul className="row align-items-center justify-content-center g-3 p-0 m-0">
                               {/* <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-facebook color--google fs-2" /></Link></li> */}
                               <li className="col-2">
-                                <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto" onClick={() => loginWithGoogle()}>
+                                <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto glass-social" onClick={() => loginWithGoogle()}>
                                   <i className="fa-brands fa-google color--google fs-2" />
                                 </Link>
                               </li>
                               <li className="col-2">
-                                <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto" onClick={() => setShowEmailOtpModal(true)}>
+                                <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto glass-social" onClick={() => setShowEmailOtpModal(true)}>
                                   <i className="fa-regular fa-envelope color--black fs-2" />
                                 </Link>
                               </li>
@@ -253,6 +253,82 @@ const Register = () => {
 
 {/* Phone OTP Modal */}
 <OTPModal show={showOtpModal} handleClose={() => setShowOtpModal(false)} navigate={navigate} />
+
+      <style jsx>{`
+        .glass-morphism {
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        .glass-input {
+          background: rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          color: #333;
+          backdrop-filter: blur(5px);
+        }
+
+        .glass-input:focus {
+          background: rgba(255, 255, 255, 0.15);
+          border-color: rgba(255, 255, 255, 0.3);
+          box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-button {
+          background: rgba(205, 44, 34, 0.8);
+          backdrop-filter: blur(5px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          transition: all 0.3s ease;
+        }
+
+        .glass-button:hover {
+          background: rgba(205, 44, 34, 0.9);
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .glass-social {
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(5px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          transition: all 0.3s ease;
+        }
+
+        .glass-social:hover {
+          background: rgba(255, 255, 255, 0.2);
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .devider-text {
+          color: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-label {
+          color: rgba(0, 0, 0, 0.8);
+        }
+
+        .text-primary {
+          color: rgba(205, 44, 34, 0.9) !important;
+        }
+
+        .alert-danger {
+          background: rgba(220, 53, 69, 0.1);
+          border: 1px solid rgba(220, 53, 69, 0.2);
+          backdrop-filter: blur(5px);
+        }
+
+        .form-check-input {
+          background-color: rgba(255, 255, 255, 0.1);
+          border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .form-check-input:checked {
+          background-color: rgba(205, 44, 34, 0.8);
+          border-color: rgba(205, 44, 34, 0.8);
+        }
+      `}</style>
     </div>
   );
 }

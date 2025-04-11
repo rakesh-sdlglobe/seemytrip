@@ -3,12 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { selectUser } from '../../store/Selectors/authSelectors'; 
+import AuthPopup from '../auth/AuthPopup';
 import './TrainNearbyDates.css';
 
 // Main component
 const NearbyDates = ({ train, onClose }) => {
     const navigate = useNavigate();
     const isAuthenticated = useSelector(selectUser);
+    const [showAuthPopup, setShowAuthPopup] = useState(false);
+    const [bookingData, setBookingData] = useState(null);
 
     // Extract available classes and quotas
     const availableClasses = [...new Set(train.availabilities.map(a => a.enqClass))];
@@ -123,16 +126,11 @@ const NearbyDates = ({ train, onClose }) => {
                 avlDayList: [dayInfo]
             },
         };
-        sessionStorage.setItem('bookingData', JSON.stringify(bookingData));
+        setBookingData(bookingData);
         if (isAuthenticated) {
             navigate('/trainbookingdetails', { state: { trainData: bookingData } });
         } else {
-            navigate('/login', {
-                state: {
-                    redirectTo: '/trainbookingdetails',
-                    trainData: bookingData,
-                }
-            });
+            setShowAuthPopup(true);
         }
     };
 
@@ -262,6 +260,18 @@ const NearbyDates = ({ train, onClose }) => {
                         ))}
                 </div>
             </div>
+            {showAuthPopup && (
+                <AuthPopup
+                    isOpen={showAuthPopup}
+                    onClose={() => setShowAuthPopup(false)}
+                    onSuccess={() => {
+                        setShowAuthPopup(false);
+                        if (bookingData) {
+                            navigate('/trainbookingdetails', { state: { trainData: bookingData } });
+                        }
+                    }}
+                />
+            )}
         </div>
     );
 };

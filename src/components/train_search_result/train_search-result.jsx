@@ -12,6 +12,7 @@ import SkeletonLoader from './SkeletonLoader';
 import NearbyDates from './TrainNearbyDates';
 import CalendarNearbyDates from './CalendarNearbyDates';
 import { fetchTrains } from '../../store/Actions/filterActions';
+import AuthPopup from '../auth/AuthPopup';
 
 const TrainSearchResultList = ({ filters }) => {
   const navigate = useNavigate();
@@ -33,6 +34,8 @@ const TrainSearchResultList = ({ filters }) => {
   });
   const [sortBy, setSortBy] = useState('departure');
   const [sortOrder, setSortOrder] = useState('asc');
+  const [showAuthPopup, setShowAuthPopup] = useState(false);
+  const [bookingData, setBookingData] = useState(null);
 
   if (trainData?.length === 0 ) { 
     console.log('No trains found in the store. Checking localStorage...');
@@ -277,18 +280,13 @@ const TrainSearchResultList = ({ filters }) => {
       classinfo : classInfo,
     };
 
-    sessionStorage.setItem('bookingData', JSON.stringify(bookingData));
+    setBookingData(bookingData);
     if (isAuthenticated) {
       navigate('/trainbookingdetails', { state: { trainData: bookingData } });
     } else {
-      navigate('/login', {
-        state: {
-          redirectTo: '/trainbookingdetails',
-          trainData: bookingData,
-        }
-      });
+      setShowAuthPopup(true);
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, setShowAuthPopup]);
 
   const stateData = useSelector((state) => state);
   console.log('217 stateData from train search result :', stateData);
@@ -910,6 +908,18 @@ const TrainSearchResultList = ({ filters }) => {
             <p className="text-muted">Please try adjusting your search filters or check back later for updated results.</p>
           </div>
         </div>
+      )}
+      {showAuthPopup && (
+        <AuthPopup
+          isOpen={showAuthPopup}
+          onClose={() => setShowAuthPopup(false)}
+          onSuccess={() => {
+            setShowAuthPopup(false);
+            if (bookingData) {
+              navigate('/trainbookingdetails', { state: { trainData: bookingData } });
+            }
+          }}
+        />
       )}
     </div>
   );

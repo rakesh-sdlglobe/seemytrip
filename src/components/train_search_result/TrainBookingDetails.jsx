@@ -30,6 +30,7 @@ import {
   selectIRCTCusername,
 } from "../../store/Selectors/userSelector";
 import { statedata } from '../../store/Selectors/emailSelector';
+import AuthPopup from '../auth/AuthPopup';
 
 const TrainBookingDetails = () => {
 
@@ -94,6 +95,7 @@ const TrainBookingDetails = () => {
   const loading = useSelector(selectTravelerLoading);
   const [selectedBoardingStation, setSelectedBoardingStation] = useState('');
   const countryList = useSelector(selectCountryList);
+  const [showAuthPopup, setShowAuthPopup] = useState(false);
 
   // Create a localStorage key based on train number and date to make it unique per trip
   const getBoardingStationStorageKey = () => {
@@ -309,9 +311,11 @@ const TrainBookingDetails = () => {
 // handle proceed to payment
 const handleProceedToPayment = (e)=>{
   e.preventDefault();
-  if(validateBeforePayment()){
-    navigate('/booking-page-3')
+  if (!validateBeforePayment()) {
+    setShowAuthPopup(true);
+    return;
   }
+  navigate('/booking-page-3')
 }
   // Update validateForm function
   const validateForm = () => {
@@ -460,42 +464,42 @@ const handleProceedToPayment = (e)=>{
 
     setForgotUsernameError('');
 
-    console.log("===> 418 :== ",forgotUsernameForm);
-
     const resultantDetails = setIRCTCUserDetails(forgotUsernameForm);
-    console.log("The resultant detials are ===>",resultantDetails);
-    
     resultantDetails.IRCTC_req_type = 'U'; 
     resultantDetails.otpType = resultantDetails.email ? 'E' : resultantDetails.mobile ? 'M' : ''; 
 
-    console.log("456 The resultant detials are ===>",resultantDetails);
-    
     dispatch(fetchIRCTCForgotDetails(resultantDetails));
-
-    // Check forgotIRCTCdetails for success or error
-    if (forgotIRCTCdetails?.success) {
-      // Show success message in confirmation popup
-      setConfirmationMessage(forgotIRCTCdetails.success);
-      setShowConfirmationPopup(true);
-      setShowForgotUsernamePopup(false);
-    } else if (forgotIRCTCdetails?.error) {
-      // Show error in toast
-      toast.error(forgotIRCTCdetails.error, {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
-      
-      // Show error in the form
-      setForgotUsernameError(forgotIRCTCdetails.error);
-      
-      // Keep the popup open
-      setShowForgotUsernamePopup(true);
-    }
   };
+
+  // Add this useEffect to handle forgotIRCTCdetails changes
+  useEffect(() => {
+    if (forgotIRCTCdetails) {
+      if (forgotIRCTCdetails.success) {
+        // Show success message in confirmation popup
+        setConfirmationMessage(forgotIRCTCdetails.success);
+        setShowConfirmationPopup(true);
+        setShowForgotUsernamePopup(false);
+        forgotUsernameForm.contact = "";
+        forgotUsernameForm.dob = "";
+      } else if (forgotIRCTCdetails.error) {
+        // Show error in toast
+        toast.error(forgotIRCTCdetails.error, {
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        
+        // Show error in the form
+        setForgotUsernameError(forgotIRCTCdetails.error);
+        
+        // Keep the popup open
+        setShowForgotUsernamePopup(true);
+      }
+    }
+  }, [forgotIRCTCdetails]);
 
   // Add these handler functions near other handlers
   const handleForgotPasswordClick = (e) => {
@@ -1443,6 +1447,7 @@ const handleProceedToPayment = (e)=>{
                       setForgotUsernameError('');
                     }}
                     required
+                    maxLength={40}
                   />
                   {forgotUsernameError ? (
                     <div className="invalid-feedback">{forgotUsernameError}</div>
@@ -1526,6 +1531,12 @@ const handleProceedToPayment = (e)=>{
               ></button>
             </div>
             <div className="modal-body p-4">
+              <div className="alert alert-info d-flex" role="alert">
+                  <i className="fa-solid fa-info-circle me-2 mt-1"></i>
+                  <div style={{ fontSize: '0.75rem' }}>
+                    Reset instructions will be sent to your registered mobile number.
+                  </div>
+                </div>
               <form onSubmit={handleForgotPasswordSubmit}>
                 <div className="mb-3">
                   <label className="form-label">
@@ -1579,38 +1590,20 @@ const handleProceedToPayment = (e)=>{
                   />
                   {forgotPasswordError.mobile ? (
                     <div className="invalid-feedback">{forgotPasswordError.mobile}</div>
-                  ) : (
-                    <small className="text-muted">Enter 10-digit number starting with 6-9</small>
-                  )}
+                  ) : ""}
                 </div>
 
-                <div className="alert alert-info d-flex" role="alert">
-                  <i className="fa-solid fa-info-circle me-2 mt-1"></i>
-                  <div className="small">
-                    Password reset instructions will be sent to your registered mobile number if the details match our records.
-                  </div>
-                </div>
 
-                <div className="d-grid gap-2">
+                <div className="d-flex justify-content-end w-100">
                   <button 
                     type="submit" 
                     className="btn btn-primary"
                   >
                     <i className="fa-solid fa-paper-plane me-2"></i>
-                    Send Reset Instructions
-                  </button>
-                  <button 
-                    type="button" 
-                    className="btn btn-outline-secondary"
-                    onClick={() => {
-                      setShowForgotPasswordPopup(false);
-                      setForgotPasswordError({});
-                      setForgotPasswordForm({ username: '', mobile: '' });
-                    }}
-                  >
-                    Cancel
+                    Send
                   </button>
                 </div>
+
               </form>
             </div>
           </div>
@@ -1705,10 +1698,11 @@ const handleProceedToPayment = (e)=>{
   // Update the renderBoardingStationDropdown function
   const renderBoardingStationDropdown = () => (
     <div className="mb-4">
-      <label htmlFor="boardingStation" className="form-label fw-medium">
-        <i className="fa-solid fa-train me-2 text-primary"></i>
-        Boarding Station*
-      </label>
+    <label htmlFor="boardingStation" className="form-label fw-bold fs-6">
+  <i className="fa-solid fa-train me-2 text-primary"></i>
+  Boarding Station*
+</label>
+
       <div className="custom-dropdown-container">
         {/* Dropdown trigger button */}
         <div 
@@ -1875,6 +1869,10 @@ const handleProceedToPayment = (e)=>{
       {renderForgotUsernamePopup()}
       {renderForgotPasswordPopup()}
       {renderConfirmationPopup()}
+      <AuthPopup 
+        isOpen={showAuthPopup} 
+        onClose={() => setShowAuthPopup(false)} 
+      />
 
       <style jsx>{`
         .journey-line {
