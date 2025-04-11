@@ -30,6 +30,7 @@ import {
   selectIRCTCusername,
 } from "../../store/Selectors/userSelector";
 import { statedata } from '../../store/Selectors/emailSelector';
+import AuthPopup from '../auth/AuthPopup';
 
 const TrainBookingDetails = () => {
 
@@ -94,6 +95,7 @@ const TrainBookingDetails = () => {
   const loading = useSelector(selectTravelerLoading);
   const [selectedBoardingStation, setSelectedBoardingStation] = useState('');
   const countryList = useSelector(selectCountryList);
+  const [showAuthPopup, setShowAuthPopup] = useState(false);
 
   // Create a localStorage key based on train number and date to make it unique per trip
   const getBoardingStationStorageKey = () => {
@@ -309,9 +311,11 @@ const TrainBookingDetails = () => {
 // handle proceed to payment
 const handleProceedToPayment = (e)=>{
   e.preventDefault();
-  if(validateBeforePayment()){
-    navigate('/booking-page-3')
+  if (!validateBeforePayment()) {
+    setShowAuthPopup(true);
+    return;
   }
+  navigate('/booking-page-3')
 }
   // Update validateForm function
   const validateForm = () => {
@@ -1877,6 +1881,10 @@ const handleProceedToPayment = (e)=>{
       {renderForgotUsernamePopup()}
       {renderForgotPasswordPopup()}
       {renderConfirmationPopup()}
+      <AuthPopup 
+        isOpen={showAuthPopup} 
+        onClose={() => setShowAuthPopup(false)} 
+      />
 
       <style jsx>{`
         .journey-line {

@@ -181,7 +181,7 @@ const Login = () => {
           <div className="container">
             <div className="row justify-content-center align-items-center m-auto">
               <div className="col-12">
-                <div className="bg-mode shadow rounded-3 overflow-hidden">
+                <div className="glass-morphism shadow rounded-3 overflow-hidden">
                   <div className="row g-0">
                     <div className="col-lg-6 d-flex align-items-center order-2 order-lg-1">
                       <div className="p-3 p-lg-5">
@@ -204,7 +204,7 @@ const Login = () => {
                               <label className="form-label">Enter Email ID</label>
                               <input
                                 type="email"
-                                className="form-control"
+                                className="form-control glass-input"
                                 placeholder="name@example.com"
                                 name='email'
                                 value={email}
@@ -218,7 +218,7 @@ const Login = () => {
                               <div className="position-relative">
                                 <input
                                   type={passwordVisible ? "text" : "password"}
-                                  className="form-control"
+                                  className="form-control glass-input"
                                   name="password"
                                   placeholder="Password"
                                   value={password}
@@ -235,7 +235,7 @@ const Login = () => {
                             <div className="form-group">
                               <button 
                                 type="submit" 
-                                className={`btn btn-primary full-width font--bold btn-lg ${isLoading ? 'loading' : ''}`}
+                                className={`btn btn-primary full-width font--bold btn-lg glass-button ${isLoading ? 'loading' : ''}`}
                                 disabled={isLoading}
                               >
                                 {isLoading ? (
@@ -247,10 +247,6 @@ const Login = () => {
                             </div>
                             <div className="modal-flex-item d-flex align-items-center justify-content-between mb-3">
                               <div className="modal-flex-first">
-                                {/* <div className="form-check form-check-inline">
-                                  <input className="form-check-input" type="checkbox" id="savepassword" defaultValue="option1" />
-                                  <label className="form-check-label" htmlFor="savepassword">Save Password</label>
-                                </div> */}
                               </div>
                               <div className="modal-flex-last">
                                 <Link to="/forgot-password" className="text-primary fw-medium">Forgot Password?</Link>
@@ -260,26 +256,20 @@ const Login = () => {
                           <div className="prixer px-3">
                             <div className="devider-wraps position-relative">
                               <div className="devider-text text-muted-2 text-md">Sign In with Socials</div>
-                             </div>
+                            </div>
                           </div>
                           <div className="social-login py-4 px-md-2">
                             <ul className="row align-items-center justify-content-center g-3 p-0 m-0">
-                              {/* <li className="col"><Link to="#" className="square--60 border br-dashed rounded-2 mx-auto"><i className="fa-brands fa-facebook color--google fs-2" /></Link></li> */}
                               <li className="col-2">
-                                <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto" onClick={() => loginWithGoogle()}>
+                                <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto glass-social" onClick={() => loginWithGoogle()}>
                                   <i className="fa-brands fa-google color--google fs-2" />
                                 </Link>
                               </li>
                               <li className="col-2">
-                                <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto" onClick={() => setShowEmailOtpModal(true)}>
+                                <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto glass-social" onClick={() => setShowEmailOtpModal(true)}>
                                   <i className="fa-regular fa-envelope color--black fs-2" />
                                 </Link>
                               </li>
-                              {/* <li className="col">
-                                <Link to="#" className="square--60 border br-dashed rounded-2 mx-auto" onClick={() => setShowOtpModal(true)}>
-                                  <i className="fa fa-phone" aria-hidden="true"></i>
-                                </Link>
-                              </li> */}
                             </ul>
                           </div>
                         </form>
@@ -293,85 +283,72 @@ const Login = () => {
         </section>
       </div>
       
-      {/* Email OTP Modal */}
       <EmailOtpModal show={showEmailOtpModal} handleClose={() => setShowEmailOtpModal(false)} navigate={navigate} />
-
-      {/* Phone OTP Modal */}
       <OTPModal show={showOtpModal} handleClose={() => setShowOtpModal(false)} navigate={navigate} />
 
       <style jsx>{`
-        .btn.loading {
-          position: relative;
-          color: transparent;
-          pointer-events: none;
+        .glass-morphism {
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
         }
 
-        .spinner {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
+        .glass-input {
+          background: rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          color: #333;
+          backdrop-filter: blur(5px);
         }
 
-        .spinner-inner {
-          width: 20px;
-          height: 20px;
-          border: 2px solid rgba(255, 255, 255, 0.3);
-          border-top-color: #fff;
-          border-radius: 50%;
-          animation: spin 0.8s linear infinite;
+        .glass-input:focus {
+          background: rgba(255, 255, 255, 0.15);
+          border-color: rgba(255, 255, 255, 0.3);
+          box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
         }
 
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-
-        .btn-primary {
-          background-color: #cd2c22;
-          border-color: #cd2c22;
+        .glass-button {
+          background: rgba(205, 44, 34, 0.8);
+          backdrop-filter: blur(5px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
           transition: all 0.3s ease;
         }
 
-        .btn-primary:hover {
-          background-color: #b31b1b;
-          border-color: #b31b1b;
-          transform: translateY(-1px);
+        .glass-button:hover {
+          background: rgba(205, 44, 34, 0.9);
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
-        .btn-primary:disabled {
-          background-color: #cd2c22;
-          border-color: #cd2c22;
-          opacity: 0.7;
+        .glass-social {
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(5px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          transition: all 0.3s ease;
         }
 
-        .btn-primary.loading:before {
-          content: '';
-          position: absolute;
-          top: -1px;
-          left: -1px;
-          right: -1px;
-          bottom: -1px;
-          background: linear-gradient(90deg, #cd2c22, #ff1a1a);
-          border-radius: inherit;
-          animation: pulse 1.5s ease infinite;
-          z-index: -1;
+        .glass-social:hover {
+          background: rgba(255, 255, 255, 0.2);
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        @keyframes pulse {
-          0% {
-            opacity: 1;
-            transform: scale(1);
-          }
-          50% {
-            opacity: 0.5;
-            transform: scale(1.02);
-          }
-          100% {
-            opacity: 1;
-            transform: scale(1);
-          }
+        .devider-text {
+          color: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-label {
+          color: rgba(0, 0, 0, 0.8);
+        }
+
+        .text-primary {
+          color: rgba(205, 44, 34, 0.9) !important;
+        }
+
+        .alert-danger {
+          background: rgba(220, 53, 69, 0.1);
+          border: 1px solid rgba(220, 53, 69, 0.2);
+          backdrop-filter: blur(5px);
         }
       `}</style>
     </div>
