@@ -41,7 +41,7 @@ const TrainBookingDetails = () => {
   const dispatch = useDispatch();
   const stationsList = useSelector(selectStations);
   const irctcUsernameStatus = useSelector(selectIRCTCUsernameStatus);
-  console.log("===> IRCTC username status is ",irctcUsernameStatus)
+  console.log("===> IRCTC userName status is ",irctcUsernameStatus)
   const IRCTCUsernamefromDB  = useSelector(selectIRCTCusername) || "";
   const [isVerifying, setIsVerifying] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
@@ -84,11 +84,11 @@ const TrainBookingDetails = () => {
   const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
   const [confirmationMessage, setConfirmationMessage] = useState('');
   const [forgotPasswordForm, setForgotPasswordForm] = useState({
-    username: '',
+    userName: '',
     mobile: ''
   });
   const [forgotPasswordError, setForgotPasswordError] = useState({
-    username: '',
+    userName: '',
     mobile: ''
   });
   const savedTravelers = useSelector(selectTravelers) || [];
@@ -484,11 +484,13 @@ const handleProceedToPayment = (e)=>{
       } else if (forgotIRCTCdetails.error) {
         // Show error in toast
         toast.error(forgotIRCTCdetails.error, {
+          toastId: "forgotUsernameError",
           position: "bottom-center",
-          autoClose: 5000,
+          autoClose: 2000,
+          theme: "colored",
           hideProgressBar: false,
           closeOnClick: true,
-          pauseOnHover: true,
+          pauseOnHover: false,
           draggable: true,
         });
         
@@ -496,7 +498,7 @@ const handleProceedToPayment = (e)=>{
         setForgotUsernameError(forgotIRCTCdetails.error);
         
         // Keep the popup open
-        setShowForgotUsernamePopup(true);
+        setShowForgotUsernamePopup(!showForgotPasswordPopup);
       }
     }
   }, [forgotIRCTCdetails]);
@@ -512,8 +514,8 @@ const handleProceedToPayment = (e)=>{
     
     // Validate fields
     const errors = {};
-    if (!forgotPasswordForm.username.trim()) {
-      errors.username = 'IRCTC username is required';
+    if (!forgotPasswordForm.userName.trim()) {
+      errors.userName = 'IRCTC userName is required';
     }
     
     const phoneRegex = /^[6-9]\d{9}$/;
@@ -526,16 +528,55 @@ const handleProceedToPayment = (e)=>{
       return;
     }
 
-    toast.success('Password reset instructions will be sent to your registered mobile number');
-    setShowForgotPasswordPopup(false);
-    setForgotPasswordError({});
-    setForgotPasswordForm({ username: '', mobile: '' });
+    // toast.success('Password reset instructions will be sent to your registered mobile number');
+    // setShowForgotPasswordPopup(false);
+    // setForgotPasswordError({});
+    // setForgotPasswordForm({ userName: '', mobile: '' });
+    
+    forgotPasswordForm.IRCTC_req_type = 'P'; 
+    forgotPasswordForm.otpType =  'M' ; 
+    
+    console.log("The forgot password form is ", forgotPasswordForm);
+    dispatch(fetchIRCTCForgotDetails(forgotPasswordForm));
+
   };
+
+  // Add this useEffect to handle forgotIRCTCdetails changes
+  useEffect(() => {
+    if (forgotIRCTCdetails) {
+      if (forgotIRCTCdetails.success) {
+        // Show success message in confirmation popup
+        setConfirmationMessage(forgotIRCTCdetails.success);
+        setShowConfirmationPopup(true);
+        setShowForgotPasswordPopup(false);
+        forgotPasswordForm.userName = "";
+        forgotPasswordForm.mobile = "";
+      } else if (forgotIRCTCdetails.error) {
+        // Show error in toast
+        // toast.error(forgotIRCTCdetails.error, {
+        //   toastId: "forgotPasswordError",
+        //   position: "bottom-center",
+        //   autoClose: 2000,
+        //   hideProgressBar: false,
+        //   theme: "colored",
+        //   closeOnClick: true,
+        //   pauseOnHover: false,
+        //   draggable: true,
+        // });
+        
+        // Show error in the form
+        setForgotPasswordError(forgotIRCTCdetails.error);
+        
+        // Keep the popup open
+        setShowForgotPasswordPopup(!showForgotUsernamePopup);
+      }
+    }
+  }, [forgotIRCTCdetails]);
 
   // Add verification handler
   const handleVerifyUsername = async () => {
     if (!irctcUser) {
-      toast.error('Please enter IRCTC username');
+      toast.error('Please enter IRCTC userName');
       return;
     }
 
@@ -543,8 +584,8 @@ const handleProceedToPayment = (e)=>{
     try {
       await dispatch(fetchIRCTCusername(irctcUser));
     } catch (error) {
-      console.error('Error verifying username:', error);
-      toast.error('Failed to verify username');
+      console.error('Error verifying userName:', error);
+      toast.error('Failed to verify userName');
       setIsVerifying(false);
     }
   };
@@ -558,15 +599,15 @@ const handleProceedToPayment = (e)=>{
         setIsEditing(false);
         // Save to contact details
         setContactDetails(prev => ({ ...prev, irctcUsername: irctcUser }));
-        toast.success('IRCTC username verified successfully');
+        toast.success('IRCTC userName verified successfully');
       } else if (irctcUsernameStatus.error) {
         setIsVerified(false);
-        toast.error(irctcUsernameStatus.error || 'Invalid IRCTC username');
+        toast.error(irctcUsernameStatus.error || 'Invalid IRCTC userName');
       }
     }
   }, [irctcUsernameStatus, irctcUser]);
 
-  // Load IRCTC username from DB when available
+  // Load IRCTC userName from DB when available
   useEffect(() => {
     if (IRCTCUsernamefromDB && !irctcUser) {
       setIrctcUser(IRCTCUsernamefromDB);
@@ -682,7 +723,7 @@ const handleProceedToPayment = (e)=>{
       if (forgotPasswordModalRef.current && !forgotPasswordModalRef.current.contains(event.target)) {
         setShowForgotPasswordPopup(false);
         setForgotPasswordError({});
-        setForgotPasswordForm({ username: '', mobile: '' });
+        setForgotPasswordForm({ userName: '', mobile: '' });
       }
       
     };
@@ -1158,7 +1199,7 @@ const handleProceedToPayment = (e)=>{
               type="text"
               className={`form-control form-control-lg ${isVerified ? 'border-success' : ''}`}
               id="irctcUsername"
-              placeholder="Enter your IRCTC username"
+              placeholder="Enter your IRCTC userName"
               value={irctcUser}
               onChange={(e) => {
                 setIrctcUser(e.target.value);
@@ -1405,7 +1446,7 @@ const handleProceedToPayment = (e)=>{
     </>
   );
 
-  // Update the render function for the forgot username popup
+  // Update the render function for the forgot userName popup
   const renderForgotUsernamePopup = () => (
     <>
       <div 
@@ -1526,7 +1567,7 @@ const handleProceedToPayment = (e)=>{
                 onClick={() => {
                   setShowForgotPasswordPopup(false);
                   setForgotPasswordError({});
-                  setForgotPasswordForm({ username: '', mobile: '' });
+                  setForgotPasswordForm({ userName: '', mobile: '' });
                 }}
               ></button>
             </div>
@@ -1545,23 +1586,23 @@ const handleProceedToPayment = (e)=>{
                   </label>
                   <input
                     type="text"
-                    className={`form-control ${forgotPasswordError.username ? 'is-invalid' : ''}`}
-                    placeholder="Enter your IRCTC username"
-                    value={forgotPasswordForm.username}
+                    className={`form-control ${forgotPasswordError.userName ? 'is-invalid' : ''}`}
+                    placeholder="Enter your IRCTC userName"
+                    value={forgotPasswordForm.userName}
                     onChange={(e) => {
                       setForgotPasswordForm({
                         ...forgotPasswordForm,
-                        username: e.target.value
+                        userName: e.target.value
                       });
                       setForgotPasswordError({
                         ...forgotPasswordError,
-                        username: ''
+                        userName: ''
                       });
                     }}
                     required
                   />
-                  {forgotPasswordError.username && (
-                    <div className="invalid-feedback">{forgotPasswordError.username}</div>
+                  {forgotPasswordError.userName && (
+                    <div className="invalid-feedback">{forgotPasswordError.userName}</div>
                   )}
                 </div>
 
@@ -1594,10 +1635,16 @@ const handleProceedToPayment = (e)=>{
                 </div>
 
 
-                <div className="d-flex justify-content-end w-100">
+                <div className="d-flex justify-content-end">
                   <button 
                     type="submit" 
-                    className="btn btn-primary"
+                    className="btn btn-primary px-5 py-1"
+                    style={{
+                      fontSize: '0.875rem',
+                      borderRadius: '10px',
+                      backgroundColor: '#cd2c22',
+                      borderColor: '#cd2c22'
+                    }}
                   >
                     <i className="fa-solid fa-paper-plane me-2"></i>
                     Send
@@ -1643,7 +1690,7 @@ const handleProceedToPayment = (e)=>{
             <div className="modal-body text-center py-4">
               <div className="mb-4">
                 <i className="fa-solid fa-envelope-circle-check fa-3x text-success mb-3"></i>
-                <p className="mb-0">{forgotIRCTCdetails?.success}</p>
+                <p className="mb-0 ">{forgotIRCTCdetails?.success}</p>
               </div>
               <div className="d-flex justify-content-center align-items-center gap-2">
                 <span className="text-muted small">Didn't receive password?</span>

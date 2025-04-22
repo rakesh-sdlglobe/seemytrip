@@ -12,6 +12,7 @@ import {
   selectError,
 } from "../../store/Selectors/authSelectors";
 import { trainImage } from '../../assets/images';
+import { sendVerificationOTP, verifyEmailOTP } from '../../store/Actions/emailAction';
 
 const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
   const dispatch = useDispatch();
@@ -70,7 +71,10 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
     
     try {
       // Here you would typically make an API call to send OTP
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log("inputValue",inputValue);
+      
+      dispatch(sendVerificationOTP(inputValue));
       setShowOtpField(true);
       setOtpTimer(60);
       setCanResendOtp(false);
@@ -101,7 +105,7 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
     setErrorMessage('');
     setIsLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      dispatch(verifyEmailOTP(inputValue, otp));
       onClose();
     } catch (error) {
       setErrorMessage('Invalid OTP. Please try again.');

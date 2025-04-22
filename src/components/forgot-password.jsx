@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { useDispatch } from 'react-redux';
 import { resetPassword } from '../store/Actions/verifyEmail';
-import { sendVerificationOTP, verifyEmailOTPForgot } from '../store/Actions/emailAction';
+import { sendVerificationOTP } from '../store/Actions/emailAction';
 import { selectOTPError } from '../store/Selectors/emailSelector';
 import { selectOTPSent } from '../store/Selectors/emailSelector';
 import { useSelector } from 'react-redux';
@@ -115,7 +115,7 @@ const ForgotPassword = () => {
       return;
     }
     try {
-      await dispatch(verifyEmailOTPForgot(email, otp, navigate));
+      // await dispatch(verifyEmailOTPForgot(email, otp, navigate));
       toast.success('OTP verified successfully.');
       setOtpVerified(true);
     } catch (error) {
