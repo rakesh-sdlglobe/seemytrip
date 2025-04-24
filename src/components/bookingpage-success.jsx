@@ -17,13 +17,13 @@ import FooterDark from './footer-dark';
 import { useSelector } from 'react-redux';
 import { selectUserProfile } from '../store/Selectors/userSelector';
 import { selectGoogleUser } from '../store/Selectors/authSelectors';
-import { selectEmail } from '../store/Selectors/emailSelector';
+import { selectEmailUser } from '../store/Selectors/emailSelector';
 
 
 const BookingPageSuccess =() =>{
   const userProfile = useSelector(selectUserProfile);
   const googleUser = useSelector(selectGoogleUser);
-  const emailuser = useSelector(selectEmail);
+  const emailuser = useSelector(selectEmailUser);
   
   const emailData1 = JSON.parse(emailuser);
 

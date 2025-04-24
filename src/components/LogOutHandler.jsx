@@ -3,19 +3,19 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { logout } from '../store/Actions/authActions';
 import { logoutEmailUser } from '../store/Actions/emailAction';
-import { selectName, selectGoogleUser, selectEmail,} from '../store/Selectors/authSelectors';
+import { selectName, selectGoogleUser,} from '../store/Selectors/authSelectors';
+import { selectEmailUser } from '../store/Selectors/emailSelector';
 
 const LogoutHandler = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     // Select user states
-    const user = useSelector(selectName);
     const googleUser = useSelector(selectGoogleUser);
-    const emailUser = useSelector(selectEmail);
+    const emailUser = useSelector(selectEmailUser);
 
     // Check if logged in
-    const isLoggedIn = Boolean(user || googleUser || emailUser);
+    const isLoggedIn = Boolean( googleUser || emailUser);
 
     useEffect(() => {
         if (!isLoggedIn && localStorage.getItem('authToken')) {

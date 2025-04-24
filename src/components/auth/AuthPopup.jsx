@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
 import {
   setEmail,
@@ -8,14 +7,19 @@ import {
   clearError,
 } from "../../store/Actions/authActions";
 import {
-  selectEmail,
+  selectGoogleUser,
   selectError,
 } from "../../store/Selectors/authSelectors";
 import { trainImage } from '../../assets/images';
 import { sendVerificationOTP, verifyEmailOTP } from '../../store/Actions/emailAction';
+import { selectOTPSent } from '../../store/Selectors/emailSelector';
+import { selectOTPError } from '../../store/Selectors/emailSelector';
+
 
 const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
   const dispatch = useDispatch();
+  const otpSent = useSelector(selectOTPSent);
+  const otpError = useSelector(selectOTPError);
   const [isLoginMode, setIsLoginMode] = useState(mode === 'login');
   const [isLoading, setIsLoading] = useState(false);
   const [otp, setOtp] = useState('');
@@ -26,7 +30,7 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
   const [inputValue, setInputValue] = useState('');
   const [storedValue, setStoredValue] = useState('');
 
-  const email = useSelector(selectEmail);
+  const email = useSelector(selectGoogleUser);
   const error = useSelector(selectError);
 
   useEffect(() => {
@@ -66,13 +70,15 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
       return;
     }
 
+    if(!otpSent && otpError) {
+      setErrorMessage(otpError);
+      return;
+    }
+
     setIsLoading(true);
     setErrorMessage('');
     
     try {
-      // Here you would typically make an API call to send OTP
-      // await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log("inputValue",inputValue);
       
       dispatch(sendVerificationOTP(inputValue));
       setShowOtpField(true);

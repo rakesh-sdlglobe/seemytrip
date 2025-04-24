@@ -16,7 +16,7 @@ import Footer from './footer';
 import SideBarProfilePage from './sidebar_profilepage';
 import PersonalInfo from './personal_info';
 import TopHeader from './topHeader';
-import SessionExpiredModal from './sessionExpiredModal';
+// import SessionExpiredModal from './sessionExpiredModal';
 import { sessionExpired } from '../store/Selectors/userSelector';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -24,7 +24,7 @@ const MyProfile = () => {
     const sessionExpire = useSelector(sessionExpired);
       return (
         <div> 
-          { sessionExpire && <SessionExpiredModal /> }  
+          {/* { sessionExpire && <SessionExpiredModal /> }   */}
           {/* Preloader - style you can find in spinners.css */}        
           <div id="preloader">
             <div className="preloader"><span /><span /></div>

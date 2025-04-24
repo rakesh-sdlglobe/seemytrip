@@ -1,38 +1,18 @@
 import axios from 'axios';
 
 
-export const SET_NAME = 'SET_NAME';
 export const SET_EMAIL = 'SET_EMAIL';
-export const SET_PASSWORD = 'SET_PASSWORD';
-export const SET_CONFIRM_PASSWORD = 'SET_CONFIRM_PASSWORD';
 export const SET_ERROR = 'SET_ERROR';
 export const CLEAR_ERROR = 'CLEAR_ERROR';
-export const CLEAR_FORM = 'CLEAR_FORM';
 export const SET_USER = 'SET_USER';
 export const LOGOUT = 'LOGOUT';
+export const SET_NAME = 'SET_NAME';
 export const GOOGLE_LOGIN_SUCCESS = 'GOOGLE_LOGIN_SUCCESS';
 export const GOOGLE_LOGIN_FAILURE = 'GOOGLE_LOGIN_FAILURE';
 
-
-export const setName = (name) => ({
-  type: SET_NAME,
-  payload: name,
-});
-
-export const setEmail = (email) => ({
-  type: SET_EMAIL,
-  payload: email,
-});
-
-export const setPassword = (password) => ({
-  type: SET_PASSWORD,
-  payload: password,
-});
-
-export const setConfirmPassword = (confirmPassword) => ({
-  type: SET_CONFIRM_PASSWORD,
-  payload: confirmPassword,
-});
+// export const API_URL = process.env.REACT_APP_API_URL ;
+export const API_URL = 'https://tripadmin.seemytrip.com/api';
+// export const API_URL = 'https://tripadmin.onrender.com/api';
 
 export const setError = (error) => ({
   type: SET_ERROR,
@@ -48,8 +28,14 @@ export const setUser = (user) => ({
   payload: user,
 });
 
-export const clearForm = () => ({
-  type: CLEAR_FORM,
+export const setEmail = (email) => ({
+  type: SET_EMAIL,
+  payload: email,
+});
+
+export const setName = (firstName) => ({
+  type: SET_NAME,
+  payload: firstName,
 });
 
 export const googleLoginSuccess = ({ token, user }) => ({
@@ -63,8 +49,6 @@ export const googleLoginFailure = (error) => ({
   payload: error,
 });
 
-export const API_URL = process.env.REACT_APP_API_URL ;
-// export const API_URL = 'https://tripadmin.onrender.com/api';
 
 export const register = (firstName, middleName, lastName, email, password, navigate) => async (dispatch) => {
   try {
@@ -88,8 +72,6 @@ export const register = (firstName, middleName, lastName, email, password, navig
     dispatch(setUser(user));
     dispatch(setName(user.firstName));
     dispatch(setEmail(''));
-    dispatch(setPassword('')); 
-    dispatch(setConfirmPassword('')); 
 
     // dispatch(clearForm())
 
@@ -123,7 +105,6 @@ export const Loginn = (email, password, navigate) => async (dispatch) => {
       dispatch(setUser(user));
       dispatch(setName(user.firstName));
       dispatch(setEmail(''));
-      dispatch(setPassword('')); 
   
       return { success : true}
     }
@@ -141,7 +122,6 @@ export const Loginn = (email, password, navigate) => async (dispatch) => {
 export const logout = () => (dispatch) => {
   localStorage.removeItem('authToken');
   localStorage.removeItem('user');
-  localStorage.removeItem('googleUserName');
   // localStorage.removeItem('trains');
   // localStorage.removeItem('trainSearchParams');
   dispatch({
@@ -152,7 +132,7 @@ export const logout = () => (dispatch) => {
 
 // Handle Google login success
 
-export const handleGoogleLogin = (accessToken, navigate) => async (dispatch) => {
+export const handleGoogleLogin = (accessToken, ) => async (dispatch) => {
   try {
       console.log("Starting Google login process...");
 
@@ -164,13 +144,14 @@ export const handleGoogleLogin = (accessToken, navigate) => async (dispatch) => 
       console.log('Google login response:', response.data);
 
       const { token, user } = response.data; // Extract token and user
+      
+      if (!user || !token) {
+        throw new Error('Invalid response from backend');
+      }
       const email = user.email;
       
-      localStorage.setItem('googleUserName',JSON.stringify(user.firstName))
-
-      if (!user || !token) {
-          throw new Error('Invalid response from backend');
-      }
+      localStorage.setItem('authToken', token);
+      localStorage.setItem('user', JSON.stringify(user));
 
 
       // Dispatch success action to Redux
