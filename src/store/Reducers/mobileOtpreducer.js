@@ -7,15 +7,11 @@ import {
 } from '../Actions/mobileOtpAction';
 
 const initialState = {
-  phoneNumber: localStorage.getItem('user') 
-    ? JSON.parse(localStorage.getItem('user')).phoneNumber 
-    : '',
+  phoneNumber: '',
   otp: '',
   otpSent: false,
   error: '',
-  user: localStorage.getItem('authToken') 
-    ? JSON.parse(localStorage.getItem('user')) 
-    : null,
+  user: null,
 };
 
 const mobileAuthReducer = (state = initialState, action) => {

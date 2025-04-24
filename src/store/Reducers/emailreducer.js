@@ -3,50 +3,64 @@ import {
   SET_OTP_ERROR,
   SET_EMAIL_USER,
   LOGOUT_EMAIL_USER,
+  SET_USERNAME,
 } from '../Actions/emailAction';
 
-// Get initial state from localStorage, if available
-const initialState = {
-  email: localStorage.getItem('user') || '',
-  otpSent: false,
-  error: '',
-  user: JSON.parse(localStorage.getItem('user')) || null, // Parse the user from localStorage
+// Load initial state from localStorage
+const loadInitialState = () => {
+  try {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      return {
+        email: parsedUser.email || null,
+        otpSent: false,
+        error: '',
+        firstName: parsedUser.firstName || '',
+      };
+    }
+  } catch (error) {
+    console.error('Failed to parse stored user data', error);
+  }
+  
+  return {
+    email: null,
+    otpSent: false,
+    error: '',
+    firstName: '',
+  };
 };
+
+const initialState = loadInitialState();
 
 const emailAuthReducer = (state = initialState, action) => {
   switch (action.type) {
     case SET_OTP_SENT:
-      return { ...state, otpSent: action.payload };
+      return { ...state, otpSent: action.payload, error: '' };
 
     case SET_OTP_ERROR:
-      return { ...state, error: action.payload };
+      return { ...state, error: action.payload, otpSent: false };
+
+    case SET_USERNAME: 
+      return { ...state, firstName: action.payload };
 
     case SET_EMAIL_USER: {
-      const { user, token } = action.payload;
-      console.log("26 email and token is from email reducer ",user,token);
-      
-
-      // Save user and token to localStorage
-      localStorage.setItem('authToken', token);
-      localStorage.setItem('user', JSON.stringify(user)); // Convert user to string before storing
+      const { email, firstName } = action.payload;     
 
       return {
         ...state,
-        user,
-        email: user || '',
+        email: email || '',
+        firstName: firstName || '',
         error: '',
         otpSent: false,
       };
     }
 
     case LOGOUT_EMAIL_USER:
-      // Remove data from localStorage on logout
       localStorage.removeItem('authToken');
       localStorage.removeItem('user');
-      localStorage.removeItem('googleUserName')
-
-      return { ...initialState, email: '', user: null };
-
+      return { ...initialState, firstName: null, email: '' };
+      
     default:
       return state;
   }

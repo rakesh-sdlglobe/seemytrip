@@ -24,14 +24,12 @@ export const UPDATE_TRAVELER_FAILURE = 'UPDATE_TRAVELER_FAILURE';
 export const SHOW_SESSION_EXPIRED_MODAL  = 'SHOW_SESSION_EXPIRED_MODAL';
 export const HIDE_SESSION_EXPIRED_MODAL  = 'HIDE_SESSION_EXPIRED_MODAL';
 
-// Fetch user profile
-// const API_URL = process.env.REACT_APP_API_URL || 'https://tripadmin.onrender.com/api';
-
 
 export const getUserProfile = () => {
   return async (dispatch) => {
     try {
       const authToken = localStorage.getItem('authToken');
+      
       if (!authToken) {
         dispatch({ type: SHOW_SESSION_EXPIRED_MODAL });
         console.error('No auth token found');

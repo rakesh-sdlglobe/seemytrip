@@ -117,14 +117,14 @@ import FlightSeatSelection from './components/flight_components/FlightSeatSelect
 function App() {
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    const user = localStorage.getItem('user');
+  // useEffect(() => {
+  //   const token = localStorage.getItem('authToken');
+  //   const user = localStorage.getItem('user');
     
-    if (token && user) {
-      dispatch(setUser(JSON.parse(user))); 
-    }
-  }, [dispatch]);
+  //   if (token && user) {
+  //     dispatch(setUser(JSON.parse(user))); 
+  //   }
+  // }, [dispatch]);
 
   return (
     <div className="App">
@@ -139,13 +139,13 @@ function App() {
           <Route path="/sliderhome" element={<SliderHome />} />
           
           {/* Authentication Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/sign-in" element={<Login />} />
-          <Route path='/register' element={<Register />} />
-          <Route path="/sign-up" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
+          {/* <Route path="/login" element={<Login />} /> */}
+          {/* <Route path="/sign-in" element={<Login />} /> */}
+          {/* <Route path='/register' element={<Register />} /> */}
+          {/* <Route path="/sign-up" element={<Register />} /> */}
+          {/* <Route path="/forgot-password" element={<ForgotPassword />} /> */}
           <Route path="/two-factor-auth" element={<TwofactorAuth />} />
-          <Route path='/otp-modal' element={<OTPModal/>} />
+          {/* <Route path='/otp-modal' element={<OTPModal/>} /> */}
 
           {/* User Account Routes */}
           <Route path="/my-profile" element={<MyProfile />} />
