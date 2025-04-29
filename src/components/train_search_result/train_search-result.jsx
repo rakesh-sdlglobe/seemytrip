@@ -2,7 +2,7 @@ import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 // import { selectTrains } from '../../store/Selectors/filterSelectors';
 import { useNavigate } from 'react-router-dom';
-import { selectUser } from'../../store/Selectors/authSelectors';
+import { selectGoogleUser } from '../../store/Selectors/authSelectors';
 import { selectSearchParams, selectStations,selectLoading } from '../../store/Selectors/filterSelectors';
 import Modal from './Modal';
 import { fetchTrainSchedule } from '../../store/Actions/filterActions';
@@ -17,7 +17,7 @@ import AuthPopup from '../auth/AuthPopup';
 const TrainSearchResultList = ({ filters }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const isAuthenticated = useSelector(selectUser);
+  const isAuthenticated = useSelector(selectGoogleUser) || JSON.parse(localStorage.getItem('user'));
   const stationsList = useSelector(selectStations);
   const loading = JSON.parse(localStorage.getItem('loading'));
   // let searchParams = useSelector(selectSearchParams);
