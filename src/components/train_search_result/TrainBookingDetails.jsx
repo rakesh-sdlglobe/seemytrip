@@ -312,7 +312,7 @@ const TrainBookingDetails = () => {
 const handleProceedToPayment = (e)=>{
   e.preventDefault();
   if (!validateBeforePayment()) {
-    setShowAuthPopup(true);
+    // setShowAuthPopup(true);
     return;
   }
   navigate('/booking-page-3')
