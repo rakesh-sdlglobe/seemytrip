@@ -45,6 +45,8 @@ export const googleLoginFailure = (error) => ({
 
 // Thunk Action
 export const handleGoogleLogin = (accessToken) => async (dispatch) => {
+
+  console.log("Google login action called with access token:", accessToken);
   // Validate input
   if (!accessToken || typeof accessToken !== 'string') {
     return dispatch(googleLoginFailure('Invalid access token'));
@@ -60,8 +62,9 @@ export const handleGoogleLogin = (accessToken) => async (dispatch) => {
 
     const response = await axios.get(`${process.env.REACT_APP_API_URL}/auth/google`, {
       headers: { Authorization: `Bearer ${accessToken}` },
-      cancelToken: source.token
     });
+    
+    console.log("Google login response:", response.data); 
 
     clearTimeout(timeout);
 
@@ -84,6 +87,7 @@ export const handleGoogleLogin = (accessToken) => async (dispatch) => {
 
   } catch (error) {
     // Handle different error scenarios
+    console.error('Google login error:', error);
     let errorMessage = 'Google login failed';
     
     if (axios.isCancel(error)) {
