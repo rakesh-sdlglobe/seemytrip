@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import { fetchTrains } from '../../store/Actions/filterActions';
+import { fetchTrains } from '../../store/Actions/trainActions';
 
 const CalendarNearbyDates = () => {
   const dispatch = useDispatch();

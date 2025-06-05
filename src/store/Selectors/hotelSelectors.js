@@ -1,0 +1,1 @@
+export const selectCityHotels = (state) => state.hotels.CityHotels.AcList;
