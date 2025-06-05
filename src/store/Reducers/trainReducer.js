@@ -1,4 +1,4 @@
-// reducers/filterReducer.js
+// reducers/trainReducer.js
 import {
   FETCH_STATIONS_REQUEST,
   FETCH_STATIONS_SUCCESS,
@@ -25,7 +25,7 @@ import {
   FETCH_IRCTC_FORGOT_DETAILS_REQUEST,
   FETCH_IRCTC_FORGOT_DETAILS_SUCCESS,
   FETCH_IRCTC_FORGOT_DETAILS_FAILURE,
-} from '../Actions/filterActions.js';
+} from '../Actions/trainActions.js';
 
 const initialState = {
   loading: false,
@@ -39,7 +39,7 @@ const initialState = {
   countryList : [],
 };
 
-export const filterReducer = (state = initialState, action) => {
+export const trainReducer = (state = initialState, action) => {
   switch (action.type) {
     case FETCH_STATIONS_REQUEST:
       return {

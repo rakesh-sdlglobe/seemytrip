@@ -1,33 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { Modal, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Select from 'react-select';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCityHotels } from '../../store/Actions/hotelActions';
+import { selectCityHotels } from '../../store/Selectors/hotelSelectors';
 import './Hotel.css';
-import { Features } from '../medical_tourism/Features';
 
-const CustomModalHeader = ({ onClose }) => (
+// Memoized modal components to prevent unnecessary re-renders
+const CustomModalHeader = React.memo(({ onClose }) => (
   <Modal.Header closeButton className="border-0">
     <Modal.Title className="fw-bold">Choose Members</Modal.Title>
   </Modal.Header>
-);
+));
 
-const CustomModalBody = ({ adults, children, rooms, setAdults, setChildren, setRooms }) => (
+const CustomModalBody = React.memo(({ adults, children, rooms, setAdults, setChildren, setRooms }) => (
   <Modal.Body className="p-4">
     {[
-      { label: 'Adults', value: adults, setValue: setAdults },
-      { label: 'Children', value: children, setValue: setChildren },
-      { label: 'Rooms', value: rooms, setValue: setRooms },
-    ].map(({ label, value, setValue }, index) => (
-      <div key={index} className="mb-3">
+      { label: 'Adults', value: adults, setValue: setAdults, min: 1 },
+      { label: 'Children', value: children, setValue: setChildren, min: 0 },
+      { label: 'Rooms', value: rooms, setValue: setRooms, min: 1 },
+    ].map(({ label, value, setValue, min }, index) => (
+      <div key={label} className="mb-3">
         <div className="d-flex justify-content-between align-items-center mb-2">
           <span className="fw-medium">{label}</span>
           <div className="d-flex align-items-center">
             <Button
               variant="outline-secondary"
               className="rounded-circle shadow-sm"
-              onClick={() => setValue(value > (label === 'Children' ? 0 : 1) ? value - 1 : (label === 'Children' ? 0 : 1))}
+              onClick={() => setValue(Math.max(value - 1, min))}
             >
               <i className="fa fa-minus" />
             </Button>
@@ -45,21 +48,24 @@ const CustomModalBody = ({ adults, children, rooms, setAdults, setChildren, setR
       </div>
     ))}
   </Modal.Body>
-);
+));
 
-const CustomModalFooter = ({ onConfirm }) => (
+const CustomModalFooter = React.memo(({ onConfirm }) => (
   <Modal.Footer className="border-0">
     <Button
-      variant="primary"
+      variant="danger"
       className="w-100 rounded-pill fw-medium"
       onClick={onConfirm}
     >
       Confirm
     </Button>
   </Modal.Footer>
-);
+));
 
 export const HotelSearchbar = () => {
+  const dispatch = useDispatch();
+  const cityHotels = useSelector(selectCityHotels);
+  const [selectedCity, setSelectedCity] = useState(null);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [adults, setAdults] = useState(1);
@@ -67,36 +73,50 @@ export const HotelSearchbar = () => {
   const [rooms, setRooms] = useState(1);
   const [showGuestsModal, setShowGuestsModal] = useState(false);
 
-  const handleShowGuestsModal = () => setShowGuestsModal(true);
-  const handleCloseGuestsModal = () => setShowGuestsModal(false);
-  const handleConfirmGuests = () => {
-    setShowGuestsModal(false);
+  // Fetch cities on mount
+  useEffect(() => {
+    dispatch(fetchCityHotels());
+  }, [dispatch]);
+
+  // Transform city data into select options
+  const cityOptions = useMemo(() => {
+    return cityHotels?.map(city => ({
+      value: city.Id,
+      label: city.Display,
+      cityData: city // Include full city data for later use
+    })) || [];
+  }, [cityHotels]);
+
+  // Handle city selection
+  const handleCityChange = (selectedOption) => {
+    setSelectedCity(selectedOption);
+    console.log('Selected city:', selectedOption);
   };
 
-  const hotelOptions = [
-    { value: 'mum', label: 'Mumbai' },
-    { value: 'dl', label: 'Delhi' },
-    { value: 'blr', label: 'Bangalore' },
-    { value: 'goa', label: 'Goa' },
-    { value: 'hyd', label: 'Hyderabad' },
-    { value: 'kol', label: 'Kolkata' },
-    { value: 'jaipur', label: 'Jaipur' },
-    { value: 'udaipur', label: 'Udaipur' },
-  ];
+  // Handle input change for search
+  const handleInputChange = (inputValue) => {
+    console.log('Search input:', inputValue);
+    return inputValue; // Important to return the input value
+  };
 
+  const handleShowGuestsModal = () => setShowGuestsModal(true);
+  const handleCloseGuestsModal = () => setShowGuestsModal(false);
+  const handleConfirmGuests = () => setShowGuestsModal(false);
+
+  // Custom styles for the Select component
   const customSelectStyles = {
-    control: (provided,state) => ({
+    control: (provided) => ({
       ...provided,
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', // Default box shadow
-      border: 'none', // Remove border
+      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      border: 'none',
       padding: '12px',
       backgroundColor: '#fff',
-      // Add a slight transition for smoother visual changes
-      transition: 'box-shadow 0.2s ease',
+      minHeight: '44px',
     }),
     menu: (provided) => ({
       ...provided,
       borderRadius: '4px',
+      zIndex: 10,
     }),
     placeholder: (provided) => ({
       ...provided,
@@ -112,71 +132,57 @@ export const HotelSearchbar = () => {
     <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
       <style>
         {`
-          .custom-border {
-             border-width: 0.5px; /* Adjust the border width as needed */
-             border-color: #ccc;  /* Ensure the border color matches */
-           }
-             .custom-input {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border: none;
-  border-radius: 8px;
-  padding: 12px;
-  background-color: #fff;
-}
-
-.custom-input:focus {
-  outline: none;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Darker shadow on focus */
-}
-
-.custom-button {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border: none;
-  border-radius: 8px;
-  padding: 10px 15px;
-  background-color: #fff;
-  cursor: pointer;
-}
-
-.custom-button:focus {
-  outline: none;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-}
-
-.custom-select {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border: none;
-  border-radius: 8px;
-}
-
-.custom-select__control {
-  box-shadow: none;
-  border: none;
-}
-
-.custom-select__control {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important; /* Force box shadow */
-  border: none !important; /* Ensure border is removed */
-}
-
-
+          .custom-input {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            background-color: #fff;
+            height: 44px;
+          }
+          .custom-input:focus {
+            outline: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+          }
+          .custom-button {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 15px;
+            background-color: #fff;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            height: 44px;
+          }
+          .custom-button:focus {
+            outline: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+          }
+          .custom-select__control {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            border: none !important;
+          }
         `}
-        
       </style>
+      
       <div className="search-wrap with-label bg-white rounded-3 p-3 pt-4">
         <div className="row gy-3 gx-md-3 gx-sm-2">
           <div className="col-xl-8 col-lg-7 col-md-12">
             <div className="row gy-3 gx-md-3 gx-sm-2">
               <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
-                <div className="form-group hdd-arrow custom-border rounded-1 mb-0">
-                  <div className="form-group hdd-arrow mb-0">
+                <div className="form-group hdd-arrow rounded-1 mb-0">
                   <Select
-                      options={hotelOptions}
-                      placeholder="Destination"
-                      classNamePrefix="custom-select"
-                      styles={customSelectStyles}
-                    />
-                  </div>
+                    options={cityOptions}
+                    placeholder="Destination"
+                    classNamePrefix="custom-select"
+                    styles={customSelectStyles}
+                    value={selectedCity}
+                    onChange={handleCityChange}
+                    onInputChange={handleInputChange}
+                    isClearable
+                    isSearchable
+                  />
                 </div>
               </div>
 
@@ -186,7 +192,7 @@ export const HotelSearchbar = () => {
                   <div className="d-flex">
                     <DatePicker
                       selected={startDate}
-                      onChange={(date) => setStartDate(date)}
+                      onChange={setStartDate}
                       selectsStart
                       startDate={startDate}
                       endDate={endDate}
@@ -195,7 +201,7 @@ export const HotelSearchbar = () => {
                     />
                     <DatePicker
                       selected={endDate}
-                      onChange={(date) => setEndDate(date)}
+                      onChange={setEndDate}
                       selectsEnd
                       startDate={startDate}
                       endDate={endDate}
@@ -218,7 +224,7 @@ export const HotelSearchbar = () => {
                       onClick={handleShowGuestsModal}
                       className="form-control text-start custom-button"
                     >
-                      {adults} Adults{adults > 1 ? 's' : ''}, {children} Child{children !== 1 ? 'ren' : ''}, {rooms} Room{rooms > 1 ? 's' : ''}
+                      {adults} Adult{adults !== 1 ? 's' : ''}, {children} Child{children !== 1 ? 'ren' : ''}, {rooms} Room{rooms !== 1 ? 's' : ''}
                     </button>
                   </div>
                 </div>
@@ -226,7 +232,7 @@ export const HotelSearchbar = () => {
               <div className="col-xl-4 col-lg-4 col-md-4 col-sm-4">
                 <div className="form-group mb-0">
                   <Link to="/hotel-list-01">
-                    <button type="button" className="btn btn-primary full-width rounded-1 fw-medium">
+                    <button type="button" className="btn btn-danger full-width rounded-1 fw-medium">
                       <i className="fa fa-search me-2" />Search
                     </button>
                   </Link>
@@ -236,7 +242,7 @@ export const HotelSearchbar = () => {
           </div>
         </div>
       </div>
-      {/* Guests Modal */}
+
       <Modal show={showGuestsModal} onHide={handleCloseGuestsModal} centered>
         <CustomModalHeader onClose={handleCloseGuestsModal} />
         <CustomModalBody

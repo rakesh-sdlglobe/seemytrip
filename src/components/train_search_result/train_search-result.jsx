@@ -1,17 +1,17 @@
 import React, { useMemo, useState, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-// import { selectTrains } from '../../store/Selectors/filterSelectors';
+// import { selectTrains } from '../../store/Selectors/trainSelectors';
 import { useNavigate } from 'react-router-dom';
 import { selectGoogleUser } from '../../store/Selectors/authSelectors';
-import { selectSearchParams, selectStations,selectLoading } from '../../store/Selectors/filterSelectors';
+import { selectSearchParams, selectStations,selectLoading } from '../../store/Selectors/trainSelectors';
 import Modal from './Modal';
-import { fetchTrainSchedule } from '../../store/Actions/filterActions';
+import { fetchTrainSchedule } from '../../store/Actions/trainActions';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import SkeletonLoader from './SkeletonLoader';
 import NearbyDates from './TrainNearbyDates';
 import CalendarNearbyDates from './CalendarNearbyDates';
-import { fetchTrains } from '../../store/Actions/filterActions';
+import { fetchTrains } from '../../store/Actions/trainActions';
 import AuthPopup from '../auth/AuthPopup';
 
 const TrainSearchResultList = ({ filters }) => {

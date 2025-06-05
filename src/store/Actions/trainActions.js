@@ -47,10 +47,13 @@ export const fetchStationsFailure = (error) => ({
 
 // Thunk action to fetch stations
 export const fetchStations = () => async (dispatch) => {
+  console.log("Yeah, came to fetch stations");
   dispatch(fetchStationsRequest());
   try {
-    const response = await fetch(`${API_URL}/trains/getStation`);
-    const data = await response.json();
+    // const response = await fetch(`${API_URL}/trains/getStation`); 
+    // const data = await response.json();
+    const response = await axios.get(`${API_URL}/trains/getStation`);
+    const data = response.data;
     console.log(data);
     console.log(`Station Data: ${data}`);
     dispatch(fetchStationsSuccess(data.stations));

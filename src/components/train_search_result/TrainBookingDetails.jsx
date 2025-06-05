@@ -8,14 +8,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import {useLocation} from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { IRCTC_Logo } from '../../assets/images';
-import { selectCountryList, selectStations, selectTrainBoardingStations } from '../../store/Selectors/filterSelectors';
-import { fetchCountryList, fetchIRCTCForgotDetails, fetchTrainBoardingStations } from '../../store/Actions/filterActions';
-import { fetchIRCTCusername } from '../../store/Actions/filterActions';
-import { selectIRCTCUsernameStatus } from '../../store/Selectors/filterSelectors';
+import { selectCountryList, selectStations, selectTrainBoardingStations } from '../../store/Selectors/trainSelectors';
+import { fetchCountryList, fetchIRCTCForgotDetails, fetchTrainBoardingStations } from '../../store/Actions/trainActions';
+import { fetchIRCTCusername } from '../../store/Actions/trainActions';
+import { selectIRCTCUsernameStatus } from '../../store/Selectors/trainSelectors';
 import { useDispatch, useSelector } from "react-redux";
-import { fetchTrainSchedule } from '../../store/Actions/filterActions';
-import { selectTrainsSchedule } from '../../store/Selectors/filterSelectors';
-import { selectIRCTCForgotDetails } from '../../store/Selectors/filterSelectors';
+import { fetchTrainSchedule } from '../../store/Actions/trainActions';
+import { selectTrainsSchedule } from '../../store/Selectors/trainSelectors';
+import { selectIRCTCForgotDetails } from '../../store/Selectors/trainSelectors';
 
 
 import {

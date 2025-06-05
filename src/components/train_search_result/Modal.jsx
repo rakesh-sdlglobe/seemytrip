@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, useMemo } from 'react';
 import { FaTimes } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
-import { selectTrainsSchedule } from '../../store/Selectors/filterSelectors';
+import { selectTrainsSchedule } from '../../store/Selectors/trainSelectors';
 
 const Modal = React.memo(({ isOpen, onClose, trainNumber, selectedTrainFromStnCode, selectedTrainToStnCode }) => {
     const trainSchedule = useSelector(selectTrainsSchedule);

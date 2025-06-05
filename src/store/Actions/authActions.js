@@ -9,8 +9,8 @@ export const SET_NAME = 'SET_NAME';
 export const GOOGLE_LOGIN_SUCCESS = 'GOOGLE_LOGIN_SUCCESS';
 export const GOOGLE_LOGIN_FAILURE = 'GOOGLE_LOGIN_FAILURE';
 
-// export const API_URL = process.env.REACT_APP_API_URL ;
-export const API_URL = 'https://tripadmin.seemytrip.com/api';
+export const API_URL = process.env.REACT_APP_API_URL ;
+// export const API_URL = 'https://tripadmin.seemytrip.com/api';
 // export const API_URL = 'https://tripadmin.onrender.com/api';
 
 const AUTH_TOKEN_KEY = 'authToken';
