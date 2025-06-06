@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { registerLocale } from "react-datepicker";
+import enGB from "date-fns/locale/en-GB"; // for dd/MM/yyyy format
 import { Modal, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Select from 'react-select';
@@ -8,6 +10,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchCityHotels } from '../../store/Actions/hotelActions';
 import { selectCityHotels } from '../../store/Selectors/hotelSelectors';
 import './Hotel.css';
+
+registerLocale("en-GB", enGB);
 
 // Memoized modal components to prevent unnecessary re-renders
 const CustomModalHeader = React.memo(({ onClose }) => (
@@ -79,13 +83,22 @@ export const HotelSearchbar = () => {
   }, [dispatch]);
 
   // Transform city data into select options
-  const cityOptions = useMemo(() => {
-    return cityHotels?.map(city => ({
-      value: city.Id,
-      label: city.Display,
-      cityData: city // Include full city data for later use
-    })) || [];
-  }, [cityHotels]);
+const cityOptions = useMemo(() => {
+  // Sort by Count descending and take top 15
+  const sortedCities = [...(cityHotels || [])]
+    .sort((a, b) => b.Count - a.Count)
+    .slice(0, 15); // Take top 15 most popular
+  
+  // If you want exactly 10-15 randomly:
+  // const shuffled = [...(cityHotels || [])].sort(() => 0.5 - Math.random());
+  // const randomSelection = shuffled.slice(0, Math.floor(Math.random() * 6) + 10);
+
+  return sortedCities.map(city => ({
+    value: city.Id,
+    label: city.Display,
+    cityData: city
+  }));
+}, [cityHotels]);
 
   // Handle city selection
   const handleCityChange = (selectedOption) => {
@@ -96,6 +109,7 @@ export const HotelSearchbar = () => {
   // Handle input change for search
   const handleInputChange = (inputValue) => {
     console.log('Search input:', inputValue);
+    dispatch(fetchCityHotels(inputValue));
     return inputValue; // Important to return the input value
   };
 
@@ -172,6 +186,7 @@ export const HotelSearchbar = () => {
             <div className="row gy-3 gx-md-3 gx-sm-2">
               <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
                 <div className="form-group hdd-arrow rounded-1 mb-0">
+                  <label>Choose City, Hotel</label>
                   <Select
                     options={cityOptions}
                     placeholder="Destination"
@@ -196,6 +211,8 @@ export const HotelSearchbar = () => {
                       selectsStart
                       startDate={startDate}
                       endDate={endDate}
+                      dateFormat={"dd/MM/yyyy"}
+                      minDate={new Date()}
                       placeholderText="Check-In"
                       className="form-control fw-bold custom-input"
                     />

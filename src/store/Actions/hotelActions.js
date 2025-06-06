@@ -20,12 +20,13 @@ export const fetchCityHotelsFailure = (error) => ({
 });
 
 
-export const fetchCityHotels = () => async (dispatch) => {
+export const fetchCityHotels = (hotelsearchtext) => async (dispatch) => {
     console.log("Fetching hotel cities from API");
+    console.log("Hotel search text:", hotelsearchtext);
     try {
         dispatch(fetchCityHotelsRequest());
 
-        const response = await axios.post(`${API_URL}/hotels/getHotelCities` );
+        const response = await axios.post(`${API_URL}/hotels/getHotelCities`,{"input" : hotelsearchtext} );
         console.log("Response from hotel cities API:", response.data);
         if(response.data) {
             dispatch(fetchCityHotelsSuccess(response.data));
