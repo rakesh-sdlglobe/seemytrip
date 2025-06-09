@@ -16,6 +16,8 @@ import { Link } from 'react-router-dom';
 import Footer from './footer';
 
 const HotelList02 = () => {
+
+  console.log('==========> HotelList02 component loaded');
       return (
         <div>
           {/* ============================================================== */}

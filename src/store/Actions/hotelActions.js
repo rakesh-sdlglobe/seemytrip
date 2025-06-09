@@ -4,6 +4,9 @@ import { API_URL, } from "./authActions";
 export const FETCH_CITY_HOTELS_REQUEST = 'FETCH_CITY_HOTELS_REQUEST';
 export const FETCH_CITY_HOTELS_SUCCESS = 'FETCH_CITY_HOTELS_SUCCESS';
 export const FETCH_CITY_HOTELS_FAILURE = 'FETCH_CITY_HOTELS_FAILURE';
+export const FETCH_HOTELS_LIST_REQUEST = 'FETCH_HOTELS_LIST_REQUEST';
+export const FETCH_HOTELS_LIST_SUCCESS = 'FETCH_HOTELS_LIST_SUCCESS';
+export const FETCH_HOTELS_LIST_FAILURE = 'FETCH_HOTELS_LIST_FAILURE';
 
 export const fetchCityHotelsRequest = () => ({
     type : FETCH_CITY_HOTELS_REQUEST,
@@ -20,12 +23,14 @@ export const fetchCityHotelsFailure = (error) => ({
 });
 
 
-export const fetchCityHotels = () => async (dispatch) => {
+
+export const fetchCityHotels = (hotelsearchtext) => async (dispatch) => {
     console.log("Fetching hotel cities from API");
+    console.log("Hotel search text:", hotelsearchtext);
     try {
         dispatch(fetchCityHotelsRequest());
 
-        const response = await axios.post(`${API_URL}/hotels/getHotelCities` );
+        const response = await axios.post(`${API_URL}/hotels/getHotelCities`,{"input" : hotelsearchtext} );
         console.log("Response from hotel cities API:", response.data);
         if(response.data) {
             dispatch(fetchCityHotelsSuccess(response.data));
@@ -37,4 +42,58 @@ export const fetchCityHotels = () => async (dispatch) => {
         dispatch(fetchCityHotelsFailure(error.message));
     }
     
+}
+
+
+
+export const fetchHotelsListRequest = () => ({
+    type : FETCH_HOTELS_LIST_REQUEST,
+});
+
+export const fetchHotelsListSuccess = (hotels) => ({
+    type : FETCH_HOTELS_LIST_SUCCESS,
+    payload : hotels,
+});
+
+export const fetchHotelsListFailure = (error) => ({
+    type : FETCH_HOTELS_LIST_FAILURE,
+    payload : error,
+});
+
+
+
+export const fetchHotelsList = (cityId, checkInDate, checkOutDate, Rooms, adults, children) => async (dispatch) => {
+    console.log("==============> Fetching hotels list from API");
+    console.log("City ID:", cityId);
+    console.log("Check-in Date:", checkInDate);
+    console.log("Check-out Date:", checkOutDate);
+    console.log("Rooms:", Rooms);
+    console.log("Adults:", adults);
+    console.log("Children:", children);
+
+    try {
+        dispatch(fetchHotelsListRequest());
+
+        const response = await axios.post(`${API_URL}/hotels/getHotelsList`, {
+            cityId,
+            checkInDate,
+            checkOutDate,
+            "Rooms" : [{
+                "RoomNo": Rooms,
+                "Adults" : adults,
+                "Children" : children
+            }]
+        });
+
+        console.log("Response from hotels list API:", response.data);
+        if(response.data.Hotels.length > 0) {
+            console.log(" *** Yeah , count for hotels is ",response.data.Hotels.length);
+            dispatch(fetchHotelsListSuccess(response.data.Hotels));
+        } else {
+            dispatch(fetchHotelsListFailure("No hotels found for the given criteria"));
+        }
+    } catch (error) {
+        console.error("Error fetching hotels list:", error);
+        dispatch(fetchHotelsListFailure(error.message));
+    }
 }
