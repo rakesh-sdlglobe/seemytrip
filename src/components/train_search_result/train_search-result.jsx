@@ -288,8 +288,6 @@ const TrainSearchResultList = ({ filters }) => {
     }
   }, [isAuthenticated, navigate, setShowAuthPopup]);
 
-  const stateData = useSelector((state) => state);
-  console.log('217 stateData from train search result :', stateData);
 
   const getFormattedSeatsData = (train, index) => {
     

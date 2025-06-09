@@ -1114,6 +1114,7 @@ const SearchComponent = ({
                             className="btn full-width fw-medium"
                             style={{ backgroundColor: buttonBackgroundColor, color: buttonTextColor, }}
                             onClick={handleSearch}
+                            disabled={!leavingFrom || !goingTo || !journeyDate}  
                           >
                             <i className="fa-solid fa-magnifying-glass me-2" />
                             {buttonText}

@@ -4,21 +4,62 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { registerLocale } from "react-datepicker";
 import enGB from "date-fns/locale/en-GB"; // for dd/MM/yyyy format
 import { Modal, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
 import Select from 'react-select';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCityHotels } from '../../store/Actions/hotelActions';
 import { selectCityHotels } from '../../store/Selectors/hotelSelectors';
-import './Hotel.css';
+import { useNavigate } from 'react-router-dom';
+
+
 
 registerLocale("en-GB", enGB);
-
 // Memoized modal components to prevent unnecessary re-renders
 const CustomModalHeader = React.memo(({ onClose }) => (
   <Modal.Header closeButton className="border-0">
     <Modal.Title className="fw-bold">Choose Members</Modal.Title>
   </Modal.Header>
 ));
+
+const handleSearch = (cityId, checkInDate, checkOutDate, Rooms, adults, children, selectedCity, navigate) => {
+  console.log("Search clicked with parameters:");
+  console.log("City ID:", cityId);
+  console.log("Check-in Date:", checkInDate);
+  console.log("Check-out Date:", checkOutDate);
+  console.log("Rooms:", Rooms);
+  console.log("Adults:", adults);
+  console.log("Children:", children);
+  console.log("Selected City Data:", selectedCity);
+
+  if (!cityId || !checkInDate || !checkOutDate) {
+    console.error("Missing required search parameters");
+    return;
+  }
+  
+  const formattedCheckIn = checkInDate ? checkInDate.toLocaleDateString('en-CA') : null;
+  const formattedCheckOut = checkOutDate ? checkOutDate.toLocaleDateString('en-CA') : null;
+
+  localStorage.setItem("hotelSearchParams", JSON.stringify({
+    cityId,
+    checkInDate: formattedCheckIn,
+    checkOutDate: formattedCheckOut,
+    Rooms,
+    adults,
+    children,
+    selectedCity
+  }));
+
+  navigate(`/hotel-search-result`, {
+    state: {
+      cityId,
+      checkInDate: formattedCheckIn,
+      checkOutDate: formattedCheckOut,
+      Rooms,
+      adults,
+      children,
+      selectedCity
+    }
+  });
+}
 
 const CustomModalBody = React.memo(({ adults, children, rooms, setAdults, setChildren, setRooms }) => (
   <Modal.Body className="p-4">
@@ -76,6 +117,7 @@ export const HotelSearchbar = () => {
   const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
   const [showGuestsModal, setShowGuestsModal] = useState(false);
+  const navigate = useNavigate();
 
   // Fetch cities on mount
   useEffect(() => {
@@ -108,7 +150,6 @@ const cityOptions = useMemo(() => {
 
   // Handle input change for search
   const handleInputChange = (inputValue) => {
-    console.log('Search input:', inputValue);
     dispatch(fetchCityHotels(inputValue));
     return inputValue; // Important to return the input value
   };
@@ -221,6 +262,7 @@ const cityOptions = useMemo(() => {
                       onChange={setEndDate}
                       selectsEnd
                       startDate={startDate}
+                      dateFormat={"dd/MM/yyyy"}
                       endDate={endDate}
                       minDate={startDate}
                       placeholderText="Check-Out"
@@ -248,11 +290,16 @@ const cityOptions = useMemo(() => {
               </div>
               <div className="col-xl-4 col-lg-4 col-md-4 col-sm-4">
                 <div className="form-group mb-0">
-                  <Link to="/hotel-list-01">
-                    <button type="button" className="btn btn-danger full-width rounded-1 fw-medium">
+                  {/* <Link to="/hotel-list-01"> */}
+                    <button 
+                        type="button" 
+                        className="btn btn-danger full-width rounded-1 fw-medium"
+                        onClick={() => handleSearch(selectedCity?.value, startDate, endDate, rooms, adults, children,selectedCity, navigate)}
+                        disabled={!selectedCity || !startDate || !endDate}
+                    > 
                       <i className="fa fa-search me-2" />Search
                     </button>
-                  </Link>
+                  {/* </Link> */}
                 </div>
               </div>
             </div>
@@ -275,3 +322,5 @@ const cityOptions = useMemo(() => {
     </div>
   );
 };
+
+export default HotelSearchbar;

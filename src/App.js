@@ -37,11 +37,10 @@ import HomeHotel from './components/home-hotel';
 import HomeRental from './components/home-rental';
 import HomeStay from './components/home-stay';
 import HotelDetail02 from './components/hotel-detail-2';
-import HotelDetail01 from './components/hotel-list-01';
-import HotelList01 from './components/hotel-list-01';
-import HotelList02 from './components/hotel-list-02';
-import HotelList03 from './components/hotel-list-03';
-import Register from './components/register';
+import HotelDetail01 from './components/hotel_components/hotel-list-01.jsx';
+import HotelList01 from './components/hotel_components/hotel-list-01.jsx';
+import HotelList02 from './components/hotel-list-02.jsx';
+import HotelList03 from './components/hotel-list-03.jsx';
 import SliderHome from './components/slider-home';
 import PropertyList from './components/property-list-01';
 import PropertyList2 from './components/property-list-02';
@@ -112,6 +111,9 @@ import TatkalRailwayreservation from './components/Features/TatkalRailwayreserva
 import Platformlocator from './components/Features/Platformlocator.jsx';
 import BackToTop from './components/BackToTop';
 import FlightSeatSelection from './components/flight_components/FlightSeatSelection.jsx';
+import HotelList from './components/hotel_components/HotelList.jsx';
+import HotelFilters from './components/hotel_components/HotelFilters.jsx';
+import HotelSearchResult from './components/hotel_components/HotelSearchResult';
 
 
 function App() {
@@ -187,9 +189,8 @@ function App() {
           <Route path="/flight-Bookingpage02" element={<FlightBookingPage02/>} />
           
           {/* Hotel Routes */}
+          <Route path="/hotel-search-result" element={<HotelSearchResult />} />
           <Route path="/home-hotel" element={<HomeHotel />} />
-          <Route path="/hotel-list-01" element={<HotelList01 />} />
-          <Route path="/hotel-list-02" element={<HotelList02 />} />
           <Route path="/hotel-list-03" element={<HotelList03 />} />
           <Route path="/hotel-detail-01" element={<HotelDetail01 />} />
           <Route path="/hotel-detail-02" element={<HotelDetail02 />} />
