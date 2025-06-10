@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const HotelFilters = ({ filters, onFilterChange, onClearAll }) => {
+const HotelsFilters = ({ filters, onFilterChange, onClearAll }) => {
   return (
     <div className="filter-searchBar bg-white rounded-3" style={{ boxShadow:"0 2px 5px rgba(0, 0, 0, 0.1)" }}>
       <div className="filter-searchBar-head border-bottom">
@@ -273,4 +273,4 @@ const HotelFilters = ({ filters, onFilterChange, onClearAll }) => {
   );
 };
 
-export default HotelFilters;
+export default HotelsFilters;

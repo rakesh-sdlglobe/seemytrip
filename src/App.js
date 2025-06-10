@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import Home from './components/home';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Login from './components/login';
 import About from './components/about';
 import PageNotFound from './components/404';
 import AddListing from './components/add-listing';
@@ -23,9 +22,7 @@ import Destination03 from './components/destination-03';
 import DestinationDetail from './components/destination-detail';
 import Faq from './components/faq';
 import FlightDetail from './components/Flight-detail';
-import FlightList01 from './components/train_search_result/TrainList.jsx';
 import FlightList02 from './components/flight-list-02';
-import ForgotPassword from './components/forgot-password';
 import HelpCenter from './components/help-center';
 import Home02 from './components/home-2';
 import Home03 from './components/home-3';
@@ -38,8 +35,6 @@ import HomeRental from './components/home-rental';
 import HomeStay from './components/home-stay';
 import HotelDetail02 from './components/hotel-detail-2';
 import HotelDetail01 from './components/hotel_components/hotel-list-01.jsx';
-import HotelList01 from './components/hotel_components/hotel-list-01.jsx';
-import HotelList02 from './components/hotel-list-02.jsx';
 import HotelList03 from './components/hotel-list-03.jsx';
 import SliderHome from './components/slider-home';
 import PropertyList from './components/property-list-01';
@@ -61,7 +56,6 @@ import MyWishlists from './components/my-wishlists.jsx';
 import Settings from './components/settings.jsx'
 import DeleteAccount from './components/delete-account.jsx'
 import { useDispatch } from 'react-redux';
-import { setUser } from './store/Actions/authActions';
 import FlightList from './components/flight_components/flight_list.jsx';
 import { FlightBookingpage01 } from './components/flight_components/flight_bookingpage.jsx';
 import FlightBookingPage02 from './components/flight_bookingpage02.jsx';
@@ -77,7 +71,6 @@ import { BusBookingPage } from './components/bus_components/bus_booking_page.jsx
 import BusList from './components/bus_components/bus_list_page.jsx';
 import BusBookingPayment from './components/bus_components/bus_booking_payment.jsx';
 import CruiseList from './components/cruise_components/Cruise_list_page.jsx';
-import CruiseResultpage from './components/cruise_components/Cruise_result_page.jsx';
 import CruiseBookingPage from './components/cruise_components/Cruise_booking_page.jsx';
 import CruiseBookingPayment from './components/bus_components/bus_booking_payment.jsx';
 import MedicalTrourism from './components/Home-Medicaltourism.jsx';
@@ -89,7 +82,6 @@ import MtList from './components/medical_tourism/mt_list_page.jsx';
 import MtBookingPayment from './components/medical_tourism/booking_payment-page.jsx';
 import TrainSearchResultList from './components/train_search_result/train_search-result.jsx';
 
-import OTPModal from './components/otp-modal.jsx';
 import SupportPage from './components/SupportPage.jsx';
 import TrainList01 from './components/train_search_result/TrainList.jsx';
 import CardOffers from './components/Offers/Offers_Result.jsx';
@@ -111,8 +103,6 @@ import TatkalRailwayreservation from './components/Features/TatkalRailwayreserva
 import Platformlocator from './components/Features/Platformlocator.jsx';
 import BackToTop from './components/BackToTop';
 import FlightSeatSelection from './components/flight_components/FlightSeatSelection.jsx';
-import HotelList from './components/hotel_components/HotelList.jsx';
-import HotelFilters from './components/hotel_components/HotelFilters.jsx';
 import HotelSearchResult from './components/hotel_components/HotelSearchResult';
 
 
