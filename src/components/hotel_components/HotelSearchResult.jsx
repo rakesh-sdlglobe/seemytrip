@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Header02 from '../header02';
 import Footer from '../footer';
 import HotelSearchbar from './HotelSearchbar';
-import HotelFilters from './HotelFilters';
+import HotelsFilters from './HotelListFilters';
 import HotelList from './HotelList';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchHotelsList } from '../../store/Actions/hotelActions';
@@ -143,14 +143,14 @@ const HotelSearchResult = () => {
           <div className="container">
             <div className="row justify-content-between gy-4 gx-xl-4 gx-lg-3 gx-md-3 gx-4">
               <div className="col-xl-3 col-lg-4 col-md-12">
-                <HotelFilters 
+                <HotelsFilters 
                   filters={filters}
                   onFilterChange={onFilterChange}
                   onClearAll={handleClearAll}
                 />
               </div>
               <div className="col-xl-9 col-lg-8 col-md-12">
-                <HotelList filters={filters} />
+                <HotelList filters={filters} hotelsList={hotelsList} />
               </div>
             </div>
           </div>
