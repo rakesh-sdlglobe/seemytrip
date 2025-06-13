@@ -119,7 +119,6 @@ export const fetchHotelsImagesFailure = (error) => ({
 
 
 export const fetchHotelsImages = (HotelProviderSearchId) => async (dispatch) => {
-    console.log("Fetching hotel images from API for hotel ID:", HotelProviderSearchId);
     try {
         dispatch(fetchHotelsImagesRequest());
 

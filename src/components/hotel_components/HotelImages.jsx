@@ -5,128 +5,123 @@ import { fetchHotelsImages } from '../../store/Actions/hotelActions';
 import { selectHotelsImages } from '../../store/Selectors/hotelSelectors';
 
 const HotelImages = () => {
-    const location = useLocation()
-    const dispatch = useDispatch()
+    const location = useLocation();
+    const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [hotel, setHotel] = useState(null);
-    const [selectedAttribute, setSelectedAttribute] = useState('all');
+    const [selectedCategory, setSelectedCategory] = useState('all');
     const [loading, setLoading] = useState(true);
-    
+    const [categories, setCategories] = useState([]);
 
-    const HotelProviderSearchId = location.state;
-    const hotelImages = useSelector(selectHotelsImages)
-    console.log("========> Finally I'm getting images:  ",hotelImages);
-    
-  // Mock data - replace with actual API call
+    const { HotelProviderSearchId } = location.state;
+    const hotelImages = useSelector(selectHotelsImages);
+
     useEffect(() => {
-        // Simulate API call
-        dispatch(fetchHotelsImages(HotelProviderSearchId))
-    }, [dispatch,HotelProviderSearchId]);
+        dispatch(fetchHotelsImages(HotelProviderSearchId));
+    }, [dispatch, HotelProviderSearchId]);
 
-  // Group images by attributes
-  const groupedImages = {
-    all: hotel?.HotelImages || [],
-    exterior: hotel?.HotelImages?.filter(img => img.includes('exterior')) || [],
-    interior: hotel?.HotelImages?.filter(img => img.includes('interior')) || [],
-    room: hotel?.HotelImages?.filter(img => img.includes('room')) || [],
-    amenities: hotel?.HotelImages?.filter(img => img.includes('amenity')) || [],
-  };
+    // Process images and extract unique categories
+    useEffect(() => {
+        if (hotelImages && hotelImages.length > 0) {
+            // Get unique categories
+            const uniqueCategories = [...new Set(hotelImages.map(img => img.Name))];
+            setCategories(['all', ...uniqueCategories]);
+            setLoading(false);
+        }
+    }, [hotelImages]);
 
-  const attributes = [
-    { id: 'all', label: 'All Images' },
-    { id: 'exterior', label: 'Exterior' },
-    { id: 'interior', label: 'Interior' },
-    { id: 'room', label: 'Rooms' },
-    { id: 'amenities', label: 'Amenities' },
-  ];
+    // Group images by category
+    const groupedImages = {
+        all: hotelImages || [],
+        ...categories.reduce((acc, category) => {
+            if (category !== 'all') {
+                acc[category] = hotelImages?.filter(img => img.Name === category) || [];
+            }
+            return acc;
+        }, {})
+    };
 
-  if (loading) {
-    return (
-      <div className="container mt-5 text-center">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (!hotel) {
-    return (
-      <div className="container mt-5 text-center">
-        <h3>Hotel not found</h3>
-        <button 
-          className="btn btn-primary mt-3"
-          onClick={() => navigate(-1)}
-        >
-          Go Back
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="container mt-4">
-      {/* Header */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="mb-0">{hotel.HotelName}</h2>
-        <button 
-          className="btn btn-outline-primary"
-          onClick={() => navigate(-1)}
-        >
-          <i className="fas fa-arrow-left me-2"></i>
-          Back to Hotel
-        </button>
-      </div>
-
-      {/* Attribute Navigation */}
-      <div className="mb-4">
-        <div className="nav nav-pills">
-          {attributes.map(attr => (
-            <button
-              key={attr.id}
-              className={`nav-link ${selectedAttribute === attr.id ? 'active' : ''}`}
-              onClick={() => setSelectedAttribute(attr.id)}
-            >
-              {attr.label}
-              <span className="badge bg-secondary ms-2">
-                {groupedImages[attr.id].length}
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Image Gallery */}
-      <div className="row g-4">
-        {groupedImages[selectedAttribute].map((image, index) => (
-          <div key={index} className="col-md-4 col-lg-3">
-            <div className="card h-100">
-              <img
-                src={image}
-                className="card-img-top"
-                alt={`${hotel.HotelName} - Image ${index + 1}`}
-                style={{ height: '200px', objectFit: 'cover' }}
-              />
-              <div className="card-body">
-                <p className="card-text text-muted small">
-                  Image {index + 1} of {groupedImages[selectedAttribute].length}
-                </p>
-              </div>
+    if (loading) {
+        return (
+            <div className="container mt-5 text-center">
+                <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
             </div>
-          </div>
-        ))}
-      </div>
+        );
+    }
 
-      {/* No Images Message */}
-      {groupedImages[selectedAttribute].length === 0 && (
-        <div className="text-center mt-5">
-          <i className="fas fa-images fa-3x text-muted mb-3"></i>
-          <h4>No images available for this category</h4>
-          <p className="text-muted">Please select a different category or check back later.</p>
+    return (
+        <div className="container-fluid mt-4">
+            <div className="row">
+                {/* Side Navigation */}
+                <div className="col-md-3 col-lg-2">
+                    <div className="sticky-top pt-3">
+                        <button 
+                            className="btn btn-outline-primary mb-4 w-100"
+                            onClick={() => navigate(-1)}
+                        >
+                            <i className="fas fa-arrow-left me-2"></i>
+                            Back to Hotel
+                        </button>
+                        
+                        <div className="list-group">
+                            {categories.map(category => (
+                                <button
+                                    key={category}
+                                    className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ${
+                                        selectedCategory === category ? 'active' : ''
+                                    }`}
+                                    onClick={() => setSelectedCategory(category)}
+                                >
+                                    {category === 'all' ? 'All Images' : category}
+                                    <span className="badge bg-primary rounded-pill">
+                                        {groupedImages[category]?.length || 0}
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Image Gallery */}
+                <div className="col-md-9 col-lg-10">
+                    <div className="row g-4">
+                        {groupedImages[selectedCategory]?.map((image, index) => (
+                            <div key={index} className="col-md-4 col-lg-3">
+                                <div className="card h-100 shadow-sm">
+                                    <img
+                                        src={image.Url}
+                                        className="card-img-top"
+                                        alt={image.Name}
+                                        style={{ 
+                                            height: '200px', 
+                                            objectFit: 'cover',
+                                            cursor: 'pointer'
+                                        }}
+                                        onClick={() => window.open(image.Url, '_blank')}
+                                    />
+                                    <div className="card-body">
+                                        <p className="card-text text-muted small">
+                                            {image.Name}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* No Images Message */}
+                    {(!groupedImages[selectedCategory] || groupedImages[selectedCategory].length === 0) && (
+                        <div className="text-center mt-5">
+                            <i className="fas fa-images fa-3x text-muted mb-3"></i>
+                            <h4>No images available for this category</h4>
+                            <p className="text-muted">Please select a different category or check back later.</p>
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 export default HotelImages; 

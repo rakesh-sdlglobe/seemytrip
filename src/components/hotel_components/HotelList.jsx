@@ -52,7 +52,7 @@ const HotelList = ({ filters, hotelsList: hotels }) => {
                       
                     {/* Thumbnail Gallery */}  
                     <div className="d-flex gap-2 mt-2"> {/* Removed fixed height for responsive */}  
-                      {hotel?.HotelImages?.slice(0, 3).map((img, index) => (  
+                      {hotel?.HotelImages?.slice(1, 4).map((img, index) => (  
                         <div   
                           key={index}  
                           className="position-relative rounded overflow-hidden flex-grow-1"  
