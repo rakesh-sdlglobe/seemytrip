@@ -1,7 +1,12 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const HotelList = ({ filters, hotelsList: hotels }) => {
+  const navigate = useNavigate()
+
+
+
   const filteredHotels = useMemo(() => {
     return hotels.filter(hotel => {
       // Add your filtering logic here based on the filters prop
@@ -12,10 +17,18 @@ const HotelList = ({ filters, hotelsList: hotels }) => {
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'INR',
       minimumFractionDigits: 2
     }).format(price);
   };
+
+  const handleNavigateToImages = (HotelProviderSearchId) => {
+    navigate('/hotel-images', {
+      state : {
+        HotelProviderSearchId
+      }
+    })
+  }
 
   return (
     <div className="row align-items-center g-4 mt-2">
@@ -58,31 +71,35 @@ const HotelList = ({ filters, hotelsList: hotels }) => {
                         
                       {/* Show All Button */}  
                       {hotel?.HotelImages?.length > 3 && (  
-                        <div   
-                          className="position-relative rounded overflow-hidden flex-grow-1"  
-                          style={{   
-                            height: '3rem',   
+                        <div 
+                          className="position-relative rounded overflow-hidden flex-grow-1"
+                          style={{ 
+                            height: '3rem', 
                             width: '2rem',
-                            backgroundImage: `url(${hotel.HotelImages[3]})`,  
-                            backgroundSize: 'cover',  
-                            backgroundPosition: 'center',  
-                            filter: 'blur(2px)',  
-                            cursor: 'pointer'  
-                          }}  
-                          onClick={() => {  
-                            // Implement your gallery modal or navigation here  
-                            console.log('Show all images clicked');  
-                          }}  
-                        >  
-                          <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50">  
-                            <button   
-                              className="btn btn-light btn-sm d-flex align-items-center gap-1"  
-                            >  
-                              <span>+</span>  
-                              <span>View All</span>  
-                            </button>  
-                          </div>  
-                        </div>  
+                            backgroundImage: `url(${hotel.HotelImages[3]})`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            filter: 'blur(2px)',
+                            cursor: 'pointer'
+                          }}
+                          onClick={() => {handleNavigateToImages(hotel.HotelProviderSearchId)}}
+                        >
+                          <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50">
+                            <button 
+                              className="btn btn-light btn-sm d-flex align-items-center gap-1"
+                              style={{
+                                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                border: 'none',
+                                padding: '4px 8px',
+                                fontSize: '0.875rem',
+                                fontWeight: '500'
+                              }}
+                            >
+                              <span style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>+</span>
+                              <span>View All</span>
+                            </button>
+                          </div>
+                        </div>
                       )}  
                     </div>  
                   </div>  

@@ -119,6 +119,20 @@ export const HotelSearchbar = () => {
   const [showGuestsModal, setShowGuestsModal] = useState(false);
   const navigate = useNavigate();
 
+  // Load data from localStorage on component mount
+  useEffect(() => {
+    const savedSearchParams = localStorage.getItem("hotelSearchParams");
+    if (savedSearchParams) {
+      const params = JSON.parse(savedSearchParams);
+      setSelectedCity(params.selectedCity);
+      setStartDate(params.checkInDate ? new Date(params.checkInDate) : null);
+      setEndDate(params.checkOutDate ? new Date(params.checkOutDate) : null);
+      setRooms(params.Rooms || 1);
+      setAdults(params.adults || 1);
+      setChildren(params.children || 0);
+    }
+  }, []);
+
   // Fetch cities on mount
   useEffect(() => {
     dispatch(fetchCityHotels());
@@ -142,16 +156,56 @@ const cityOptions = useMemo(() => {
   }));
 }, [cityHotels]);
 
-  // Handle city selection
+  // Handle city selection with localStorage update
   const handleCityChange = (selectedOption) => {
     setSelectedCity(selectedOption);
-    console.log('Selected city:', selectedOption);
+    const currentParams = JSON.parse(localStorage.getItem("hotelSearchParams") || "{}");
+    localStorage.setItem("hotelSearchParams", JSON.stringify({
+      ...currentParams,
+      selectedCity: selectedOption,
+      cityId: selectedOption?.value
+    }));
   };
 
   // Handle input change for search
   const handleInputChange = (inputValue) => {
     dispatch(fetchCityHotels(inputValue));
     return inputValue; // Important to return the input value
+  };
+
+  // Handle date changes with localStorage update
+  const handleDateChange = (date, isStartDate) => {
+    if (isStartDate) {
+      setStartDate(date);
+    } else {
+      setEndDate(date);
+    }
+    const currentParams = JSON.parse(localStorage.getItem("hotelSearchParams") || "{}");
+    localStorage.setItem("hotelSearchParams", JSON.stringify({
+      ...currentParams,
+      checkInDate: isStartDate ? date?.toLocaleDateString('en-CA') : currentParams.checkInDate,
+      checkOutDate: !isStartDate ? date?.toLocaleDateString('en-CA') : currentParams.checkOutDate
+    }));
+  };
+
+  // Handle guest changes with localStorage update
+  const handleGuestChange = (type, value) => {
+    const currentParams = JSON.parse(localStorage.getItem("hotelSearchParams") || "{}");
+    switch(type) {
+      case 'adults':
+        setAdults(value);
+        break;
+      case 'children':
+        setChildren(value);
+        break;
+      case 'rooms':
+        setRooms(value);
+        break;
+    }
+    localStorage.setItem("hotelSearchParams", JSON.stringify({
+      ...currentParams,
+      [type]: value
+    }));
   };
 
   const handleShowGuestsModal = () => setShowGuestsModal(true);
@@ -248,7 +302,7 @@ const cityOptions = useMemo(() => {
                   <div className="d-flex">
                     <DatePicker
                       selected={startDate}
-                      onChange={setStartDate}
+                      onChange={(date) => handleDateChange(date, true)}
                       selectsStart
                       startDate={startDate}
                       endDate={endDate}
@@ -259,7 +313,7 @@ const cityOptions = useMemo(() => {
                     />
                     <DatePicker
                       selected={endDate}
-                      onChange={setEndDate}
+                      onChange={(date) => handleDateChange(date, false)}
                       selectsEnd
                       startDate={startDate}
                       dateFormat={"dd/MM/yyyy"}
@@ -313,9 +367,9 @@ const cityOptions = useMemo(() => {
           adults={adults}
           children={children}
           rooms={rooms}
-          setAdults={setAdults}
-          setChildren={setChildren}
-          setRooms={setRooms}
+          setAdults={(value) => handleGuestChange('adults', value)}
+          setChildren={(value) => handleGuestChange('children', value)}
+          setRooms={(value) => handleGuestChange('rooms', value)}
         />
         <CustomModalFooter onConfirm={handleConfirmGuests} />
       </Modal>

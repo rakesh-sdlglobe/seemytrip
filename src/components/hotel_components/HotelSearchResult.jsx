@@ -8,11 +8,13 @@ import HotelList from './HotelList';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchHotelsList } from '../../store/Actions/hotelActions';
 import { selectHotelsList } from '../../store/Selectors/hotelSelectors';
+import { selectHotelsLoading } from '../../store/Selectors/hotelSelectors';
 
 const HotelSearchResult = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const hotelsList = useSelector(selectHotelsList);
+  const loading = useSelector(selectHotelsLoading)
 
   console.log("17 Hotels List:", hotelsList);
 
@@ -52,10 +54,10 @@ const HotelSearchResult = () => {
     }
   }, [dispatch]);
 
-  useEffect(() => {
-    // Log the hotels list whenever it changes
-    console.log('57 Hotels List:', hotelsList);
-  }, [hotelsList]);
+  // useEffect(() => {
+  //   // Log the hotels list whenever it changes
+  //   console.log('57 Hotels List:', hotelsList);
+  // }, [hotelsList]);
 
   const onFilterChange = useCallback((e) => {
     const { id, checked, type } = e.target;

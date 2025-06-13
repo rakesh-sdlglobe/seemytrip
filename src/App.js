@@ -104,6 +104,7 @@ import Platformlocator from './components/Features/Platformlocator.jsx';
 import BackToTop from './components/BackToTop';
 import FlightSeatSelection from './components/flight_components/FlightSeatSelection.jsx';
 import HotelSearchResult from './components/hotel_components/HotelSearchResult';
+import HotelImages from './components/hotel_components/HotelImages.jsx';
 
 
 function App() {
@@ -181,6 +182,7 @@ function App() {
           {/* Hotel Routes */}
           <Route path="/hotel-search-result" element={<HotelSearchResult />} />
           <Route path="/home-hotel" element={<HomeHotel />} />
+          <Route path="/hotel-images" element={<HotelImages />} />
           <Route path="/hotel-list-03" element={<HotelList03 />} />
           <Route path="/hotel-detail-01" element={<HotelDetail01 />} />
           <Route path="/hotel-detail-02" element={<HotelDetail02 />} />

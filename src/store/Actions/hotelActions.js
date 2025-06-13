@@ -7,6 +7,9 @@ export const FETCH_CITY_HOTELS_FAILURE = 'FETCH_CITY_HOTELS_FAILURE';
 export const FETCH_HOTELS_LIST_REQUEST = 'FETCH_HOTELS_LIST_REQUEST';
 export const FETCH_HOTELS_LIST_SUCCESS = 'FETCH_HOTELS_LIST_SUCCESS';
 export const FETCH_HOTELS_LIST_FAILURE = 'FETCH_HOTELS_LIST_FAILURE';
+export const FETCH_HOTELS_IMAGES_REQUEST = 'FETCH_HOTELS_IMAGES_REQUEST';
+export const FETCH_HOTELS_IMAGES_SUCCESS = 'FETCH_HOTELS_IMAGES_SUCCESS';
+export const FETCH_HOTELS_IMAGES_FAILURE = 'FETCH_HOTELS_IMAGES_FAILURE';
 
 export const fetchCityHotelsRequest = () => ({
     type : FETCH_CITY_HOTELS_REQUEST,
@@ -95,5 +98,42 @@ export const fetchHotelsList = (cityId, checkInDate, checkOutDate, Rooms, adults
     } catch (error) {
         console.error("Error fetching hotels list:", error);
         dispatch(fetchHotelsListFailure(error.message));
+    }
+}
+
+export const fetchHotelsImagesRequest = () => ({
+    type : FETCH_HOTELS_IMAGES_REQUEST,
+});
+
+export const fetchHotelsImagesSuccess = (images) => ({
+    type : FETCH_HOTELS_IMAGES_SUCCESS,
+    payload : images,
+    error : null,
+});
+
+export const fetchHotelsImagesFailure = (error) => ({
+    type : FETCH_HOTELS_IMAGES_FAILURE,
+    payload : null,
+    error : error,
+});
+
+
+export const fetchHotelsImages = (HotelProviderSearchId) => async (dispatch) => {
+    console.log("Fetching hotel images from API for hotel ID:", HotelProviderSearchId);
+    try {
+        dispatch(fetchHotelsImagesRequest());
+
+        const response = await axios.post(`${API_URL}/hotels/getHotelImages`, { HotelProviderSearchId });
+
+        console.log("Response from hotels images API:", response.data);
+
+        if(response.data.Gallery && response.data.Gallery.length > 0) {
+            dispatch(fetchHotelsImagesSuccess(response.data?.Gallery));
+        } else {
+            dispatch(fetchHotelsImagesFailure("No images found for the hotel"));
+        }
+    } catch (error) {
+        console.error("Error fetching hotel images:", error);
+        dispatch(fetchHotelsImagesFailure(error.message));
     }
 }
