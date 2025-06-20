@@ -105,6 +105,7 @@ import BackToTop from './components/BackToTop';
 import FlightSeatSelection from './components/flight_components/FlightSeatSelection.jsx';
 import HotelSearchResult from './components/hotel_components/HotelSearchResult';
 import HotelImages from './components/hotel_components/HotelImages.jsx';
+import HotelDetails from './components/hotel_components/HotelDetails.jsx';
 
 
 function App() {
@@ -188,6 +189,7 @@ function App() {
           <Route path="/hotel-detail-02" element={<HotelDetail02 />} />
           <Route path="/hotel-bookingpage" element={<HotelBookingPage/>} />
           <Route path="/hotel-bookingpage02" element={<HotelBookingpage02/>} />
+          <Route path="/hotel-details" element={<HotelDetails />} />
 
           {/* Car & Cab Routes */}
           <Route path="/home-car" element={<HomeCar />} />

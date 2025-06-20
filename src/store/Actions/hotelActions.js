@@ -10,6 +10,9 @@ export const FETCH_HOTELS_LIST_FAILURE = 'FETCH_HOTELS_LIST_FAILURE';
 export const FETCH_HOTELS_IMAGES_REQUEST = 'FETCH_HOTELS_IMAGES_REQUEST';
 export const FETCH_HOTELS_IMAGES_SUCCESS = 'FETCH_HOTELS_IMAGES_SUCCESS';
 export const FETCH_HOTELS_IMAGES_FAILURE = 'FETCH_HOTELS_IMAGES_FAILURE';
+export const FETCH_HOTEL_DETAILS_REQUEST = 'FETCH_HOTEL_DETAILS_REQUEST'
+export const FETCH_HOTEL_DETAILS_SUCCESS = 'FETCH_HOTEL_DETAILS_SUCCESS'
+export const FETCH_HOTEL_DETAILS_FAILURE = 'FETCH_HOTEL_DETAILS_FAILURE'
 
 export const fetchCityHotelsRequest = () => ({
     type : FETCH_CITY_HOTELS_REQUEST,
@@ -135,4 +138,36 @@ export const fetchHotelsImages = (HotelProviderSearchId) => async (dispatch) => 
         console.error("Error fetching hotel images:", error);
         dispatch(fetchHotelsImagesFailure(error.message));
     }
+}
+
+const fetchHotelDetailsRequest = () => ({
+  type: FETCH_HOTEL_DETAILS_REQUEST,
+})
+
+const fetchHotelDetailsSuccess = (data) => ({
+  type: FETCH_HOTEL_DETAILS_SUCCESS,
+  payload: data,
+})
+
+const fetchHotelDetailsFailure = (error) => ({
+  type: FETCH_HOTEL_DETAILS_FAILURE,
+  payload: error,
+})
+
+export const fetchHotelDetails = (searchId) => {
+  return async (dispatch) => {
+    dispatch(fetchHotelDetailsRequest())
+    try {
+      const response = await axios.post(
+        'http://localhost:3002/api/hotels/getHoteldetails',
+        { HotelProviderSearchId: searchId }
+      )
+      dispatch(fetchHotelDetailsSuccess(response.data))
+      return response.data
+
+    } catch (err) {
+      dispatch(fetchHotelDetailsFailure(err.message || 'Something went wrong'))
+      throw err
+    }
+  }
 }

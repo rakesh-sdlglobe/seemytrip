@@ -1,10 +1,12 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { fetchHotelDetails } from '../../store/Actions/hotelActions';
+import { useDispatch } from 'react-redux';
 
 const HotelList = ({ filters, hotelsList: hotels }) => {
   const navigate = useNavigate()
-
+  const dispatch = useDispatch();
 
 
   const filteredHotels = useMemo(() => {
@@ -30,12 +32,30 @@ const HotelList = ({ filters, hotelsList: hotels }) => {
     })
   }
 
+  const handleHotelClick = async (hotel) => {
+    try {
+      // dispatch returns a promise because of our thunk
+      const data = await dispatch(fetchHotelDetails(hotel.HotelProviderSearchId))
+      navigate('/hotel-details', {
+        state: {
+          HotelProviderSearchId: hotel.HotelProviderSearchId,
+          details: data
+        }
+      })
+    } catch (err) {
+      // Optionally show an error toast
+      console.error('Could not fetch hotel details:', err)
+    }
+  }
+
   return (
     <div className="row align-items-center g-4 mt-2">
       {filteredHotels.length > 0 ? (
         filteredHotels.map(hotel => (
           <div key={hotel.HotelProviderSearchId} className="col-xl-12 col-lg-12 col-12">
-            <div className="card list-layout-block rounded-3 p-3">  
+            <div className="card list-layout-block rounded-3 p-3"
+            onClick={() => handleHotelClick(hotel)}
+            >  
               <div className="row">  
                 {/* Main Image Column */}  
                 <div className="col-xl-4 col-lg-3 col-md">  
