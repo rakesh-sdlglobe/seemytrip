@@ -15,17 +15,17 @@ export const FETCH_HOTEL_DETAILS_SUCCESS = 'FETCH_HOTEL_DETAILS_SUCCESS'
 export const FETCH_HOTEL_DETAILS_FAILURE = 'FETCH_HOTEL_DETAILS_FAILURE'
 
 export const fetchCityHotelsRequest = () => ({
-    type : FETCH_CITY_HOTELS_REQUEST,
+    type: FETCH_CITY_HOTELS_REQUEST,
 });
 
 export const fetchCityHotelsSuccess = (hotels) => ({
-    type : FETCH_CITY_HOTELS_SUCCESS,
-    payload : hotels,
+    type: FETCH_CITY_HOTELS_SUCCESS,
+    payload: hotels,
 });
 
 export const fetchCityHotelsFailure = (error) => ({
-    type : FETCH_CITY_HOTELS_FAILURE,
-    payload : error,
+    type: FETCH_CITY_HOTELS_FAILURE,
+    payload: error,
 });
 
 
@@ -36,34 +36,34 @@ export const fetchCityHotels = (hotelsearchtext) => async (dispatch) => {
     try {
         dispatch(fetchCityHotelsRequest());
 
-        const response = await axios.post(`${API_URL}/hotels/getHotelCities`,{"input" : hotelsearchtext} );
+        const response = await axios.post(`${API_URL}/hotels/getHotelCities`, { "input": hotelsearchtext });
         console.log("Response from hotel cities API:", response.data);
-        if(response.data) {
+        if (response.data) {
             dispatch(fetchCityHotelsSuccess(response.data));
-        }else {
+        } else {
             dispatch(fetchCityHotelsFailure("No hotel cities found"));
         }
-    }catch (error) {
+    } catch (error) {
         console.error("Error fetching hotel cities:", error);
         dispatch(fetchCityHotelsFailure(error.message));
     }
-    
+
 }
 
 
 
 export const fetchHotelsListRequest = () => ({
-    type : FETCH_HOTELS_LIST_REQUEST,
+    type: FETCH_HOTELS_LIST_REQUEST,
 });
 
 export const fetchHotelsListSuccess = (hotels) => ({
-    type : FETCH_HOTELS_LIST_SUCCESS,
-    payload : hotels,
+    type: FETCH_HOTELS_LIST_SUCCESS,
+    payload: hotels,
 });
 
 export const fetchHotelsListFailure = (error) => ({
-    type : FETCH_HOTELS_LIST_FAILURE,
-    payload : error,
+    type: FETCH_HOTELS_LIST_FAILURE,
+    payload: error,
 });
 
 
@@ -84,16 +84,16 @@ export const fetchHotelsList = (cityId, checkInDate, checkOutDate, Rooms, adults
             cityId,
             checkInDate,
             checkOutDate,
-            "Rooms" : [{
+            "Rooms": [{
                 "RoomNo": Rooms,
-                "Adults" : adults,
-                "Children" : children
+                "Adults": adults,
+                "Children": children
             }]
         });
 
         console.log("Response from hotels list API:", response.data);
-        if(response.data.Hotels.length > 0) {
-            console.log(" *** Yeah , count for hotels is ",response.data.Hotels.length);
+        if (response.data.Hotels.length > 0) {
+            console.log(" *** Yeah , count for hotels is ", response.data.Hotels.length);
             dispatch(fetchHotelsListSuccess(response.data.Hotels));
         } else {
             dispatch(fetchHotelsListFailure("No hotels found for the given criteria"));
@@ -105,19 +105,19 @@ export const fetchHotelsList = (cityId, checkInDate, checkOutDate, Rooms, adults
 }
 
 export const fetchHotelsImagesRequest = () => ({
-    type : FETCH_HOTELS_IMAGES_REQUEST,
+    type: FETCH_HOTELS_IMAGES_REQUEST,
 });
 
 export const fetchHotelsImagesSuccess = (images) => ({
-    type : FETCH_HOTELS_IMAGES_SUCCESS,
-    payload : images,
-    error : null,
+    type: FETCH_HOTELS_IMAGES_SUCCESS,
+    payload: images,
+    error: null,
 });
 
 export const fetchHotelsImagesFailure = (error) => ({
-    type : FETCH_HOTELS_IMAGES_FAILURE,
-    payload : null,
-    error : error,
+    type: FETCH_HOTELS_IMAGES_FAILURE,
+    payload: null,
+    error: error,
 });
 
 
@@ -129,7 +129,7 @@ export const fetchHotelsImages = (HotelProviderSearchId) => async (dispatch) => 
 
         console.log("Response from hotels images API:", response.data);
 
-        if(response.data.Gallery && response.data.Gallery.length > 0) {
+        if (response.data.Gallery && response.data.Gallery.length > 0) {
             dispatch(fetchHotelsImagesSuccess(response.data?.Gallery));
         } else {
             dispatch(fetchHotelsImagesFailure("No images found for the hotel"));
@@ -141,33 +141,50 @@ export const fetchHotelsImages = (HotelProviderSearchId) => async (dispatch) => 
 }
 
 const fetchHotelDetailsRequest = () => ({
-  type: FETCH_HOTEL_DETAILS_REQUEST,
+    type: FETCH_HOTEL_DETAILS_REQUEST,
 })
 
 const fetchHotelDetailsSuccess = (data) => ({
-  type: FETCH_HOTEL_DETAILS_SUCCESS,
-  payload: data,
+    type: FETCH_HOTEL_DETAILS_SUCCESS,
+    payload: data,
 })
 
 const fetchHotelDetailsFailure = (error) => ({
-  type: FETCH_HOTEL_DETAILS_FAILURE,
-  payload: error,
+    type: FETCH_HOTEL_DETAILS_FAILURE,
+    payload: error,
 })
 
-export const fetchHotelDetails = (searchId) => {
-  return async (dispatch) => {
-    dispatch(fetchHotelDetailsRequest())
-    try {
-      const response = await axios.post(
-        'http://localhost:3002/api/hotels/getHoteldetails',
-        { HotelProviderSearchId: searchId }
-      )
-      dispatch(fetchHotelDetailsSuccess(response.data))
-      return response.data
+export const fetchHotelDetails = (HotelId, searchParams) => {
+    return async (dispatch) => {
+        dispatch(fetchHotelDetailsRequest())
+        try {
+            const payload = {
+                HotelId: HotelId,
+                CityId: searchParams.cityId,
+                CheckInDate: searchParams.checkInDate,
+                CheckOutDate: searchParams.checkOutDate,
+                Rooms: [
+                    {
+                        RoomNo: searchParams.Rooms,
+                        adults: searchParams.adults,
+                        children: searchParams.children
+                    }
+                ]
+            };
 
-    } catch (err) {
-      dispatch(fetchHotelDetailsFailure(err.message || 'Something went wrong'))
-      throw err
+            console.log("Final Payload to API:", payload);
+
+            const response = await axios.post(
+                `http://localhost:3002/api/hotels/getHoteldetails`,
+                payload
+            );
+            console.log("Data from fetchHotelDetails API:", response.data);
+            dispatch(fetchHotelDetailsSuccess(response.data))
+            return response.data
+
+        } catch (err) {
+            dispatch(fetchHotelDetailsFailure(err.message || 'Something went wrong'))
+            throw err
+        }
     }
-  }
 }

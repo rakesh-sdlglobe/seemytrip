@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { fetchHotelDetails } from '../../store/Actions/hotelActions';
 import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
 const HotelList = ({ filters, hotelsList: hotels }) => {
   const navigate = useNavigate()
@@ -26,27 +27,45 @@ const HotelList = ({ filters, hotelsList: hotels }) => {
 
   const handleNavigateToImages = (HotelProviderSearchId) => {
     navigate('/hotel-images', {
-      state : {
+      state: {
         HotelProviderSearchId
       }
     })
   }
 
   const handleHotelClick = async (hotel) => {
-    try {
-      // dispatch returns a promise because of our thunk
-      const data = await dispatch(fetchHotelDetails(hotel.HotelProviderSearchId))
-      navigate('/hotel-details', {
-        state: {
-          HotelProviderSearchId: hotel.HotelProviderSearchId,
-          details: data
-        }
-      })
-    } catch (err) {
-      // Optionally show an error toast
-      console.error('Could not fetch hotel details:', err)
-    }
+  const savedSearchParams = localStorage.getItem("hotelSearchParams");
+  const params = savedSearchParams ? JSON.parse(savedSearchParams) : {};
+  console.log("Params of detail page: ", params);
+
+  try {
+    const data = await dispatch(fetchHotelDetails(hotel.HotelProviderSearchId, {
+      cityId: params.cityId,
+      checkInDate: params.checkInDate,
+      checkOutDate: params.checkOutDate,
+      Rooms: params.Rooms,
+      adults: params.adults,
+      children: params.children
+    }));
+
+    console.log("Hotel details fetched successfully:", data);
+
+    navigate('/hotel-details', {
+      state: {
+        HotelProviderSearchId: hotel.HotelProviderSearchId,
+        details: data, // ✅ Now this is defined
+        cityId: params.cityId,
+        checkInDate: params.checkInDate,
+        checkOutDate: params.checkOutDate,
+        Rooms: params.Rooms,
+        adults: params.adults,
+        children: params.children
+      }
+    });
+  } catch (err) {
+    console.error('Could not fetch hotel details:', err);
   }
+};
 
   return (
     <div className="row align-items-center g-4 mt-2">
@@ -54,47 +73,47 @@ const HotelList = ({ filters, hotelsList: hotels }) => {
         filteredHotels.map(hotel => (
           <div key={hotel.HotelProviderSearchId} className="col-xl-12 col-lg-12 col-12">
             <div className="card list-layout-block rounded-3 p-3"
-            onClick={() => handleHotelClick(hotel)}
-            >  
-              <div className="row">  
-                {/* Main Image Column */}  
-                <div className="col-xl-4 col-lg-3 col-md">  
-                  <div className="position-relative h-50">  
-                    {/* Main Image */}  
-                    <div className="cardImage__caps rounded-2 overflow-hidden" style={{ height: '11rem' }}> {/* Fixed height */}  
-                      <img   
-                        className="img-fluid w-100 h-100 object-fit-cover"   
-                        src={hotel?.HotelImages?.[0] || ''}   
-                        alt={hotel.HotelName}  
-                        id={`main-image-${hotel.HotelProviderSearchId}`}  
-                      />  
-                    </div>  
-                      
-                    {/* Thumbnail Gallery */}  
-                    <div className="d-flex gap-2 mt-2"> {/* Removed fixed height for responsive */}  
-                      {hotel?.HotelImages?.slice(1, 4).map((img, index) => (  
-                        <div   
-                          key={index}  
-                          className="position-relative rounded overflow-hidden flex-grow-1"  
-                          onMouseEnter={() => {  
-                            document.getElementById(`main-image-${hotel.HotelProviderSearchId}`).src = img;  
-                          }}  
-                          style={{ cursor: 'pointer', height: '3rem', width: '3rem'}} 
-                        >  
-                          <img   
-                            className="img-fluid h-100 w-100 object-fit-cover"  
-                            src={img}  
-                            alt={`Thumbnail ${index + 1}`}  
-                          />  
-                        </div>  
-                      ))}  
-                        
-                      {/* Show All Button */}  
-                      {hotel?.HotelImages?.length > 3 && (  
-                        <div 
+              onClick={() => handleHotelClick(hotel)}
+            >
+              <div className="row">
+                {/* Main Image Column */}
+                <div className="col-xl-4 col-lg-3 col-md">
+                  <div className="position-relative h-50">
+                    {/* Main Image */}
+                    <div className="cardImage__caps rounded-2 overflow-hidden" style={{ height: '11rem' }}> {/* Fixed height */}
+                      <img
+                        className="img-fluid w-100 h-100 object-fit-cover"
+                        src={hotel?.HotelImages?.[0] || ''}
+                        alt={hotel.HotelName}
+                        id={`main-image-${hotel.HotelProviderSearchId}`}
+                      />
+                    </div>
+
+                    {/* Thumbnail Gallery */}
+                    <div className="d-flex gap-2 mt-2"> {/* Removed fixed height for responsive */}
+                      {hotel?.HotelImages?.slice(1, 4).map((img, index) => (
+                        <div
+                          key={index}
                           className="position-relative rounded overflow-hidden flex-grow-1"
-                          style={{ 
-                            height: '3rem', 
+                          onMouseEnter={() => {
+                            document.getElementById(`main-image-${hotel.HotelProviderSearchId}`).src = img;
+                          }}
+                          style={{ cursor: 'pointer', height: '3rem', width: '3rem' }}
+                        >
+                          <img
+                            className="img-fluid h-100 w-100 object-fit-cover"
+                            src={img}
+                            alt={`Thumbnail ${index + 1}`}
+                          />
+                        </div>
+                      ))}
+
+                      {/* Show All Button */}
+                      {hotel?.HotelImages?.length > 3 && (
+                        <div
+                          className="position-relative rounded overflow-hidden flex-grow-1"
+                          style={{
+                            height: '3rem',
                             width: '2rem',
                             backgroundImage: `url(${hotel.HotelImages[3]})`,
                             backgroundSize: 'cover',
@@ -102,10 +121,10 @@ const HotelList = ({ filters, hotelsList: hotels }) => {
                             filter: 'blur(2px)',
                             cursor: 'pointer'
                           }}
-                          onClick={() => {handleNavigateToImages(hotel.HotelProviderSearchId)}}
+                          onClick={() => { handleNavigateToImages(hotel.HotelProviderSearchId) }}
                         >
                           <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50">
-                            <button 
+                            <button
                               className="btn btn-light btn-sm d-flex align-items-center gap-1"
                               style={{
                                 backgroundColor: 'rgba(255, 255, 255, 0.9)',
@@ -120,27 +139,27 @@ const HotelList = ({ filters, hotelsList: hotels }) => {
                             </button>
                           </div>
                         </div>
-                      )}  
-                    </div>  
-                  </div>  
-                </div> 
+                      )}
+                    </div>
+                  </div>
+                </div>
                 <div className="col-xl col-lg col-md">
                   <div className="listLayout_midCaps mt-md-0 mt-3 mb-md-0 mb-3">
-                    <div className="d-flex gap-3 align-items-center mt-2">  
-                      <h4 className="fs-5 fw-bold mb-1">{hotel.HotelName}</h4>  
-                      <div className="d-flex align-items-center">  
-                        <div className="d-inline-block me-2">  
-                          {[...Array(5)].map((_, i) => (  
-                            <i  
-                              key={i}  
-                              className={`fa fa-star text-${i < Math.floor(parseFloat(hotel.StarRating)) ? 'warning' : 'muted'} text-xs`}  
-                            />  
-                          ))}  
-                        </div>  
-                        <span className="text-muted text-sm">  
-                          ({parseFloat(hotel.StarRating).toFixed(1)})  
-                        </span>  
-                      </div>  
+                    <div className="d-flex gap-3 align-items-center mt-2">
+                      <h4 className="fs-5 fw-bold mb-1">{hotel.HotelName}</h4>
+                      <div className="d-flex align-items-center">
+                        <div className="d-inline-block me-2">
+                          {[...Array(5)].map((_, i) => (
+                            <i
+                              key={i}
+                              className={`fa fa-star text-${i < Math.floor(parseFloat(hotel.StarRating)) ? 'warning' : 'muted'} text-xs`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-muted text-sm">
+                          ({parseFloat(hotel.StarRating).toFixed(1)})
+                        </span>
+                      </div>
                     </div>
                     <ul className="row gx-2 p-0 excortio">
                       <li className="col-auto">
