@@ -72,7 +72,7 @@ const HotelList = ({ filters, hotelsList: hotels }) => {
       {filteredHotels.length > 0 ? (
         filteredHotels.map(hotel => (
           <div key={hotel.HotelProviderSearchId} className="col-xl-12 col-lg-12 col-12">
-            <div className="card list-layout-block rounded-3 p-3"
+            <div className="card list-layout-block rounded-3 p-3" role="button"
               onClick={() => handleHotelClick(hotel)}
             >
               <div className="row">
