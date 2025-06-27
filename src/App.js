@@ -106,6 +106,7 @@ import FlightSeatSelection from './components/flight_components/FlightSeatSelect
 import HotelSearchResult from './components/hotel_components/HotelSearchResult';
 import HotelImages from './components/hotel_components/HotelImages.jsx';
 import HotelDetails from './components/hotel_components/HotelDetails.jsx';
+import RazorpayPaymentButton from './components/train_search_result/RazorpayPaymentButton.jsx';
 
 
 function App() {
@@ -151,6 +152,7 @@ function App() {
           <Route path="/delete-account" element={<DeleteAccount/>} />
 
           {/* Train Routes */}
+          <Route path="/RazorpayPaymentButton" element={<RazorpayPaymentButton />} />
           <Route path="/Train-list-01" element={<TrainList01 />} />
           <Route path="/booking-page" element={<BookingPage trainName="12976 JP MYSORE EXP" />} />
           <Route path="/booking-page/:trainName" element={<BookingPage />} />

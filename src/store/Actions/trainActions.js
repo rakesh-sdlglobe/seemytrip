@@ -86,7 +86,7 @@ export const fetchTrainsSearchParams = (searchParams) => ({
 
 export const fetchTrains = (fromStnCode, toStnCode, journeyDate) => async (dispatch) => {
   dispatch(fetchTrainsRequest());
-  localStorage.setItem('loading',true);
+  // localStorage.setItem('loading',true);
   try {
     const response = await fetch(`${API_URL}/trains/getTrains`, {
       method: 'POST',

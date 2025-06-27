@@ -94,7 +94,7 @@ const TrainSearchResultList = ({ filters }) => {
       localStorage.setItem('loading', 'true');
 
       // Fetch new train data
-      await dispatch(fetchTrains(formattedDate, fromStnCode, toStnCode));
+      dispatch(fetchTrains(formattedDate, fromStnCode, toStnCode));
       setSelectedDate(newDate);
 
       localStorage.setItem('loading', 'false');

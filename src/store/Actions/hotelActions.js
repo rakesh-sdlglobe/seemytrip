@@ -68,7 +68,7 @@ export const fetchHotelsListFailure = (error) => ({
 
 
 
-export const fetchHotelsList = (cityId, checkInDate, checkOutDate, Rooms, adults, children) => async (dispatch) => {
+export const fetchHotelsList = (cityId, checkInDate, checkOutDate, Rooms, adults, children, PageNo, SessionID, Filter, Sort) => async (dispatch) => {
     console.log("==============> Fetching hotels list from API");
     console.log("City ID:", cityId);
     console.log("Check-in Date:", checkInDate);
@@ -88,13 +88,17 @@ export const fetchHotelsList = (cityId, checkInDate, checkOutDate, Rooms, adults
                 "RoomNo": Rooms,
                 "Adults": adults,
                 "Children": children
-            }]
+            }],
+            "PageNo": PageNo || 1,
+            "SessionID": SessionID || null,
+            "Filter": Filter || null,
+            "Sort": Sort || { "SortBy": "StarRating", "SortOrder": "Desc" }
         });
 
         console.log("Response from hotels list API:", response.data);
-        if (response.data.Hotels.length > 0) {
+        if (response.data && response.data !== null) {
             console.log(" *** Yeah , count for hotels is ", response.data.Hotels.length);
-            dispatch(fetchHotelsListSuccess(response.data.Hotels));
+            dispatch(fetchHotelsListSuccess(response.data));
         } else {
             dispatch(fetchHotelsListFailure("No hotels found for the given criteria"));
         }
