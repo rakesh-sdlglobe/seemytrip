@@ -5,17 +5,14 @@ import { fetchHotelDetails } from '../../store/Actions/hotelActions';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 
-const HotelList = ({ filters, hotelsList: hotels }) => {
+const HotelList = ({  hotelsList: hotels }) => {
   const navigate = useNavigate()
   const dispatch = useDispatch();
 
 
   const filteredHotels = useMemo(() => {
-    return hotels.filter(hotel => {
-      // Add your filtering logic here based on the filters prop
-      return true;
-    });
-  }, [filters, hotels]);
+    return  hotels.Hotels ? hotels.Hotels : [];
+  }, [hotels]);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-US', {
