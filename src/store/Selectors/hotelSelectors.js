@@ -1,7 +1,7 @@
 export const selectHotelsError = (state) => state.hotels.error;
 export const selectHotelsLoading = (state) => state.hotels.loading;
 export const selectCityHotels = (state) => state.hotels.CityHotels.AcList;
-export const selectHotelsList = (state) => state.hotels.HotelsList;
+export const selectHotelsList = (state) => state.hotels.HotelsList.Hotels;
 export const selectFilter = (state) => state.hotels.HotelsList.FiltersWithCount;
 export const selectTotalHotel = (state) => state.hotels.HotelsList.TotalHotels;
 export const selectTotalPages = (state) => state.hotels.HotelsList.TotalPages;

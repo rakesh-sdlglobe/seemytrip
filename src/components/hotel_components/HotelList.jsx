@@ -11,7 +11,7 @@ const HotelList = ({  hotelsList: hotels }) => {
 
 
   const filteredHotels = useMemo(() => {
-    return  hotels.Hotels ? hotels.Hotels : [];
+    return  hotels ? hotels : [];
   }, [hotels]);
 
   const formatPrice = (price) => {
