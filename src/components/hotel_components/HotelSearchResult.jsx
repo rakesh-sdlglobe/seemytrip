@@ -203,7 +203,7 @@ const onMealFilterChange = useCallback((e) => {
       {
       setSelectAmenity((prevValue) => prevValue !== "" ? prevValue + "|"+ value : value);
     }else{
-      setSelectAmenity((prevValue) => prevValue.includes("|") ? prevValue.replace("|"+value,"") : prevValue.replace(value,"") );
+      setSelectAmenity((prevValue) => prevValue.includes("|") ? prevValue.replace("|"+value,"") : prevValue.replace(value," ") );
     }
     setfilterLoading(true);
   }, []);
@@ -243,6 +243,7 @@ const onMealFilterChange = useCallback((e) => {
     }
   }, [dispatch]);
   
+  const searchParams = JSON.parse(localStorage.getItem('hotelSearchParams') || '{}');
 
   return (
     <div>
@@ -255,7 +256,7 @@ const onMealFilterChange = useCallback((e) => {
       <div id="main-wrapper">
         <Header02 />
         <div className="clearfix" />
-        <HotelSearchbar />
+        <HotelSearchbar searchParams={searchParams} />
         <section className="gray-simple">
           <div className="container">
             <div className="row justify-content-between gy-4 gx-xl-4 gx-lg-3 gx-md-3 gx-4">

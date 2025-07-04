@@ -193,7 +193,8 @@ const TrainList01 = () => {
         <section className="gray-simple">
           <div className="container">
             <div className="row justify-content-between gy-4 gx-xl-4 gx-lg-3 gx-md-3 gx-4">
-              <div className="col-xl-3 col-lg-4 col-md-12">
+              {/* Desktop Filter Sidebar */}
+              <div className="col-xl-3 col-lg-4 col-md-12 d-none d-lg-block">
                 <div className="filter-searchBar bg-white rounded-3" style={{ boxShadow:"0 2px 5px rgba(0, 0, 0, 0.1)" }}>
                   <div className="filter-searchBar-head border-bottom">
                     <div className="searchBar-headerBody d-flex align-items-start justify-content-between px-3 py-3">
@@ -572,8 +573,18 @@ const TrainList01 = () => {
                   </div>
                 </div>
               </div>
+              {/* Train List and Mobile Filter/Sort */}
               <div className="col-xl-9 col-lg-8 col-md-12">
-                <TrainSearchResultList filters={filters} />
+                {/* Mobile Filter/Sort Buttons */}
+                <div className="d-lg-none mb-3">
+                  {/* The actual buttons will be rendered by TrainSearchResultList */}
+                </div>
+                <TrainSearchResultList
+                  filters={filters}
+                  setFilters={setFilters}
+                  onFilterChange={onFilterChange}
+                  handleClearAll={handleClearAll}
+                />
               </div>
             </div>
           </div>

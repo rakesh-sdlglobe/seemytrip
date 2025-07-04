@@ -1,14 +1,13 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { registerLocale } from "react-datepicker";
 import enGB from "date-fns/locale/en-GB"; // for dd/MM/yyyy format
-import { Modal, Button } from 'react-bootstrap';
-import Select from 'react-select';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Modal } from 'react-bootstrap';
+import DatePicker, { registerLocale } from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import Select from 'react-select';
 import { fetchCityHotels } from '../../store/Actions/hotelActions';
 import { selectCityHotels } from '../../store/Selectors/hotelSelectors';
-import { useNavigate } from 'react-router-dom';
 
 
 
@@ -20,33 +19,21 @@ const CustomModalHeader = React.memo(({ onClose }) => (
   </Modal.Header>
 ));
 
-const handleSearch = (cityId, checkInDate, checkOutDate, Rooms, adults, children, selectedCity, navigate) => {
-  console.log("Search clicked with parameters:");
-  console.log("City ID:", cityId);
-  console.log("Check-in Date:", checkInDate);
-  console.log("Check-out Date:", checkOutDate);
-  console.log("Rooms:", Rooms);
-  console.log("Adults:", adults);
-  console.log("Children:", children);
-  console.log("Selected City Data:", selectedCity);
-
-  if (!cityId || !checkInDate || !checkOutDate) {
-    console.error("Missing required search parameters");
-    return;
-  }
-  
+// Remove handleSearch's localStorage logic, only navigate (or you can remove handleSearch entirely if not needed)
+const handleSearch = (
+  cityId,
+  checkInDate,
+  checkOutDate,
+  Rooms,
+  adults,
+  children,
+  selectedCity,
+  navigate,
+  roomsData
+) => {
+  // Only navigate, do not store to localStorage here
   const formattedCheckIn = checkInDate ? checkInDate.toLocaleDateString('en-CA') : null;
   const formattedCheckOut = checkOutDate ? checkOutDate.toLocaleDateString('en-CA') : null;
-
-  localStorage.setItem("hotelSearchParams", JSON.stringify({
-    cityId,
-    checkInDate: formattedCheckIn,
-    checkOutDate: formattedCheckOut,
-    Rooms,
-    adults,
-    children,
-    selectedCity
-  }));
 
   navigate(`/hotel-search-result`, {
     state: {
@@ -56,67 +43,145 @@ const handleSearch = (cityId, checkInDate, checkOutDate, Rooms, adults, children
       Rooms,
       adults,
       children,
-      selectedCity
+      selectedCity,
+      roomsData
     }
   });
 }
 
-const CustomModalBody = React.memo(({ adults, children, rooms, setAdults, setChildren, setRooms }) => (
+const MAX_ROOMS = 5;
+const MAX_ADULTS = 4;
+const MAX_CHILDREN = 4;
+
+const CustomModalBody = React.memo(({ roomsData, setRoomsData, addRoom, removeRoom }) => (
   <Modal.Body className="p-4">
-    {[
-      { label: 'Adults', value: adults, setValue: setAdults, min: 1 },
-      { label: 'Children', value: children, setValue: setChildren, min: 0 },
-      { label: 'Rooms', value: rooms, setValue: setRooms, min: 1 },
-    ].map(({ label, value, setValue, min }, index) => (
-      <div key={label} className="mb-3">
-        <div className="d-flex justify-content-between align-items-center mb-2">
-          <span className="fw-medium">{label}</span>
-          <div className="d-flex align-items-center">
-            <Button
-              variant="outline-secondary"
-              className="rounded-circle shadow-sm"
-              onClick={() => setValue(Math.max(value - 1, min))}
+    <div className="mb-3 text-center fw-bold fs-5">
+      Room: {roomsData.length}
+    </div>
+    {roomsData.map((room, idx) => (
+      <div key={idx} className="mb-4 border rounded p-3 position-relative">
+        {/* Cancel (x) icon for every room, always visible */}
+        <button
+          type="button"
+          className="btn btn-link text-danger position-absolute"
+          style={{
+            top: 6,
+            right: 8,
+            fontSize: 22,
+            lineHeight: 1,
+            zIndex: 2,
+            borderRadius: '50%',
+            width: 32,
+            height: 32,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 0,
+            background: 'none',
+            boxShadow: 'none',
+            border: 'none'
+          }}
+          onClick={() => removeRoom(idx)}
+          aria-label="Remove Room"
+          title="Remove Room"
+          disabled={roomsData.length === 1}
+        >
+          &times;
+        </button>
+        <div className="fw-medium mb-2">Room {idx + 1}</div>
+        <div className="d-flex gap-3 align-items-center">
+          <div>
+            <label className="me-2">Adults</label>
+            <select
+              className="form-select d-inline-block w-auto"
+              value={room.adults}
+              onChange={e => {
+                const updated = [...roomsData];
+                updated[idx].adults = Number(e.target.value);
+                setRoomsData(updated);
+              }}
             >
-              <i className="fa fa-minus" />
-            </Button>
-            <span className="mx-3">{value}</span>
-            <Button
-              variant="outline-secondary"
-              className="rounded-circle shadow-sm"
-              onClick={() => setValue(value + 1)}
+              {[...Array(MAX_ADULTS)].map((_, i) => (
+                <option key={i+1} value={i+1}>{i+1} Adult{i+1 > 1 ? 's' : ''}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="me-2">Children</label>
+            <select
+              className="form-select d-inline-block w-auto"
+              value={room.children}
+              onChange={e => {
+                const updated = [...roomsData];
+                updated[idx].children = Number(e.target.value);
+                setRoomsData(updated);
+              }}
             >
-              <i className="fa fa-plus" />
-            </Button>
+              {[...Array(MAX_CHILDREN+1)].map((_, i) => (
+                <option key={i} value={i}>{i} Child{i !== 1 ? 'ren' : ''}</option>
+              ))}
+            </select>
           </div>
         </div>
-        {index < 2 && <hr />}
       </div>
     ))}
   </Modal.Body>
 ));
 
-const CustomModalFooter = React.memo(({ onConfirm }) => (
-  <Modal.Footer className="border-0">
-    <Button
-      variant="danger"
-      className="w-100 rounded-pill fw-medium"
-      onClick={onConfirm}
-    >
-      Confirm
-    </Button>
+// Updated Modal Footer with Add Room and Confirm buttons side by side, curved, with gap
+const CustomModalFooter = React.memo(({ onConfirm, addRoom, roomsCount }) => (
+  <Modal.Footer className="border-0 p-0">
+    <div className="d-flex w-100 gap-3 px-3 pb-2">
+      <button
+        type="button"
+        className="btn btn-outline-primary fw-medium"
+        style={{
+          width: "50%",
+          borderRadius: "10px",
+          height: 48,
+        }}
+        onClick={addRoom}
+        disabled={roomsCount >= 5}
+      >
+        <i className="fa fa-plus" /> Add Room
+      </button>
+      <button
+        type="button"
+        className="btn btn-danger fw-medium confirm-btn"
+        style={{
+          width: "50%",
+          borderRadius: "10px",
+          color: "#fff",
+          height: 48,
+        }}
+        onClick={onConfirm}
+      >
+        Confirm
+      </button>
+    </div>
+    <style>
+      {`
+        .confirm-btn:hover, .confirm-btn:focus {
+          color: #dc3545 !important;
+          background-color: #fff !important;
+          border-color: #dc3545 !important;
+        }
+      `}
+    </style>
   </Modal.Footer>
 ));
 
-export const HotelSearchbar = () => {
+export const HotelSearchbar = ({ searchParams = {} }) => {
   const dispatch = useDispatch();
   const cityHotels = useSelector(selectCityHotels);
-  const [selectedCity, setSelectedCity] = useState(null);
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [selectedCity, setSelectedCity] = useState(searchParams.selectedCity || null);
+  const [startDate, setStartDate] = useState(searchParams.checkInDate ? new Date(searchParams.checkInDate) : null);
+  const [endDate, setEndDate] = useState(searchParams.checkOutDate ? new Date(searchParams.checkOutDate) : null);
+  const [roomsData, setRoomsData] = useState(searchParams.roomsData || [{ adults: 1, children: 0 }]);
+  const [showGuestsModal, setShowGuestsModal] = useState(false);
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
-  const [showGuestsModal, setShowGuestsModal] = useState(false);
   const navigate = useNavigate();
 
   // Load data from localStorage on component mount
@@ -127,11 +192,53 @@ export const HotelSearchbar = () => {
       setSelectedCity(params.selectedCity);
       setStartDate(params.checkInDate ? new Date(params.checkInDate) : null);
       setEndDate(params.checkOutDate ? new Date(params.checkOutDate) : null);
-      setRooms(params.Rooms || 1);
-      setAdults(params.adults || 1);
-      setChildren(params.children || 0);
+      setRoomsData(params.roomsData || [{ adults: 1, children: 0 }]);
     }
   }, []);
+
+  // Save roomsData to localStorage on change
+  useEffect(() => {
+    const currentParams = JSON.parse(localStorage.getItem("hotelSearchParams") || "{}");
+    localStorage.setItem("hotelSearchParams", JSON.stringify({
+      ...currentParams,
+      roomsData,
+      Rooms: roomsData.length,
+      adults: roomsData.reduce((sum, r) => sum + r.adults, 0),
+      children: roomsData.reduce((sum, r) => sum + r.children, 0),
+    }));
+  }, [roomsData]);
+
+  // Add room handler
+  const addRoom = () => {
+    if (roomsData.length < MAX_ROOMS) {
+      setRoomsData([...roomsData, { adults: 1, children: 0 }]);
+    }
+  };
+
+  // Remove room handler
+  const removeRoom = (idx) => {
+    if (roomsData.length > 1) {
+      setRoomsData(roomsData.filter((_, i) => i !== idx));
+    }
+  };
+
+  const handleShowGuestsModal = () => setShowGuestsModal(true);
+  const handleCloseGuestsModal = () => setShowGuestsModal(false);
+
+  // Confirm handler
+  const handleConfirmGuests = () => {
+    localStorage.setItem("hotelSearchParams", JSON.stringify({
+      cityId: selectedCity?.value,
+      selectedCity,
+      checkInDate: startDate ? startDate.toLocaleDateString('en-CA') : null,
+      checkOutDate: endDate ? endDate.toLocaleDateString('en-CA') : null,
+      roomsData,
+      Rooms: roomsData.length,
+      adults: roomsData.reduce((sum, r) => sum + r.adults, 0),
+      children: roomsData.reduce((sum, r) => sum + r.children, 0),
+    }));
+    setShowGuestsModal(false);
+  };
 
   // Fetch cities on mount
   useEffect(() => {
@@ -208,10 +315,6 @@ const cityOptions = useMemo(() => {
     }));
   };
 
-  const handleShowGuestsModal = () => setShowGuestsModal(true);
-  const handleCloseGuestsModal = () => setShowGuestsModal(false);
-  const handleConfirmGuests = () => setShowGuestsModal(false);
-
   // Custom styles for the Select component
   const customSelectStyles = {
     control: (provided) => ({
@@ -271,6 +374,14 @@ const cityOptions = useMemo(() => {
           .custom-select__control {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
             border: none !important;
+          }
+          .btn-danger.full-width {
+            width: 100%;
+          }
+          .btn-danger.full-width:hover, .btn-danger.full-width:focus {
+            color: #dc3545 !important;
+            background-color: #fff !important;
+            border-color: #dc3545 !important;
           }
         `}
       </style>
@@ -337,7 +448,11 @@ const cityOptions = useMemo(() => {
                       onClick={handleShowGuestsModal}
                       className="form-control text-start custom-button"
                     >
-                      {adults} Adult{adults !== 1 ? 's' : ''}, {children} Child{children !== 1 ? 'ren' : ''}, {rooms} Room{rooms !== 1 ? 's' : ''}
+                      {roomsData.reduce((sum, r) => sum + r.adults, 0)} Adult
+                      {roomsData.reduce((sum, r) => sum + r.adults, 0) !== 1 ? 's' : ''},{" "}
+                      {roomsData.reduce((sum, r) => sum + r.children, 0)} Child
+                      {roomsData.reduce((sum, r) => sum + r.children, 0) !== 1 ? 'ren' : ''},{" "}
+                      {roomsData.length} Room{roomsData.length !== 1 ? 's' : ''}
                     </button>
                   </div>
                 </div>
@@ -348,7 +463,19 @@ const cityOptions = useMemo(() => {
                     <button 
                         type="button" 
                         className="btn btn-danger full-width rounded-1 fw-medium"
-                        onClick={() => handleSearch(selectedCity?.value, startDate, endDate, rooms, adults, children,selectedCity, navigate)}
+                        onClick={() =>
+                          handleSearch(
+                            selectedCity?.value,
+                            startDate,
+                            endDate,
+                            roomsData.length,
+                            roomsData.reduce((sum, r) => sum + r.adults, 0),
+                            roomsData.reduce((sum, r) => sum + r.children, 0),
+                            selectedCity,
+                            navigate,
+                            roomsData // <-- Pass roomsData here
+                          )
+                        }
                         disabled={!selectedCity || !startDate || !endDate}
                     > 
                       <i className="fa fa-search me-2" />Search
@@ -364,14 +491,16 @@ const cityOptions = useMemo(() => {
       <Modal show={showGuestsModal} onHide={handleCloseGuestsModal} centered>
         <CustomModalHeader onClose={handleCloseGuestsModal} />
         <CustomModalBody
-          adults={adults}
-          children={children}
-          rooms={rooms}
-          setAdults={(value) => handleGuestChange('adults', value)}
-          setChildren={(value) => handleGuestChange('children', value)}
-          setRooms={(value) => handleGuestChange('rooms', value)}
+          roomsData={roomsData}
+          setRoomsData={setRoomsData}
+          addRoom={addRoom}
+          removeRoom={removeRoom}
         />
-        <CustomModalFooter onConfirm={handleConfirmGuests} />
+        <CustomModalFooter
+          onConfirm={handleConfirmGuests}
+          addRoom={addRoom}
+          roomsCount={roomsData.length}
+        />
       </Modal>
     </div>
   );

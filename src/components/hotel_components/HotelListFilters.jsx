@@ -65,7 +65,7 @@ const HotelsFilters = ({ filters, TotalHotel,selectAmenity,selectMeal,selectLoca
                   className="btn-check" 
                   id={meal.Name.replace(/\s+/g, '')+"_"+ (i+1)} // Remove spaces for ID
                     value={meal.Name}
-                    checked={meal.Selected || selectMeal.split("|").some(x=> x.toLowerCase() === meal.Name.toLowerCase())}
+                    checked={meal.Selected || selectMeal?.split("|").some(x=> x.toLowerCase() === meal.Name.toLowerCase())}
                   onChange={onMealFilterChange}
                 />
                 <label className="btn btn-sm btn-secondary rounded-1 fw-medium full-width" htmlFor={meal.Name.replace(/\s+/g, '')+"_"+ (i+1)}>{getMealPlanName(meal.Name)}</label>
@@ -126,7 +126,7 @@ const HotelsFilters = ({ filters, TotalHotel,selectAmenity,selectMeal,selectLoca
                         type="checkbox" 
                         id={(Number(rating.Name)*10)+"_"+ (i+1)}
                         value={rating.Name}
-                        checked={rating.Selected || selectStarRatings.split("|").some(x=> x === rating.Name)}
+                        checked={rating.Selected || selectStarRatings?.split("|").some(x=> x === rating.Name)}
                         onChange={onStarRatingsFilterChange}
                       />
                       <label className="form-check-label" htmlFor={(Number(rating.Name)*10)+"_"+ (i+1)} />
@@ -163,7 +163,7 @@ const HotelsFilters = ({ filters, TotalHotel,selectAmenity,selectMeal,selectLoca
                     type="checkbox" 
                     id={Localities.Name.replace(/\s+/g, '')+"_"+ (i+1)} // Remove spaces for ID
                     value={Localities.Name}
-                    checked={Localities.Selected || selectLocalities.split("|").some(x=> x.toLowerCase() === Localities.Name.toLowerCase())}
+                    checked={Localities.Selected || selectLocalities?.split("|").some(x=> x.toLowerCase() === Localities.Name.toLowerCase())}
                     onChange={onLocalitiesFilterChange}
                   />
                   <label className="form-check-label" htmlFor={Localities.Name.replace(/\s+/g, '')+"_"+ (i+1)}>{Localities.Name}</label>
@@ -189,7 +189,7 @@ const HotelsFilters = ({ filters, TotalHotel,selectAmenity,selectMeal,selectLoca
                     type="checkbox" 
                     id={amenity.Name.replace(/\s+/g, '')+"_"+ (i+1)} // Remove spaces for ID
                     value={amenity.Name}
-                    checked={amenity.Selected || selectAmenity.split("|").some(x=> x.toLowerCase() === amenity.Name.toLowerCase())}
+                    checked={amenity.Selected || selectAmenity?.split("|").some(x=> x.toLowerCase() === amenity.Name.toLowerCase())}
                     onChange={onAmenityFilterChange}
                   />
                   <label className="form-check-label" htmlFor={amenity.Name.replace(/\s+/g, '')+"_"+ (i+1)}>{amenity.Name}</label>

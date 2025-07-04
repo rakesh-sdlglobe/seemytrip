@@ -1,66 +1,47 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { trainImage } from '../assets/images';
-import { NavLink, Link, useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../store/Actions/authActions';
-import { selectPhoneNumber } from '../store/Selectors/mobileSelector';
-import { selectEmailUser, selectEmailUserName, statedata } from '../store/Selectors/emailSelector';
-import { logoutMobileUser } from '../store/Actions/mobileOtpAction';
 import { logoutEmailUser } from '../store/Actions/emailAction';
-import AuthPopup from './auth/AuthPopup';
+import { logoutMobileUser } from '../store/Actions/mobileOtpAction';
 import { selectGoogleUser, selectGoogleUserName } from '../store/Selectors/authSelectors';
+import { selectEmailUser, selectEmailUserName, statedata } from '../store/Selectors/emailSelector';
+import { selectPhoneNumber } from '../store/Selectors/mobileSelector';
+import AuthPopup from './auth/AuthPopup';
 
 const Header02 = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const emailUserName = useSelector(selectEmailUserName) || "Traveller";
   const googleUserName = useSelector(selectGoogleUserName);
   const emailuser = useSelector(selectEmailUser);
   const googleUser = useSelector(selectGoogleUser);
   const phoneNumber = useSelector(selectPhoneNumber);
   const [showAuthPopup, setShowAuthPopup] = useState(false);
-  const stateData = useSelector(statedata) ;
+  const stateData = useSelector(statedata);
 
-  // Memoize the logged in state
   const isLoggedIn = Boolean(googleUser || phoneNumber || emailuser);
-  console.log("========> ", googleUser, phoneNumber, emailuser, isLoggedIn);
-  console.log("stateData", stateData);
-  
-  // Replace all direct property access with getItem/setItem/removeItem
+
   const handleLogout = useCallback(async () => {
     try {
-      // Clear all auth states
       await Promise.allSettled([
         dispatch(logout()),
         dispatch(logoutMobileUser(navigate)),
-        dispatch(logoutEmailUser(navigate))
+        dispatch(logoutEmailUser(navigate)),
       ]);
 
-      // Clear localStorage
       ['authToken', 'googleUser', 'googleUserName'].forEach(key => {
         localStorage.removeItem(key);
       });
 
-      // Navigate to home after state updates
       navigate('/', { replace: true });
     } catch (error) {
       console.error("Logout failed:", error);
-      window.location.href = '/'; // Fallback
+      window.location.href = '/';
     }
   }, [dispatch, navigate]);
 
-  // Auto-logout effect
-  // useEffect(() => {
-  //   const authToken = localStorage.getItem('authToken');
-  //   if (!authToken && !isLoggedIn) {
-  //     console.log("From 53 header02 file, foing to logout ", isLoggedIn, authToken);
-  //     dispatch(logout());
-  //     // localStorage.removeItem('authToken');
-  //     window.location.reload();
-  //   }
-  // }, []);
-
-  // Navigation items data
   const navItems = [
     { to: "/", icon: "fa-solid fa-train", text: "Trains" },
     { to: "/home-flight", icon: "fa-solid fa-plane", text: "Flights" },
@@ -71,18 +52,16 @@ const Header02 = () => {
     { to: "/packages", icon: "fa-solid fa-suitcase-rolling", text: "Packages" },
   ];
 
-  // User dropdown items
   const userMenuItems = [
     { to: "/my-profile", text: "Profile" },
     { to: "/support", text: "Support" },
     { to: "/settings", text: "Settings" },
   ];
 
-  // Get display name for logged in user
   const getUserDisplayName = () => {
-    return `Hi, ${emailUserName}` || ` Hi, ${googleUserName}` || 
+    return `Hi, ${emailUserName}` || `Hi, ${googleUserName}` || 
            (phoneNumber && "Hi, Traveller") || 
-           (emailuser && "Hii, Traveller");
+           (emailuser && "Hi, Traveller");
   };
 
   return (
@@ -120,6 +99,82 @@ const Header02 = () => {
             color: inherit;
             outline: none;
           }
+
+          @media (max-width: 768px) {
+            .mobile_nav {
+              width: 100%;
+              display: flex;
+              justify-content: flex-end;
+            }
+
+            .mobile_nav .nav-link {
+              padding: 8px 10px;
+              font-size: 14px;
+            }
+
+            .nav-menus-wrapper {
+              display: none !important;
+            }
+
+            .horizontal-scroll-nav {
+              margin-top:25px;
+              margin-bottom:10px;
+              overflow-x: auto !important;
+              -webkit-overflow-scrolling: touch;
+              scrollbar-width: none; /* Firefox */
+            }
+            .horizontal-scroll-nav ul {
+              flex-wrap: nowrap !important;
+              overflow-x: auto !important;
+              scrollbar-width: none; /* Firefox */
+            }
+            .horizontal-scroll-nav::-webkit-scrollbar,
+            .horizontal-scroll-nav ul::-webkit-scrollbar {
+              display: none !important; /* Hide scrollbar for Chrome, Safari, Opera */
+            }
+            .horizontal-scroll-nav li {
+              border: 1.5px solid #cd2c22 !important;
+              border-radius: 8px;
+              background: #fff;
+            }
+            .horizontal-scroll-nav li .fa-lg,
+            .horizontal-scroll-nav li .nav-link {
+              color: #cd2c22 !important;
+            }
+            .horizontal-scroll-nav li .nav-link.active {
+              background: #cd2c22 !important;
+              color: #fff !important;
+              border-radius: 8px;
+            }
+            .horizontal-scroll-nav li .nav-link.active .fa-lg {
+              color: #fff !important;
+            }
+          }
+
+          .horizontal-scroll-nav {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+          }
+          .horizontal-scroll-nav ul {
+            flex-wrap: nowrap !important;
+          }
+          .horizontal-scroll-nav::-webkit-scrollbar {
+            display: none;
+          }
+          /* Add border for mobile nav-menu elements */
+          @media (max-width: 768px) {
+            .horizontal-scroll-nav li {
+              border: 1.5px solid #cd2c22;
+              border-radius: 8px;
+              background: #fff;
+            }
+          }
+          @media (min-width: 769px) {
+            .horizontal-scroll-nav {
+              display: none !important;
+            }
+          }
         `}
       </style>
 
@@ -131,31 +186,21 @@ const Header02 = () => {
                 <img src={trainImage} className="logo" alt="Logo" />
               </NavLink>
               <div className="nav-toggle" />
-              <div className="mobile_nav">
-                <ul>
-                  <li className="currencyDropdown me-2">
-                    <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#currencyModal">
-                      <span className="fw-medium">INR</span>
-                    </Link>
-                  </li>
-                  <li className="languageDropdown me-2">
-                    <Link to="#" className="nav-link" data-bs-toggle="modal" data-bs-target="#countryModal">
-                      <img src="https://placehold.co/100x100" className="img-fluid" width={17} alt="Country" />
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="#" className="bg-light-primary text-primary rounded" data-bs-toggle="modal" data-bs-target="#login">
-                      <i className="fa-regular fa-circle-user fs-6" />
-                    </Link>
-                  </li>
-                </ul>
-              </div>
+
+              {/* Mobile version right-end Sign In/Register */}
+              {!isLoggedIn && (
+                <div className="mobile_nav d-md-none">
+                  <Link to="#" onClick={() => setShowAuthPopup(true)} className="bg-light-primary text-primary rounded nav-link">
+                    <i className="fa-regular fa-circle-user fs-6" />
+                  </Link>
+                </div>
+              )}
             </div>
 
             <div className="nav-menus-wrapper" style={{ transitionProperty: 'none' }}>
               <ul className="nav-menu">
                 {navItems.map((item, index) => (
-                  <li key={index} className="mt-3">
+                  <li key={index} className="mt-3 ">
                     <NavLink to={item.to}>
                       <i className={`${item.icon} me-2 fa-lg`} />
                       {item.text}
@@ -164,7 +209,7 @@ const Header02 = () => {
                 ))}
               </ul>
 
-              <ul className="nav-menu nav-menu-social align-to-right mt-3">
+              <ul className="nav-menu nav-menu-social align-to-right mt-3 ">
                 {isLoggedIn ? (
                   <li className="nav-item dropdown">
                     <Link 
@@ -195,7 +240,7 @@ const Header02 = () => {
                     </ul>
                   </li>
                 ) : (
-                  <li className="list-buttons">
+                  <li className="list-buttons d-none d-md-block">
                     <Link to="#" onClick={() => setShowAuthPopup(true)}>
                       <i className="fa-regular fa-circle-user fs-6 me-2" />
                       Sign In / Register
@@ -206,6 +251,27 @@ const Header02 = () => {
             </div>
           </nav>
         </div>
+
+        {/* New container for horizontal scrollable nav-menus */}
+        <div className="container d-md-none mt-2">
+          <div className="horizontal-scroll-nav">
+            <ul className="d-flex flex-row gap-2 mb-0" style={{ overflowX: 'auto', whiteSpace: 'nowrap', padding: 0, listStyle: 'none' }}>
+              {navItems.map((item, index) => (
+                <li key={index} style={{ display: 'inline-block', flex: '0 0 auto' }}>
+                  <NavLink
+                    to={item.to}
+                    style={{ display: 'inline-block', padding: '10px 16px' }}
+                    className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}
+                  >
+                    <i className={`${item.icon} me-2 fa-lg`} />
+                    {item.text}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+        {/* End horizontal scrollable nav-menus */}
       </div>
 
       <AuthPopup 
