@@ -5,7 +5,7 @@ import About from './components/about';
 import PageNotFound from './components/404';
 import AddListing from './components/add-listing';
 import Blogdetail from './components/blog-detail';
-import Blog from './components/blog';
+import Blog from './components/blog'; 
 import BookingPage from './components/train_search_result/booking-page.jsx';
 import CarDetails from './components/car-detail';
 import CarList01 from './components/car-list-01';
