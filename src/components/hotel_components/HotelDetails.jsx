@@ -523,8 +523,19 @@ export default function HotelDetails() {
                                       <div className="text-muted small mb-2">
                                         +₹ {pkg.taxes.toLocaleString()} taxes & fees Per Night
                                       </div>
-                                      <button className="btn btn-primary w-50 mb-2">
-                                        Select Package
+                                      <button className="btn btn-primary w-50 mb-2"
+                                        onClick={() => {
+                                          navigate('/hotel-review', {
+                                            state: {
+                                              hotel: details.HotelDetail,
+                                              room: room,
+                                              package: pkg,
+                                              image: room.Image?.ImageUrl,
+                                            }
+                                          });
+                                        }}
+                                      >
+                                        Select Room
                                       </button>
                                       <div className="text-center">
                                         <span className="text-primary small">{pkg.offer}</span>
