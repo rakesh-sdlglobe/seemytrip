@@ -178,8 +178,8 @@ const Header02 = () => {
         `}
       </style>
 
-      <div className="header header-light">
-        <div className="container">
+      <div className="header header-light" style={{ boxShadow: '0 2px 8px #eee'}}>
+        <div className="container"  >
           <nav id="navigation" className="navigation navigation-landscape">
             <div className="nav-header">
               <NavLink to="/" className="nav-brand">
