@@ -1,35 +1,102 @@
-import { useSelector } from 'react-redux';
-// import { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useEffect, useRef, useState } from 'react';
 import { selectUserProfile } from '../store/Selectors/userSelector';
-// import { imageUpload } from '../store/Actions/userActions';
+import { imageUpload } from '../store/Actions/userActions';
+import { setEncryptedItem, getEncryptedItem, removeEncryptedItem } from '../utils/encryption';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
-
-const SideBarProfilePage = () => {
+const SideBarProfilePage = ({ allowImageUpload = true }) => {
     const userProfile = useSelector(selectUserProfile);
-    // const [uploadedImage, setUploadedImage] = useState(null);
+    const dispatch = useDispatch();
+    const [uploadedImage, setUploadedImage] = useState(null);
+    const fileInputRef = useRef(null);
 
-    // Handle image upload functionality (commented out for now)
-    // const handleImageUpload = (event) => {
-    //     const file = event.target.files[0];
-    //     if (file) {
-    //         setUploadedImage(URL.createObjectURL(file));
-    //         imageUpload(file);
-    //     }
-    // };
+    // Snackbar state
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success'); // 'success' | 'error' | 'info'
+    const [snackbarMessage, setSnackbarMessage] = useState('');
 
-    // useEffect(() => {
-    //     if (userProfile && userProfile.filepath) {
-    //         const imageUrl = `${process.env.REACT_APP_API_URL}/uploads/${userProfile.filepath.split("uploads\\")[1] || userProfile.filepath.split("uploads/")[1]}`;
-    //         setUploadedImage(imageUrl);
-    //     }
-    // }, [userProfile]);
-
-    // Function to render the first letter of the user's name
-    const renderInitial = () => {
-        if (userProfile?.firstName) {
-            return userProfile.firstName.charAt(0).toUpperCase();
+    useEffect(() => {
+        if (userProfile?.img_url) {
+            setUploadedImage(userProfile.img_url);
+            setEncryptedItem('profileImage', userProfile.img_url);
+        } else {
+            const savedImage = getEncryptedItem('profileImage');
+            if (savedImage) setUploadedImage(savedImage);
+            else setUploadedImage(null);
         }
-        return "G"; // Default for "Guest User"
+    }, [userProfile]);
+
+    // Handles image upload and user authentication
+    const handleImageUpload = async (event) => {
+        const file = event.target.files[0];
+        // console.log("34 file ", file);
+        if (!file) {
+            setSnackbarSeverity('error');
+            setSnackbarMessage('Please select a file');
+            setSnackbarOpen(true);
+            return;
+        }
+
+        // Decrypt user1 from localStorage and check user_id
+        const decryptedUser = getEncryptedItem('user1');
+        console.log("44 decryptedUser ", decryptedUser);
+        if (!decryptedUser) {
+            // If user1 is missing or corrupted, clear it and prompt re-login
+            removeEncryptedItem('user1');
+            setSnackbarSeverity('error');
+            setSnackbarMessage('User authentication required. Please log in again.');
+            setSnackbarOpen(true);
+            return;
+        }
+        if (!decryptedUser.user_id) {
+            setSnackbarSeverity('error');
+            setSnackbarMessage('User ID missing. Please log in again.');
+            setSnackbarOpen(true);
+            return;
+        }
+
+        // Verify that the user_id matches between Redux state and decrypted localStorage
+        if (userProfile?.user_id && decryptedUser.user_id !== userProfile.user_id) {
+            setSnackbarSeverity('error');
+            setSnackbarMessage('User ID mismatch. Please login again.');
+            setSnackbarOpen(true);
+            return;
+        }
+
+        try {
+            setSnackbarSeverity('info');
+            setSnackbarMessage('Uploading image...');
+            setSnackbarOpen(true);
+
+            // imageUpload will use user1.user_id internally
+            const response = await imageUpload(file);
+            setUploadedImage(response.img_url);
+
+            setSnackbarSeverity('success');
+            setSnackbarMessage('Image uploaded successfully');
+            setSnackbarOpen(true);
+
+            setEncryptedItem('profileImage', response.img_url);
+        } catch (error) {
+            console.error('Image upload error:', error);
+            setSnackbarSeverity('error');
+            setSnackbarMessage(error.message || 'Image upload failed');
+            setSnackbarOpen(true);
+        }
+    };
+
+    // Get initials for avatar fallback
+    const getInitials = () => {
+        const first = userProfile?.firstName?.charAt(0).toUpperCase() || '';
+        const last = userProfile?.lastName?.charAt(0).toUpperCase() || '';
+        return (first + last) || 'GU';
+    };
+
+    // Get full name for display
+    const getFullName = () => {
+        return `${userProfile?.firstName || ''} ${userProfile?.middleName || ''} ${userProfile?.lastName || ''}`.trim() || 'Guest User';
     };
 
     return (
@@ -39,80 +106,77 @@ const SideBarProfilePage = () => {
                     <div className="py-5 px-3">
                         <div className="crd-thumbimg text-center">
                             <div className="p-2 d-flex align-items-center justify-content-center brd position-relative">
-                                <div 
-                                    className="circle bg-secondary text-white d-flex align-items-center justify-content-center"
-                                    style={{
-                                        width: '120px',
-                                        height: '120px',
-                                        fontSize: '3rem',
-                                        fontWeight: 'bold',
-                                    }}
-                                >
-                                    {renderInitial()}
-                                </div>
-                                {/* Display user image functionality commented out */}
-                                {/* <div className="d-flex flex-column align-items-end">
-                                    <img
-                                        src={ "https://placehold.co/500x500"}
-                                        className="img-fluid circle"
-                                        style={{ 
-                                            width: '120px',
-                                            height: '120px',
-                                            objectFit: 'cover'
+                                <div className="d-flex flex-column align-items-center">
+                                    <div
+                                        className="circle bg-secondary text-white d-flex align-items-center justify-content-center"
+                                        style={{
+                                            width: '260px',
+                                            height: '200px',
+                                            fontSize: '2.5rem',
+                                            fontWeight: 'bold',
+                                            position: 'relative',
+                                            overflow: 'hidden',
+                                            cursor: allowImageUpload ? 'pointer' : 'default',
+                                            borderRadius: '50%',
                                         }}
-                                        alt="Profile"
-                                    />
-                                    <label style={{ 
-                                        cursor: 'pointer', 
-                                        marginTop: '-30px',
-                                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                                        border: '3px solid white',
-                                        borderRadius: '50%',
-                                        padding: '8px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center'
-                                    }}>
-                                        <i className="fa-solid fa-pen-to-square text-light"></i>
+                                        onClick={() => allowImageUpload && fileInputRef.current.click()}
+                                    >
+                                        {uploadedImage ? (
+                                            <img
+                                                src={uploadedImage}
+                                                alt={getFullName()}
+                                                className="img-fluid circle"
+                                                style={{
+                                                    width: '300px',
+                                                    height: '200px',
+                                                    objectFit: 'cover',
+                                                    borderRadius: '50%',
+                                                }}
+                                            />
+                                        ) : (
+                                            <span>{getInitials()}</span>
+                                        )}
                                         <input
                                             type="file"
                                             name="file"
                                             accept="image/*"
                                             onChange={handleImageUpload}
+                                            ref={fileInputRef}
                                             style={{ display: 'none' }}
                                         />
-                                    </label>
-                                </div> */}
+                                    </div>
+                                    <div className="mt-3">
+                                        <h5 className="mb-0 text-light fw-semibold">{getFullName()}</h5>
+                                        {/* {allowImageUpload && (
+                                            <small className="text-light opacity-75">
+                                                Click to change photo
+                                            </small>
+                                        )} */}
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div className="crd-capser text-center mt-4">
-                            <h5 className="mb-0 text-light fw-semibold">{userProfile?.firstName || "Guest User"}</h5>
-                            {/* <span className="text-light opacity-75 fw-medium text-md">
-                                <i className="fa-solid fa-location-dot me-2" />Karnataka, India
-                            </span> */}
                         </div>
                     </div>
                 </div>
-                {/* Other card middle functionality */}
-                {/* <div className="card-middle mt-5 mb-4 px-4">
-                    <div className="revs-wraps mb-3">
-                        <div className="revs-wraps-flex d-flex align-items-center justify-content-between mb-1">
-                            <span className="text-dark fw-semibold text-md">Complete Your Profile</span>
-                            <span className="text-dark fw-semibold text-md">75%</span>
-                        </div>
-                        <div className="progress" role="progressbar" aria-label="Example" aria-valuenow={87} aria-valuemin={0} aria-valuemax={100} style={{ height: '7px' }}>
-                            <div className="progress-bar bg-success" style={{ width: '87%' }} />
-                        </div>
-                    </div>
-                    <div className="crd-upgrades">
-                        <button className="btn btn-light-primary fw-medium full-width rounded-2" type="button">
-                            <i className="fa-solid fa-sun me-2" />Upgrade Pro
-                        </button>
-                    </div>
-                </div> */}
             </div>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={3000}
+                onClose={() => setSnackbarOpen(false)}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <MuiAlert
+                    onClose={() => setSnackbarOpen(false)}
+                    severity={snackbarSeverity}
+                    sx={{ width: '100%' }}
+                    elevation={6}
+                    variant="filled"
+                >
+                    {snackbarMessage}
+                </MuiAlert>
+            </Snackbar>
         </div>
     );
-}
+};
 
 export default SideBarProfilePage;
