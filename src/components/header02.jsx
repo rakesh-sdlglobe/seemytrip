@@ -1,14 +1,15 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { trainImage } from '../assets/images';
 import { logout } from '../store/Actions/authActions';
 import { logoutEmailUser } from '../store/Actions/emailAction';
 import { logoutMobileUser } from '../store/Actions/mobileOtpAction';
-import { selectGoogleUser, selectGoogleUserName } from '../store/Selectors/authSelectors';
+import { selectGoogleUser, selectGoogleUserName, selectUser } from '../store/Selectors/authSelectors';
 import { selectEmailUser, selectEmailUserName, statedata } from '../store/Selectors/emailSelector';
 import { selectPhoneNumber } from '../store/Selectors/mobileSelector';
 import AuthPopup from './auth/AuthPopup';
+import { getEncryptedItem } from '../utils/encryption';
 
 const Header02 = () => {
   const dispatch = useDispatch();
@@ -20,8 +21,113 @@ const Header02 = () => {
   const phoneNumber = useSelector(selectPhoneNumber);
   const [showAuthPopup, setShowAuthPopup] = useState(false);
   const stateData = useSelector(statedata);
+  
+  // Local state to track authentication status
+  const [localAuthState, setLocalAuthState] = useState({
+    isLoggedIn: false,
+    user: null
+  });
 
-  const isLoggedIn = Boolean(googleUser || phoneNumber || emailuser);
+  // Check localStorage for authentication data on component mount and when Redux state changes
+  useEffect(() => {
+    const checkLocalAuth = () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        const user1 = getEncryptedItem('user1');
+        
+        if (token && user1) {
+          console.log('Header02: Found auth data in localStorage:', { token: !!token, user1 });
+          setLocalAuthState({
+            isLoggedIn: true,
+            user1
+          });
+        } else {
+          console.log('Header02: No auth data found in localStorage');
+          setLocalAuthState({
+            isLoggedIn: false,
+            user1: null
+          });
+        }
+      } catch (error) {
+        console.error('Error parsing stored user data:', error);
+        setLocalAuthState({
+          isLoggedIn: false,
+          user1: null  
+        });
+      }
+    };
+
+    checkLocalAuth();
+
+    // Listen for storage changes (when localStorage is updated from other parts of the app)
+    const handleStorageChange = (e) => {
+      if (e.key === 'authToken' || e.key === 'user1') {
+        console.log('Header02: Storage changed:', e.key);
+        checkLocalAuth();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [googleUser, emailuser, phoneNumber]); // Re-run when Redux auth state changes
+
+  // Determine if user is logged in (check both Redux and local state)
+  const isLoggedIn = Boolean(googleUser || phoneNumber || emailuser) || localAuthState.isLoggedIn;
+
+  // Debug logging
+  useEffect(() => {
+    console.log('Header02: Auth state debug:', {
+      googleUser,
+      phoneNumber,
+      emailuser,
+      localAuthState,
+      isLoggedIn,
+      emailUserName,
+      googleUserName
+    });
+  }, [googleUser, phoneNumber, emailuser, localAuthState, isLoggedIn, emailUserName, googleUserName]);
+
+  // Handle successful authentication from AuthPopup
+  const handleAuthSuccess = useCallback(() => {
+    console.log('Header02: Authentication successful, updating state...');
+    setShowAuthPopup(false);
+    // Force a re-check of localStorage
+    setTimeout(() => {
+      const token = localStorage.getItem('authToken');
+      const user = getEncryptedItem('user1');
+      if (token && user) {
+        console.log('Header02: Setting auth state after success:', user);
+        setLocalAuthState({
+          isLoggedIn: true,
+          user
+        });
+        // Dispatch a custom event to notify other components
+        window.dispatchEvent(new CustomEvent('authStateChanged', { 
+          detail: { isLoggedIn: true, user } 
+        }));
+      }
+    }, 100);
+  }, []);
+
+  // Listen for custom auth state change events
+  useEffect(() => {
+    const handleAuthStateChange = (e) => {
+      if (e.detail) {
+        setLocalAuthState({
+          isLoggedIn: e.detail.isLoggedIn,
+          user: e.detail.user
+        });
+      }
+    };
+
+    window.addEventListener('authStateChanged', handleAuthStateChange);
+    return () => {
+      window.removeEventListener('authStateChanged', handleAuthStateChange);
+    };
+  }, []);
 
   const handleLogout = useCallback(async () => {
     try {
@@ -34,6 +140,17 @@ const Header02 = () => {
       ['authToken', 'googleUser', 'googleUserName'].forEach(key => {
         localStorage.removeItem(key);
       });
+
+      // Update local auth state
+      setLocalAuthState({
+        isLoggedIn: false,
+        user: null
+      });
+
+      // Dispatch a custom event to notify other components
+      window.dispatchEvent(new CustomEvent('authStateChanged', { 
+        detail: { isLoggedIn: false, user: null } 
+      }));
 
       navigate('/', { replace: true });
     } catch (error) {
@@ -59,9 +176,12 @@ const Header02 = () => {
   ];
 
   const getUserDisplayName = () => {
-    return `Hi, ${emailUserName}` || `Hi, ${googleUserName}` || 
-           (phoneNumber && "Hi, Traveller") || 
-           (emailuser && "Hi, Traveller");
+    // Prefer localStorage user firstName if available
+    if (localAuthState.user?.firstName) return `Hi, ${localAuthState.user.firstName}`;
+    if (googleUserName) return `Hi, ${googleUserName}`;
+    if (emailUserName) return `Hi, ${emailUserName}`;
+    if (phoneNumber || emailuser) return "Hi, Traveller";
+    return "Hi, Traveller";
   };
 
   return (
@@ -276,7 +396,8 @@ const Header02 = () => {
 
       <AuthPopup 
         isOpen={showAuthPopup} 
-        onClose={() => setShowAuthPopup(false)} 
+        onClose={() => setShowAuthPopup(false)}
+        onAuthSuccess={handleAuthSuccess}
       />
     </>
   );

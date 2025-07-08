@@ -17,7 +17,8 @@ const PersonalInfo = () => {
         fullName: '',
         mobile: '',
         dob: '',
-        gender: 'Male',
+        gender: '',
+        maritalStatus: '',
         email: '',
         isEmailVerified: 0,
         isMobileVerified: 0,
@@ -35,6 +36,7 @@ const PersonalInfo = () => {
                 mobile: userProfile.mobile || '',
                 dob: userProfile.dob ? new Date(userProfile.dob).toISOString().split('T')[0] : null,
                 gender: userProfile.gender || 'Male',
+                maritalStatus: userProfile.maritalStatus || '',
                 email: userProfile.email || '',
                 isEmailVerified: userProfile.isEmailVerified || 0,
                 isMobileVerified: userProfile.isMobileVerified || 0,
@@ -107,9 +109,12 @@ const PersonalInfo = () => {
             gender: formData.gender,
             email: formData.email,
             isEmailVerified: formData.isEmailVerified,
+            maritalStatus: formData.maritalStatus,
         };
+        console.log("114 userData ", userData);
         
         dispatch(editUserProfile(userData));
+        dispatch(getUserProfile());
         setIsEditable(false);
     }, [formData, dispatch]);
 
@@ -298,6 +303,20 @@ const PersonalInfo = () => {
                                 <option value="Female">Female</option>
                                 <option value="Other">Other</option>
                             </select>
+                            <label className="form-label mt-2">Marital Status</label>
+                            <select
+                                className="form-control custom-select"
+                                name="maritalStatus"
+                                value={formData.maritalStatus}
+                                onChange={handleChange}
+                                disabled={!isEditable}
+                            >
+                                <option value="">Select</option>
+                                <option value="Single">Single</option>
+                                <option value="Married">Married</option>
+                                {/* <option value="Divorced">Divorced</option> */}
+                                {/* <option value="Widowed">Widowed</option> */}
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -366,14 +385,15 @@ const PersonalInfo = () => {
 
                 .calendar-popup {
                     position: absolute;
-                    top: calc(100% + 5px);
-                    left: 0;
-                    width: 350px;
+                    top:10%;
+                    left: 0%;
+                    width: 340px;           /* Reduced width */
+                    min-width: 310px;       /* Reduced min-width */
                     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
                     border-radius: 12px;
                     background: white;
                     z-index: 99999;
-                    padding: 15px;
+                    padding: 4px;           /* Less padding */
                 }
 
                 .react-calendar {
@@ -387,40 +407,50 @@ const PersonalInfo = () => {
                 }
 
                 .react-calendar__navigation {
-                    margin-bottom: 20px;
+                    margin-bottom: 4px;     /* Reduced margin */
+                    padding: 2px 0;         /* Reduced padding */
+                    height: 20px;           /* Reduced height */
                 }
 
                 .react-calendar__navigation button {
-                    min-width: 44px;
+                    min-width: 40px;        /* Reduced min-width */
                     background: none;
-                    font-size: 16px;
-                    padding: 8px;
-                    border-radius: 8px;
+                    font-size: 14px;         /* Reduced font size */
+                    padding: 0px 0;         /* Reduced padding */
+                    border-radius: 3px;     /* Reduced border radius */
+                    height: 25px;           /* Reduced height */
                 }
 
-                .react-calendar__navigation button:enabled:hover,
-                .react-calendar__navigation button:enabled:focus {
-                    background-color: #f8f8f8;
+                .react-calendar__navigation__label {
+                    font-size: 14px !important;  /* Increased font size for month/year */
+                    font-weight: 600;            /* Increased font weight */
+                    padding: 0 8px;              /* Increased padding */
                 }
 
                 .react-calendar__month-view__weekdays {
                     text-align: center;
                     text-transform: uppercase;
                     font-weight: bold;
-                    font-size: 0.9em;
-                    padding: 8px 0;
+                    font-size: 14px;
+                    padding: 0px 0;
                 }
 
                 .react-calendar__month-view__days__day {
-                    padding: 12px 8px !important;
-                    font-size: 14px;
+                    padding: 0 !important;
+                    font-size: 10px;
+                    min-height: 40px;
+                    height: 40px;
+                    aspect-ratio: unset !important;
                 }
 
                 .react-calendar__tile {
-                    border-radius: 8px;
-                    padding: 12px;
-                    margin: 4px;
+                    border-radius: 4px;
+                    padding: 0;
+                    margin: 1px;
                     font-weight: 500;
+                    font-size: 10px;
+                    min-height: 33px;
+                    height: 33px;
                 }
 
                 .react-calendar__tile:disabled {
@@ -432,7 +462,7 @@ const PersonalInfo = () => {
 
                 .react-calendar__tile--active {
                     background: #cd2c22 !important;
-                    color: white;
+                    color: white !important;
                 }
 
                 .react-calendar__tile--now {
@@ -441,6 +471,11 @@ const PersonalInfo = () => {
 
                 .react-calendar__month-view__days__day--weekend {
                     color: #cd2c22;
+                }
+
+                /* Override weekend color for selected dates */
+                .react-calendar__month-view__days__day--weekend.react-calendar__tile--active {
+                    color: white !important;
                 }
 
                 .react-calendar__month-view__days__day--neighboringMonth {
