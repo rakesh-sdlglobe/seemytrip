@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API_URL } from './authActions';
+import { getEncryptedItem, setEncryptedItem } from '../../utils/encryption';
 
 export const FETCH_USER_PROFILE_SUCCESS = 'FETCH_USER_PROFILE_SUCCESS';
 export const FETCH_USER_PROFILE_FAILURE = 'FETCH_USER_PROFILE_FAILURE';
@@ -29,11 +30,10 @@ export const getUserProfile = () => {
   return async (dispatch) => {
     try {
       const authToken = localStorage.getItem('authToken');
-      
-      if (!authToken) {
-        dispatch({ type: SHOW_SESSION_EXPIRED_MODAL });
-        console.error('No auth token found');
-        throw new Error('No auth token found');
+      const user1 = getEncryptedItem('user1');
+      if (!authToken || !user1) {
+        dispatch({ type: FETCH_USER_PROFILE_FAILURE, payload: 'No user found' });
+        return;
       }
 
       const response = await axios.get(`${API_URL}/users/userProfile`, {
@@ -43,19 +43,15 @@ export const getUserProfile = () => {
         }
       });
 
+      // Optionally update user1 in localStorage with latest profile
+      setEncryptedItem('user1', response.data);
+
       dispatch({ 
         type: FETCH_USER_PROFILE_SUCCESS, 
         payload: response.data 
       });
     } catch (error) {
-      console.error('51 Failed to fetch user profile:', error);
       const errorMessage = error.response?.data?.message || 'Failed to fetch user profile';
-
-      if (error.response?.status === 401) {
-        console.error('Session expired:', error);
-        dispatch({ type: SHOW_SESSION_EXPIRED_MODAL });
-      }
-
       dispatch({ 
         type: FETCH_USER_PROFILE_FAILURE, 
         payload: errorMessage 
@@ -65,6 +61,8 @@ export const getUserProfile = () => {
 };
 // Edit user profile
 export const editUserProfile = (userData,navigate) => {
+  console.log("69 userData ", userData);
+  
   return async (dispatch) => {
     const authToken = localStorage.authToken;     
     try {
@@ -210,25 +208,38 @@ export const removeTraveler = (id) => async (dispatch) => {
 export const imageUpload = async (file) => {
   if (!file) {
     console.error("No file provided for upload.");
-    return;
+    throw new Error("No file provided for upload.");
+  }
+
+  // Get decrypted user data to verify user_id
+  const user = getEncryptedItem('user1');
+  console.log('imageUpload: decrypted user1:', user);
+  if (!user) {
+    console.error("No valid user found in user1 (user1 missing or corrupted)");
+    throw new Error("User authentication required");
+  }
+  if (!user.user_id) {
+    console.error("user1 is present but missing user_id property", user);
+    throw new Error("User authentication required");
   }
 
   const formData = new FormData();
-  formData.append('file', file);
+  formData.append('img_url', file); // Changed to match backend expectation
+  console.log("227 formData ", formData);
 
-  const authToken = localStorage.authToken; 
+  const authToken = localStorage.getItem('authToken'); 
+  console.log("229 user_id for upload ", user.user_id, formData);
 
   try {
-    const response = await axios.post(`${API_URL}/users/imageUpload`, formData, {
+    const response = await axios.put(`${API_URL}/users/imageUpload/${user.user_id}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         'Authorization': `Bearer ${authToken}`,
-      
       },
     });
 
     console.log('Image uploaded successfully:', response.data);
-    return response.data; // Optionally return the API response
+    return response.data; // Return the API response with img_url
   } catch (error) {
     console.error('Error uploading image:', error.message);
     throw error; // Rethrow the error for further handling if needed

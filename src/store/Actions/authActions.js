@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { setEncryptedItem, getEncryptedItem, removeEncryptedItem } from '../../utils/encryption';
 
 export const SET_EMAIL = 'SET_EMAIL';
 export const SET_ERROR = 'SET_ERROR';
@@ -16,10 +17,10 @@ export const API_URL = process.env.REACT_APP_API_URL ;
 const AUTH_TOKEN_KEY = 'authToken';
 const USER_DATA_KEY = 'user';
 
-// Helper function for localStorage operations
+// Helper function for localStorage operations with encryption
 const persistAuthData = (token, user) => {
   localStorage.setItem(AUTH_TOKEN_KEY, token);
-  localStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
+  setEncryptedItem(USER_DATA_KEY, user);
 };
 
 export const setError = (error) => ({ type: SET_ERROR, payload: error });
@@ -73,17 +74,23 @@ export const handleGoogleLogin = (accessToken) => async (dispatch) => {
       throw new Error('Invalid response structure from server');
     }
 
-    const { token, user } = response.data;
+    const { token, user, user1 } = response.data;
     const { email, firstName } = user;
 
     // Persist data
     persistAuthData(token, user);
+
+    // Store the encrypted user1 (not user)
+    setEncryptedItem('user1', user1);
 
     // Batch dispatches (could use redux-batched-actions if needed)
     dispatch(googleLoginSuccess({ token, user }));
     dispatch(setUser(user));
     dispatch(setName(firstName));
     dispatch(setEmail(email));
+
+    // Store user as plain JSON in localStorage
+    localStorage.setItem('user', JSON.stringify(user));
 
   } catch (error) {
     // Handle different error scenarios
@@ -103,17 +110,14 @@ export const handleGoogleLogin = (accessToken) => async (dispatch) => {
     
     // Optional: Clear auth data on failure
     localStorage.removeItem(AUTH_TOKEN_KEY);
-    localStorage.removeItem(USER_DATA_KEY);
+    removeEncryptedItem(USER_DATA_KEY);
   }
 };
 
 
 export const register = (firstName, middleName, lastName, email, password, navigate) => async (dispatch) => {
   try {
-
     dispatch(setError(''));
-
-
     const response = await axios.post(`${API_URL}/signup`, {
       firstName,
       middleName,
@@ -121,74 +125,49 @@ export const register = (firstName, middleName, lastName, email, password, navig
       email,
       password,
     });
-
-    const { user, token} = response.data;
-
+    const { user1, user, token } = response.data;
     localStorage.setItem('authToken', token);
-    localStorage.setItem('user', JSON.stringify(user)); 
+    localStorage.setItem('user', JSON.stringify(user));
 
+    setEncryptedItem('user1', user1);
     dispatch(setUser(user));
     dispatch(setName(user.firstName));
     dispatch(setEmail(''));
-
     // dispatch(clearForm())
-
     // navigate('/');
-
   } catch (error) {
-  
     const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.';
     dispatch(setError(errorMessage));
   }
 };
 
 
-export const Loginn = (email, password, navigate) => async (dispatch) => {
-  try {
-
-    dispatch(setError(''));
-
-    const response = await axios.post(`${API_URL}/login`, {
-      email,
-      password,
-    });
-
-    console.log("response from the login action ",response);
-    if(response.data){
-      const { user, token} = response.data;
-  
-      localStorage.setItem('authToken', token);
-      localStorage.setItem('user', JSON.stringify(user));
-  
-      dispatch(setUser(user));
-      dispatch(setName(user.firstName));
-      dispatch(setEmail(''));
-  
-      return { success : true}
-    }
-    else{
-      return { error : response.data.message}
-    }    
-  } catch (error) {
-    const errorMessage = error.response?.data?.message || 'Login failed. Please check your credentials.';
-    dispatch(setError(errorMessage));
-    return { error : errorMessage}
-  }
+export const login = (email, password) => async (dispatch) => {
+  const response = await axios.post('/api/login', { email, password });
+  const { token, user, user1 } = response.data;
+  localStorage.setItem('authToken', token);
+  setEncryptedItem('user1', user1);
+  dispatch(setUser(user));
 };
 
 
 export const logout = () => (dispatch) => {
   localStorage.removeItem('authToken');
-  localStorage.removeItem('user');
-  // localStorage.removeItem('trains');
-  // localStorage.removeItem('trainSearchParams');
+  removeEncryptedItem('user1');
   dispatch({
     type: LOGOUT,
   });
-
 };
 
 // Handle Google login success
+
+const user1 = getEncryptedItem('user1');
+if (user1 && user1.user_id) {
+  // Use user1.user_id, user1.email
+}
+
+const user = JSON.parse(localStorage.getItem('user'));
+// Use user.firstName, user.lastName, etc.
 
 
 
