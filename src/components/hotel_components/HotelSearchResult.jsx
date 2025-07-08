@@ -5,6 +5,7 @@ import Footer from '../footer';
 import HotelSearchbar from './HotelSearchbar';
 import HotelsFilters from './HotelListFilters';
 import HotelList from './HotelList';
+import HotelListSkeleton from './HotelListSkeleton';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchHotelsList } from '../../store/Actions/hotelActions';
 import { selectHotelsList,selectFilter , selectSessionId, selectTotalHotel, selectTotalPages} from '../../store/Selectors/hotelSelectors';
@@ -279,10 +280,16 @@ const onMealFilterChange = useCallback((e) => {
                 
               </div>
               <div className="col-xl-9 col-lg-8 col-md-12">
-                {hotelResultList ?
-                <HotelList hotelsList={hotelResultList} />
-                :<> </>
-                }
+                {loading ? (
+                  <HotelListSkeleton count={6} />
+                ) : hotelResultList && hotelResultList.length > 0 ? (
+                  <HotelList hotelsList={hotelResultList} />
+                ) : (
+                  <div style={{textAlign: 'center', padding: '2rem', color: '#888'}}>
+                    <img src="/images/no-hotels.png" alt="No hotels found" style={{width: '80px', marginBottom: '1rem', opacity: 0.7}} />
+                    <div>No hotels found for your search.</div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
