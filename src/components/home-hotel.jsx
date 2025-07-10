@@ -19,7 +19,18 @@ import { Bangalore, benglore, charminar, chennai, delhi, Delhi, Hotel01, Hotel02
 import AppApk from './App_apk_promotion';
 import { Features } from './medical_tourism/Features';
 
+// Utility function to get hotel search params from localStorage
+function getHotelSearchParamsFromStorage() {
+  try {
+    const data = localStorage.getItem('hotelSearchParams');
+    return data ? JSON.parse(data) : null;
+  } catch {
+    return null;
+  }
+}
+
 const HomeHotel = () => {
+  const initialSearchParams = getHotelSearchParamsFromStorage();
   return (
     <div>
       {/* ============================================================== */}
@@ -61,7 +72,7 @@ const HomeHotel = () => {
               <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
               <div className="search-wrap bg-white rounded-3 p-3">
               <Features/>
-              <HotelSearchbar/>
+              <HotelSearchbar searchParams={initialSearchParams} />
               </div>
              </div>
             </div>

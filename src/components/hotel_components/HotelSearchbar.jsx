@@ -4,7 +4,7 @@ import { Modal } from 'react-bootstrap';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Select from 'react-select';
 import { fetchCityHotels } from '../../store/Actions/hotelActions';
 import { selectCityHotels } from '../../store/Selectors/hotelSelectors';
@@ -183,6 +183,7 @@ export const HotelSearchbar = ({ searchParams = {} }) => {
   const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Refs for automatic focus
   const citySelectRef = useRef(null);
@@ -200,8 +201,11 @@ export const HotelSearchbar = ({ searchParams = {} }) => {
       setStartDate(params.checkInDate ? new Date(params.checkInDate) : null);
       setEndDate(params.checkOutDate ? new Date(params.checkOutDate) : null);
       setRoomsData(params.roomsData || [{ adults: 1, children: 0 }]);
+      if (typeof params.adults === 'number') setAdults(params.adults);
+      if (typeof params.children === 'number') setChildren(params.children);
+      if (typeof params.Rooms === 'number') setRooms(params.Rooms);
     }
-  }, []);
+  }, [location]);
 
   // Save roomsData to localStorage on change
   useEffect(() => {
