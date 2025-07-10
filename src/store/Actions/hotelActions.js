@@ -132,9 +132,10 @@ export const fetchHotelsImages = (HotelProviderSearchId) => async (dispatch) => 
         const response = await axios.post(`${API_URL}/hotels/getHotelImages`, { HotelProviderSearchId });
 
         console.log("Response from hotels images API:", response.data);
+        console.log("Gallery from hotels images API:", response.data.Gallery);
 
         if (response.data.Gallery && response.data.Gallery.length > 0) {
-            dispatch(fetchHotelsImagesSuccess(response.data?.Gallery));
+            dispatch(fetchHotelsImagesSuccess(response.data));
         } else {
             dispatch(fetchHotelsImagesFailure("No images found for the hotel"));
         }

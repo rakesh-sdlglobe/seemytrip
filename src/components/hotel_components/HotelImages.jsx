@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { fetchHotelsImages } from '../../store/Actions/hotelActions';
@@ -11,9 +11,16 @@ const HotelImages = () => {
     const [selectedCategory, setSelectedCategory] = useState('all');
     const [loading, setLoading] = useState(true);
     const [categories, setCategories] = useState([]);
+    const [activeCategory, setActiveCategory] = useState('');
+
+    // 1. Create a ref to store tab elements
+    const tabRefs = useRef({});
 
     const { HotelProviderSearchId } = location.state;
     const hotelImages = useSelector(selectHotelsImages);
+
+    // Use the correct array for images
+    const imagesArray = hotelImages?.Gallery || [];
 
     useEffect(() => {
         dispatch(fetchHotelsImages(HotelProviderSearchId));
@@ -21,24 +28,76 @@ const HotelImages = () => {
 
     // Process images and extract unique categories
     useEffect(() => {
-        if (hotelImages && hotelImages.length > 0) {
+        console.log("hotelImages from Redux:", hotelImages);
+        console.log("imagesArray:", imagesArray);
+        if (imagesArray.length > 0) {
             // Get unique categories
-            const uniqueCategories = [...new Set(hotelImages.map(img => img.Name))];
+            const uniqueCategories = [...new Set(imagesArray.map(img => img.Name))];
             setCategories(['all', ...uniqueCategories]);
             setLoading(false);
         }
     }, [hotelImages]);
 
+    useEffect(() => {
+        // Set default active category on load
+        const firstCategory = Object.keys(groupedByCategory)[0];
+        if (firstCategory) setActiveCategory(firstCategory);
+    }, [imagesArray]);
+
     // Group images by category
-    const groupedImages = {
-        all: hotelImages || [],
-        ...categories.reduce((acc, category) => {
-            if (category !== 'all') {
-                acc[category] = hotelImages?.filter(img => img.Name === category) || [];
+    const groupedByCategory = imagesArray && imagesArray.length > 0 ? imagesArray.reduce((acc, img) => {
+        if (!acc[img.Name]) acc[img.Name] = [];
+        acc[img.Name].push(img);
+        return acc;
+    }, {}) : {};
+
+    useEffect(() => {
+        const timer = setTimeout(() => setLoading(false), 2000);
+        return () => clearTimeout(timer);
+    }, []);
+
+    useEffect(() => {
+        // Only add scroll listener if there are categories to track
+        if (Object.keys(groupedByCategory).length === 0) return;
+
+        const handleScroll = () => {
+            const sectionIds = Object.keys(groupedByCategory).map(category => `section-${category}`);
+            
+            // Check if there are any sections before proceeding
+            if (sectionIds.length === 0) return;
+            
+            let current = sectionIds[0];
+
+            for (let id of sectionIds) {
+                const section = document.getElementById(id);
+                if (section) {
+                    const rect = section.getBoundingClientRect();
+                    // You can tweak the offset (here: 120) for your header height
+                    if (rect.top <= 120) {
+                        current = id;
+                    }
+                }
             }
-            return acc;
-        }, {})
-    };
+            // Remove 'section-' prefix to get the category name
+            if (current) {
+                setActiveCategory(current.replace('section-', ''));
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [groupedByCategory]);
+
+    // 2. Scroll the active tab into view when it changes
+    useEffect(() => {
+        if (activeCategory && tabRefs.current[activeCategory]) {
+            tabRefs.current[activeCategory].scrollIntoView({
+                behavior: 'smooth',
+                inline: 'center',
+                block: 'nearest'
+            });
+        }
+    }, [activeCategory]);
 
     if (loading) {
         return (
@@ -50,77 +109,93 @@ const HotelImages = () => {
         );
     }
 
+    // Check if there are any images to display
+    if (!imagesArray || imagesArray.length === 0) {
+        return (
+            <div className="container mt-5 text-center">
+                <p>No images available for this hotel.</p>
+            </div>
+        );
+    }
+
     return (
-        <div className="container-fluid mt-4">
-            <div className="row">
-                {/* Side Navigation */}
-                <div className="col-md-3 col-lg-2">
-                    <div className="sticky-top pt-3">
-                        <button 
-                            className="btn btn-outline-primary mb-4 w-100"
-                            onClick={() => navigate(-1)}
+        <>
+            <style>
+            {`
+              .category-tabs {
+                scrollbar-width: none;        /* Firefox */
+                
+              }
+              .category-tabs::-webkit-scrollbar {
+                display: none;                /* Chrome, Safari, Opera */
+              }
+            `}
+            </style>
+            <div className="container mt-4">
+                {/* Horizontal Scrollable Tabs */}
+                <div className="category-tabs" style={{
+                    display: 'flex',
+                    overflowX: 'auto',
+                    borderBottom: '1px solid #eee',
+                    marginBottom: 24,
+                    gap: 24,
+                    padding: '8px 0',
+                    position: 'sticky',
+                    top: 0,
+                    background: '#fff',
+                    zIndex: 10,
+                    fontSize: 8,
+                }}>
+                    {Object.keys(groupedByCategory).map(category => (
+                        <button
+                            key={category}
+                            ref={el => tabRefs.current[category] = el} // <-- Add this line
+                            className={`category-tab${activeCategory === category ? ' active' : ''}`}
+                            style={{
+                                background: 'none',
+                                border: 'none',
+                                fontWeight: activeCategory === category ? 'bold' : 'normal',
+                                color: activeCategory === category ? '#222' : '#555',
+                                borderBottom: activeCategory === category ? '3px solid #2196f3' : 'none',
+                                padding: '8px 12px',
+                                cursor: 'pointer',
+                                outline: 'none',
+                                fontSize: 12,
+                                whiteSpace: 'nowrap'
+                            }}
+                            onClick={() => {
+                                setActiveCategory(category);
+                                document.getElementById(`section-${category}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }}
                         >
-                            <i className="fas fa-arrow-left me-2"></i>
-                            Back to Hotel
+                            {category}
                         </button>
-                        
-                        <div className="list-group">
-                            {categories.map(category => (
-                                <button
-                                    key={category}
-                                    className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ${
-                                        selectedCategory === category ? 'active' : ''
-                                    }`}
-                                    onClick={() => setSelectedCategory(category)}
-                                >
-                                    {category === 'all' ? 'All Images' : category}
-                                    <span className="badge bg-primary rounded-pill">
-                                        {groupedImages[category]?.length || 0}
-                                    </span>
-                                </button>
+                    ))}
+                </div>
+
+                {/* Gallery Sections */}
+                {Object.entries(groupedByCategory).map(([category, images]) => (
+                    <div key={category} id={`section-${category}`} className="mb-5">
+                        <h5 className="mb-3">{category}</h5>
+                        <div className="row g-4">
+                            {images.map((image, idx) => (
+                                <div key={idx} className="col-md-4 col-lg-3">
+                                    <div className="card h-100 shadow-sm">
+                                        <img
+                                            src={image.Url}
+                                            className="card-img-top"
+                                            alt={image.Name}
+                                            style={{ height: '200px', objectFit: 'cover', cursor: 'pointer' }}
+                                            onClick={() => window.open(image.Url, '_blank')}
+                                        />
+                                    </div>
+                                </div>
                             ))}
                         </div>
                     </div>
-                </div>
-
-                {/* Image Gallery */}
-                <div className="col-md-9 col-lg-10">
-                    <div className="row g-4">
-                        {groupedImages[selectedCategory]?.map((image, index) => (
-                            <div key={index} className="col-md-4 col-lg-3">
-                                <div className="card h-100 shadow-sm">
-                                    <img
-                                        src={image.Url}
-                                        className="card-img-top"
-                                        alt={image.Name}
-                                        style={{ 
-                                            height: '200px', 
-                                            objectFit: 'cover',
-                                            cursor: 'pointer'
-                                        }}
-                                        onClick={() => window.open(image.Url, '_blank')}
-                                    />
-                                    <div className="card-body">
-                                        <p className="card-text text-muted small">
-                                            {image.Name}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* No Images Message */}
-                    {(!groupedImages[selectedCategory] || groupedImages[selectedCategory].length === 0) && (
-                        <div className="text-center mt-5">
-                            <i className="fas fa-images fa-3x text-muted mb-3"></i>
-                            <h4>No images available for this category</h4>
-                            <p className="text-muted">Please select a different category or check back later.</p>
-                        </div>
-                    )}
-                </div>
+                ))}
             </div>
-        </div>
+        </>
     );
 };
 
