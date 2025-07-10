@@ -1,5 +1,5 @@
 import enGB from "date-fns/locale/en-GB"; // for dd/MM/yyyy format
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { Modal } from 'react-bootstrap';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -184,6 +184,13 @@ export const HotelSearchbar = ({ searchParams = {} }) => {
   const [rooms, setRooms] = useState(1);
   const navigate = useNavigate();
 
+  // Refs for automatic focus
+  const citySelectRef = useRef(null);
+  const startDateRef = useRef(null);
+  const endDateRef = useRef(null);
+  const guestsButtonRef = useRef(null);
+  const searchButtonRef = useRef(null);
+
   // Load data from localStorage on component mount
   useEffect(() => {
     const savedSearchParams = localStorage.getItem("hotelSearchParams");
@@ -238,6 +245,13 @@ export const HotelSearchbar = ({ searchParams = {} }) => {
       children: roomsData.reduce((sum, r) => sum + r.children, 0),
     }));
     setShowGuestsModal(false);
+    
+    // Auto-focus to search button after guests confirmation
+    if (searchButtonRef.current) {
+      setTimeout(() => {
+        searchButtonRef.current.focus();
+      }, 100);
+    }
   };
 
   // Fetch cities on mount
@@ -272,6 +286,16 @@ const cityOptions = useMemo(() => {
       selectedCity: selectedOption,
       cityId: selectedOption?.value
     }));
+    
+    // Auto-focus to start date after city selection
+    if (selectedOption && startDateRef.current) {
+      setTimeout(() => {
+        const startDateInput = startDateRef.current.querySelector('input');
+        if (startDateInput) {
+          startDateInput.focus();
+        }
+      }, 100);
+    }
   };
 
   // Handle input change for search
@@ -284,8 +308,47 @@ const cityOptions = useMemo(() => {
   const handleDateChange = (date, isStartDate) => {
     if (isStartDate) {
       setStartDate(date);
+      // If end date is earlier than new start date, clear it
+      if (endDate && date) {
+        const startDateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        const endDateOnly = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+        if (endDateOnly < startDateOnly) {
+          setEndDate(null);
+        }
+      }
+      // Auto-focus to end date after start date selection
+      if (date && endDateRef.current) {
+        setTimeout(() => {
+          const endDateInput = endDateRef.current.querySelector('input');
+          if (endDateInput) {
+            endDateInput.focus();
+          }
+        }, 100);
+      }
     } else {
       setEndDate(date);
+      // Validate checkout date and refocus if invalid
+      if (date && startDate) {
+        const startDateOnly = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+        const checkDateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        if (checkDateOnly < startDateOnly) {
+          // Clear invalid date and refocus
+          setEndDate(null);
+          setTimeout(() => {
+            const endDateInput = endDateRef.current.querySelector('input');
+            if (endDateInput) {
+              endDateInput.focus();
+            }
+          }, 100);
+          return; // Don't save invalid date
+        }
+      }
+      // Auto-focus to guests button after valid end date selection
+      if (date && guestsButtonRef.current) {
+        setTimeout(() => {
+          guestsButtonRef.current.focus();
+        }, 100);
+      }
     }
     const currentParams = JSON.parse(localStorage.getItem("hotelSearchParams") || "{}");
     localStorage.setItem("hotelSearchParams", JSON.stringify({
@@ -293,6 +356,19 @@ const cityOptions = useMemo(() => {
       checkInDate: isStartDate ? date?.toLocaleDateString('en-CA') : currentParams.checkInDate,
       checkOutDate: !isStartDate ? date?.toLocaleDateString('en-CA') : currentParams.checkOutDate
     }));
+  };
+
+  // Function to filter out invalid dates for checkout
+  const filterCheckoutDates = (date) => {
+    // If no start date is selected, allow all future dates
+    if (!startDate) {
+      return date >= new Date();
+    }
+    // Allow dates that are on or after the start date (for same day bookings)
+    // Compare dates by setting time to 00:00:00 for accurate comparison
+    const startDateOnly = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+    const checkDateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    return checkDateOnly >= startDateOnly;
   };
 
   // Handle guest changes with localStorage update
@@ -383,6 +459,15 @@ const cityOptions = useMemo(() => {
             background-color: #fff !important;
             border-color: #dc3545 !important;
           }
+          .custom-input:disabled {
+            background-color: #f8f9fa !important;
+            color: #6c757d !important;
+            cursor: not-allowed !important;
+            opacity: 0.6;
+          }
+          .custom-input:disabled::placeholder {
+            color: #adb5bd !important;
+          }
         `}
       </style>
       
@@ -394,6 +479,7 @@ const cityOptions = useMemo(() => {
                 <div className="form-group hdd-arrow rounded-1 mb-0">
                   <label>Choose City, Hotel</label>
                   <Select
+                    ref={citySelectRef}
                     options={cityOptions}
                     placeholder="Destination"
                     classNamePrefix="custom-select"
@@ -411,28 +497,31 @@ const cityOptions = useMemo(() => {
                 <div className="form-group mb-0">
                   <label>Choose Date</label>
                   <div className="d-flex">
-                    <DatePicker
-                      selected={startDate}
-                      onChange={(date) => handleDateChange(date, true)}
-                      selectsStart
-                      startDate={startDate}
-                      endDate={endDate}
-                      dateFormat={"dd/MM/yyyy"}
-                      minDate={new Date()}
-                      placeholderText="Check-In"
-                      className="form-control fw-bold custom-input"
-                    />
-                    <DatePicker
-                      selected={endDate}
-                      onChange={(date) => handleDateChange(date, false)}
-                      selectsEnd
-                      startDate={startDate}
-                      dateFormat={"dd/MM/yyyy"}
-                      endDate={endDate}
-                      minDate={startDate}
-                      placeholderText="Check-Out"
-                      className="form-control fw-bold ms-2 custom-input"
-                    />
+                    <div ref={startDateRef}>
+                      <DatePicker
+                        selected={startDate}
+                        onChange={(date) => handleDateChange(date, true)}
+                        selectsStart
+                        startDate={startDate}
+                        endDate={endDate}
+                        dateFormat={"dd/MM/yyyy"}
+                        minDate={new Date()}
+                        placeholderText="Check-In"
+                        className="form-control fw-bold custom-input"
+                      />
+                    </div>
+                    <div ref={endDateRef}>
+                      <DatePicker
+                        selected={endDate}
+                        onChange={(date) => handleDateChange(date, false)}
+                        dateFormat={"dd/MM/yyyy"}
+                        minDate={startDate || new Date()}
+                        filterDate={filterCheckoutDates}
+                        placeholderText="Check-Out"
+                        className="form-control fw-bold ms-2 custom-input"
+                        disabled={!startDate}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -445,6 +534,7 @@ const cityOptions = useMemo(() => {
                   <label>Members</label>
                   <div className="booking-form__input">
                     <button
+                      ref={guestsButtonRef}
                       onClick={handleShowGuestsModal}
                       className="form-control text-start custom-button"
                     >
@@ -461,6 +551,7 @@ const cityOptions = useMemo(() => {
                 <div className="form-group mb-0">
                   {/* <Link to="/hotel-list-01"> */}
                     <button 
+                        ref={searchButtonRef}
                         type="button" 
                         className="btn btn-danger full-width rounded-1 fw-medium"
                         onClick={() =>
