@@ -7,3 +7,4 @@ export const selectTotalHotel = (state) => state.hotels.HotelsList.TotalHotels;
 export const selectTotalPages = (state) => state.hotels.HotelsList.TotalPages;
 export const selectSessionId = (state) => state.hotels.HotelsList.SessionId;
 export const selectHotelsImages = (state) => state.hotels.HotelImages;
+export const selectHotelDetails = (state) => state.hotels;
