@@ -448,6 +448,7 @@ const HotelImages = () => {
     const tabRefs = useRef({});
 
     const { HotelProviderSearchId } = location.state;
+    console.log("HotelProviderSearchId:", HotelProviderSearchId);
     const hotelImages = useSelector(selectHotelsImages);
 
     // Use the correct array for images
@@ -561,8 +562,69 @@ const HotelImages = () => {
               .category-tabs::-webkit-scrollbar {
                 display: none;                /* Chrome, Safari, Opera */
               }
+              .hotel-header-bar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 16px 24px 8px 24px;
+                background: #fff;
+                border-bottom: 1px solid #eee;
+                position: sticky;
+                top: 0;
+                z-index: 100;
+              }
+              .hotel-header-bar .back-btn {
+                background: none;
+                border: none;
+                color: #e53935;
+                font-size: 20px;
+                font-weight: bold;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+              }
+              .hotel-header-bar .hotel-title {
+                font-size: 20px;
+                font-weight: 600;
+                color: #222;
+                flex: 1;
+                text-align: left;
+                margin-left: 12px;
+              }
+              .hotel-header-bar .select-room-btn {
+                background: #e53935;
+                color: #fff;
+                border: none;
+                border-radius: 4px;
+                padding: 8px 18px;
+                font-size: 15px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: background 0.2s;
+              }
+              .hotel-header-bar .select-room-btn:hover {
+                background: #b71c1c;
+              }
             `}
             </style>
+            {/* Header Bar */}
+            <div className="hotel-header-bar">
+              <button className="back-btn" onClick={() => navigate(-1)}>
+                &#8592; {/* Left arrow */}
+              </button>
+              <div className="hotel-title">
+                {hotelImages?.HotelName || "Hotel Name"}
+              </div>
+              <button
+                className="select-room-btn"
+                onClick={() => {
+                  navigate('/hotel-details', { state: { details: hotelImages } });
+                }}
+              >
+                Select Room
+              </button>
+            </div>
             {/* Modal for slider view */}
             {modalOpen && (
               <ImageSliderModal
