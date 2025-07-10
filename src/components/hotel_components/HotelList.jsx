@@ -99,6 +99,10 @@ const HotelList = ({  hotelsList: hotels }) => {
                           onMouseEnter={() => {
                             document.getElementById(`main-image-${hotel.HotelProviderSearchId}`).src = img;
                           }}
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent card click
+                            handleNavigateToImages(hotel.HotelProviderSearchId);
+                          }}
                           style={{ cursor: 'pointer', height: '3rem', width: '3rem' }}
                         >
                         
