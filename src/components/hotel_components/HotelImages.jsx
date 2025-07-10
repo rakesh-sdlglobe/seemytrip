@@ -3,6 +3,85 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { fetchHotelsImages } from '../../store/Actions/hotelActions';
 import { selectHotelsImages } from '../../store/Selectors/hotelSelectors';
+import ImageSkeleton from './ImageSkeleton';
+
+// Hotel Images Skeleton Component
+const HotelImagesSkeleton = () => {
+  return (
+    <div className="container mt-4">
+      {/* Skeleton for category tabs */}
+      <div className="category-tabs" style={{
+        display: 'flex',
+        overflowX: 'auto',
+        borderBottom: '1px solid #eee',
+        marginBottom: 24,
+        gap: 24,
+        padding: '8px 0',
+        position: 'sticky',
+        top: 0,
+        background: '#fff',
+        zIndex: 10,
+      }}>
+        {[...Array(5)].map((_, index) => (
+          <div
+            key={index}
+            style={{
+              width: '80px',
+              height: '32px',
+              background: 'linear-gradient(90deg, #ececec 25%, #f5f5f5 50%, #ececec 75%)',
+              borderRadius: '4px',
+              animation: 'skeleton-fade 1.2s infinite ease-in-out alternate'
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Skeleton for gallery sections */}
+      {[...Array(3)].map((_, sectionIndex) => (
+        <div key={sectionIndex} className="mb-5">
+          {/* Skeleton for section title */}
+          <div
+            style={{
+              width: '200px',
+              height: '24px',
+              background: 'linear-gradient(90deg, #ececec 25%, #f5f5f5 50%, #ececec 75%)',
+              borderRadius: '4px',
+              marginBottom: '16px',
+              animation: 'skeleton-fade 1.2s infinite ease-in-out alternate'
+            }}
+          />
+          
+          {/* Skeleton for image grid */}
+          <div className="row g-4">
+            {[...Array(8)].map((_, imageIndex) => (
+              <div key={imageIndex} className="col-md-4 col-lg-3">
+                <div className="card h-100 shadow-sm">
+                  <div
+                    style={{
+                      height: '200px',
+                      background: 'linear-gradient(90deg, #ececec 25%, #f5f5f5 50%, #ececec 75%)',
+                      borderRadius: '0.375rem 0.375rem 0 0',
+                      animation: 'skeleton-fade 1.2s infinite ease-in-out alternate'
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+
+      <style>
+        {`
+          @keyframes skeleton-fade {
+            0% { opacity: 1; }
+            100% { opacity: 0.5; }
+          }
+        `}
+      </style>
+    </div>
+  );
+};
 
 const HotelImages = () => {
     const location = useLocation();
@@ -100,13 +179,7 @@ const HotelImages = () => {
     }, [activeCategory]);
 
     if (loading) {
-        return (
-            <div className="container mt-5 text-center">
-                <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                </div>
-            </div>
-        );
+        return <HotelImagesSkeleton />;
     }
 
     // Check if there are any images to display
@@ -149,7 +222,7 @@ const HotelImages = () => {
                     {Object.keys(groupedByCategory).map(category => (
                         <button
                             key={category}
-                            ref={el => tabRefs.current[category] = el} // <-- Add this line
+                            ref={el => tabRefs.current[category] = el}
                             className={`category-tab${activeCategory === category ? ' active' : ''}`}
                             style={{
                                 background: 'none',
@@ -181,11 +254,16 @@ const HotelImages = () => {
                             {images.map((image, idx) => (
                                 <div key={idx} className="col-md-4 col-lg-3">
                                     <div className="card h-100 shadow-sm">
-                                        <img
+                                        <ImageSkeleton
                                             src={image.Url}
-                                            className="card-img-top"
                                             alt={image.Name}
-                                            style={{ height: '200px', objectFit: 'cover', cursor: 'pointer' }}
+                                            className="card-img-top"
+                                            style={{ 
+                                                height: '200px', 
+                                                objectFit: 'cover', 
+                                                cursor: 'pointer',
+                                                borderRadius: '0.375rem 0.375rem 0 0'
+                                            }}
                                             onClick={() => window.open(image.Url, '_blank')}
                                         />
                                     </div>
