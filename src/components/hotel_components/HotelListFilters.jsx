@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-US', {
@@ -29,6 +29,8 @@ const  getMealPlanName = (meal)  =>{
 }
 const HotelsFilters = ({ filters, TotalHotel,selectAmenity,selectMeal,selectLocalities,selectStarRatings , onMealFilterChange,onAmenityFilterChange,onLocalitiesFilterChange,onStarRatingsFilterChange,selectPrice,onFilterChange, onClearAll }) => {
   console.log("selectAmenity:", selectAmenity);
+  const [visibleAmenitiesCount, setVisibleAmenitiesCount] = useState(6);
+  const [visibleLocalitiesCount, setVisibleLocalitiesCount] = useState(6);
   return (
     <div className="filter-searchBar bg-white rounded-3" style={{ boxShadow:"0 2px 5px rgba(0, 0, 0, 0.1)" }}>
       <div className="filter-searchBar-head border-bottom">
@@ -153,9 +155,9 @@ const HotelsFilters = ({ filters, TotalHotel,selectAmenity,selectMeal,selectLoca
           <div className="searchBar-single-title d-flex mb-3">
             <h6 className="sidebar-subTitle fs-6 fw-medium m-0">Localities</h6>
           </div>
-          <div className="searchBar-single-wrap">
+          <div className="searchBar-single-wrap" style={{ position: 'relative', paddingBottom: '2rem' }}>
             <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2 mb-0">
-              {filters.Localities.map((Localities,i) => (
+              {filters.Localities.slice(0, visibleLocalitiesCount).map((Localities,i) => (
                 <li className="col-12" key={"Localities_"+i+1}>
                   <div className="form-check">
                   <input 
@@ -170,6 +172,23 @@ const HotelsFilters = ({ filters, TotalHotel,selectAmenity,selectMeal,selectLoca
                 </div>
               </li>  ))}
             </ul>
+            {filters.Localities.length > visibleLocalitiesCount && (
+              <span
+                style={{
+                  color: 'red',
+                  cursor: 'pointer',
+                  fontSize: '0.8rem',
+                  fontWeight: 500,
+                  position: 'absolute',
+                  right: 0,
+                  bottom: 0,
+                  margin: '0.5rem',
+                }}
+                onClick={() => setVisibleLocalitiesCount(c => c + 6)}
+              >
+                Show More
+              </span>
+            )}
           </div>
         </div>
         } 
@@ -179,9 +198,9 @@ const HotelsFilters = ({ filters, TotalHotel,selectAmenity,selectMeal,selectLoca
           <div className="searchBar-single-title d-flex mb-3">
             <h6 className="sidebar-subTitle fs-6 fw-medium m-0">Amenities</h6>
           </div>
-          <div className="searchBar-single-wrap">
+          <div className="searchBar-single-wrap" style={{ position: 'relative', paddingBottom: '2rem' }}>
             <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2 mb-0">
-              {filters.Amenities.map((amenity,i) => (
+              {filters.Amenities.slice(0, visibleAmenitiesCount).map((amenity,i) => (
                 <li className="col-12" key={"amenity_"+i+1}>
                   <div className="form-check">
                   <input 
@@ -196,6 +215,23 @@ const HotelsFilters = ({ filters, TotalHotel,selectAmenity,selectMeal,selectLoca
                 </div>
               </li>  ))}
             </ul>
+            {filters.Amenities.length > visibleAmenitiesCount && (
+              <span
+                style={{
+                  color: 'red',
+                  cursor: 'pointer',
+                  fontSize: '0.8em',
+                  fontWeight: 500,
+                  position: 'absolute',
+                  right: 0,
+                  bottom: 0,
+                  margin: '0.5rem',
+                }}
+                onClick={() => setVisibleAmenitiesCount(c => c + 6)}
+              >
+                Show More
+              </span>
+            )}
           </div>
         </div>
         }
