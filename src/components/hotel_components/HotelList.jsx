@@ -83,6 +83,10 @@ const HotelList = ({  hotelsList: hotels }) => {
                         src={hotel?.HotelImages?.[0] || ''}
                         alt={hotel.HotelName}
                         id={`main-image-${hotel.HotelProviderSearchId}`}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent card click
+                          handleNavigateToImages(hotel.HotelProviderSearchId);
+                        }}
                       />
                     </div>
 
@@ -95,8 +99,13 @@ const HotelList = ({  hotelsList: hotels }) => {
                           onMouseEnter={() => {
                             document.getElementById(`main-image-${hotel.HotelProviderSearchId}`).src = img;
                           }}
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent card click
+                            handleNavigateToImages(hotel.HotelProviderSearchId);
+                          }}
                           style={{ cursor: 'pointer', height: '3rem', width: '3rem' }}
                         >
+                        
                           <img
                             className="img-fluid h-100 w-100 object-fit-cover"
                             src={img}
@@ -118,7 +127,10 @@ const HotelList = ({  hotelsList: hotels }) => {
                             filter: 'blur(2px)',
                             cursor: 'pointer'
                           }}
-                          onClick={() => { handleNavigateToImages(hotel.HotelProviderSearchId) }}
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent card click
+                            handleNavigateToImages(hotel.HotelProviderSearchId);
+                          }}
                         >
                           <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50">
                             <button
