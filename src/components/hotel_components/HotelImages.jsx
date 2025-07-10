@@ -5,6 +5,128 @@ import { fetchHotelsImages } from '../../store/Actions/hotelActions';
 import { selectHotelsImages } from '../../store/Selectors/hotelSelectors';
 import ImageSkeleton from './ImageSkeleton';
 
+// Add this Modal component inside the same file (or import from another file if you prefer)
+const ImageSliderModal = ({ images, currentIndex, onClose, onPrev, onNext }) => {
+  const touchStartX = useRef(null);
+
+  // Handle touch start
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  // Handle touch end
+  const handleTouchEnd = (e) => {
+    if (touchStartX.current === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchEndX - touchStartX.current;
+    if (Math.abs(diff) > 50) { // Minimum swipe distance
+      if (diff > 0) {
+        onPrev(e); // Swipe right: previous image
+      } else {
+        onNext(e); // Swipe left: next image
+      }
+    }
+    touchStartX.current = null;
+  };
+
+  if (!images || images.length === 0) return null;
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        top: 0, left: 0, right: 0, bottom: 0,
+        background: 'rgba(0,0,0,0.8)',
+        zIndex: 2000,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+      onClick={onClose}
+    >
+      <div
+        style={{
+          position: 'relative',
+          maxWidth: '90vw',
+          maxHeight: '90vh',
+          background: 'transparent',
+        }}
+        onClick={e => e.stopPropagation()}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        <img
+          src={images[currentIndex].Url}
+          alt={images[currentIndex].Name}
+          style={{
+            maxWidth: '80vw',
+            maxHeight: '80vh',
+            borderRadius: 8,
+            boxShadow: '0 2px 16px rgba(0,0,0,0.5)'
+          }}
+        />
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          style={{
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            background: 'rgba(0,0,0,0.6)',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '50%',
+            width: 32,
+            height: 32,
+            fontSize: 20,
+            cursor: 'pointer'
+          }}
+        >×</button>
+        {/* Prev/Next buttons */}
+        {images.length > 1 && (
+          <>
+            <button
+              onClick={onPrev}
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: -40,
+                transform: 'translateY(-50%)',
+                background: 'rgba(0,0,0,0.6)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '50%',
+                width: 32,
+                height: 32,
+                fontSize: 20,
+                cursor: 'pointer'
+              }}
+              aria-label="Previous"
+            >‹</button>
+            <button
+              onClick={onNext}
+              style={{
+                position: 'absolute',
+                top: '50%',
+                right: -40,
+                transform: 'translateY(-50%)',
+                background: 'rgba(0,0,0,0.6)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '50%',
+                width: 32,
+                height: 32,
+                fontSize: 20,
+                cursor: 'pointer'
+              }}
+              aria-label="Next"
+            >›</button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
 // Hotel Images Skeleton Component
 const HotelImagesSkeleton = () => {
   return (
@@ -91,6 +213,25 @@ const HotelImages = () => {
     const [loading, setLoading] = useState(true);
     const [categories, setCategories] = useState([]);
     const [activeCategory, setActiveCategory] = useState('');
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalImages, setModalImages] = useState([]);
+    const [modalIndex, setModalIndex] = useState(0);
+
+    // Add the useEffect here
+    useEffect(() => {
+      if (!modalOpen) return;
+      const handleKeyDown = (e) => {
+        if (e.key === 'ArrowLeft') {
+          setModalIndex((prev) => (prev - 1 + modalImages.length) % modalImages.length);
+        } else if (e.key === 'ArrowRight') {
+          setModalIndex((prev) => (prev + 1) % modalImages.length);
+        } else if (e.key === 'Escape') {
+          setModalOpen(false);
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [modalOpen, modalImages.length]);
 
     // 1. Create a ref to store tab elements
     const tabRefs = useRef({});
@@ -178,6 +319,13 @@ const HotelImages = () => {
         }
     }, [activeCategory]);
 
+    // Handler to open modal with images of the current category
+    const handleImageClick = (images, idx) => {
+        setModalImages(images);
+        setModalIndex(idx);
+        setModalOpen(true);
+    };
+
     if (loading) {
         return <HotelImagesSkeleton />;
     }
@@ -204,6 +352,22 @@ const HotelImages = () => {
               }
             `}
             </style>
+            {/* Modal for slider view */}
+            {modalOpen && (
+              <ImageSliderModal
+                images={modalImages}
+                currentIndex={modalIndex}
+                onClose={() => setModalOpen(false)}
+                onPrev={e => {
+                  e.stopPropagation();
+                  setModalIndex((modalIndex - 1 + modalImages.length) % modalImages.length);
+                }}
+                onNext={e => {
+                  e.stopPropagation();
+                  setModalIndex((modalIndex + 1) % modalImages.length);
+                }}
+              />
+            )}
             <div className="container mt-4">
                 {/* Horizontal Scrollable Tabs */}
                 <div className="category-tabs" style={{
@@ -264,7 +428,7 @@ const HotelImages = () => {
                                                 cursor: 'pointer',
                                                 borderRadius: '0.375rem 0.375rem 0 0'
                                             }}
-                                            onClick={() => window.open(image.Url, '_blank')}
+                                            onClick={() => handleImageClick(images, idx)}
                                         />
                                     </div>
                                 </div>
