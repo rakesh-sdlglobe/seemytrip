@@ -302,68 +302,6 @@ export default function HotelDetails() {
                   transition: "all 0.2s",
                 }}
               >
-                {activeTab === 2 && (
-                  // Overview
-                  <div className="mb-5">
-                    <div className="card mb-4 shadow-sm">
-                      <div className="card-body">
-                        <h4>About This Hotel</h4>
-                        <HotelDescription description={details.HotelDetail?.Description} />
-                        <div className="row mt-4">
-                          <div className="col-md-6">
-                            <h5>Hotel Highlights</h5>
-                            <ul className="list-unstyled">
-                              {(details.HotelDetail?.Highlights || [
-                                "Beachfront location",
-                                "Full-service spa",
-                                "Multiple restaurants",
-                                "24/7 room service",
-                              ]).map((item) => (
-                                <li key={item}>
-                                  <FaCheckCircle className="text-success me-2" />
-                                  {item}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                          <div className="col-md-6">
-                            <h5>Nearby Attractions</h5>
-                            <HotelDescription
-                              description={details.HotelDetail?.Attractions?.join('')}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === 1 && (
-                  <div className="mb-5">
-                    {details.HotelDetail?.Amenities?.length > 0 ? (
-                      <div className="card mb-4 shadow-sm">
-                        <div className="card-body">
-                          <h4>Hotel Amenities</h4>
-                          <div className="row">
-                            {details.HotelDetail.Amenities.map((amen, i) => {
-                              const IconComponent = amenityIconMap[amen.Description] || FaLock;
-                              return (
-                                <div key={i} className="col-6 col-md-3 mb-3">
-                                  <div className="d-flex align-items-center">
-                                    <IconComponent className="me-2" size={18} />
-                                    <span>{amen.Description}</span>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <p className="text-muted">No amenities listed.</p>
-                    )}
-                  </div>
-                )}
 
                 {activeTab === 0 && (
                   // Rooms
@@ -552,6 +490,69 @@ export default function HotelDetails() {
                   ) : (
                     <p className="text-muted">No rooms available.</p>
                   )
+                )}
+
+                {activeTab === 1 && (
+                  <div className="mb-5">
+                    {details.HotelDetail?.Amenities?.length > 0 ? (
+                      <div className="card mb-4 shadow-sm">
+                        <div className="card-body">
+                          <h4>Hotel Amenities</h4>
+                          <div className="row">
+                            {details.HotelDetail.Amenities.map((amen, i) => {
+                              const IconComponent = amenityIconMap[amen.Description] || FaLock;
+                              return (
+                                <div key={i} className="col-6 col-md-3 mb-3">
+                                  <div className="d-flex align-items-center">
+                                    <IconComponent className="me-2" size={18} />
+                                    <span>{amen.Description}</span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-muted">No amenities listed.</p>
+                    )}
+                  </div>
+                )}
+
+                {activeTab === 2 && (
+                  // Overview
+                  <div className="mb-5">
+                    <div className="card mb-4 shadow-sm">
+                      <div className="card-body">
+                        <h4>About This Hotel</h4>
+                        <HotelDescription description={details.HotelDetail?.Description} />
+                        <div className="row mt-4">
+                          <div className="col-md-6">
+                            <h5>Hotel Highlights</h5>
+                            <ul className="list-unstyled">
+                              {(details.HotelDetail?.Highlights || [
+                                "Beachfront location",
+                                "Full-service spa",
+                                "Multiple restaurants",
+                                "24/7 room service",
+                              ]).map((item) => (
+                                <li key={item}>
+                                  <FaCheckCircle className="text-success me-2" />
+                                  {item}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                          <div className="col-md-6">
+                            <h5>Nearby Attractions</h5>
+                            <HotelDescription
+                              description={details.HotelDetail?.Attractions?.join('')}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 )}
 
                 {activeTab === 3 && (
