@@ -174,10 +174,10 @@ const CustomModalFooter = React.memo(({ onConfirm, addRoom, roomsCount }) => (
 export const HotelSearchbar = ({ searchParams = {} }) => {
   const dispatch = useDispatch();
   const cityHotels = useSelector(selectCityHotels);
-  const [selectedCity, setSelectedCity] = useState(searchParams.selectedCity || null);
-  const [startDate, setStartDate] = useState(searchParams.checkInDate ? new Date(searchParams.checkInDate) : null);
-  const [endDate, setEndDate] = useState(searchParams.checkOutDate ? new Date(searchParams.checkOutDate) : null);
-  const [roomsData, setRoomsData] = useState(searchParams.roomsData || [{ adults: 1, children: 0 }]);
+  const [selectedCity, setSelectedCity] = useState(searchParams?.selectedCity || null);
+  const [startDate, setStartDate] = useState(searchParams?.checkInDate ? new Date(searchParams.checkInDate) : null);
+  const [endDate, setEndDate] = useState(searchParams?.checkOutDate ? new Date(searchParams.checkOutDate) : null);
+  const [roomsData, setRoomsData] = useState(searchParams?.roomsData || [{ adults: 1, children: 0 }]);
   const [showGuestsModal, setShowGuestsModal] = useState(false);
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
@@ -196,14 +196,19 @@ export const HotelSearchbar = ({ searchParams = {} }) => {
   useEffect(() => {
     const savedSearchParams = localStorage.getItem("hotelSearchParams");
     if (savedSearchParams) {
-      const params = JSON.parse(savedSearchParams);
-      setSelectedCity(params.selectedCity);
-      setStartDate(params.checkInDate ? new Date(params.checkInDate) : null);
-      setEndDate(params.checkOutDate ? new Date(params.checkOutDate) : null);
-      setRoomsData(params.roomsData || [{ adults: 1, children: 0 }]);
-      if (typeof params.adults === 'number') setAdults(params.adults);
-      if (typeof params.children === 'number') setChildren(params.children);
-      if (typeof params.Rooms === 'number') setRooms(params.Rooms);
+      try {
+        const params = JSON.parse(savedSearchParams);
+        setSelectedCity(params?.selectedCity || null);
+        setStartDate(params?.checkInDate ? new Date(params.checkInDate) : null);
+        setEndDate(params?.checkOutDate ? new Date(params.checkOutDate) : null);
+        setRoomsData(params?.roomsData || [{ adults: 1, children: 0 }]);
+        if (typeof params?.adults === 'number') setAdults(params.adults);
+        if (typeof params?.children === 'number') setChildren(params.children);
+        if (typeof params?.Rooms === 'number') setRooms(params.Rooms);
+      } catch (e) {
+        // If JSON is invalid, clear the localStorage key
+        localStorage.removeItem("hotelSearchParams");
+      }
     }
   }, [location]);
 

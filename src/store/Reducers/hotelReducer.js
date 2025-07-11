@@ -16,7 +16,10 @@ import {
 
 
 const initialState = {
-    loading: false,
+    cityHotelsListLoading: false,
+    hotelsListLoading : false,
+    hotelImagesLoading:false,
+    hotelDetailsLoading : false,
     error: null,
     details: null,
     CityHotels: [],
@@ -30,63 +33,63 @@ export const hotelReducer = (state = initialState, action) => {
         case FETCH_CITY_HOTELS_REQUEST:
             return {
                 ...state,
-                loading: true,
+                cityHotelsListLoading: true,
             };
         case FETCH_CITY_HOTELS_SUCCESS:
             return {
                 ...state,
-                loading: false,
+                cityHotelsListLoading: false,
                 error: null,
                 CityHotels: action.payload,
             };
         case FETCH_CITY_HOTELS_FAILURE:
             return {
                 ...state,
-                loading: false,
+                cityHotelsListLoading: false,
                 error: action.payload,
             };
         case FETCH_HOTELS_LIST_REQUEST:
             return {
                 ...state,
-                loading: true,
+                hotelsListLoading: true,
             };
         case FETCH_HOTELS_LIST_SUCCESS:
             return {
                 ...state,
-                loading: false,
+                hotelsListLoading: false,
                 error: null,
                 HotelsList: action.payload,
             };
         case FETCH_HOTELS_LIST_FAILURE:
             return {
                 ...state,
-                loading: false,
+                hotelsListLoading: false,
                 error: action.payload,
             };
         case FETCH_HOTELS_IMAGES_REQUEST:
             return {
                 ...state,
-                loading: true,
+                hotelImagesLoading: true,
             };
         case FETCH_HOTELS_IMAGES_SUCCESS:
             return {
                 ...state,
-                loading: false,
+                hotelImagesLoading: false,
                 error: null,
                 HotelImages: action.payload,
             };
         case FETCH_HOTELS_IMAGES_FAILURE:
             return {
                 ...state,
-                loading: false,
+                hotelImagesLoading: false,
                 error: action.payload,
             };
         case FETCH_HOTEL_DETAILS_REQUEST:
-            return { ...state, loading: true, error: null }
+            return { ...state, hotelDetailsLoading: true, error: null }
         case FETCH_HOTEL_DETAILS_SUCCESS:
-            return { ...state, loading: false, details: action.payload }
+            return { ...state, hotelDetailsLoading: false, details: action.payload }
         case FETCH_HOTEL_DETAILS_FAILURE:
-            return { ...state, loading: false, error: action.payload }
+            return { ...state, hotelDetailsLoading: false, error: action.payload }
         default:
             return state;
     }
