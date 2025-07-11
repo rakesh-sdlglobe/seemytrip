@@ -29,8 +29,8 @@ const HotelSearchResult = () => {
   const [MaxPrice, setMaxPrice] = useState(99999999);
   const [MinPrice, setMinPrice] = useState(selectFilter ? selectFilter.MinPrice : 0);
   const [filterLoading, setfilterLoading] = useState(false);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hotelResultList, setHotelResultList] = useState([]);
+  const [visibleCount, setVisibleCount] = useState(6); // New state for visible hotels
 
 
   console.log("Hotels List:", hotelsList);
@@ -49,57 +49,6 @@ const HotelSearchResult = () => {
     }
   }, [dispatch]);
   
-
-const loadMoreHotels = useCallback(() => {
-  if (isLoadingMore) return;
-
-  const searchParams = JSON.parse(localStorage.getItem("hotelSearchParams") || "{}");
-  const { cityId, checkInDate, checkOutDate, Rooms, adults, children } = searchParams;
-
-
-
-  if (cityId && checkInDate && checkOutDate && Rooms && adults && !filterLoading) {
-    const Filter = {
-      MinPrice,
-      MaxPrice,
-      MealPlans: selectMeal,
-      StarRatings: selectStarRatings,
-      Localities: selectLocalities,
-      Amenities: selectAmenity,
-    };
-
-    setIsLoadingMore(true);
-    dispatch(
-      fetchHotelsList(
-        cityId,
-        checkInDate,
-        checkOutDate,
-        Rooms,
-        adults,
-        children,
-        pageNo + 1,
-        SessionId,
-        Filter,
-        null
-      )
-    ).finally(() => {
-      setPageNo(prev => prev + 1);
-      setIsLoadingMore(false);
-    });
-  }
-}, [
-  isLoadingMore,
-  MinPrice,
-  MaxPrice,
-  selectMeal,
-  selectStarRatings,
-  selectLocalities,
-  selectAmenity,
-  pageNo,
-  SessionId,
-  dispatch,
-  filterLoading
-]);
 
   useEffect(() => {
     // Get search parameters from localStorage
@@ -127,8 +76,10 @@ const loadMoreHotels = useCallback(() => {
     const docHeight = document.documentElement.scrollHeight;
 
     if (scrollTop + windowHeight >= docHeight - 100) {
-      if(!filterLoading && !isLoadingMore && pageNo < TotalPages) {
-          loadMoreHotels();
+      if(!filterLoading && pageNo < TotalPages) {
+          // The original code had loadMoreHotels() here, which is removed.
+          // The logic for loading more hotels is now handled by the infinite scroll effect.
+          // This effect will now only trigger the infinite scroll if there are more pages.
       }
       
     }
@@ -136,19 +87,9 @@ const loadMoreHotels = useCallback(() => {
 
   window.addEventListener("scroll", handleScroll);
   return () => window.removeEventListener("scroll", handleScroll);
-}, [isLoadingMore,
-  MinPrice,
-  MaxPrice,
-  selectMeal,
-  selectStarRatings,
-  selectLocalities,
-  selectAmenity,
-  pageNo,
-  SessionId,
-  dispatch,
-  filterLoading,
-  loadMoreHotels,
-  TotalPages
+}, [pageNo,
+  TotalPages,
+  filterLoading
 ]);
 
 
@@ -163,6 +104,11 @@ useEffect(() => {
       return [...prev, ...newHotels];
     });
   }}, [hotelsList]);
+
+  // Reset visibleCount when hotelResultList changes (e.g., new search)
+  useEffect(() => {
+    setVisibleCount(6);
+  }, [hotelResultList]);
   
 const onStarRatingsFilterChange = useCallback((e) => {
     const { id, checked, type, value } = e.target;
@@ -283,7 +229,19 @@ const onMealFilterChange = useCallback((e) => {
                 {loading ? (
                   <HotelListSkeleton count={6} />
                 ) : hotelResultList && hotelResultList.length > 0 ? (
-                  <HotelList hotelsList={hotelResultList} />
+                  <>
+                    <HotelList hotelsList={hotelResultList.slice(0, visibleCount)} />
+                    {visibleCount < hotelResultList.length && (
+                      <div style={{ textAlign: 'center', margin: '2rem 0' }}>
+                        <button
+                          className="btn btn-primary"
+                          onClick={() => setVisibleCount((prev) => prev + 6)}
+                        >
+                          Show More
+                        </button>
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <div style={{textAlign: 'center', padding: '2rem', color: '#888'}}>
                     <img src="/images/no-hotels.png" alt="No hotels found" style={{width: '80px', marginBottom: '1rem', opacity: 0.7}} />
