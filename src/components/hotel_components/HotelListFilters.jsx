@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { Slider, Box, Typography } from '@mui/material';
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -27,10 +28,75 @@ const  getMealPlanName = (meal)  =>{
   return meal; // Default case if no match found
   
 }
-const HotelsFilters = ({ filters, TotalHotel,selectAmenity,selectMeal,selectLocalities,selectStarRatings , onMealFilterChange,onAmenityFilterChange,onLocalitiesFilterChange,onStarRatingsFilterChange,selectPrice,onFilterChange, onClearAll }) => {
+const HotelsFilters = ({ 
+  filters, 
+  TotalHotel,
+  selectAmenity,
+  selectMeal,
+  selectLocalities,
+  selectStarRatings, 
+  onMealFilterChange,
+  onAmenityFilterChange,
+  onLocalitiesFilterChange,
+  onStarRatingsFilterChange,
+  selectPrice,
+  onFilterChange, 
+  onClearAll,
+  onApplyFilters,
+  filtersChanged
+}) => {
   console.log("selectAmenity:", selectAmenity);
   const [visibleAmenitiesCount, setVisibleAmenitiesCount] = useState(6);
   const [visibleLocalitiesCount, setVisibleLocalitiesCount] = useState(6);
+
+  // Add state for slider values
+  const minPrice = filters.MinPrice ?? 0;
+  const maxPrice = filters.PriceRangeHotels
+    ? Math.max(...filters.PriceRangeHotels.map(p => p.MaxPrice))
+    : 50000;
+
+  const [priceRange, setPriceRange] = useState([minPrice, maxPrice]);
+
+  // Get min and max price from filters
+  const getPriceRange = () => {
+    if (!filters || !filters.PriceRangeHotels || filters.PriceRangeHotels.length === 0) {
+      return { min: 0, max: 50000 };
+    }
+    
+    const prices = filters.PriceRangeHotels
+      .filter(x => x.MaxPrice > filters.MinPrice)
+      .map(x => ({ min: x.MinPrice, max: x.MaxPrice }));
+    
+    const minPrice = Math.min(...prices.map(p => p.min));
+    const maxPrice = Math.max(...prices.map(p => p.max));
+    
+    return { min: minPrice, max: maxPrice };
+  };
+
+  // Initialize price range
+  useEffect(() => {
+    // When filters change, reset slider to backend min/max
+    setPriceRange([minPrice, maxPrice]);
+  }, [minPrice, maxPrice]);
+
+  const handlePriceChange = (event, newValue) => {
+    setPriceRange(newValue);
+  };
+
+  const handlePriceChangeCommitted = (event, newValue) => {
+    const [min, max] = newValue;
+    onFilterChange({
+      target: {
+        checked: true,
+        value: `${min}|${max}`
+      }
+    });
+  };
+
+  const valuetext = (value) => {
+    return formatPrice(value);
+  };
+
   return (
     <div className="filter-searchBar bg-white rounded-3" style={{ boxShadow:"0 2px 5px rgba(0, 0, 0, 0.1)" }}>
       <div className="filter-searchBar-head border-bottom">
@@ -80,35 +146,55 @@ const HotelsFilters = ({ filters, TotalHotel,selectAmenity,selectMeal,selectLoca
 }
        
 
-        {/* Pricing */}
-        {filters.PriceRangeHotels && filters.PriceRangeHotels.length > 0 &&
-        <div className="searchBar-single px-3 py-3 border-bottom">
-          <div className="searchBar-single-title d-flex mb-3">
-            <h6 className="sidebar-subTitle fs-6 fw-medium m-0">Price</h6>
-          </div>
-          <div className="searchBar-single-wrap">
-            <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2 mb-0">
-              {filters.PriceRangeHotels && filters.PriceRangeHotels.filter(x=> x.MaxPrice > filters.MinPrice).map((price, i) => (
-
-                <li className="col-6" key={"price_"+(i+1)}>
-                <input 
-                  type="checkbox" 
-                  className="btn-check" 
-                  id={"price_"+price.MinPrice+"_"+price.MaxPrice+"_"+ (i+1)} // Remove spaces for ID
-                    MinPrice={price.MinPrice}
-                    MaxPrice={price.MaxPrice}
-                    value={`${price.MinPrice}|${price.MaxPrice}`}
-                    checked={selectPrice === `${price.MinPrice}|${price.MaxPrice}`}
-                  onChange={onFilterChange}
+        {/* Pricing - Replace the existing checkbox section with this */}
+        {filters.PriceRangeHotels && filters.PriceRangeHotels.length > 0 && (
+          <div className="searchBar-single px-3 py-3 border-bottom">
+            <div className="searchBar-single-title d-flex mb-3">
+              <h6 className="sidebar-subTitle fs-6 fw-medium m-0">Price</h6>
+            </div>
+            <div className="searchBar-single-wrap">
+              <Box sx={{ width: '100%', px: 1 }}>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  {formatPrice(priceRange[0])} - {formatPrice(priceRange[1])}
+                </Typography>
+                <Slider
+                  getAriaLabel={() => 'Price range'}
+                  value={priceRange}
+                  onChange={handlePriceChange}
+                  onChangeCommitted={handlePriceChangeCommitted}
+                  valueLabelDisplay="auto"
+                  getAriaValueText={valuetext}
+                  min={minPrice}
+                  max={maxPrice}
+                  step={100}
+                  disableSwap
+                  sx={{
+                    '& .MuiSlider-thumb': {
+                      backgroundColor: '#007bff',
+                      '&:hover, &.Mui-focusVisible': {
+                        boxShadow: '0 0 0 8px rgba(0, 123, 255, 0.16)',
+                      },
+                    },
+                    '& .MuiSlider-track': {
+                      backgroundColor: '#007bff',
+                    },
+                    '& .MuiSlider-rail': {
+                      backgroundColor: '#e0e0e0',
+                    },
+                  }}
                 />
-                <label className="btn btn-sm btn-secondary rounded-1 fw-medium full-width" htmlFor={"price_"+price.MinPrice+"_"+price.MaxPrice+"_"+ (i+1)}>{formatPrice(price.MinPrice < filters.MinPrice ? filters.MinPrice : price.MinPrice)} - {formatPrice(price.MaxPrice)}</label>
-              </li>
-              ))}
-              
-            </ul>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+                  <Typography variant="caption" color="text.secondary">
+                    {formatPrice(minPrice)}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    {formatPrice(maxPrice)}
+                  </Typography>
+                </Box>
+              </Box>
+            </div>
           </div>
-        </div>
-}
+        )}
 
         {/* Customer Ratings */}
         {filters.StarRatings && filters.StarRatings.length > 0 &&
@@ -235,6 +321,17 @@ const HotelsFilters = ({ filters, TotalHotel,selectAmenity,selectMeal,selectLoca
           </div>
         </div>
         }
+        
+        {/* Add Apply Filters button at the bottom */}
+        {/* <div className="searchBar-single px-3 py-3">
+          <button
+            className={`btn w-100 ${filtersChanged ? 'btn-primary' : 'btn-secondary'}`}
+            onClick={onApplyFilters}
+            disabled={!filtersChanged}
+          >
+            {filtersChanged ? 'Apply Filters' : 'No Changes'}
+          </button>
+        </div> */}
       </div>
     </div>
   );

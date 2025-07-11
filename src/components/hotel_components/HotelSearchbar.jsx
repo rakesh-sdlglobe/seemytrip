@@ -8,7 +8,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Select from 'react-select';
 import { fetchCityHotels } from '../../store/Actions/hotelActions';
 import { selectCityHotels } from '../../store/Selectors/hotelSelectors';
-
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 
 
 registerLocale("en-GB", enGB);
@@ -31,21 +32,24 @@ const handleSearch = (
   navigate,
   roomsData
 ) => {
-  // Only navigate, do not store to localStorage here
-  const formattedCheckIn = checkInDate ? checkInDate.toLocaleDateString('en-CA') : null;
-  const formattedCheckOut = checkOutDate ? checkOutDate.toLocaleDateString('en-CA') : null;
+  // Store search parameters in localStorage
+  const searchParams = {
+    cityId,
+    checkInDate: checkInDate ? checkInDate.toLocaleDateString('en-CA') : null,
+    checkOutDate: checkOutDate ? checkOutDate.toLocaleDateString('en-CA') : null,
+    Rooms,
+    adults,
+    children,
+    selectedCity,
+    roomsData
+  };
+  
+  // Store in localStorage to trigger the search in HotelSearchResult
+  localStorage.setItem('hotelSearchParams', JSON.stringify(searchParams));
 
+  // Navigate to search result page
   navigate(`/hotel-search-result`, {
-    state: {
-      cityId,
-      checkInDate: formattedCheckIn,
-      checkOutDate: formattedCheckOut,
-      Rooms,
-      adults,
-      children,
-      selectedCity,
-      roomsData
-    }
+    state: searchParams
   });
 }
 
@@ -171,7 +175,7 @@ const CustomModalFooter = React.memo(({ onConfirm, addRoom, roomsCount }) => (
   </Modal.Footer>
 ));
 
-export const HotelSearchbar = ({ searchParams = {} }) => {
+export const HotelSearchbar = ({ searchParams = {}, onSearchSubmit, onPendingChange }) => {
   const dispatch = useDispatch();
   const cityHotels = useSelector(selectCityHotels);
   const [selectedCity, setSelectedCity] = useState(searchParams?.selectedCity || null);
@@ -184,6 +188,7 @@ export const HotelSearchbar = ({ searchParams = {} }) => {
   const [rooms, setRooms] = useState(1);
   const navigate = useNavigate();
   const location = useLocation();
+  const [calendarOpen, setCalendarOpen] = useState({ start: false, end: false });
 
   // Refs for automatic focus
   const citySelectRef = useRef(null);
@@ -295,6 +300,7 @@ const cityOptions = useMemo(() => {
       selectedCity: selectedOption,
       cityId: selectedOption?.value
     }));
+    if (onPendingChange) onPendingChange(); // <-- ADD THIS LINE
     
     // Auto-focus to start date after city selection
     if (selectedOption && startDateRef.current) {
@@ -365,6 +371,7 @@ const cityOptions = useMemo(() => {
       checkInDate: isStartDate ? date?.toLocaleDateString('en-CA') : currentParams.checkInDate,
       checkOutDate: !isStartDate ? date?.toLocaleDateString('en-CA') : currentParams.checkOutDate
     }));
+    if (onPendingChange) onPendingChange();
   };
 
   // Function to filter out invalid dates for checkout
@@ -398,51 +405,85 @@ const cityOptions = useMemo(() => {
       ...currentParams,
       [type]: value
     }));
+    if (onPendingChange) onPendingChange();
   };
 
   // Custom styles for the Select component
   const customSelectStyles = {
     control: (provided) => ({
       ...provided,
-      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+      boxShadow: 'none !important', // Add !important
       border: 'none',
       padding: '12px',
       backgroundColor: '#fff',
       minHeight: '44px',
+      borderRadius: '10px', // <-- Add this line to match your input
+      fontWeight: 'bold', // Make the input bold
     }),
     menu: (provided) => ({
       ...provided,
-      borderRadius: '4px',
+      borderRadius: '10px', // <-- Optional: match dropdown menu too
       zIndex: 10,
     }),
     placeholder: (provided) => ({
       ...provided,
       color: '#999',
+      fontWeight: 'bold', // Make the placeholder bold
     }),
     singleValue: (provided) => ({
       ...provided,
       color: '#333',
+      fontWeight: 'bold', // Make the selected value bold
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor:
+        state.isSelected
+          ? '#d30000'         // Slightly lighter dark red when selected
+          : state.isFocused
+          ? '#F4F5F5'         // Cream when hovered (focus) and not selected
+          : '#fff',           // Default white
+      color: state.isSelected ? '#fff' : '#333',
+      fontWeight: 'normal',
+      fontSize: '16px',
+      padding: '12px',
+      cursor: 'pointer',
+      transition: 'background 0.2s',
     }),
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        startDateRef.current && !startDateRef.current.contains(event.target) &&
+        endDateRef.current && !endDateRef.current.contains(event.target)
+      ) {
+        setCalendarOpen({ start: false, end: false });
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
       <style>
         {`
           .custom-input {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border: none;
-            border-radius: 8px;
+            box-shadow: none;
+            border: 1px solid #e0e0e0;   /* Add border for consistency */
+            border-radius: 10px;          /* <-- increased value */
             padding: 12px;
             background-color: #fff;
-            height: 44px;
+            height: 60px;                 /* Match train search bar */
+            font-size: 16px;              /* Match font size */
           }
           .custom-input:focus {
             outline: none;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            box-shadow: none;
           }
           .custom-button {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: none;
             border: none;
             border-radius: 8px;
             padding: 10px 15px;
@@ -454,14 +495,15 @@ const cityOptions = useMemo(() => {
           }
           .custom-button:focus {
             outline: none;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            box-shadow: none;
           }
           .custom-select__control {
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            box-shadow: none !important;
             border: none !important;
           }
           .btn-danger.full-width {
             width: 100%;
+            border-radius: 8px !important; /* Increased border-radius */
           }
           .btn-danger.full-width:hover, .btn-danger.full-width:focus {
             color: #dc3545 !important;
@@ -477,16 +519,71 @@ const cityOptions = useMemo(() => {
           .custom-input:disabled::placeholder {
             color: #adb5bd !important;
           }
+          .hotel-search-container {
+            width: 100%;
+            background-color:rgb(236, 240, 240);      /* Bootstrap red, or use 'red' */
+            background-size: cover;         /* Ensures any background image covers the area */
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            height: 100px;
+            padding: 0 16px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            /* Optional: add a background image if needed */
+            /* background-image: url('your-image-url.jpg'); */
+          }
+          .calendar-popup {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 320px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 3px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            background: white;
+            z-index: 1000;
+            overflow: hidden;
+            padding: 15px;
+            margin-top: 5px;
+            border: none;
+          }
+          .calendar-popup {
+            border: none !important;
+            outline: none !important;
+          }
+          .react-calendar {
+            border: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+          }
+          .custom-input:focus {
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+          }
+          /* Make selected date in calendar red */
+          .react-calendar__tile--active {
+            background: #cd2c22 !important; /* Your preferred red */
+            color: #fff !important;
+          }
+          .react-calendar__tile--active:enabled:hover,
+          .react-calendar__tile--active:enabled:focus {
+            background: #b30000 !important; /* A darker red on hover/focus */
+            color: #fff !important;
+          }
         `}
       </style>
       
-      <div className="search-wrap with-label bg-white rounded-3 p-3 pt-4">
-        <div className="row gy-3 gx-md-3 gx-sm-2">
+    
+      <div className="search-wrap with-label bg-red rounded-3 p-3 pt-4">
+      <div className="container hotel-search-container">
+      <div className="row gy-3 gx-md-3 gx-sm-2">
+          
           <div className="col-xl-8 col-lg-7 col-md-12">
             <div className="row gy-3 gx-md-3 gx-sm-2">
               <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
                 <div className="form-group hdd-arrow rounded-1 mb-0">
-                  <label>Choose City, Hotel</label>
+                  {/* <label>Choose City, Hotel</label> */}
                   <Select
                     ref={citySelectRef}
                     options={cityOptions}
@@ -496,7 +593,6 @@ const cityOptions = useMemo(() => {
                     value={selectedCity}
                     onChange={handleCityChange}
                     onInputChange={handleInputChange}
-                    isClearable
                     isSearchable
                   />
                 </div>
@@ -504,32 +600,77 @@ const cityOptions = useMemo(() => {
 
               <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
                 <div className="form-group mb-0">
-                  <label>Choose Date</label>
+                  {/* <label>Choose Date</label> */}
                   <div className="d-flex">
-                    <div ref={startDateRef}>
-                      <DatePicker
-                        selected={startDate}
-                        onChange={(date) => handleDateChange(date, true)}
-                        selectsStart
-                        startDate={startDate}
-                        endDate={endDate}
-                        dateFormat={"dd/MM/yyyy"}
-                        minDate={new Date()}
-                        placeholderText="Check-In"
+                    <div ref={startDateRef} style={{ position: "relative" }}>
+                      <input
+                        type="text"
+                        readOnly
                         className="form-control fw-bold custom-input"
+                        value={startDate ? startDate.toLocaleDateString('en-GB') : ''}
+                        onClick={() => setCalendarOpen({ ...calendarOpen, start: !calendarOpen.start, end: false })}
+                        placeholder="Check-In"
                       />
+                      {calendarOpen.start && (
+                        <div className="calendar-popup">
+                          <Calendar
+                            onChange={(date) => {
+                              setStartDate(date);
+                              setCalendarOpen({ ...calendarOpen, start: false });
+                              setTimeout(() => setCalendarOpen((prev) => ({ ...prev, end: true })), 200);
+                            }}
+                            value={startDate}
+                            minDate={new Date()}
+                            maxDate={(() => {
+                              const today = new Date();
+                              const maxDate = new Date(today);
+                              maxDate.setDate(today.getDate() + 365);
+                              return maxDate;
+                            })()}
+                            selectRange={false}
+                            showNeighboringMonth={true}
+                            showFixedNumberOfWeeks={false}
+                            minDetail="month"
+                          />
+                        </div>
+                      )}
                     </div>
-                    <div ref={endDateRef}>
-                      <DatePicker
-                        selected={endDate}
-                        onChange={(date) => handleDateChange(date, false)}
-                        dateFormat={"dd/MM/yyyy"}
-                        minDate={startDate || new Date()}
-                        filterDate={filterCheckoutDates}
-                        placeholderText="Check-Out"
+                    <div ref={endDateRef} style={{ position: "relative" }}>
+                      <input
+                        type="text"
+                        readOnly
                         className="form-control fw-bold ms-2 custom-input"
+                        value={endDate ? endDate.toLocaleDateString('en-GB') : ''}
+                        onClick={() => startDate && setCalendarOpen({ ...calendarOpen, end: !calendarOpen.end, start: false })}
+                        placeholder="Check-Out"
                         disabled={!startDate}
                       />
+                      {calendarOpen.end && (
+                        <div className="calendar-popup">
+                          <Calendar
+                            onChange={(date) => {
+                              setEndDate(date);
+                              setCalendarOpen({ ...calendarOpen, end: false });
+                            }}
+                            value={endDate}
+                            minDate={startDate || new Date()}
+                            maxDate={(() => {
+                              const today = new Date();
+                              const maxDate = new Date(today);
+                              maxDate.setDate(today.getDate() + 365);
+                              return maxDate;
+                            })()}
+                            selectRange={false}
+                            showNeighboringMonth={true}
+                            showFixedNumberOfWeeks={false}
+                            minDetail="month"
+                            tileDisabled={({ date }) => {
+                              if (!startDate) return false;
+                              return date < startDate;
+                            }}
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -540,18 +681,24 @@ const cityOptions = useMemo(() => {
             <div className="row gy-3 gx-md-3 gx-sm-2">
               <div className="col-xl-8 col-lg-8 col-md-8 col-sm-8">
                 <div className="form-group mb-0">
-                  <label>Members</label>
+                  {/* <label>Members</label> */}
                   <div className="booking-form__input">
                     <button
                       ref={guestsButtonRef}
                       onClick={handleShowGuestsModal}
                       className="form-control text-start custom-button"
                     >
-                      {roomsData.reduce((sum, r) => sum + r.adults, 0)} Adult
+                      <span style={{fontWeight: 'bold'}}>
+                        {roomsData.reduce((sum, r) => sum + r.adults, 0)}
+                      </span> Adult
                       {roomsData.reduce((sum, r) => sum + r.adults, 0) !== 1 ? 's' : ''},{" "}
-                      {roomsData.reduce((sum, r) => sum + r.children, 0)} Child
+                      <span style={{fontWeight: 'bold'}}>
+                        {roomsData.reduce((sum, r) => sum + r.children, 0)}
+                      </span> Child
                       {roomsData.reduce((sum, r) => sum + r.children, 0) !== 1 ? 'ren' : ''},{" "}
-                      {roomsData.length} Room{roomsData.length !== 1 ? 's' : ''}
+                      <span style={{fontWeight: 'bold'}}>
+                        {roomsData.length}
+                      </span> Room{roomsData.length !== 1 ? 's' : ''}
                     </button>
                   </div>
                 </div>
@@ -602,6 +749,7 @@ const cityOptions = useMemo(() => {
           roomsCount={roomsData.length}
         />
       </Modal>
+      </div>
     </div>
   );
 };
