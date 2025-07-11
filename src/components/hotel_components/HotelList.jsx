@@ -6,6 +6,8 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 
 const HotelList = ({  hotelsList: hotels }) => {
+
+  console.log("Hotels list need to display ======> ", hotels);
   const navigate = useNavigate()
   const dispatch = useDispatch();
 
@@ -36,7 +38,7 @@ const HotelList = ({  hotelsList: hotels }) => {
   console.log("Params of detail page: ", params);
 
   try {
-    const data = await dispatch(fetchHotelDetails(hotel.HotelProviderSearchId, {
+    const data = dispatch(fetchHotelDetails(hotel.HotelProviderSearchId, {
       cityId: params.cityId,
       checkInDate: params.checkInDate,
       checkOutDate: params.checkOutDate,

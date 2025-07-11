@@ -35,8 +35,6 @@ const HotelSearchResult = () => {
 
   console.log("Hotels List:", hotelsList);
 
-  console.log("Filters:", hotelResultList);
-
   useEffect(() => {
     // Get search parameters from localStorage
     const searchParams = JSON.parse(localStorage.getItem('hotelSearchParams') || '{}');
@@ -144,6 +142,7 @@ const onMealFilterChange = useCallback((e) => {
     }
     setfilterLoading(true);
   }, []);
+  
   const onAmenityFilterChange = useCallback((e) => {
     const { id, checked, type, value } = e.target;
     if(checked === true)
@@ -228,10 +227,10 @@ const onMealFilterChange = useCallback((e) => {
               <div className="col-xl-9 col-lg-8 col-md-12">
                 {loading ? (
                   <HotelListSkeleton count={6} />
-                ) : hotelResultList && hotelResultList.length > 0 ? (
+                ) : hotelsList && hotelsList.length > 0 ? (
                   <>
-                    <HotelList hotelsList={hotelResultList.slice(0, visibleCount)} />
-                    {visibleCount < hotelResultList.length && (
+                    <HotelList hotelsList={hotelsList.slice(0, visibleCount)} />
+                    {visibleCount < hotelsList.length && (
                       <div style={{ textAlign: 'center', margin: '2rem 0' }}>
                         <button
                           className="btn btn-primary"
