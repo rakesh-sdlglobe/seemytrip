@@ -6,6 +6,7 @@ import HotelSearchbar from './HotelSearchbar';
 import HotelsFilters from './HotelListFilters';
 import HotelList from './HotelList';
 import HotelListSkeleton from './HotelListSkeleton';
+import HotelsFiltersSkeleton from './HotelsFiltersSkeleton';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchHotelsList } from '../../store/Actions/hotelActions';
 import { selectHotelsList,selectFilter , selectSessionId, selectTotalHotel, selectTotalPages} from '../../store/Selectors/hotelSelectors';
@@ -20,150 +21,134 @@ const HotelSearchResult = () => {
   const TotalPages =  useSelector(selectTotalPages);
   const SessionId =  useSelector(selectSessionId);
   const loading = useSelector(selectHotelsLoading)
-  const [selectAmenity, setSelectAmenity] = useState(""); 
-  const [selectMeal, setSelectMeal] = useState(""); 
-  const [selectLocalities, setSelectLocalities] = useState(""); 
-  const [selectStarRatings, setselectStarRatings] = useState(""); 
+  const [selectAmenity, setSelectAmenity] = useState("");
+  const [selectMeal, setSelectMeal] = useState("");
+  const [selectLocalities, setSelectLocalities] = useState("");
+  const [selectStarRatings, setselectStarRatings] = useState("");
   const [selectPrice, setSelectPrice] = useState("");
   const [pageNo, setPageNo] = useState(1);
   const [MaxPrice, setMaxPrice] = useState(99999999);
-  const [MinPrice, setMinPrice] = useState(selectFilter ? selectFilter.MinPrice : 0);
+  const [MinPrice, setMinPrice] = useState(0);
   const [filterLoading, setfilterLoading] = useState(false);
   const [hotelResultList, setHotelResultList] = useState([]);
-  const [visibleCount, setVisibleCount] = useState(6); // New state for visible hotels
-
+  const [visibleCount, setVisibleCount] = useState(6);
 
   console.log("Hotels List:", hotelsList);
+  console.log("Hotel Result List:", hotelResultList);
 
-  console.log("Filters:", hotelResultList);
-
+  // Initial load effect
   useEffect(() => {
-    // Get search parameters from localStorage
     const searchParams = JSON.parse(localStorage.getItem('hotelSearchParams') || '{}');
     const { cityId, checkInDate, checkOutDate, Rooms, adults, children } = searchParams;
 
-    // Dispatch the API call if we have the required parameters
     if (cityId && checkInDate && checkOutDate && Rooms && adults) {
-      dispatch(fetchHotelsList(cityId, checkInDate, checkOutDate, Rooms, adults, children, 1, null, null, null));
+      // Reset states for new search
+      setHotelResultList([]);
+      setPageNo(1);
+      setVisibleCount(6);
+      setfilterLoading(false);
       
+      // Clear all filter selections for new search
+      setSelectAmenity("");
+      setSelectMeal("");
+      setSelectLocalities("");
+      setselectStarRatings("");
+      setSelectPrice("");
+      setMinPrice(0);
+      setMaxPrice(99999999);
+      
+      dispatch(fetchHotelsList(cityId, checkInDate, checkOutDate, Rooms, adults, children, 1, null, null, null));
     }
   }, [dispatch]);
-  
 
+  // Filter effect - only trigger when filters change and filterLoading is true
   useEffect(() => {
-    // Get search parameters from localStorage
+    if (!filterLoading) return; // Only proceed if filterLoading is true
+    
     const searchParams = JSON.parse(localStorage.getItem('hotelSearchParams') || '{}');
     const { cityId, checkInDate, checkOutDate, Rooms, adults, children } = searchParams;
 
-    // Dispatch the API call if we have the required parameters
-    if (cityId && checkInDate && checkOutDate && Rooms && adults && filterLoading) {
+    if (cityId && checkInDate && checkOutDate && Rooms && adults) {
       const Filter = {
-      MinPrice,
-      MaxPrice,
-      MealPlans: selectMeal,
-      StarRatings: selectStarRatings,
-      Localities: selectLocalities,
-      Amenities: selectAmenity,
-    };
-      dispatch(fetchHotelsList(cityId, checkInDate, checkOutDate, Rooms, adults, children, 1, SessionId, Filter, null));
-    }
-  }, [MaxPrice,MinPrice,selectAmenity, selectMeal, selectLocalities, selectStarRatings, selectPrice, pageNo,SessionId, dispatch, filterLoading]);
-
-  useEffect(() => {
-  const handleScroll = () => {
-    const scrollTop = window.scrollY;
-    const windowHeight = window.innerHeight;
-    const docHeight = document.documentElement.scrollHeight;
-
-    if (scrollTop + windowHeight >= docHeight - 100) {
-      if(!filterLoading && pageNo < TotalPages) {
-          // The original code had loadMoreHotels() here, which is removed.
-          // The logic for loading more hotels is now handled by the infinite scroll effect.
-          // This effect will now only trigger the infinite scroll if there are more pages.
-      }
+        MinPrice,
+        MaxPrice,
+        MealPlans: selectMeal,
+        StarRatings: selectStarRatings,
+        Localities: selectLocalities,
+        Amenities: selectAmenity,
+      };
       
+      // Reset hotel list for filtered search
+      setHotelResultList([]);
+      setPageNo(1);
+      setVisibleCount(6);
+      
+      dispatch(fetchHotelsList(cityId, checkInDate, checkOutDate, Rooms, adults, children, 1, SessionId, Filter, null));
+      setfilterLoading(false); // Reset filterLoading after dispatch
     }
-  };
+  }, [MaxPrice, MinPrice, selectAmenity, selectMeal, selectLocalities, selectStarRatings, selectPrice, SessionId, dispatch, filterLoading]);
 
-  window.addEventListener("scroll", handleScroll);
-  return () => window.removeEventListener("scroll", handleScroll);
-}, [pageNo,
-  TotalPages,
-  filterLoading
-]);
+  // Update hotelResultList when hotelsList changes
+  useEffect(() => {
+    if (hotelsList && hotelsList.length > 0) {
+      setHotelResultList(hotelsList); // Simply replace the list with new results
+    }
+  }, [hotelsList]);
 
-
-useEffect(() => {
-  if (hotelsList) {
-   
-    setHotelResultList((prev) => {
-      console.log("Previous Hotels:", prev);
-      console.log("New Hotels:", hotelsList);
-       const existingIds = new Set(prev.map(hotel => hotel.HotelProviderSearchId));
-      const newHotels = hotelsList.filter(hotel => !existingIds.has(hotel.HotelProviderSearchId));
-      return [...prev, ...newHotels];
-    });
-  }}, [hotelsList]);
-
-  // Reset visibleCount when hotelResultList changes (e.g., new search)
+  // Reset visibleCount when hotelResultList changes
   useEffect(() => {
     setVisibleCount(6);
   }, [hotelResultList]);
-  
-const onStarRatingsFilterChange = useCallback((e) => {
-    const { id, checked, type, value } = e.target;
-    if(checked === true)
-      {
-        
+
+  const onStarRatingsFilterChange = useCallback((e) => {
+    const { checked, value } = e.target;
+    if(checked === true) {
       setselectStarRatings((prevValue) => prevValue !== "" ? prevValue + "|"+ value : value);
-    }else{
-      setselectStarRatings((prevValue) => prevValue.includes("|") ? prevValue.replace("|"+value,"") : prevValue.replace(value,"") );
+    } else {
+      setselectStarRatings((prevValue) => prevValue.includes("|") ? prevValue.replace("|"+value,"") : prevValue.replace(value,""));
     }
     setfilterLoading(true);
   }, []);
 
-const onLocalitiesFilterChange = useCallback((e) => {
-    const { id, checked, type, value } = e.target;
-    if(checked === true)
-      {
+  const onLocalitiesFilterChange = useCallback((e) => {
+    const { checked, value } = e.target;
+    if(checked === true) {
       setSelectLocalities((prevValue) => prevValue !== "" ? prevValue + "|"+ value : value);
-    }else{
-      setSelectLocalities((prevValue) => prevValue.includes("|") ? prevValue.replace("|"+value,"") : prevValue.replace(value,"") );
+    } else {
+      setSelectLocalities((prevValue) => prevValue.includes("|") ? prevValue.replace("|"+value,"") : prevValue.replace(value,""));
     }
     setfilterLoading(true);
   }, []);
-  
-const onMealFilterChange = useCallback((e) => {
-    const { id, checked, type, value } = e.target;
-    if(checked === true)
-      {
-        
+
+  const onMealFilterChange = useCallback((e) => {
+    const { checked, value } = e.target;
+    if(checked === true) {
       setSelectMeal((prevValue) => prevValue !== "" ? prevValue + "|"+ value : value);
-    }else{
-      setSelectMeal((prevValue) => prevValue.includes("|") ? prevValue.replace("|"+value,"") : prevValue.replace(value,"") );
+    } else {
+      setSelectMeal((prevValue) => prevValue.includes("|") ? prevValue.replace("|"+value,"") : prevValue.replace(value,""));
     }
     setfilterLoading(true);
   }, []);
+
   const onAmenityFilterChange = useCallback((e) => {
-    const { id, checked, type, value } = e.target;
-    if(checked === true)
-      {
+    const { checked, value } = e.target;
+    if(checked === true) {
       setSelectAmenity((prevValue) => prevValue !== "" ? prevValue + "|"+ value : value);
-    }else{
-      setSelectAmenity((prevValue) => prevValue.includes("|") ? prevValue.replace("|"+value,"") : prevValue.replace(value," ") );
+    } else {
+      setSelectAmenity((prevValue) => prevValue.includes("|") ? prevValue.replace("|"+value,"") : prevValue.replace(value,""));
     }
     setfilterLoading(true);
   }, []);
+
   const onFilterChange = useCallback((e) => {
-    const { id, checked, type,MaxPrice,MinPrice,value } = e.target;
-    if(checked === true)
-      {
-        setMinPrice(value.split("|")[0]);
-        setMaxPrice(value.split("|")[1]);
+    const { checked, value } = e.target;
+    if(checked === true) {
+      setMinPrice(value.split("|")[0]);
+      setMaxPrice(value.split("|")[1]);
       setSelectPrice(value);
-    }else{
+    } else {
       setMinPrice(0);
-        setMaxPrice(999999999);
+      setMaxPrice(999999999);
       setSelectPrice("");
     }
     setfilterLoading(true);
@@ -179,17 +164,15 @@ const onMealFilterChange = useCallback((e) => {
     setSelectPrice("");
     setPageNo(1);
     setHotelResultList([]);
-   // Get search parameters from localStorage
+    
     const searchParams = JSON.parse(localStorage.getItem('hotelSearchParams') || '{}');
     const { cityId, checkInDate, checkOutDate, Rooms, adults, children } = searchParams;
 
-    // Dispatch the API call if we have the required parameters
     if (cityId && checkInDate && checkOutDate && Rooms && adults) {
       dispatch(fetchHotelsList(cityId, checkInDate, checkOutDate, Rooms, adults, children, 1, null, null, null));
-      
     }
   }, [dispatch]);
-  
+
   const searchParams = JSON.parse(localStorage.getItem('hotelSearchParams') || '{}');
 
   return (
@@ -208,25 +191,28 @@ const onMealFilterChange = useCallback((e) => {
           <div className="container">
             <div className="row justify-content-between gy-4 gx-xl-4 gx-lg-3 gx-md-3 gx-4">
               <div className="col-xl-3 col-lg-4 col-md-12">
-                {filters ? <HotelsFilters 
-                  filters={filters}
-                  TotalHotel={TotalHotel}
-                  onFilterChange={onFilterChange}
-                  onAmenityFilterChange={onAmenityFilterChange}
-                  selectAmenity={selectAmenity}
-                  selectMeal={selectMeal}
-                  onMealFilterChange={onMealFilterChange}
-                  selectLocalities={selectLocalities}
-                  onLocalitiesFilterChange={onLocalitiesFilterChange}
-                  selectStarRatings={selectStarRatings}
-                  onStarRatingsFilterChange={onStarRatingsFilterChange}
-                  selectPrice={selectPrice}
-                  onClearAll={handleClearAll}
-                /> :<></>}
-                
+                {(loading || filterLoading) && !filters ? (
+                  <HotelsFiltersSkeleton />
+                ) : filters ? (
+                  <HotelsFilters
+                    filters={filters}
+                    TotalHotel={TotalHotel}
+                    onFilterChange={onFilterChange}
+                    onAmenityFilterChange={onAmenityFilterChange}
+                    selectAmenity={selectAmenity}
+                    selectMeal={selectMeal}
+                    onMealFilterChange={onMealFilterChange}
+                    selectLocalities={selectLocalities}
+                    onLocalitiesFilterChange={onLocalitiesFilterChange}
+                    selectStarRatings={selectStarRatings}
+                    onStarRatingsFilterChange={onStarRatingsFilterChange}
+                    selectPrice={selectPrice}
+                    onClearAll={handleClearAll}
+                  />
+                ) : null}
               </div>
               <div className="col-xl-9 col-lg-8 col-md-12">
-                {loading ? (
+                {loading || filterLoading ? (
                   <HotelListSkeleton count={6} />
                 ) : hotelResultList && hotelResultList.length > 0 ? (
                   <>
