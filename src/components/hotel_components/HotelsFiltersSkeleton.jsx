@@ -18,6 +18,7 @@ const SkeletonBlock = ({ height, width, style = {} }) => (
     }}
   />
 );
+//dsfhgsdfhg
 
 const HotelsFiltersSkeleton = () => (
   <aside className="filters-skeleton p-3 bg-white rounded-3 mb-4" style={{ minWidth: 250, maxWidth: 350 }}>
