@@ -588,6 +588,23 @@ export default function HotelDetails() {
                                   {/* Room Package Details (60%) */}
                                   <div style={{ width: "60%" }}>
                                     <b className="d-block mb-2">{RoomName}</b>
+                                     {/* BoardName */}
+                                     {room.BoardName && (
+                                        <div className="text-muted small mb-1">
+                                          {room.BoardName}
+                                        </div>
+                                      )}
+
+                                      {/* Refundable/Non Refundable */}
+                                      {room.RefundableText && room.RefundableText !== "Not Available" ? (
+                                        <div className="text-success small mb-2">
+                                          {room.RefundableText}
+                                        </div>
+                                      ) : (
+                                        <div className="text-danger small mb-2">
+                                          Non - Refundable
+                                        </div>
+                                      )}
                                     <ul className="list-unstyled mb-2">
                                       {includes.map((d, i) => (
                                         <li key={d + i} className="mb-1">
@@ -611,6 +628,8 @@ export default function HotelDetails() {
                                       <h2 className="mb-1 fw-bold " style={{ fontSize: 28 }}>
                                         ₹ {Number(room.Charges) > 0 ? (Number(room.ServicePrice) - Number(room.Charges)).toLocaleString() :  room.ServicePrice.toLocaleString()}
                                       </h2>
+                                      {console.log("**********",room)
+                                      }
                                       {Number(room.Charges) > 0  && (<>
                                       <div className="text-muted small mb-2">
                                         +₹ {room.Charges.toLocaleString()} taxes & fees Per Night
