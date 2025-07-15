@@ -57,9 +57,8 @@ const HotelsFilters = ({
     if (!filters || !filters.PriceRangeHotels || filters.PriceRangeHotels.length === 0) {
       return { min: 0, max: 50000 };
     }
-
     const prices = filters.PriceRangeHotels
-      .filter(x => x.MaxPrice > filters.MinPrice)
+      .filter(x => x.MaxPrice > x.MinPrice)
       .map(x => ({ min: x.MinPrice, max: x.MaxPrice }));
 
     const minPrice = Math.min(...prices.map(p => p.min));
@@ -75,15 +74,37 @@ const HotelsFilters = ({
     if (!selectPrice) {
       return [minPrice, maxPrice];
     }
-
     const [min, max] = selectPrice.split('|').map(Number);
-    return [min, max];
+    // Clamp values to the current min/max from API
+    return [
+      Math.max(minPrice, Math.min(min, maxPrice)),
+      Math.max(minPrice, Math.min(max, maxPrice))
+    ];
   };
 
-  // Initialize price range
+  // Keep priceRange in sync with selectPrice and API range
   useEffect(() => {
     setPriceRange(getCurrentPriceRange());
-  }, [selectPrice, filters]);
+    // eslint-disable-next-line
+  }, [selectPrice, minPrice, maxPrice]);
+
+  // If API range changes and selectPrice is out of bounds, reset
+  useEffect(() => {
+    if (
+      priceRange[0] < minPrice ||
+      priceRange[1] > maxPrice ||
+      priceRange[0] > priceRange[1]
+    ) {
+      setPriceRange([minPrice, maxPrice]);
+      onFilterChange({
+        target: {
+          checked: true,
+          value: `${minPrice}|${maxPrice}`
+        }
+      });
+    }
+    // eslint-disable-next-line
+  }, [minPrice, maxPrice]);
 
   const handlePriceChange = (event, newValue) => {
     setPriceRange(newValue);
