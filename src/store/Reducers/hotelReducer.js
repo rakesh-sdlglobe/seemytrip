@@ -4,6 +4,7 @@ import {
     FETCH_CITY_HOTELS_FAILURE,
     FETCH_HOTELS_LIST_REQUEST,
     FETCH_HOTELS_LIST_SUCCESS,
+    FETCH_HOTELS_LIST_PAGINATION_SUCCESS,
     FETCH_HOTELS_LIST_FAILURE,
     FETCH_HOTELS_IMAGES_REQUEST,
     FETCH_HOTELS_IMAGES_SUCCESS,
@@ -11,7 +12,6 @@ import {
     FETCH_HOTEL_DETAILS_REQUEST,
     FETCH_HOTEL_DETAILS_SUCCESS,
     FETCH_HOTEL_DETAILS_FAILURE
-
 } from "../Actions/hotelActions";
 
 
@@ -59,6 +59,16 @@ export const hotelReducer = (state = initialState, action) => {
                 hotelsListLoading: false,
                 error: null,
                 HotelsList: action.payload,
+            };
+        case FETCH_HOTELS_LIST_PAGINATION_SUCCESS:
+            return {
+                ...state,
+                hotelsListLoading: false,
+                error: null,
+                HotelsList: {
+                    ...action.payload,
+                    Hotels: [...(state.HotelsList.Hotels || []), ...(action.payload.Hotels || [])]
+                },
             };
         case FETCH_HOTELS_LIST_FAILURE:
             return {
