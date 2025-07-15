@@ -315,11 +315,6 @@ const HotelList = ({  hotelsList: hotels }) => {
                           </Link>
                         </div>
                       </div>
-                      <div className="d-flex align-items-start align-items-md-end text-start text-md-end flex-column">
-                        <span onClick={() => handleHotelClick(hotel)} className="btn btn-md btn-primary full-width fw-medium px-lg-4">
-                          See Availability<i className="fa-solid fa-arrow-trend-up ms-2" />
-                        </span>
-                      </div>
                     </div>
                   </div>
                 </div>

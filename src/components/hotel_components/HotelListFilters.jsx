@@ -329,7 +329,7 @@ const HotelsFilters = ({
         }
 
         {/* Add Apply Filters button at the bottom */}
-        <div className="searchBar-single px-3 py-3">
+        {/* <div className="searchBar-single px-3 py-3">
           <button
             className={`btn w-100 ${filtersChanged ? 'btn-primary' : 'btn-secondary'}`}
             onClick={onApplyFilters}
@@ -337,7 +337,7 @@ const HotelsFilters = ({
           >
             {filtersChanged ? 'Apply Filters' : 'No Changes'}
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
   );
