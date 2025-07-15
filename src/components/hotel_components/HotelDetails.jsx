@@ -48,6 +48,10 @@ import { ImageComponent } from "../../components/ui/image";
 import { selectHotelDetails , selectHotelDetailsImages} from '../../store/Selectors/hotelSelectors';
 // import { DialogContent } from "../../components/ui/dialog";
 import { useNavigate } from 'react-router-dom';
+import Header02 from '../header02';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import { HotelSearchbar } from './HotelSearchbar';
 
 const amenityIconMap = {
   "Free WiFi": FaWifi,
@@ -311,29 +315,19 @@ export default function HotelDetails() {
   const tax = Math.round(subtotal * 0.18); // 18% GST
   const total = subtotal + tax;
 
+  // Get searchParams from localStorage for HotelSearchbar
+  const searchParams = JSON.parse(localStorage.getItem('hotelSearchParams') || '{}');
+
   return (<>
     {details && details.HotelDetail && (<> 
     
     <div className="bg-light min-vh-100">
-      {/* Nav */}
-      <nav className="navbar navbar-light bg-white shadow-sm border-bottom">
-        <div className="container d-flex justify-content-between">
-          <Button variant="link" onClick={() => navigate(-1)}>
-            <FaChevronLeft /> Back to Search
-          </Button>
-          <div>
-            <Button variant="link" className="me-2">
-              <FaShareAlt /> Share
-            </Button>
-            <Button variant="link">
-              <FaHeart /> Save
-            </Button>
-          </div>
-        </div>
-      </nav>
-
+      {/* Header02 above searchbar */}
+      <Header02 />
+      {/* HotelSearchbar below Header02 */}
+      <HotelSearchbar searchParams={searchParams}  backgroundColor="#cd2c22"/>
       <div
-        className="container py-5"
+        className="container py-1"
         style={{
           border: "1px solid #dee2e6",
           borderRadius: "1rem",
@@ -435,7 +429,7 @@ export default function HotelDetails() {
             >
               {/* Tabs */}
               <ul className="nav nav-tabs mb-1">
-                {['Rooms', 'Amenities', 'Overview', 'Reviews'].map((tab, idx) => (
+                {['Rooms', 'Amenities', 'Overview', 'Reviews', 'Map'].map((tab, idx) => (
                   <li className="nav-item" key={tab}>
                     <button
                       className={`nav-link  ${activeTab === idx ? "active custom-active-tab" : ""}`}
@@ -594,6 +588,23 @@ export default function HotelDetails() {
                                   {/* Room Package Details (60%) */}
                                   <div style={{ width: "60%" }}>
                                     <b className="d-block mb-2">{RoomName}</b>
+                                     {/* BoardName */}
+                                     {room.BoardName && (
+                                        <div className="text-muted small mb-1">
+                                          {room.BoardName}
+                                        </div>
+                                      )}
+
+                                      {/* Refundable/Non Refundable */}
+                                      {room.RefundableText && room.RefundableText !== "Not Available" ? (
+                                        <div className="text-success small mb-2">
+                                          {room.RefundableText}
+                                        </div>
+                                      ) : (
+                                        <div className="text-danger small mb-2">
+                                          Non - Refundable
+                                        </div>
+                                      )}
                                     <ul className="list-unstyled mb-2">
                                       {includes.map((d, i) => (
                                         <li key={d + i} className="mb-1">
@@ -617,6 +628,8 @@ export default function HotelDetails() {
                                       <h2 className="mb-1 fw-bold " style={{ fontSize: 28 }}>
                                         ₹ {Number(room.Charges) > 0 ? (Number(room.ServicePrice) - Number(room.Charges)).toLocaleString() :  room.ServicePrice.toLocaleString()}
                                       </h2>
+                                      {console.log("**********",room)
+                                      }
                                       {Number(room.Charges) > 0  && (<>
                                       <div className="text-muted small mb-2">
                                         +₹ {room.Charges.toLocaleString()} taxes & fees Per Night
@@ -762,6 +775,64 @@ export default function HotelDetails() {
                     </div>
                   </div>
                 )}
+                {activeTab === 4 && (
+  <div style={{ overflow: 'hidden' }}>
+    <div style={{ height: 350, width: '100%', overflow: 'hidden' }}>
+      <MapContainer
+        center={[
+          parseFloat(details.HotelDetail?.HotelAddress?.Latitude) || 25.08047,
+          parseFloat(details.HotelDetail?.HotelAddress?.Longitude) || 55.13652
+        ]}
+        zoom={15}
+        style={{ height: '100%', width: '100%' }}
+        scrollWheelZoom={true}
+        zoomControl={true}
+        dragging={true}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
+          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+        />
+        <Marker
+          position={[
+            parseFloat(details.HotelDetail?.HotelAddress?.Latitude) || 25.08047,
+            parseFloat(details.HotelDetail?.HotelAddress?.Longitude) || 55.13652
+          ]}
+        >
+          <Popup>
+            <div>
+              <h6 className="fw-bold">{details.HotelDetail?.HotelName}</h6>
+              <p className="mb-1">{details.HotelDetail?.HotelAddress?.Address}</p>
+              <p className="mb-0 text-muted">{details.HotelDetail?.HotelAddress?.City}, {details.HotelDetail?.HotelAddress?.Country}</p>
+            </div>
+          </Popup>
+        </Marker>
+      </MapContainer>
+    </div>
+    {/* Hotel name, rating, and address below the map */}
+    <div className="mt-3 text-center">
+      <h4 className="fw-bold mb-1">{details.HotelDetail?.HotelName}</h4>
+      <div className="d-flex justify-content-center align-items-center mb-2">
+        {[...Array(5)].map((_, i) => (
+          <FaStar
+            key={i}
+            className={
+              details.HotelDetail?.TripAdvisorDetail?.Rating && i < Math.floor(details.HotelDetail.TripAdvisorDetail.Rating)
+                ? "text-warning me-1"
+                : "text-secondary me-1"
+            }
+          />
+        ))}
+        {details.HotelDetail?.TripAdvisorDetail?.Rating && (
+          <span className="ms-2 text-muted">{details.HotelDetail.TripAdvisorDetail.Rating}/5</span>
+        )}
+      </div>
+      <div className="text-muted">
+        {details.HotelDetail?.HotelAddress?.Address}, {details.HotelDetail?.HotelAddress?.City}, {details.HotelDetail?.HotelAddress?.Country}
+      </div>
+    </div>
+  </div>
+)}
               </div>
             </div>
           </div>
