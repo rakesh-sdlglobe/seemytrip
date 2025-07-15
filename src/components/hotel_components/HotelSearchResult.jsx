@@ -252,10 +252,10 @@ const HotelSearchResult = () => {
               <div className="col-xl-9 col-lg-8 col-md-12 sticky-hotel-list">
                 {loading || filterLoading ? (
                   <HotelListSkeleton count={6} />
-                ) : hotelResultList && hotelResultList.length > 0 ? (
+                ) : hotelsList && hotelsList.length > 0 ? (
                   <>
-                    <HotelList hotelsList={visibleHotels} />
-                    {visibleCount < hotelResultList.length && (
+                    <HotelList hotelsList={hotelsList.slice(0, visibleCount)} />
+                    {visibleCount < hotelsList.length && (
                       <div style={{ textAlign: 'center', margin: '2rem 0' }}>
                         <button
                           className="btn btn-primary"
