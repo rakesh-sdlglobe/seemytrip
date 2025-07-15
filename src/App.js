@@ -106,8 +106,7 @@ import TrainBookingDetails from './components/train_search_result/TrainBookingDe
 import TrainList01 from './components/train_search_result/TrainList.jsx';
 import TrainBooking from './components/train_search_result/trainlistcard.jsx';
 import TravelInsurance from './components/TravelInsurance/TravelInsurance.jsx';
-import MapComponent from './components/hotel_components/hotelmap.jsx';
-import LeafletMap from './components/hotel_components/hotelmap.jsx';
+
 
 function App() {
   const dispatch = useDispatch();
@@ -153,7 +152,7 @@ function App() {
 
           {/* Train Routes */}
           <Route path="/RazorpayPaymentButton" element={<RazorpayPaymentButton />} />
-          <Route path="/hotelmap" element={<LeafletMap />} />
+          
           <Route path="/Train-list-01" element={<TrainList01 />} />
           <Route path="/booking-page" element={<BookingPage trainName="12976 JP MYSORE EXP" />} />
           <Route path="/booking-page/:trainName" element={<BookingPage />} />

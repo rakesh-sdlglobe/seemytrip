@@ -64,3 +64,82 @@
   font-size: 20px;
   line-height: 1;
 }
+
+/* Map Modal Styles */
+.map-modal {
+  z-index: 1055;
+}
+
+.map-modal .modal-dialog {
+  max-width: 800px;
+}
+
+.map-modal .modal-content {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.map-modal .modal-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-bottom: none;
+}
+
+.map-modal .modal-title {
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.map-modal .btn-close {
+  filter: invert(1);
+  opacity: 0.8;
+}
+
+.map-modal .btn-close:hover {
+  opacity: 1;
+}
+
+.map-modal .modal-body {
+  padding: 0;
+}
+
+.map-modal .hotel-address {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.map-modal .hotel-address i {
+  color: #dc3545;
+}
+
+.map-modal .map-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.map-modal .leaflet-container {
+  border-radius: 0;
+}
+
+.map-modal .modal-footer {
+  background-color: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+}
+
+/* Ensure map markers display properly */
+.leaflet-marker-icon {
+  background: none;
+  border: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .map-modal .modal-dialog {
+    margin: 1rem;
+    max-width: calc(100% - 2rem);
+  }
+  
+  .map-modal .modal-title {
+    font-size: 1.1rem;
+  }
+}
