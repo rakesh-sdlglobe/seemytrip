@@ -70,21 +70,29 @@ const HotelList = ({  hotelsList: hotels }) => {
   console.log("Params of detail page: ", params);
 
   try {
-    const data = dispatch(fetchHotelDetails(hotel.HotelProviderSearchId, {
-      cityId: params.cityId,
-      checkInDate: params.checkInDate,
-      checkOutDate: params.checkOutDate,
-      Rooms: params.Rooms,
-      adults: params.adults,
-      children: params.children
-    }));
+    // const data = dispatch(fetchHotelDetails(hotel.HotelProviderSearchId, {
+    //   cityId: params.cityId,
+    //   checkInDate: params.checkInDate,
+    //   checkOutDate: params.checkOutDate,
+    //   Rooms: params.Rooms,
+    //   adults: params.adults,
+    //   children: params.children
+    // }));
 
-    console.log("Hotel details fetched successfully:", data);
-
+    //console.log("Hotel details fetched successfully:", data);
+// Store in localStorage to trigger the search in HotelSearchResult
+  localStorage.setItem('hotelDetailsParams', JSON.stringify({
+        HotelProviderSearchId: hotel.HotelProviderSearchId,
+        cityId: params.cityId,
+        checkInDate: params.checkInDate,
+        checkOutDate: params.checkOutDate,
+        Rooms: params.Rooms,
+        adults: params.adults,
+        children: params.children
+      }));
     navigate('/hotel-details', {
       state: {
         HotelProviderSearchId: hotel.HotelProviderSearchId,
-        details: data, // ✅ Now this is defined
         cityId: params.cityId,
         checkInDate: params.checkInDate,
         checkOutDate: params.checkOutDate,
@@ -306,6 +314,11 @@ const HotelList = ({  hotelsList: hotels }) => {
                             See Availability<i className="fa-solid fa-arrow-trend-up ms-2" />
                           </Link>
                         </div>
+                      </div>
+                      <div className="d-flex align-items-start align-items-md-end text-start text-md-end flex-column">
+                        <span onClick={() => handleHotelClick(hotel)} className="btn btn-md btn-primary full-width fw-medium px-lg-4">
+                          See Availability<i className="fa-solid fa-arrow-trend-up ms-2" />
+                        </span>
                       </div>
                     </div>
                   </div>
