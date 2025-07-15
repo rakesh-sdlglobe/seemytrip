@@ -36,7 +36,7 @@ const HotelReview = () => {
   }
 
   const { checkIn, checkOut, rooms, adults, children, checkInTime, checkOutTime } = getBookingData(hotel);
-  const inclusions = pkg.details || [];
+  const inclusions = pkg || [];
   const visibleInclusions = showAll ? inclusions : inclusions.slice(0, 2);
 
   // Room details string (customize as needed)
