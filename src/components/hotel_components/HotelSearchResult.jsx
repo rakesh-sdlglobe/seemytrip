@@ -266,7 +266,7 @@ const HotelSearchResult = () => {
                         </button>
                       </div>
                     )}
-                    {visibleCount >= hotelResultList.length && pageNo < TotalPages && (
+                    {visibleCount >= hotelsList.length && pageNo < TotalPages && (
                       <div style={{ textAlign: 'center', margin: '2rem 0' }}>
                         <button
                           className="btn btn-primary"
