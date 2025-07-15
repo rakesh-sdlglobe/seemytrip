@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState ,useCallback } from "react";
+import { useDispatch, useSelector  } from 'react-redux';
 import {
   FaChair,
   FaCheckCircle,
@@ -29,11 +30,22 @@ import {
   FaWifi
 } from "react-icons/fa";
 
+import { logout } from '../../store/Actions/authActions';
+import { logoutEmailUser } from '../../store/Actions/emailAction';
+import { logoutMobileUser } from '../../store/Actions/mobileOtpAction';
+import { selectGoogleUser, selectGoogleUserName, selectUser } from '../../store/Selectors/authSelectors';
+import { selectEmailUser, selectEmailUserName, statedata } from '../../store/Selectors/emailSelector';
+import { selectPhoneNumber } from '../../store/Selectors/mobileSelector';
 
+
+import AuthPopup from '../../components/auth/AuthPopup';
+import { getEncryptedItem } from '../../utils/encryption';
+import { fetchHotelDetails } from '../../store/Actions/hotelActions';
 import { useLocation } from 'react-router-dom';
 import { Button } from "../../components/ui/button";
 import { HotelDescription } from "../../components/ui/description";
 import { ImageComponent } from "../../components/ui/image";
+import { selectHotelDetails , selectHotelDetailsImages} from '../../store/Selectors/hotelSelectors';
 // import { DialogContent } from "../../components/ui/dialog";
 import { useNavigate } from 'react-router-dom';
 
@@ -71,9 +83,11 @@ const amenityIconMap = {
 
 export default function HotelDetails() {
   const location = useLocation();
+  const dispatch = useDispatch();
   const { cityId, checkInDate, checkOutDate, Rooms, adults, children } = location.state || {};
   const navigate = useNavigate();
-
+  const details = useSelector(selectHotelDetails);
+   const images = useSelector(selectHotelDetailsImages);
   // Carousel state
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -93,11 +107,81 @@ export default function HotelDetails() {
   const [guestCount, setGuestCount] = useState(adults + children);
 
   const { state } = useLocation();
-  const { details } = state || {};
-  console.log("HotelDetails component loaded with details:", details);
+  const emailUserName = useSelector(selectEmailUserName) || "Traveller";
+    const googleUserName = useSelector(selectGoogleUserName);
+    const emailuser = useSelector(selectEmailUser);
+    const googleUser = useSelector(selectGoogleUser);
+    const phoneNumber = useSelector(selectPhoneNumber);
+  const [showAuthPopup, setShowAuthPopup] = useState(false);
+     // Local state to track authentication status
+      const [localAuthState, setLocalAuthState] = useState({
+        isLoggedIn: false,
+        user: null
+      });
+  // Check localStorage for authentication data on component mount and when Redux state changes
+  useEffect(() => {
+    const checkLocalAuth = () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        const user1 = getEncryptedItem('user1');
+        
+        if (token && user1) {
+          console.log('Header02: Found auth data in localStorage:', { token: !!token, user1 });
+          setLocalAuthState({
+            isLoggedIn: true,
+            user1
+          });
+        } else {
+          console.log('Header02: No auth data found in localStorage');
+          setLocalAuthState({
+            isLoggedIn: false,
+            user1: null
+          });
+        }
+      } catch (error) {
+        console.error('Error parsing stored user data:', error);
+        setLocalAuthState({
+          isLoggedIn: false,
+          user1: null  
+        });
+      }
+    };
+
+    checkLocalAuth();
+
+    // Listen for storage changes (when localStorage is updated from other parts of the app)
+    const handleStorageChange = (e) => {
+      if (e.key === 'authToken' || e.key === 'user1') {
+        console.log('Header02: Storage changed:', e.key);
+        checkLocalAuth();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [googleUser, emailuser, phoneNumber]); // Re-run when Redux auth state changes
+// Initial load effect
+  useEffect(() => {
+    const searchParams = JSON.parse(localStorage.getItem('hotelDetailsParams') || '{}');
+    const { cityId, checkInDate, checkOutDate, Rooms, adults, children,HotelProviderSearchId } = searchParams;
+
+    if (HotelProviderSearchId && cityId && checkInDate && checkOutDate && Rooms && adults) {
+      dispatch(fetchHotelDetails(HotelProviderSearchId, {
+            cityId: cityId,
+            checkInDate: checkInDate,
+            checkOutDate: checkOutDate,
+            Rooms: Rooms,
+            adults: adults,
+            children: children
+          }));
+    }
+  }, [dispatch]);
 
   // Use images from details.HotelDetail.HotelImages or fallback to empty array
-  const images = details.HotelDetail?.HotelImages || [];
+  //const images = details.HotelDetail?.HotelImages || [];
 
   // Carousel controls
   const nextImage = () =>
@@ -107,7 +191,7 @@ export default function HotelDetails() {
 
   // Room selection logic
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const hotelRooms = details.HotelDetail?.HotelRooms || [];
+  const hotelRooms = [];
 
   // Set default selected room id only once when hotelRooms change and selectedRoomId is not set
   useEffect(() => {
@@ -126,7 +210,99 @@ export default function HotelDetails() {
       state: { HotelProviderSearchId }
     });
   };
+  // validation for login
+  //const isLoggedIn = localStorage.getItem('authToken') || localStorage.getItem('googleAuthToken');
+  // Determine if user is logged in (check both Redux and local state)
+  const isLoggedIn = Boolean(googleUser || phoneNumber || emailuser) || localAuthState.isLoggedIn;
 
+  const handleBooking = (roomDetails) => {
+    if (!isLoggedIn) {
+      // Show login popup if not logged in
+      setShowAuthPopup(true);
+      return;
+    }
+
+    navigate('/hotel-review', {state: roomDetails });
+  }
+ useEffect(() => {
+    console.log('Header02: Auth state debug:', {
+      googleUser,
+      phoneNumber,
+      emailuser,
+      localAuthState,
+      isLoggedIn,
+      emailUserName,
+      googleUserName
+    });
+  }, [googleUser, phoneNumber, emailuser, localAuthState, isLoggedIn, emailUserName, googleUserName]);
+
+   // Listen for custom auth state change events
+  useEffect(() => {
+    const handleAuthStateChange = (e) => {
+      if (e.detail) {
+        setLocalAuthState({
+          isLoggedIn: e.detail.isLoggedIn,
+          user: e.detail.user
+        });
+      }
+    };
+
+    window.addEventListener('authStateChanged', handleAuthStateChange);
+    return () => {
+      window.removeEventListener('authStateChanged', handleAuthStateChange);
+    };
+  }, []);
+
+  const handleLogout = useCallback(async () => {
+    try {
+      await Promise.allSettled([
+        dispatch(logout()),
+        dispatch(logoutMobileUser(navigate)),
+        dispatch(logoutEmailUser(navigate)),
+      ]);
+
+      ['authToken', 'googleUser', 'googleUserName'].forEach(key => {
+        localStorage.removeItem(key);
+      });
+
+      // Update local auth state
+      setLocalAuthState({
+        isLoggedIn: false,
+        user: null
+      });
+
+      // Dispatch a custom event to notify other components
+      window.dispatchEvent(new CustomEvent('authStateChanged', { 
+        detail: { isLoggedIn: false, user: null } 
+      }));
+
+      navigate('/', { replace: true });
+    } catch (error) {
+      console.error("Logout failed:", error);
+      window.location.href = '/';
+    }
+  }, [dispatch, navigate]);
+
+ const handleAuthSuccess = useCallback(() => {
+    console.log('Header02: Authentication successful, updating state...');
+    setShowAuthPopup(false);
+    // Force a re-check of localStorage
+    setTimeout(() => {
+      const token = localStorage.getItem('authToken');
+      const user = getEncryptedItem('user1');
+      if (token && user) {
+        console.log('Header02: Setting auth state after success:', user);
+        setLocalAuthState({
+          isLoggedIn: true,
+          user
+        });
+        // Dispatch a custom event to notify other components
+        window.dispatchEvent(new CustomEvent('authStateChanged', { 
+          detail: { isLoggedIn: true, user } 
+        }));
+      }
+    }, 100);
+  }, []);
   // Price calculation
   const nights =
     (new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24);
@@ -135,7 +311,9 @@ export default function HotelDetails() {
   const tax = Math.round(subtotal * 0.18); // 18% GST
   const total = subtotal + tax;
 
-  return (
+  return (<>
+    {details && details.HotelDetail && (<> 
+    
     <div className="bg-light min-vh-100">
       {/* Nav */}
       <nav className="navbar navbar-light bg-white shadow-sm border-bottom">
@@ -305,10 +483,14 @@ export default function HotelDetails() {
 
                 {activeTab === 0 && (
                   // Rooms
-                  hotelRooms.length > 0 ? (
-                    hotelRooms.map((room, index) => {
+                  details.HotelDetail?.HotelServices.length > 0 ? (
+                    details.HotelDetail?.HotelServices.map((room, index) => {
                       // Example data extraction (adjust as per your data structure)
-                      const descriptionLines = (room.Description || "")
+                      var RoomName = room.Rooms.length >  0 ? room.Rooms[0].RoomName : "Room Name Not Available";
+                       var RoomFyi = room.Rooms.length >  0 ? room.Rooms[0].FYI : [];
+                      var roomDetails = details.HotelDetail?.HotelRooms?.filter(x=> x.Name.toLowerCase() === RoomName.toLowerCase()).length > 0 ?  details.HotelDetail?.HotelRooms?.filter(x=> x.Name.toLowerCase() === RoomName.toLowerCase())[0] || {} : {};
+                      
+                      const descriptionLines = (roomDetails?.Description || "")
                         .split(/<br\s*\/?>/i)
                         .map(line => line.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, '').trim())
                         .filter(Boolean);
@@ -316,28 +498,7 @@ export default function HotelDetails() {
                       const mainDetails = descriptionLines.slice(0, 4); // e.g. size, view, bed, bathroom
                       const moreDetails = descriptionLines.slice(4); // e.g. amenities
 
-                      // Package/offer data (replace with your actual data)
-                      const packages = room.Packages || [
-                        {
-                          title: "Room With Free Cancellation | Breakfast only",
-                          details: [
-                            "Book with ₹ 0 Payment",
-                            "15% off on session of Spa",
-                            "Early Check-In upto 2 hours (subject to availability)",
-                            "Late Check-Out upto 2 hours (subject to availability)",
-                            "15% off on Food & Beverage services",
-                            "15% Off on Laundry service",
-                            "Complimentary Welcome Drink on arrival",
-                            "Free Breakfast",
-                            "Bed, Breakfast and More",
-                            "Free Cancellation before 08 Jul 01:59 PM"
-                          ],
-                          price: 12000,
-                          taxes: 2160,
-                          offer: "Login Now and get this for ₹11,880 or less"
-                        }
-                      ];
-
+                      var includes = RoomFyi.length > 0 ? RoomFyi : room.Includes || [];
                       return (
                         // Add border to parent container
                         <div
@@ -362,13 +523,13 @@ export default function HotelDetails() {
                               }}
                             >
                               <img
-                                src={room.Image?.ImageUrl}
-                                alt={room.Name}
+                                src={roomDetails?.Image?.ImageUrl}
+                                alt={RoomName}
                                 className="img-fluid rounded-top"
                                 style={{ objectFit: "cover", width: "100%", height: 140 }}
                               />
                               <div className="card-body p-3">
-                                <h3 className="h5 mb-2">{room.Name}</h3>
+                                <h3 className="h5 mb-2">{RoomName}</h3>
                                 <ul className="list-unstyled mb-2">
                                   {mainDetails.map((line, i) => (
                                     <li key={line + i} className="mb-1">{line}</li>
@@ -422,9 +583,7 @@ export default function HotelDetails() {
                             }}
                           >
                             <div className="d-flex flex-column gap-3">
-                              {packages.map((pkg, pkgIdx) => (
-                                <div
-                                  key={pkg.title + pkgIdx}
+                              <div
                                   className="details-container d-flex flex-row p-3"
                                   style={{
                                     minWidth: 500,
@@ -434,9 +593,9 @@ export default function HotelDetails() {
                                 >
                                   {/* Room Package Details (60%) */}
                                   <div style={{ width: "60%" }}>
-                                    <b className="d-block mb-2">{pkg.title}</b>
+                                    <b className="d-block mb-2">{RoomName}</b>
                                     <ul className="list-unstyled mb-2">
-                                      {pkg.details.map((d, i) => (
+                                      {includes.map((d, i) => (
                                         <li key={d + i} className="mb-1">
                                           {d}
                                         </li>
@@ -456,32 +615,30 @@ export default function HotelDetails() {
                                   >
                                     <div>
                                       <h2 className="mb-1 fw-bold " style={{ fontSize: 28 }}>
-                                        ₹ {pkg.price.toLocaleString()}
+                                        ₹ {Number(room.Charges) > 0 ? (Number(room.ServicePrice) - Number(room.Charges)).toLocaleString() :  room.ServicePrice.toLocaleString()}
                                       </h2>
+                                      {Number(room.Charges) > 0  && (<>
                                       <div className="text-muted small mb-2">
-                                        +₹ {pkg.taxes.toLocaleString()} taxes & fees Per Night
+                                        +₹ {room.Charges.toLocaleString()} taxes & fees Per Night
                                       </div>
+                                      </>)}
+                                      
                                       <button className="btn btn-primary w-50 mb-2"
-                                        onClick={() => {
-                                          navigate('/hotel-review', {
-                                            state: {
-                                              hotel: details.HotelDetail,
-                                              room: room,
-                                              package: pkg,
-                                              image: room.Image?.ImageUrl,
-                                            }
-                                          });
-                                        }}
+                                         onClick={() => handleBooking({hotel: details.HotelDetail,
+                                                                      room: room,
+                                                                      package: includes,
+                                                                      image: roomDetails?.Image?.ImageUrl,
+                                                                      })
+                                        }
                                       >
                                         Select Room
                                       </button>
-                                      <div className="text-center">
+                                      {/* <div className="text-center">
                                         <span className="text-primary small">{pkg.offer}</span>
-                                      </div>
+                                      </div> */}
                                     </div>
                                   </div>
                                 </div>
-                              ))}
                             </div>
                           </div>
                         </div>
@@ -681,7 +838,15 @@ export default function HotelDetails() {
                   <strong>Total</strong>
                   <strong>₹{details.HotelDetail?.HotelServices[0]?.ServicePrice.toLocaleString()}</strong>
                 </div>
-                <button className="btn btn-primary w-100">Book Now</button>
+                
+                  
+                <button onClick={() => handleBooking({
+                                              hotel: details.HotelDetail,
+                                              room: details.HotelDetail?.HotelServices[0],
+                                              package: details.HotelDetail?.HotelServices[0]?.Rooms?.length >  0 ? details.HotelDetail?.HotelServices[0]?.Rooms[0].FYI.length > 0 ?  details.HotelDetail?.HotelServices[0]?.Rooms[0].FYI  :details.HotelDetail?.HotelServices[0]?.Includes || [] : [],
+                                              image: details.HotelDetail?.HotelRooms?.filter(x=> x.Name.toLowerCase() === (details.HotelDetail?.HotelServices[0]?.Rooms?.length >  0 ? details.HotelDetail?.HotelServices[0]?.Rooms[0].RoomName.toLowerCase() :"")).length > 0 ?  details.HotelDetail?.HotelRooms?.filter(x=> x.Name.toLowerCase() === (details.HotelDetail?.HotelServices[0]?.Rooms?.length >  0 ? details.HotelDetail?.HotelServices[0]?.Rooms[0].RoomName.toLowerCase() :""))[0].Image?.ImageUrl  : ""
+                                            })
+                                        } className="btn btn-primary w-100">Book Now</button>
                 <p className="text-center text-muted small mt-2">
                   Free cancellation until 24 hours before check-in
                 </p>
@@ -709,5 +874,11 @@ export default function HotelDetails() {
         </div>
       </div>
     </div>
-  );
+     <AuthPopup 
+        isOpen={showAuthPopup} 
+        onClose={() => setShowAuthPopup(false)}
+        onAuthSuccess={handleAuthSuccess}
+      />
+    </>)}
+  </>);
 }
