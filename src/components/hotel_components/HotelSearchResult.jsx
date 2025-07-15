@@ -31,10 +31,13 @@ const HotelSearchResult = () => {
   const [MinPrice, setMinPrice] = useState(0);
   const [filterLoading, setfilterLoading] = useState(false);
   const [hotelResultList, setHotelResultList] = useState([]);
-  const [visibleCount, setVisibleCount] = useState(6);
+  const [visibleCount, setVisibleCount] = useState(5);
+  const [paginationLoading, setPaginationLoading] = useState(false);
 
   console.log("Hotels List:", hotelsList);
   console.log("Hotel Result List:", hotelResultList);
+  console.log("Current Page No:", pageNo);
+  console.log("Total Pages:", TotalPages);
 
   // Initial load effect
   useEffect(() => {
@@ -45,8 +48,9 @@ const HotelSearchResult = () => {
       // Reset states for new search
       setHotelResultList([]);
       setPageNo(1);
-      setVisibleCount(6);
+      setVisibleCount(5);
       setfilterLoading(false);
+      setPaginationLoading(false);
       
       // Clear all filter selections for new search
       setSelectAmenity("");
@@ -57,7 +61,7 @@ const HotelSearchResult = () => {
       setMinPrice(0);
       setMaxPrice(99999999);
       
-      dispatch(fetchHotelsList(cityId, checkInDate, checkOutDate, Rooms, adults, children, 1, null, null, null));
+      dispatch(fetchHotelsList(cityId, checkInDate, checkOutDate, Rooms, adults, children, 1, null, null, null, false));
     }
   }, [dispatch]);
 
@@ -81,24 +85,55 @@ const HotelSearchResult = () => {
       // Reset hotel list for filtered search
       setHotelResultList([]);
       setPageNo(1);
-      setVisibleCount(6);
+      setVisibleCount(5);
       
-      dispatch(fetchHotelsList(cityId, checkInDate, checkOutDate, Rooms, adults, children, 1, SessionId, Filter, null));
+      dispatch(fetchHotelsList(cityId, checkInDate, checkOutDate, Rooms, adults, children, 1, SessionId, Filter, null, false));
       setfilterLoading(false); // Reset filterLoading after dispatch
     }
   }, [MaxPrice, MinPrice, selectAmenity, selectMeal, selectLocalities, selectStarRatings, selectPrice, SessionId, dispatch, filterLoading]);
 
   // Update hotelResultList when hotelsList changes
   useEffect(() => {
-    if (hotelsList && hotelsList.length > 0) {
-      setHotelResultList(hotelsList); // Simply replace the list with new results
+    console.log("hotelsList from Redux:", hotelsList);
+    if (Array.isArray(hotelsList) && hotelsList.length > 0) {
+      setHotelResultList(hotelsList);
+    } else if (hotelsList && hotelsList.Hotels && hotelsList.Hotels.length > 0) {
+      setHotelResultList(hotelsList.Hotels);
     }
   }, [hotelsList]);
 
   // Reset visibleCount when hotelResultList changes
   useEffect(() => {
-    setVisibleCount(6);
+    setVisibleCount(5);
   }, [hotelResultList]);
+
+  // Handle Show More button click
+  const handleShowMore = useCallback(() => {
+    const searchParams = JSON.parse(localStorage.getItem('hotelSearchParams') || '{}');
+    const { cityId, checkInDate, checkOutDate, Rooms, adults, children } = searchParams;
+
+    if (cityId && checkInDate && checkOutDate && Rooms && adults && pageNo < TotalPages) {
+      const nextPage = pageNo + 1;
+      setPageNo(nextPage);
+      setPaginationLoading(true);
+      
+      const Filter = {
+        MinPrice,
+        MaxPrice,
+        MealPlans: selectMeal,
+        StarRatings: selectStarRatings,
+        Localities: selectLocalities,
+        Amenities: selectAmenity,
+      };
+      
+      dispatch(fetchHotelsList(cityId, checkInDate, checkOutDate, Rooms, adults, children, nextPage, SessionId, Filter, null, true));
+    }
+  }, [pageNo, TotalPages, SessionId, MinPrice, MaxPrice, selectAmenity, selectMeal, selectLocalities, selectStarRatings, dispatch]);
+
+  // Reset pagination loading when hotelsList changes
+  useEffect(() => {
+    setPaginationLoading(false);
+  }, [hotelsList]);
 
   const onStarRatingsFilterChange = useCallback((e) => {
     const { checked, value } = e.target;
@@ -169,11 +204,14 @@ const HotelSearchResult = () => {
     const { cityId, checkInDate, checkOutDate, Rooms, adults, children } = searchParams;
 
     if (cityId && checkInDate && checkOutDate && Rooms && adults) {
-      dispatch(fetchHotelsList(cityId, checkInDate, checkOutDate, Rooms, adults, children, 1, null, null, null));
+      dispatch(fetchHotelsList(cityId, checkInDate, checkOutDate, Rooms, adults, children, 1, null, null, null, false));
     }
   }, [dispatch]);
 
   const searchParams = JSON.parse(localStorage.getItem('hotelSearchParams') || '{}');
+
+  // Get visible hotels based on visibleCount
+  const visibleHotels = hotelResultList.slice(0, visibleCount);
 
   return (
     <div>
@@ -186,11 +224,11 @@ const HotelSearchResult = () => {
       <div id="main-wrapper">
         <Header02 />
         <div className="clearfix" />
-        <HotelSearchbar searchParams={searchParams} />
+        <HotelSearchbar searchParams={searchParams}  backgroundColor="#cd2c22"/>
         <section className="gray-simple">
           <div className="container">
             <div className="row justify-content-between gy-4 gx-xl-4 gx-lg-3 gx-md-3 gx-4">
-              <div className="col-xl-3 col-lg-4 col-md-12">
+              <div className="col-xl-3 col-lg-4 col-md-12 sticky-filter">
                 {(loading || filterLoading) && !filters ? (
                   <HotelsFiltersSkeleton />
                 ) : filters ? (
@@ -211,19 +249,31 @@ const HotelSearchResult = () => {
                   />
                 ) : null}
               </div>
-              <div className="col-xl-9 col-lg-8 col-md-12">
+              <div className="col-xl-9 col-lg-8 col-md-12 sticky-hotel-list">
                 {loading || filterLoading ? (
                   <HotelListSkeleton count={6} />
                 ) : hotelResultList && hotelResultList.length > 0 ? (
                   <>
-                    <HotelList hotelsList={hotelResultList.slice(0, visibleCount)} />
+                    <HotelList hotelsList={visibleHotels} />
                     {visibleCount < hotelResultList.length && (
                       <div style={{ textAlign: 'center', margin: '2rem 0' }}>
                         <button
                           className="btn btn-primary"
-                          onClick={() => setVisibleCount((prev) => prev + 6)}
+                          onClick={() => setVisibleCount(prev => prev + 5)}
+                          disabled={paginationLoading}
                         >
-                          Show More
+                          {paginationLoading ? 'Loading...' : 'Show More'}
+                        </button>
+                      </div>
+                    )}
+                    {visibleCount >= hotelResultList.length && pageNo < TotalPages && (
+                      <div style={{ textAlign: 'center', margin: '2rem 0' }}>
+                        <button
+                          className="btn btn-primary"
+                          onClick={handleShowMore}
+                          disabled={paginationLoading}
+                        >
+                          {paginationLoading ? 'Loading...' : 'Show More'}
                         </button>
                       </div>
                     )}

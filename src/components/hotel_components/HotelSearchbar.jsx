@@ -175,7 +175,7 @@ const CustomModalFooter = React.memo(({ onConfirm, addRoom, roomsCount }) => (
   </Modal.Footer>
 ));
 
-export const HotelSearchbar = ({ searchParams = {}, onSearchSubmit, onPendingChange }) => {
+export const HotelSearchbar = ({ searchParams = {}, onSearchSubmit, onPendingChange,  backgroundColor = '#FFFFFFFF' }) => {
   const dispatch = useDispatch();
   const cityHotels = useSelector(selectCityHotels);
   const [selectedCity, setSelectedCity] = useState(searchParams?.selectedCity || null);
@@ -466,289 +466,296 @@ const cityOptions = useMemo(() => {
   }, []);
 
   return (
-    <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-      <style>
-        {`
-          .custom-input {
-            box-shadow: none;
-            border: 1px solid #e0e0e0;   /* Add border for consistency */
-            border-radius: 10px;          /* <-- increased value */
-            padding: 12px;
-            background-color: #fff;
-            height: 60px;                 /* Match train search bar */
-            font-size: 16px;              /* Match font size */
-          }
-          .custom-input:focus {
-            outline: none;
-            box-shadow: none;
-          }
-          .custom-button {
-            box-shadow: none;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 15px;
-            background-color: #fff;
-            cursor: pointer;
-            width: 100%;
-            text-align: left;
-            height: 44px;
-          }
-          .custom-button:focus {
-            outline: none;
-            box-shadow: none;
-          }
-          .custom-select__control {
-            box-shadow: none !important;
-            border: none !important;
-          }
-          .btn-danger.full-width {
-            width: 100%;
-            border-radius: 8px !important; /* Increased border-radius */
-          }
-          .btn-danger.full-width:hover, .btn-danger.full-width:focus {
-            color: #dc3545 !important;
-            background-color: #fff !important;
-            border-color: #dc3545 !important;
-          }
-          .custom-input:disabled {
-            background-color: #f8f9fa !important;
-            color: #6c757d !important;
-            cursor: not-allowed !important;
-            opacity: 0.6;
-          }
-          .custom-input:disabled::placeholder {
-            color: #adb5bd !important;
-          }
-          .hotel-search-container {
-            width: 100%;
-            background-color:rgb(236, 240, 240);      /* Bootstrap red, or use 'red' */
-            background-size: cover;         /* Ensures any background image covers the area */
-            border: 1px solid #e0e0e0;
-            border-radius: 12px;
-            height: 100px;
-            padding: 0 16px;
-            box-sizing: border-box;
-            display: flex;
-            align-items: center;
-            /* Optional: add a background image if needed */
-            /* background-image: url('your-image-url.jpg'); */
-          }
-          .calendar-popup {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            width: 320px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 3px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
-            background: white;
-            z-index: 1000;
-            overflow: hidden;
-            padding: 15px;
-            margin-top: 5px;
-            border: none;
-          }
-          .calendar-popup {
-            border: none !important;
-            outline: none !important;
-          }
-          .react-calendar {
-            border: none !important;
-            box-shadow: none !important;
-            outline: none !important;
-          }
-          .custom-input:focus {
-            border: none !important;
-            outline: none !important;
-            box-shadow: none !important;
-          }
-          /* Make selected date in calendar red */
-          .react-calendar__tile--active {
-            background: #cd2c22 !important; /* Your preferred red */
-            color: #fff !important;
-          }
-          .react-calendar__tile--active:enabled:hover,
-          .react-calendar__tile--active:enabled:focus {
-            background: #b30000 !important; /* A darker red on hover/focus */
-            color: #fff !important;
-          }
-        `}
-      </style>
+    <div className="hotel-searchbar" style={{ backgroundColor: backgroundColor }}>
+      <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+        <style>
+          {`
+            .custom-input {
+              box-shadow: none;
+              border: 1px solid #e0e0e0;   /* Add border for consistency */
+              border-radius: 10px;          /* <-- increased value */
+              padding: 12px;
+              background-color: #fff;
+              height: 60px;                 /* Match train search bar */
+              font-size: 16px;              /* Match font size */
+            }
+            .custom-input:focus {
+              outline: none;
+              box-shadow: none;
+            }
+            .custom-button {
+              box-shadow: none;
+              border: none;
+              border-radius: 8px;
+              padding: 10px 15px;
+              background-color: #fff;
+              cursor: pointer;
+              width: 100%;
+              text-align: left;
+              height: 44px;
+            }
+            .custom-button:focus {
+              outline: none;
+              box-shadow: none;
+            }
+            .custom-select__control {
+              box-shadow: none !important;
+              border: none !important;
+            }
+            .btn-danger.full-width {
+              width: 100%;
+              border-radius: 8px !important; /* Increased border-radius */
+            }
+            .btn-danger.full-width:hover, .btn-danger.full-width:focus {
+              color: #dc3545 !important;
+              background-color: #fff !important;
+              border-color: #dc3545 !important;
+            }
+            .custom-input:disabled {
+              background-color: #f8f9fa !important;
+              color: #6c757d !important;
+              cursor: not-allowed !important;
+              opacity: 0.6;
+            }
+            .custom-input:disabled::placeholder {
+              color: #adb5bd !important;
+            }
+            .hotel-search-container {
+              width: 100%;
+              background-color:rgb(236, 240, 240);      /* Bootstrap red, or use 'red' */
+              background-size: cover;         /* Ensures any background image covers the area */
+              border: 1px solid #e0e0e0;
+              border-radius: 12px;
+              height: 100px;
+              padding: 0 16px;
+              box-sizing: border-box;
+              display: flex;
+              align-items: center;
+              /* Optional: add a background image if needed */
+              /* background-image: url('your-image-url.jpg'); */
+            }
+            .calendar-popup {
+              position: absolute;
+              top: 100%;
+              left: 0;
+              width: 320px;
+              box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 3px 8px rgba(0, 0, 0, 0.1);
+              border-radius: 12px;
+              background: white;
+              z-index: 1000;
+              overflow: hidden;
+              padding: 15px;
+              margin-top: 5px;
+              border: none;
+            }
+            .calendar-popup {
+              border: none !important;
+              outline: none !important;
+            }
+            .react-calendar {
+              border: none !important;
+              box-shadow: none !important;
+              outline: none !important;
+            }
+            .custom-input:focus {
+              border: none !important;
+              outline: none !important;
+              box-shadow: none !important;
+            }
+            /* Make selected date in calendar red */
+            .react-calendar__tile--active {
+              background: #cd2c22 !important; /* Your preferred red */
+              color: #fff !important;
+            }
+            .react-calendar__tile--active:enabled:hover,
+            .react-calendar__tile--active:enabled:focus {
+              background: #b30000 !important; /* A darker red on hover/focus */
+              color: #fff !important;
+            }
+            .hotel-searchbar-bg-red {
+              background: red;
+              width: 100%;
+              padding: 20px 0; /* Optional: add some vertical space */
+            }
+          `}
+        </style>
+        
       
-    
-      <div className="search-wrap with-label bg-red rounded-3 p-3 pt-4">
-      <div className="container hotel-search-container">
-      <div className="row gy-3 gx-md-3 gx-sm-2">
-          
-          <div className="col-xl-8 col-lg-7 col-md-12">
+        <div className="search-wrap with-label bg-red rounded-3 p-3 pt-4">
+          <div className="container hotel-search-container">
             <div className="row gy-3 gx-md-3 gx-sm-2">
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
-                <div className="form-group hdd-arrow rounded-1 mb-0">
-                  {/* <label>Choose City, Hotel</label> */}
-                  <Select
-                    ref={citySelectRef}
-                    options={cityOptions}
-                    placeholder="Destination"
-                    classNamePrefix="custom-select"
-                    styles={customSelectStyles}
-                    value={selectedCity}
-                    onChange={handleCityChange}
-                    onInputChange={handleInputChange}
-                    isSearchable
-                  />
-                </div>
-              </div>
+              
+              <div className="col-xl-8 col-lg-7 col-md-12">
+                <div className="row gy-3 gx-md-3 gx-sm-2">
+                  <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 position-relative">
+                    <div className="form-group hdd-arrow rounded-1 mb-0">
+                      {/* <label>Choose City, Hotel</label> */}
+                      <Select
+                        ref={citySelectRef}
+                        options={cityOptions}
+                        placeholder="Destination"
+                        classNamePrefix="custom-select"
+                        styles={customSelectStyles}
+                        value={selectedCity}
+                        onChange={handleCityChange}
+                        onInputChange={handleInputChange}
+                        isSearchable
+                      />
+                    </div>
+                  </div>
 
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
-                <div className="form-group mb-0">
-                  {/* <label>Choose Date</label> */}
-                  <div className="d-flex">
-                    <div ref={startDateRef} style={{ position: "relative" }}>
-                      <input
-                        type="text"
-                        readOnly
-                        className="form-control fw-bold custom-input"
-                        value={startDate ? startDate.toLocaleDateString('en-GB') : ''}
-                        onClick={() => setCalendarOpen({ ...calendarOpen, start: !calendarOpen.start, end: false })}
-                        placeholder="Check-In"
-                      />
-                      {calendarOpen.start && (
-                        <div className="calendar-popup">
-                          <Calendar
-                            onChange={(date) => {
-                              setStartDate(date);
-                              setCalendarOpen({ ...calendarOpen, start: false });
-                              setTimeout(() => setCalendarOpen((prev) => ({ ...prev, end: true })), 200);
-                            }}
-                            value={startDate}
-                            minDate={new Date()}
-                            maxDate={(() => {
-                              const today = new Date();
-                              const maxDate = new Date(today);
-                              maxDate.setDate(today.getDate() + 365);
-                              return maxDate;
-                            })()}
-                            selectRange={false}
-                            showNeighboringMonth={true}
-                            showFixedNumberOfWeeks={false}
-                            minDetail="month"
+                  <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                    <div className="form-group mb-0">
+                      {/* <label>Choose Date</label> */}
+                      <div className="d-flex">
+                        <div ref={startDateRef} style={{ position: "relative" }}>
+                          <input
+                            type="text"
+                            readOnly
+                            className="form-control fw-bold custom-input"
+                            value={startDate ? startDate.toLocaleDateString('en-GB') : ''}
+                            onClick={() => setCalendarOpen({ ...calendarOpen, start: !calendarOpen.start, end: false })}
+                            placeholder="Check-In"
                           />
+                          {calendarOpen.start && (
+                            <div className="calendar-popup">
+                              <Calendar
+                                onChange={(date) => {
+                                  setStartDate(date);
+                                  setCalendarOpen({ ...calendarOpen, start: false });
+                                  setTimeout(() => setCalendarOpen((prev) => ({ ...prev, end: true })), 200);
+                                }}
+                                value={startDate}
+                                minDate={new Date()}
+                                maxDate={(() => {
+                                  const today = new Date();
+                                  const maxDate = new Date(today);
+                                  maxDate.setDate(today.getDate() + 365);
+                                  return maxDate;
+                                })()}
+                                selectRange={false}
+                                showNeighboringMonth={true}
+                                showFixedNumberOfWeeks={false}
+                                minDetail="month"
+                              />
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                    <div ref={endDateRef} style={{ position: "relative" }}>
-                      <input
-                        type="text"
-                        readOnly
-                        className="form-control fw-bold ms-2 custom-input"
-                        value={endDate ? endDate.toLocaleDateString('en-GB') : ''}
-                        onClick={() => startDate && setCalendarOpen({ ...calendarOpen, end: !calendarOpen.end, start: false })}
-                        placeholder="Check-Out"
-                        disabled={!startDate}
-                      />
-                      {calendarOpen.end && (
-                        <div className="calendar-popup">
-                          <Calendar
-                            onChange={(date) => {
-                              setEndDate(date);
-                              setCalendarOpen({ ...calendarOpen, end: false });
-                            }}
-                            value={endDate}
-                            minDate={startDate || new Date()}
-                            maxDate={(() => {
-                              const today = new Date();
-                              const maxDate = new Date(today);
-                              maxDate.setDate(today.getDate() + 365);
-                              return maxDate;
-                            })()}
-                            selectRange={false}
-                            showNeighboringMonth={true}
-                            showFixedNumberOfWeeks={false}
-                            minDetail="month"
-                            tileDisabled={({ date }) => {
-                              if (!startDate) return false;
-                              return date < startDate;
-                            }}
+                        <div ref={endDateRef} style={{ position: "relative" }}>
+                          <input
+                            type="text"
+                            readOnly
+                            className="form-control fw-bold ms-2 custom-input"
+                            value={endDate ? endDate.toLocaleDateString('en-GB') : ''}
+                            onClick={() => startDate && setCalendarOpen({ ...calendarOpen, end: !calendarOpen.end, start: false })}
+                            placeholder="Check-Out"
+                            disabled={!startDate}
                           />
+                          {calendarOpen.end && (
+                            <div className="calendar-popup">
+                              <Calendar
+                                onChange={(date) => {
+                                  setEndDate(date);
+                                  setCalendarOpen({ ...calendarOpen, end: false });
+                                }}
+                                value={endDate}
+                                minDate={startDate || new Date()}
+                                maxDate={(() => {
+                                  const today = new Date();
+                                  const maxDate = new Date(today);
+                                  maxDate.setDate(today.getDate() + 365);
+                                  return maxDate;
+                                })()}
+                                selectRange={false}
+                                showNeighboringMonth={true}
+                                showFixedNumberOfWeeks={false}
+                                minDetail="month"
+                                tileDisabled={({ date }) => {
+                                  if (!startDate) return false;
+                                  return date < startDate;
+                                }}
+                              />
+                            </div>
+                          )}
                         </div>
-                      )}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-          <div className="col-xl-4 col-lg-5 col-md-12">
-            <div className="row gy-3 gx-md-3 gx-sm-2">
-              <div className="col-xl-8 col-lg-8 col-md-8 col-sm-8">
-                <div className="form-group mb-0">
-                  {/* <label>Members</label> */}
-                  <div className="booking-form__input">
-                    <button
-                      ref={guestsButtonRef}
-                      onClick={handleShowGuestsModal}
-                      className="form-control text-start custom-button"
-                    >
-                      <span style={{fontWeight: 'bold'}}>
-                        {roomsData.reduce((sum, r) => sum + r.adults, 0)}
-                      </span> Adult
-                      {roomsData.reduce((sum, r) => sum + r.adults, 0) !== 1 ? 's' : ''},{" "}
-                      <span style={{fontWeight: 'bold'}}>
-                        {roomsData.reduce((sum, r) => sum + r.children, 0)}
-                      </span> Child
-                      {roomsData.reduce((sum, r) => sum + r.children, 0) !== 1 ? 'ren' : ''},{" "}
-                      <span style={{fontWeight: 'bold'}}>
-                        {roomsData.length}
-                      </span> Room{roomsData.length !== 1 ? 's' : ''}
-                    </button>
+              <div className="col-xl-4 col-lg-5 col-md-12">
+                <div className="row gy-3 gx-md-3 gx-sm-2">
+                  <div className="col-xl-8 col-lg-8 col-md-8 col-sm-8">
+                    <div className="form-group mb-0">
+                      {/* <label>Members</label> */}
+                      <div className="booking-form__input">
+                        <button
+                          ref={guestsButtonRef}
+                          onClick={handleShowGuestsModal}
+                          className="form-control text-start custom-button"
+                        >
+                          <span style={{fontWeight: 'bold'}}>
+                            {roomsData.reduce((sum, r) => sum + r.adults, 0)}
+                          </span> Adult
+                          {roomsData.reduce((sum, r) => sum + r.adults, 0) !== 1 ? 's' : ''},{" "}
+                          <span style={{fontWeight: 'bold'}}>
+                            {roomsData.reduce((sum, r) => sum + r.children, 0)}
+                          </span> Child
+                          {roomsData.reduce((sum, r) => sum + r.children, 0) !== 1 ? 'ren' : ''},{" "}
+                          <span style={{fontWeight: 'bold'}}>
+                            {roomsData.length}
+                          </span> Room{roomsData.length !== 1 ? 's' : ''}
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="col-xl-4 col-lg-4 col-md-4 col-sm-4">
-                <div className="form-group mb-0">
-                  {/* <Link to="/hotel-list-01"> */}
-                    <button 
-                        ref={searchButtonRef}
-                        type="button" 
-                        className="btn btn-danger full-width rounded-1 fw-medium"
-                        onClick={() =>
-                          handleSearch(
-                            selectedCity?.value,
-                            startDate,
-                            endDate,
-                            roomsData.length,
-                            roomsData.reduce((sum, r) => sum + r.adults, 0),
-                            roomsData.reduce((sum, r) => sum + r.children, 0),
-                            selectedCity,
-                            navigate,
-                            roomsData // <-- Pass roomsData here
-                          )
-                        }
-                        disabled={!selectedCity || !startDate || !endDate}
-                    > 
-                      <i className="fa fa-search me-2" />Search
-                    </button>
-                  {/* </Link> */}
+                  <div className="col-xl-4 col-lg-4 col-md-4 col-sm-4">
+                    <div className="form-group mb-0">
+                      {/* <Link to="/hotel-list-01"> */}
+                        <button 
+                            ref={searchButtonRef}
+                            type="button" 
+                            className="btn btn-danger full-width rounded-1 fw-medium"
+                            onClick={() =>
+                              handleSearch(
+                                selectedCity?.value,
+                                startDate,
+                                endDate,
+                                roomsData.length,
+                                roomsData.reduce((sum, r) => sum + r.adults, 0),
+                                roomsData.reduce((sum, r) => sum + r.children, 0),
+                                selectedCity,
+                                navigate,
+                                roomsData // <-- Pass roomsData here
+                              )
+                            }
+                            disabled={!selectedCity || !startDate || !endDate}
+                        > 
+                          <i className="fa fa-search me-2" />Search
+                        </button>
+                      {/* </Link> */}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <Modal show={showGuestsModal} onHide={handleCloseGuestsModal} centered>
-        <CustomModalHeader onClose={handleCloseGuestsModal} />
-        <CustomModalBody
-          roomsData={roomsData}
-          setRoomsData={setRoomsData}
-          addRoom={addRoom}
-          removeRoom={removeRoom}
-        />
-        <CustomModalFooter
-          onConfirm={handleConfirmGuests}
-          addRoom={addRoom}
-          roomsCount={roomsData.length}
-        />
-      </Modal>
+        <Modal show={showGuestsModal} onHide={handleCloseGuestsModal} centered>
+          <CustomModalHeader onClose={handleCloseGuestsModal} />
+          <CustomModalBody
+            roomsData={roomsData}
+            setRoomsData={setRoomsData}
+            addRoom={addRoom}
+            removeRoom={removeRoom}
+          />
+          <CustomModalFooter
+            onConfirm={handleConfirmGuests}
+            addRoom={addRoom}
+            roomsCount={roomsData.length}
+          />
+        </Modal>
       </div>
     </div>
   );

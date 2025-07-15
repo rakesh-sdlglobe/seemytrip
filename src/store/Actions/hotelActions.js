@@ -7,6 +7,7 @@ export const FETCH_CITY_HOTELS_FAILURE = 'FETCH_CITY_HOTELS_FAILURE';
 export const FETCH_HOTELS_LIST_REQUEST = 'FETCH_HOTELS_LIST_REQUEST';
 export const FETCH_HOTELS_LIST_SUCCESS = 'FETCH_HOTELS_LIST_SUCCESS';
 export const FETCH_HOTELS_LIST_FAILURE = 'FETCH_HOTELS_LIST_FAILURE';
+export const FETCH_HOTELS_LIST_PAGINATION_SUCCESS = 'FETCH_HOTELS_LIST_PAGINATION_SUCCESS';
 export const FETCH_HOTELS_IMAGES_REQUEST = 'FETCH_HOTELS_IMAGES_REQUEST';
 export const FETCH_HOTELS_IMAGES_SUCCESS = 'FETCH_HOTELS_IMAGES_SUCCESS';
 export const FETCH_HOTELS_IMAGES_FAILURE = 'FETCH_HOTELS_IMAGES_FAILURE';
@@ -61,6 +62,11 @@ export const fetchHotelsListSuccess = (hotels) => ({
     payload: hotels,
 });
 
+export const fetchHotelsListPaginationSuccess = (hotels) => ({
+    type: FETCH_HOTELS_LIST_PAGINATION_SUCCESS,
+    payload: hotels,
+});
+
 export const fetchHotelsListFailure = (error) => ({
     type: FETCH_HOTELS_LIST_FAILURE,
     payload: error,
@@ -68,7 +74,7 @@ export const fetchHotelsListFailure = (error) => ({
 
 
 
-export const fetchHotelsList = (cityId, checkInDate, checkOutDate, Rooms, adults, children, PageNo, SessionID, Filter, Sort) => async (dispatch) => {
+export const fetchHotelsList = (cityId, checkInDate, checkOutDate, Rooms, adults, children, PageNo, SessionID, Filter, Sort, isPagination = false) => async (dispatch) => {
     console.log("==============> Fetching hotels list from API");
     console.log("City ID:", cityId);
     console.log("Check-in Date:", checkInDate);
@@ -76,6 +82,8 @@ export const fetchHotelsList = (cityId, checkInDate, checkOutDate, Rooms, adults
     console.log("Rooms:", Rooms);
     console.log("Adults:", adults);
     console.log("Children:", children);
+    console.log("Page No:", PageNo);
+    console.log("Is Pagination:", isPagination);
 
     try {
         dispatch(fetchHotelsListRequest());
@@ -98,7 +106,11 @@ export const fetchHotelsList = (cityId, checkInDate, checkOutDate, Rooms, adults
         console.log("Response from hotels list API:", response.data);
         if (response.data && response.data !== null) {
             console.log(" *** Yeah , count for hotels is ", response.data.Hotels.length);
-            dispatch(fetchHotelsListSuccess(response.data));
+            if (isPagination) {
+                dispatch(fetchHotelsListPaginationSuccess(response.data));
+            } else {
+                dispatch(fetchHotelsListSuccess(response.data));
+            }
         } else {
             dispatch(fetchHotelsListFailure("No hotels found for the given criteria"));
         }
