@@ -28,6 +28,7 @@ const handleSearch = (
   Rooms,
   adults,
   children,
+  age,
   selectedCity,
   navigate,
   roomsData
@@ -118,7 +119,26 @@ const CustomModalBody = React.memo(({ roomsData, setRoomsData, addRoom, removeRo
               value={room.Children}
               onChange={e => {
                 const updated = [...roomsData];
-                updated[idx].Children = Number(e.target.value);
+                const newChildren = Number(e.target.value);
+                updated[idx].Children = newChildren;
+
+                // Preserve existing ages, only add/remove as needed
+                let prevPaxs = Array.isArray(updated[idx].Paxs) ? updated[idx].Paxs : [];
+                if (newChildren > prevPaxs.length) {
+                  // Add new children with default age 1
+                  prevPaxs = [
+                    ...prevPaxs,
+                    ...Array.from({ length: newChildren - prevPaxs.length }, () => ({
+                      Pax_type: 'C',
+                      Age: 1,
+                    }))
+                  ];
+                } else {
+                  // Remove extra children
+                  prevPaxs = prevPaxs.slice(0, newChildren);
+                }
+                updated[idx].Paxs = prevPaxs;
+
                 setRoomsData(updated);
               }}
             >
@@ -127,34 +147,59 @@ const CustomModalBody = React.memo(({ roomsData, setRoomsData, addRoom, removeRo
               ))}
             </select>
           </div>
-          {room.Children > 0 && (<>
-          {[...Array(room.Children)].map((_, paxIdx) => (
-                <div>
-            <label className="me-2">Age</label>
-            <select
-              className="form-select d-inline-block w-auto"
-              value={room.Paxs && room.Paxs != null &&  room.Paxs.length > 0 ? room.Paxs[paxIdx]?.Age || 0 : 0}
-              onChange={e => {
-                const updated = [...roomsData];
-                 if(updated[idx].Paxs && updated[idx].Paxs.length > paxIdx) {
-                  updated[idx].Paxs[paxIdx].Age = Number(e.target.value);
-                }else
-                {
-                  updated[idx].Paxs = updated[idx].Paxs || [];
-                  updated[idx].Paxs.push({ Pax_type: 'C', Age: Number(e.target.value) });
-                }
-                setRoomsData(updated);
-              }}
-            >
-              {[...Array(MAX_ChildAge+1)].map((_, i) => (
-                <option key={i} value={i}>{i} Year{i !== 1 ? 's' : ''}</option>
-              ))}
-            </select>
-          </div>
-              ))}
-          </>)}
-          
         </div>
+        {room.Children > 0 && (
+  <div
+    style={{
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: '8px 0px',
+      marginTop: 8,
+      width: '100%',
+    }}
+  >
+    {[...Array(room.Children)].map((_, paxIdx) => (
+      <div
+        key={paxIdx}
+        style={{
+          flex: '0 0 50%',
+          maxWidth: '50%',
+          minWidth: 120,
+          display: 'flex',
+          alignItems: 'center',
+          marginBottom: 8,
+        }}
+      >
+        <label className="me-2">Age</label>
+        <select
+          className="form-select d-inline-block w-auto"
+          value={
+            room.Paxs && room.Paxs.length > paxIdx
+              ? room.Paxs[paxIdx]?.Age || 1 // Default to 1 if undefined
+              : 1 // Default to 1 if Paxs not set
+          }
+          onChange={e => {
+            const updated = [...roomsData];
+            updated[idx].Paxs = updated[idx].Paxs || [];
+            // Ensure Paxs array has enough elements
+            while (updated[idx].Paxs.length < room.Children) {
+              updated[idx].Paxs.push({ Pax_type: 'C', Age: 1 });
+            }
+            updated[idx].Paxs[paxIdx].Age = Number(e.target.value);
+            setRoomsData(updated);
+          }}
+        >
+          {[...Array(MAX_ChildAge)].map((_, i) => (
+            <option key={i + 1} value={i + 1}>
+              {i + 1} Year{i + 1 !== 1 ? 's' : ''}
+            </option>
+          ))}
+        </select>
+      </div>
+    ))}
+  </div>
+)}
+          
       </div>
     ))}
   </Modal.Body>
@@ -244,18 +289,6 @@ export const HotelSearchbar = ({ searchParams = {}, onSearchSubmit, onPendingCha
       }
     }
   }, [location]);
-
-  // Save roomsData to localStorage on change
-  useEffect(() => {
-    const currentParams = JSON.parse(localStorage.getItem("hotelSearchParams") || "{}");
-    localStorage.setItem("hotelSearchParams", JSON.stringify({
-      ...currentParams,
-      roomsData,
-      Rooms: roomsData.length,
-      adults: roomsData.reduce((sum, r) => sum + r.Adults, 0),
-      children: roomsData.reduce((sum, r) => sum + r.Children, 0),
-    }));
-  }, [roomsData]);
 
   // Add room handler
   const addRoom = () => {
