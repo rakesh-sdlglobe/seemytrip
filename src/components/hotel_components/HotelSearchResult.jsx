@@ -42,7 +42,7 @@ const HotelSearchResult = () => {
   // Initial load effect
   useEffect(() => {
     const searchParams = JSON.parse(localStorage.getItem('hotelSearchParams') || '{}');
-    const { cityId, checkInDate, checkOutDate, Rooms, adults, children } = searchParams;
+    const { cityId, checkInDate, checkOutDate,roomsData, Rooms, adults, children } = searchParams;
 
     if (cityId && checkInDate && checkOutDate && Rooms && adults) {
       // Reset states for new search
@@ -61,7 +61,7 @@ const HotelSearchResult = () => {
       setMinPrice(0);
       setMaxPrice(99999999);
       
-      dispatch(fetchHotelsList(cityId, checkInDate, checkOutDate, Rooms, adults, children, 1, null, null, null, false));
+      dispatch(fetchHotelsList(cityId, checkInDate, checkOutDate, roomsData, adults, children, 1, null, null, null, false));
     }
   }, [dispatch]);
 
@@ -70,7 +70,7 @@ const HotelSearchResult = () => {
     if (!filterLoading) return; // Only proceed if filterLoading is true
     
     const searchParams = JSON.parse(localStorage.getItem('hotelSearchParams') || '{}');
-    const { cityId, checkInDate, checkOutDate, Rooms, adults, children } = searchParams;
+    const { cityId, checkInDate, checkOutDate,roomsData, Rooms, adults, children } = searchParams;
 
     if (cityId && checkInDate && checkOutDate && Rooms && adults) {
       const Filter = {
@@ -87,7 +87,7 @@ const HotelSearchResult = () => {
       setPageNo(1);
       setVisibleCount(5);
       
-      dispatch(fetchHotelsList(cityId, checkInDate, checkOutDate, Rooms, adults, children, 1, SessionId, Filter, null, false));
+      dispatch(fetchHotelsList(cityId, checkInDate, checkOutDate, roomsData, adults, children, 1, SessionId, Filter, null, false));
       setfilterLoading(false); // Reset filterLoading after dispatch
     }
   }, [MaxPrice, MinPrice, selectAmenity, selectMeal, selectLocalities, selectStarRatings, selectPrice, SessionId, dispatch, filterLoading]);
@@ -110,7 +110,7 @@ const HotelSearchResult = () => {
   // Handle Show More button click
   const handleShowMore = useCallback(() => {
     const searchParams = JSON.parse(localStorage.getItem('hotelSearchParams') || '{}');
-    const { cityId, checkInDate, checkOutDate, Rooms, adults, children } = searchParams;
+    const { cityId, checkInDate, checkOutDate,roomsData, Rooms, adults, children } = searchParams;
 
     if (cityId && checkInDate && checkOutDate && Rooms && adults && pageNo < TotalPages) {
       const nextPage = pageNo + 1;
@@ -126,7 +126,7 @@ const HotelSearchResult = () => {
         Amenities: selectAmenity,
       };
       
-      dispatch(fetchHotelsList(cityId, checkInDate, checkOutDate, Rooms, adults, children, nextPage, SessionId, Filter, null, true));
+      dispatch(fetchHotelsList(cityId, checkInDate, checkOutDate, roomsData, adults, children, nextPage, SessionId, Filter, null, true));
     }
   }, [pageNo, TotalPages, SessionId, MinPrice, MaxPrice, selectAmenity, selectMeal, selectLocalities, selectStarRatings, dispatch]);
 
@@ -201,10 +201,10 @@ const HotelSearchResult = () => {
     setHotelResultList([]);
     
     const searchParams = JSON.parse(localStorage.getItem('hotelSearchParams') || '{}');
-    const { cityId, checkInDate, checkOutDate, Rooms, adults, children } = searchParams;
+    const { cityId, checkInDate, checkOutDate,roomsData, Rooms, adults, children } = searchParams;
 
     if (cityId && checkInDate && checkOutDate && Rooms && adults) {
-      dispatch(fetchHotelsList(cityId, checkInDate, checkOutDate, Rooms, adults, children, 1, null, null, null, false));
+      dispatch(fetchHotelsList(cityId, checkInDate, checkOutDate, roomsData, adults, children, 1, null, null, null, false));
     }
   }, [dispatch]);
 

@@ -56,6 +56,7 @@ const handleSearch = (
 const MAX_ROOMS = 5;
 const MAX_ADULTS = 4;
 const MAX_CHILDREN = 4;
+const MAX_ChildAge = 12; // Assuming children are aged 0-12
 
 const CustomModalBody = React.memo(({ roomsData, setRoomsData, addRoom, removeRoom }) => (
   <Modal.Body className="p-4">
@@ -101,7 +102,7 @@ const CustomModalBody = React.memo(({ roomsData, setRoomsData, addRoom, removeRo
               value={room.adults}
               onChange={e => {
                 const updated = [...roomsData];
-                updated[idx].adults = Number(e.target.value);
+                updated[idx].Adults = Number(e.target.value);
                 setRoomsData(updated);
               }}
             >
@@ -114,10 +115,10 @@ const CustomModalBody = React.memo(({ roomsData, setRoomsData, addRoom, removeRo
             <label className="me-2">Children</label>
             <select
               className="form-select d-inline-block w-auto"
-              value={room.children}
+              value={room.Children}
               onChange={e => {
                 const updated = [...roomsData];
-                updated[idx].children = Number(e.target.value);
+                updated[idx].Children = Number(e.target.value);
                 setRoomsData(updated);
               }}
             >
@@ -126,6 +127,33 @@ const CustomModalBody = React.memo(({ roomsData, setRoomsData, addRoom, removeRo
               ))}
             </select>
           </div>
+          {room.Children > 0 && (<>
+          {[...Array(room.Children)].map((_, paxIdx) => (
+                <div>
+            <label className="me-2">Age</label>
+            <select
+              className="form-select d-inline-block w-auto"
+              value={room.Paxs && room.Paxs != null &&  room.Paxs.length > 0 ? room.Paxs[paxIdx]?.Age || 0 : 0}
+              onChange={e => {
+                const updated = [...roomsData];
+                 if(updated[idx].Paxs && updated[idx].Paxs.length > paxIdx) {
+                  updated[idx].Paxs[paxIdx].Age = Number(e.target.value);
+                }else
+                {
+                  updated[idx].Paxs = updated[idx].Paxs || [];
+                  updated[idx].Paxs.push({ Pax_type: 'C', Age: Number(e.target.value) });
+                }
+                setRoomsData(updated);
+              }}
+            >
+              {[...Array(MAX_ChildAge+1)].map((_, i) => (
+                <option key={i} value={i}>{i} Year{i !== 1 ? 's' : ''}</option>
+              ))}
+            </select>
+          </div>
+              ))}
+          </>)}
+          
         </div>
       </div>
     ))}
@@ -181,7 +209,7 @@ export const HotelSearchbar = ({ searchParams = {}, onSearchSubmit, onPendingCha
   const [selectedCity, setSelectedCity] = useState(searchParams?.selectedCity || null);
   const [startDate, setStartDate] = useState(searchParams?.checkInDate ? new Date(searchParams.checkInDate) : null);
   const [endDate, setEndDate] = useState(searchParams?.checkOutDate ? new Date(searchParams.checkOutDate) : null);
-  const [roomsData, setRoomsData] = useState(searchParams?.roomsData || [{ adults: 1, children: 0 }]);
+  const [roomsData, setRoomsData] = useState(searchParams?.roomsData || [{ RoomNo:1, Adults: 1, Children: 0 ,Paxs:null}]);
   const [showGuestsModal, setShowGuestsModal] = useState(false);
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
@@ -206,7 +234,7 @@ export const HotelSearchbar = ({ searchParams = {}, onSearchSubmit, onPendingCha
         setSelectedCity(params?.selectedCity || null);
         setStartDate(params?.checkInDate ? new Date(params.checkInDate) : null);
         setEndDate(params?.checkOutDate ? new Date(params.checkOutDate) : null);
-        setRoomsData(params?.roomsData || [{ adults: 1, children: 0 }]);
+        setRoomsData(params?.roomsData || [{ RoomNo: 1, Adults: 1, Children: 0 ,Paxs:null}]);
         if (typeof params?.adults === 'number') setAdults(params.adults);
         if (typeof params?.children === 'number') setChildren(params.children);
         if (typeof params?.Rooms === 'number') setRooms(params.Rooms);
@@ -224,15 +252,15 @@ export const HotelSearchbar = ({ searchParams = {}, onSearchSubmit, onPendingCha
       ...currentParams,
       roomsData,
       Rooms: roomsData.length,
-      adults: roomsData.reduce((sum, r) => sum + r.adults, 0),
-      children: roomsData.reduce((sum, r) => sum + r.children, 0),
+      adults: roomsData.reduce((sum, r) => sum + r.Adults, 0),
+      children: roomsData.reduce((sum, r) => sum + r.Children, 0),
     }));
   }, [roomsData]);
 
   // Add room handler
   const addRoom = () => {
     if (roomsData.length < MAX_ROOMS) {
-      setRoomsData([...roomsData, { adults: 1, children: 0 }]);
+      setRoomsData([...roomsData, { RoomNo: roomsData.length+1, Adults: 1, Children: 0 ,Paxs:null}]);
     }
   };
 
@@ -255,8 +283,8 @@ export const HotelSearchbar = ({ searchParams = {}, onSearchSubmit, onPendingCha
       checkOutDate: endDate ? endDate.toLocaleDateString('en-CA') : null,
       roomsData,
       Rooms: roomsData.length,
-      adults: roomsData.reduce((sum, r) => sum + r.adults, 0),
-      children: roomsData.reduce((sum, r) => sum + r.children, 0),
+      adults: roomsData.reduce((sum, r) => sum + r.Adults, 0),
+      children: roomsData.reduce((sum, r) => sum + r.Children, 0),
     }));
     setShowGuestsModal(false);
     
@@ -391,10 +419,10 @@ const cityOptions = useMemo(() => {
   const handleGuestChange = (type, value) => {
     const currentParams = JSON.parse(localStorage.getItem("hotelSearchParams") || "{}");
     switch(type) {
-      case 'adults':
+      case 'Adults':
         setAdults(value);
         break;
-      case 'children':
+      case 'Children':
         setChildren(value);
         break;
       case 'rooms':
@@ -695,13 +723,13 @@ const cityOptions = useMemo(() => {
                           className="form-control text-start custom-button"
                         >
                           <span style={{fontWeight: 'bold'}}>
-                            {roomsData.reduce((sum, r) => sum + r.adults, 0)}
+                            {roomsData.reduce((sum, r) => sum + r.Adults, 0)}
                           </span> Adult
-                          {roomsData.reduce((sum, r) => sum + r.adults, 0) !== 1 ? 's' : ''},{" "}
+                          {roomsData.reduce((sum, r) => sum + r.Adults, 0) !== 1 ? 's' : ''},{" "}
                           <span style={{fontWeight: 'bold'}}>
-                            {roomsData.reduce((sum, r) => sum + r.children, 0)}
+                            {roomsData.reduce((sum, r) => sum + r.Children, 0)}
                           </span> Child
-                          {roomsData.reduce((sum, r) => sum + r.children, 0) !== 1 ? 'ren' : ''},{" "}
+                          {roomsData.reduce((sum, r) => sum + r.Children, 0) !== 1 ? 'ren' : ''},{" "}
                           <span style={{fontWeight: 'bold'}}>
                             {roomsData.length}
                           </span> Room{roomsData.length !== 1 ? 's' : ''}
@@ -722,8 +750,8 @@ const cityOptions = useMemo(() => {
                                 startDate,
                                 endDate,
                                 roomsData.length,
-                                roomsData.reduce((sum, r) => sum + r.adults, 0),
-                                roomsData.reduce((sum, r) => sum + r.children, 0),
+                                roomsData.reduce((sum, r) => sum + r.Adults, 0),
+                                roomsData.reduce((sum, r) => sum + r.Children, 0),
                                 selectedCity,
                                 navigate,
                                 roomsData // <-- Pass roomsData here

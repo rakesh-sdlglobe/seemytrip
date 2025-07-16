@@ -86,7 +86,7 @@ const HotelList = ({  hotelsList: hotels }) => {
         cityId: params.cityId,
         checkInDate: params.checkInDate,
         checkOutDate: params.checkOutDate,
-        Rooms: params.Rooms,
+        Rooms: params.roomsData,
         adults: params.adults,
         children: params.children
       }));
