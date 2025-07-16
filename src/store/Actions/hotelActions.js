@@ -92,11 +92,7 @@ export const fetchHotelsList = (cityId, checkInDate, checkOutDate, Rooms, adults
             cityId,
             checkInDate,
             checkOutDate,
-            "Rooms": [{
-                "RoomNo": Rooms,
-                "Adults": adults,
-                "Children": children
-            }],
+            "Rooms": Rooms,
             "PageNo": PageNo || 1,
             "SessionID": SessionID || null,
             "Filter": Filter || null,
@@ -180,13 +176,7 @@ export const fetchHotelDetails = (HotelId, searchParams) => {
                 CityId: searchParams.cityId,
                 CheckInDate: searchParams.checkInDate,
                 CheckOutDate: searchParams.checkOutDate,
-                Rooms: [
-                    {
-                        RoomNo: searchParams.Rooms,
-                        adults: searchParams.adults,
-                        children: searchParams.children
-                    }
-                ]
+                Rooms: searchParams.Rooms || [],
             };
 
             console.log("Final Payload to API:", payload);

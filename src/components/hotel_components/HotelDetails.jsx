@@ -122,6 +122,12 @@ export default function HotelDetails() {
         isLoggedIn: false,
         user: null
       });
+      // selected Room data
+      const [seletedRoomState, setseletedRoomState] = useState({hotel: null,
+                                                                      room: null,
+                                                                      package: null,
+                                                                      image: "",
+                                                                      })
   // Check localStorage for authentication data on component mount and when Redux state changes
   useEffect(() => {
     const checkLocalAuth = () => {
@@ -193,22 +199,6 @@ export default function HotelDetails() {
   const prevImage = () =>
     setCurrentImageIndex((i) => (i - 1 + (images.length || 1)) % (images.length || 1));
 
-  // Room selection logic
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const hotelRooms = [];
-
-  // Set default selected room id only once when hotelRooms change and selectedRoomId is not set
-  useEffect(() => {
-    if (!selectedRoomId && hotelRooms.length > 0) {
-      setSelectedRoomId(hotelRooms[0].id);
-    }
-  }, [selectedRoomId, hotelRooms]);
-
-  const selectedRoom = useMemo(
-    () => hotelRooms.find((r) => r.id === selectedRoomId),
-    [selectedRoomId, hotelRooms]
-  );
-
   const handleNavigateToImages = (HotelProviderSearchId) => {
     navigate('/hotel-images', {
       state: { HotelProviderSearchId }
@@ -222,6 +212,7 @@ export default function HotelDetails() {
   const handleBooking = (roomDetails) => {
     if (!isLoggedIn) {
       // Show login popup if not logged in
+      setseletedRoomState(roomDetails);
       setShowAuthPopup(true);
       return;
     }
@@ -300,20 +291,22 @@ export default function HotelDetails() {
           isLoggedIn: true,
           user
         });
+        navigate('/hotel-review', {state: seletedRoomState });
+        
         // Dispatch a custom event to notify other components
         window.dispatchEvent(new CustomEvent('authStateChanged', { 
           detail: { isLoggedIn: true, user } 
         }));
       }
     }, 100);
-  }, []);
+  }, [navigate, seletedRoomState]);
   // Price calculation
   const nights =
     (new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24);
-  const roomRate = selectedRoom ? selectedRoom.ServicePrice || 0 : 0;
-  const subtotal = nights * roomRate * roomCount;
-  const tax = Math.round(subtotal * 0.18); // 18% GST
-  const total = subtotal + tax;
+  //const roomRate = selectedRoom ? selectedRoom.ServicePrice || 0 : 0;
+  //const subtotal = nights * roomRate * roomCount;
+  //const tax = Math.round(subtotal * 0.18); // 18% GST
+  //const total = subtotal + tax;
 
   // Get searchParams from localStorage for HotelSearchbar
   const searchParams = JSON.parse(localStorage.getItem('hotelSearchParams') || '{}');
