@@ -785,6 +785,7 @@ const cityOptions = useMemo(() => {
                                 roomsData.length,
                                 roomsData.reduce((sum, r) => sum + r.Adults, 0),
                                 roomsData.reduce((sum, r) => sum + r.Children, 0),
+                                null, // age
                                 selectedCity,
                                 navigate,
                                 roomsData // <-- Pass roomsData here
