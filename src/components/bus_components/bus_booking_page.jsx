@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Header02 from '../header02';
 import FooterDark from '../footer-dark';
-import { bus7 ,bus} from '../../assets/images';
+import { bus} from '../../assets/images';
 
 export const BusBookingPage = () => {
   return (

@@ -100,7 +100,7 @@ const CustomModalBody = React.memo(({ roomsData, setRoomsData, addRoom, removeRo
             <label className="me-2">Adults</label>
             <select
               className="form-select d-inline-block w-auto"
-              value={room.adults}
+              value={room.Adults}
               onChange={e => {
                 const updated = [...roomsData];
                 updated[idx].Adults = Number(e.target.value);

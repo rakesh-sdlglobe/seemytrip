@@ -4,8 +4,10 @@ import FooterDark from '../footer-dark';
 import BusSearch from './bus_search_page';
 import BusFilterPage from './bus_filter_page';
 import BusResultPage from './bus_result_page';
+import React, { useState } from 'react';
 
 const BusList = () => {
+    const [loading, setLoading] = useState(false);
     return (
         <div>
             {/*  */}
@@ -42,10 +44,10 @@ const BusList = () => {
                     <div className="container">
                         <div className="row justify-content-between gy-4 gx-xl-4 gx-lg-3 gx-md-3 gx-4">
                             {/* Sidebar */}
-                            <BusFilterPage />
+                            <BusFilterPage loading={loading} setLoading={setLoading} />
 
                             {/* All List */}
-                            <BusResultPage />
+                            <BusResultPage loading={loading} />
                         </div>
                     </div>
                 </section>

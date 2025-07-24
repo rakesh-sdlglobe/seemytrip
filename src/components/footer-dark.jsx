@@ -68,11 +68,12 @@ const FooterDark = () => {
               <div className="footer-widget">
                 <h4 className="widget-title">Company Information</h4>
                 <ul className="footer-menu">
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>About Us</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Contact Us</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Privacy Policy</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Terms of Service</Link></li>
-                  <li><Link to="#" onClick={(e) => { e.preventDefault() }}>Support </Link></li>
+                  <li><Link to="/about-us">About Us</Link></li>
+                  <li><Link to="/contact-us">Contact Us</Link></li>
+                  <li><Link to="/privacy-policy">Privacy Policy</Link></li>
+                  <li><Link to="/terms-and-conditions">Terms of Service</Link></li>
+                  <li><Link to="/cancellation-and-refund-policy">Cancellation & Refund Policy</Link></li>
+                  <li><Link to="/support">Support</Link></li>
                 </ul>
               </div>
             </div>
