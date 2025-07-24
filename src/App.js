@@ -106,6 +106,12 @@ import TrainBookingDetails from './components/train_search_result/TrainBookingDe
 import TrainList01 from './components/train_search_result/TrainList.jsx';
 import TrainBooking from './components/train_search_result/trainlistcard.jsx';
 import TravelInsurance from './components/TravelInsurance/TravelInsurance.jsx';
+import AboutUs from './components/footer/AboutUs';
+import ContactUs from './components/footer/ContactUs';
+import PrivacyPolicyFooter from './components/footer/PrivacyPolicy';
+import TermsAndConditions from './components/footer/TermsAndConditions';
+import CancellationAndRefundPolicy from './components/footer/CancellationAndRefundPolicy';
+
 
 
 function App() {
@@ -256,19 +262,16 @@ function App() {
           <Route path="/packages" element={<Packages/>} />
           <Route path="/giftcards" element={<GiftCards/>} />
 
+          {/* Footer Info Pages */}
+          <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/contact-us" element={<ContactUs />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicyFooter />} />
+          <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+          <Route path="/cancellation-and-refund-policy" element={<CancellationAndRefundPolicy />} />
+
           {/* Miscellaneous Routes */}
-          <Route path="/about-us" element={<About />} />
-          <Route path="/career-page" element={<CareerPage />} />
-          <Route path="/help-center" element={<HelpCenter />} />
-          <Route path="/faq" element={<Faq />} />
           <Route path="/error-page" element={<PageNotFound />} />
           <Route path="/pricing" element={<Pricing />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/contact-v1" element={<ContactV1 />} />
-          <Route path="/contact-v2" element={<ContactV2 />} />
-          <Route path="/join-us" element={<JoinUs />} />
-          <Route path="/add-listing" element={<AddListing />} />
-          <Route path="/compare-listing" element={<CompareListing />} />
           <Route path="/support" element={<SupportPage/>} />
         </Routes>
         <BackToTop />

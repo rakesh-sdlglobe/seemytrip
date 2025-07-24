@@ -212,12 +212,12 @@ export default function HotelDetails() {
   const isLoggedIn = Boolean(googleUser || phoneNumber || emailuser) || localAuthState.isLoggedIn;
 
   const handleBooking = (roomDetails) => {
-    if (!isLoggedIn) {
-      // Show login popup if not logged in
-      setseletedRoomState(roomDetails);
-      setShowAuthPopup(true);
-      return;
-    }
+    // if (!isLoggedIn) {
+    //   // Show login popup if not logged in
+    //   setseletedRoomState(roomDetails);
+    //   setShowAuthPopup(true);
+    //   return;
+    // }
 
     navigate('/hotel-review', { state: roomDetails });
   }
@@ -520,7 +520,7 @@ export default function HotelDetails() {
                                   }}
                                 >
                                   <img
-                                    src={roomDetails?.Image?.ImageUrl}
+                                    src={roomDetails?.Image?.ImageUrl || details.HotelDetail?.HotelImages?.[0]}
                                     alt={RoomName}
                                     className="img-fluid rounded-top"
                                     style={{ objectFit: "cover", width: "100%", height: 140 }}
@@ -644,7 +644,7 @@ export default function HotelDetails() {
                                             hotel: details.HotelDetail,
                                             room: room,
                                             package: includes,
-                                            image: roomDetails?.Image?.ImageUrl,
+                                            image: roomDetails?.Image?.ImageUrl || details.HotelDetail?.HotelImages?.[0],
                                           })
                                           }
                                         >
