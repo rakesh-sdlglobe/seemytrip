@@ -206,29 +206,28 @@ export const removeTraveler = (id) => async (dispatch) => {
 };
 
 export const imageUpload = async (file) => {
-  if (!file) {
-    console.error("No file provided for upload.");
-    throw new Error("No file provided for upload.");
-  }
+      console.log("209 file ", file);
+  
+  if (!file) throw new Error("No file provided for upload.");
 
-  // Get decrypted user data to verify user_id
   const user = getEncryptedItem('user1');
-  console.log('imageUpload: decrypted user1:', user);
-  if (!user) {
-    console.error("No valid user found in user1 (user1 missing or corrupted)");
-    throw new Error("User authentication required");
-  }
-  if (!user.user_id) {
-    console.error("user1 is present but missing user_id property", user);
-    throw new Error("User authentication required");
-  }
+  if (!user || !user.user_id) throw new Error("User authentication required");
 
   const formData = new FormData();
-  formData.append('img_url', file); // Changed to match backend expectation
-  console.log("227 formData ", formData);
+  formData.append('img_url', file); // Must match backend
+
+  for (let [key, value] of formData.entries()) {
+    if (value instanceof File) {
+      console.log(`${key}: File name = ${value.name}, size = ${value.size}`);
+    } else {
+      console.log(`${key}: ${value}`);
+    }
+  }
 
   const authToken = localStorage.getItem('authToken'); 
-  console.log("229 user_id for upload ", user.user_id, formData);
+console.log("220 formData ", formData);
+console.log("221 user ", user);
+
 
   try {
     const response = await axios.put(`${API_URL}/users/imageUpload/${user.user_id}`, formData, {
@@ -238,10 +237,8 @@ export const imageUpload = async (file) => {
       },
     });
 
-    console.log('Image uploaded successfully:', response.data);
-    return response.data; // Return the API response with img_url
+    return response.data; // { img_url, message }
   } catch (error) {
-    console.error('Error uploading image:', error.message);
-    throw error; // Rethrow the error for further handling if needed
+    throw error;
   }
 };

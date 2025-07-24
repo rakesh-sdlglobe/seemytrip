@@ -95,7 +95,7 @@ const PersonalInfo = () => {
         }
     }, []);
 
-    const handleSave = useCallback(() => {
+    const handleSave = useCallback(async () => {
         const [firstName, ...middleLast] = formData.fullName.split(" "), 
               lastName = middleLast.pop() || "", 
               middleName = middleLast.join(" ");
@@ -113,8 +113,8 @@ const PersonalInfo = () => {
         };
         console.log("114 userData ", userData);
         
-        dispatch(editUserProfile(userData));
-        dispatch(getUserProfile());
+        await dispatch(editUserProfile(userData)); // Wait for update to finish
+        await dispatch(getUserProfile());          // Then fetch the latest profile
         setIsEditable(false);
     }, [formData, dispatch]);
 
