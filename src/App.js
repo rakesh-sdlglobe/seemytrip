@@ -117,7 +117,9 @@ import CancellationAndRefundPolicy from './components/footer/CancellationAndRefu
 function App() {
   const dispatch = useDispatch();
 
+
   // useEffect(() => {
+    
   //   const token = localStorage.getItem('authToken');
   //   const user = localStorage.getItem('user');
     
