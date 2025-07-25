@@ -14,6 +14,9 @@ export const FETCH_HOTELS_IMAGES_FAILURE = 'FETCH_HOTELS_IMAGES_FAILURE';
 export const FETCH_HOTEL_DETAILS_REQUEST = 'FETCH_HOTEL_DETAILS_REQUEST';
 export const FETCH_HOTEL_DETAILS_SUCCESS = 'FETCH_HOTEL_DETAILS_SUCCESS';
 export const FETCH_HOTEL_DETAILS_FAILURE = 'FETCH_HOTEL_DETAILS_FAILURE';
+export const FETCH_HOTEL_PRICE_REQUEST = 'FETCH_HOTEL_PRICE_REQUEST';
+export const FETCH_HOTEL_PRICE_SUCCESS = 'FETCH_HOTEL_PRICE_SUCCESS';
+export const FETCH_HOTEL_PRICE_FAILURE = 'FETCH_HOTEL_PRICE_FAILURE';
 
 export const fetchCityHotelsRequest = () => ({
     type: FETCH_CITY_HOTELS_REQUEST,
@@ -191,6 +194,44 @@ export const fetchHotelDetails = (HotelId, searchParams) => {
 
         } catch (err) {
             dispatch(fetchHotelDetailsFailure(err.message || 'Something went wrong'))
+            throw err
+        }
+    }
+}
+
+
+const fetchHotelPriceRequest = () => ({
+    type: FETCH_HOTEL_PRICE_REQUEST,
+})
+
+const fetchHotelPriceSuccess = (data) => ({
+    type: FETCH_HOTEL_PRICE_SUCCESS,
+    payload: data,
+})
+
+const fetchHotelPriceFailure = (error) => ({
+    type: FETCH_HOTEL_PRICE_FAILURE,
+    payload: error,
+})
+
+export const fetchHotelPrice = (RequestPriceValidation) => {
+    return async (dispatch) => {
+        dispatch(fetchHotelPriceRequest())
+        try {
+            const payload = RequestPriceValidation;
+
+            console.log("Final Payload to API:", payload);
+
+            const response = await axios.post(
+                `http://localhost:3002/api/hotels/getPriceValidation`,
+                payload
+            );
+            console.log("Data from B2B/PriceValidation API:", response.data);
+            dispatch(fetchHotelPriceSuccess(response.data))
+            return response.data
+
+        } catch (err) {
+            dispatch(fetchHotelPriceFailure(err.message || 'Something went wrong'))
             throw err
         }
     }

@@ -5,6 +5,9 @@ import {
     FETCH_BUS_CITY_LIST_REQUEST,
     FETCH_BUS_CITY_LIST_SUCCESS,
     FETCH_BUS_CITY_LIST_FAILURE,
+    FETCH_BUS_SEARCH_REQUEST,
+    FETCH_BUS_SEARCH_SUCCESS,
+    FETCH_BUS_SEARCH_FAILURE,
 } from '../Actions/busActions';
 
 const initialState = {
@@ -19,6 +22,7 @@ const busReducer = (state = initialState, action) => {
     switch (action.type) {
         case FETCH_BUS_AUTH_REQUEST:
         case FETCH_BUS_CITY_LIST_REQUEST:
+        case FETCH_BUS_SEARCH_REQUEST:
             return {
                 ...state,
                 loading: true,
@@ -55,6 +59,21 @@ const busReducer = (state = initialState, action) => {
             };
         }
         case FETCH_BUS_CITY_LIST_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                error: action.payload,
+            };
+        case FETCH_BUS_SEARCH_SUCCESS: {
+            console.log('Redux: Received BusSearchList:', action.payload);
+            return {
+                ...state,
+                loading: false,
+                BusSearchList: action.payload,
+                error: null,
+            };
+        }
+        case FETCH_BUS_SEARCH_FAILURE:
             return {
                 ...state,
                 loading: false,
