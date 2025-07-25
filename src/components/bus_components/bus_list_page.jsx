@@ -5,9 +5,35 @@ import BusSearch from './bus_search_page';
 import BusFilterPage from './bus_filter_page';
 import BusResultPage from './bus_result_page';
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { selectBusSearchList } from '../../store/Selectors/busSelectors';
+
+const defaultFilters = {
+  busTypes: [],
+  wifi: false,
+  charging: false,
+  snacks: false,
+  priceMin: 0,      // <-- add this
+  priceMax: 5000,   // <-- and this
+  rating45: false,
+  rating4: false,
+  rating35: false,
+};
 
 const BusList = () => {
     const [loading, setLoading] = useState(false);
+    const [filters, setFilters] = useState(defaultFilters);
+
+    // Handler for filter changes
+    const handleFilterChange = (newFilters) => setFilters(prev => ({ ...prev, ...newFilters }));
+    const handleClear = () => setFilters(defaultFilters);
+
+    const searchList = useSelector(selectBusSearchList);
+    const busResults = searchList?.BusSearchResult?.BusResults || [];
+    const prices = busResults.map(bus => bus.BusPrice?.PublishedPriceRoundedOff || 0);
+    const minPrice = prices.length ? Math.min(...prices) : 100;
+    const maxPrice = prices.length ? Math.max(...prices) : 5000;
+
     return (
         <div>
             {/*  */}
@@ -44,10 +70,21 @@ const BusList = () => {
                     <div className="container">
                         <div className="row justify-content-between gy-4 gx-xl-4 gx-lg-3 gx-md-3 gx-4">
                             {/* Sidebar */}
-                            <BusFilterPage loading={loading} setLoading={setLoading} />
+                            <BusFilterPage
+                                filters={filters}
+                                onFilterChange={handleFilterChange}
+                                onClear={handleClear}
+                                minPrice={minPrice}
+                                maxPrice={maxPrice}
+                                loading={loading}
+                                setLoading={setLoading}
+                            />
 
                             {/* All List */}
-                            <BusResultPage loading={loading} />
+                            <BusResultPage
+                                filters={filters}
+                                loading={loading}
+                            />
                         </div>
                     </div>
                 </section>
@@ -61,4 +98,4 @@ const BusList = () => {
     );
 }
 
-export default BusList
+export default BusList;

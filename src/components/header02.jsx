@@ -161,11 +161,12 @@ const Header02 = () => {
 
   const navItems = [
     { to: "/", icon: "fa-solid fa-train", text: "Trains" },
+     { to: "/home-bus", icon: "fa-solid fa-bus", text: "Buses" },
     { to: "/home-flight", icon: "fa-solid fa-plane", text: "Flights" },
     { to: "/home-hotel", icon: "fa-solid fa-hotel", text: "Hotels" },
     { to: "/home-car", icon: "fa-solid fa-car", text: "Cabs" },
     { to: "/home-cruise", icon: "fa-solid fa-ship", text: "Cruises" },
-    { to: "/home-bus", icon: "fa-solid fa-bus", text: "Buses" },
+
     { to: "/packages", icon: "fa-solid fa-suitcase-rolling", text: "Packages" },
   ];
 
