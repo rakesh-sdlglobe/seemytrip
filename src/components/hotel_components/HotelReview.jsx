@@ -3,6 +3,8 @@ import { useLocation } from 'react-router-dom';
 import Header02 from '../header02';
 import TripSecure from './TripSecure';
 import HotelTraveller from './hotelTraveller';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchHotelPrice } from '../../store/Actions/hotelActions';
 
 const getBookingData = (hotel) => {
   // Get all booking params from hotelSearchParams in localStorage
@@ -29,16 +31,60 @@ const formatDate = (dateStr) => {
 };
 
 const HotelReview = () => {
+    const dispatch = useDispatch();
   const { state } = useLocation();
   const { hotel, room, package: pkg, image } = state || {};
   const [showAll, setShowAll] = useState(false);
- 
+ const [isLoadingPrice, setIsLoadingPrice] = useState(false);
   if (!hotel || !room || !pkg) {
     return <div>No booking data found.</div>;
   }
- const validatePrices = (travellerDetails,setIsLoading) => {
-  setIsLoading(false);
-    console.log("Traveller Details:", travellerDetails);
+ const validatePrices = (travellerDetails) => {
+  setIsLoadingPrice(true);
+   PriceValidation(travellerDetails);
+  }
+  const PriceValidation = (travellerDetails) => {
+    const { cityId,checkInDate,checkOutDate,roomsData
+  } = JSON.parse(localStorage.getItem('hotelSearchParams') || '{}');
+  var Provider = []
+  Provider.push(room.ProviderName);
+    var PRICE_REQUEST ={
+    "Credential": {},
+    "CityId": cityId,
+    "PageNo": 1,
+    "PageSize": 999,
+    "HotelID": hotel.HotelProviderSearchId,
+    "SessionID": null,
+    "HotelType": "HOTEL",
+    "TravellerNationality": "IN",
+    "CheckInDate": checkInDate,
+    "CheckOutDate": checkOutDate,
+    "Currency": "INR",
+    "Rooms": roomsData || [],
+    "SearchType": "Hotel",
+    "SearchProviders": Provider,
+    "OptionalToken": room.OptionalToken,
+    "ProviderName": room.ProviderName,
+    "ServiceIdentifer": room.ServiceIdentifer,
+    "PriceDMCType": null,
+    "PackageRate": false,
+    "SearchDateTime": null,
+    "AltCurrency": null,
+    "ISflorida": null,
+    "Zonename": null,
+    "IsSkiPackage": null,
+    "ClearFilter": false,
+    "isMap": false,
+    "isSingleHotelDetails": false,
+    "IsNoAvail": 0,
+    "CountryId": null,
+    "IsPaxChanged": false,
+    "Isback": false
+}
+    console.log("Price Validation Request:", PRICE_REQUEST);
+    dispatch(fetchHotelPrice(PRICE_REQUEST));
+    setIsLoadingPrice(false);
+    // Make API call to validate prices
   }
   const RoomName = room.Rooms.length > 0 ? room.Rooms[0].RoomName : "Room Name Not Available";
 var RoomFyi = room.Rooms.length > 0 ? room.Rooms[0].FYI : [];
@@ -229,6 +275,7 @@ var room_Details = hotel?.HotelRooms?.filter(x => x.Name.toLowerCase() === RoomN
                <HotelTraveller
   roomData={roomsData || []}
   validatePrices={validatePrices}
+  isLoading={isLoadingPrice}
 />
 
           </div>

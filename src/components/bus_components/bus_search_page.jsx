@@ -11,6 +11,14 @@ const BusSearch = () => {
   const [fromCity, setFromCity] = useState(null);
   const [toCity, setToCity] = useState(null);
   const [startDate, setStartDate] = useState(null);
+
+  // For debounced input
+  const [fromInput, setFromInput] = useState('');
+  const [toInput, setToInput] = useState('');
+  const [fromOptions, setFromOptions] = useState([]);
+  const [toOptions, setToOptions] = useState([]);
+  const debounceRef = useRef();
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -23,6 +31,7 @@ const BusSearch = () => {
   const loading = useSelector(selectBusLoading);
   const error = useSelector(selectBusError);
   const cityList = useSelector(selectBusCityList);
+  const authData = useSelector(state => state.bus.authData);
 
   // Prefill from localStorage on all pages
   useEffect(() => {
@@ -50,40 +59,60 @@ const BusSearch = () => {
     dispatch(fetchBusCityListIfNeeded());
   }, [dispatch]);
 
-  // Convert cityList to react-select options, show only first 10
-  const cityOptions = Array.isArray(cityList)
-    ? cityList.slice(0, 5).map(city => ({
+  // Debounced filter function
+  const filterCities = (input, cityList) => {
+    if (!Array.isArray(cityList)) return [];
+    if (!input) {
+      return cityList.slice(0, 15).map(city => ({
         value: city.CityId || city.value || city.id,
         label: city.CityName || city.label || city.name,
-      }))
-    : [];
+      }));
+    }
+    const lowerInput = input.toLowerCase();
 
-  const customSelectStyles = {
-    control: (provided, state) => ({
-      ...provided,
-      boxShadow: state.isFocused ? '0 4px 6px rgba(0, 0, 0, 0.1)' : '0 4px 6px rgba(0, 0, 0, 0.1)',
-      border: 'none',
-      borderRadius: '4px',
-      backgroundColor: '#fff',
-      padding: '12px',
-      width: '100%',
-      '&:hover': {
-        border: 'none',
-      },
-    }),
-    menu: (provided) => ({
-      ...provided,
-      borderRadius: '4px',
-    }),
-    placeholder: (provided) => ({
-      ...provided,
-      color: '#999',
-    }),
-    singleValue: (provided) => ({
-      ...provided,
-      color: '#333',
-    }),
+    // Exact matches first
+    const exactMatches = cityList.filter(city =>
+      (city.CityName || city.label || city.name).toLowerCase() === lowerInput
+    );
+
+    // Partial matches (excluding exact matches)
+    const partialMatches = cityList.filter(city =>
+      (city.CityName || city.label || city.name).toLowerCase().includes(lowerInput) &&
+      (city.CityName || city.label || city.name).toLowerCase() !== lowerInput
+    );
+
+    // Combine and limit to 5
+    const combined = [...exactMatches, ...partialMatches].slice(0, 5);
+
+    return combined.map(city => ({
+      value: city.CityId || city.value || city.id,
+      label: city.CityName || city.label || city.name,
+    }));
   };
+
+  // Debounce input changes for "From"
+  useEffect(() => {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setFromOptions(filterCities(fromInput, cityList));
+    }, 300);
+    return () => clearTimeout(debounceRef.current);
+  }, [fromInput, cityList]);
+
+  // Debounce input changes for "To"
+  useEffect(() => {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setToOptions(filterCities(toInput, cityList));
+    }, 300);
+    return () => clearTimeout(debounceRef.current);
+  }, [toInput, cityList]);
+
+  // Initial options
+  useEffect(() => {
+    setFromOptions(filterCities('', cityList));
+    setToOptions(filterCities('', cityList));
+  }, [cityList]);
 
   // Focus management handlers
   const handleFromChange = (val) => {
@@ -112,22 +141,55 @@ const BusSearch = () => {
       alert('Please select all fields');
       return;
     }
-    // Store in localStorage only on search
+    if (!authData || !authData.TokenId || !authData.EndUserIp) {
+      alert('Bus API authentication failed. Please try again.');
+      return;
+    }
     const searchParams = {
       fromCityId: fromCity.value,
       fromCityName: fromCity.label,
       toCityId: toCity.value,
       toCityName: toCity.label,
       date: `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}`,
+      TokenId: authData.TokenId,
+      EndUserIp: authData.EndUserIp,
     };
     localStorage.setItem('busSearchparams', JSON.stringify(searchParams));
     dispatch(fetchBusSearch({
-      from: fromCity.value,
-      to: toCity.value,
-      date: startDate,
-    })).then(() => {
-      navigate('/bus-list');
-    });
+      DateOfJourney: searchParams.date,
+      OriginId: searchParams.fromCityId,
+      DestinationId: searchParams.toCityId,
+      TokenId: searchParams.TokenId,
+      EndUserIp: searchParams.EndUserIp,
+    }));
+    navigate('/bus-list'); // Navigate immediately
+  };
+
+  const customSelectStyles = {
+    control: (provided, state) => ({
+      ...provided,
+      boxShadow: state.isFocused ? '0 4px 6px rgba(0, 0, 0, 0.1)' : '0 4px 6px rgba(0, 0, 0, 0.1)',
+      border: 'none',
+      borderRadius: '4px',
+      backgroundColor: '#fff',
+      padding: '12px',
+      width: '100%',
+      '&:hover': {
+        border: 'none',
+      },
+    }),
+    menu: (provided) => ({
+      ...provided,
+      borderRadius: '4px',
+    }),
+    placeholder: (provided) => ({
+      ...provided,
+      color: '#999',
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      color: '#333',
+    }),
   };
 
   return (
@@ -202,11 +264,12 @@ const BusSearch = () => {
                     <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                       <Select
                         id="fromCity"
-                        options={cityOptions}
+                        options={fromOptions}
                         placeholder="From"
                         styles={customSelectStyles}
                         value={fromCity}
                         onChange={handleFromChange}
+                        onInputChange={val => setFromInput(val)}
                         isLoading={loading && (!cityList || cityList.length === 0)}
                         isClearable
                         ref={fromRef}
@@ -216,11 +279,12 @@ const BusSearch = () => {
                     <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                       <Select
                         id="toCity"
-                        options={cityOptions}
+                        options={toOptions}
                         placeholder="To"
                         styles={customSelectStyles}
                         value={toCity}
                         onChange={handleToChange}
+                        onInputChange={val => setToInput(val)}
                         isLoading={loading && (!cityList || cityList.length === 0)}
                         isClearable
                         ref={toRef}

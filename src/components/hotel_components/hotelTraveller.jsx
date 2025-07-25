@@ -2,11 +2,15 @@ import React, { useState,useRef,useEffect } from "react";
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
   
-export default function HotelTraveller({ roomData,validatePrices }) {
+export default function HotelTraveller({ roomData,validatePrices,isLoading }) {
   const [travellerDetails, setTravellerDetails] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-    const [calendarOpen, setCalendarOpen] = useState({ start: false, end: false });
+  const [openCalendars, setOpenCalendars] = useState({});
+  //const [isLoading, setIsLoading] = useState(false);
   const startDateRef = useRef(null);
+
+  const today = new Date();
+  const DobStartDate = new Date(today);
+  DobStartDate.setDate(today.getDate() - 730);
 const calculateAge = (dob) => {
   if (!dob) return null;
 
@@ -23,16 +27,14 @@ const calculateAge = (dob) => {
   return age;
 };
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        startDateRef.current && !startDateRef.current.contains(event.target)
-      ) {
-        setCalendarOpen({ start: false, end: false });
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const handleClickOutside = (event) => {
+    if (startDateRef.current && !startDateRef.current.contains(event.target)) {
+      setOpenCalendars({});
+    }
+  };
+  document.addEventListener('mousedown', handleClickOutside);
+  return () => document.removeEventListener('mousedown', handleClickOutside);
+}, []);
   const handleTravellerChange = (roomIndex, paxType, paxIndex, field, value) => {
     const roomId = roomIndex + 1;
     const paxId = paxIndex + 1;
@@ -89,7 +91,7 @@ const calculateAge = (dob) => {
 
   return (
     
-    <form onSubmit={(e) => { e.preventDefault();setIsLoading(true);validatePrices(travellerDetails,setIsLoading); }}>
+    <form onSubmit={(e) => { e.preventDefault();validatePrices(travellerDetails); }}>
   <div className="form-group mt-3">
      {roomData.map((room, idx) => (
         <div key={idx} className="mb-4 border rounded p-3 position-relative">
@@ -225,28 +227,41 @@ const calculateAge = (dob) => {
                             readOnly
                             className="form-control fw-bold custom-input"
                             value={getTravellerValue(idx, "C", i, "DOB")}
-                            onClick={() => setCalendarOpen({ ...calendarOpen, start: !calendarOpen.start, end: false })}
-                            placeholder="Check-In"
+                            
+                            onClick={() => {
+                              const key = `${idx}-C-${i}`;
+                              setOpenCalendars(prev => ({
+                                ...prev,
+                                [key]: !prev[key]
+                              }));
+                            }}
+                            placeholder="Date of Birth"
                           />
-                          {calendarOpen.start && (
+                          {openCalendars[`${idx}-C-${i}`] && (
                             <div className="calendar-popup">
                               <Calendar
                                 onChange={(date) => {
-                                     handleTravellerChange(idx, "C", i, "DOB", date)
-                                  setCalendarOpen({ ...calendarOpen, start: false });
-                                  setTimeout(() => setCalendarOpen((prev) => ({ ...prev, end: true })), 200);
+                                 const formattedDate = date.toISOString().split('T')[0]; // 'YYYY-MM-DD'
+                                  handleTravellerChange(idx, "C", i, "DOB", formattedDate);
+                                  setOpenCalendars(prev => ({ ...prev, [`${idx}-C-${i}`]: false }));
                                 }}
-                                value={new Date(getTravellerValue(idx, "C", i, "DOB")) || new Date()}
+                                value={
+                                  (() => {
+                                    const dobStr = getTravellerValue(idx, "C", i, "DOB");
+                                    const parsedDate = new Date(dobStr);
+                                    return isNaN(parsedDate.getTime()) ? DobStartDate : parsedDate.toLocaleDateString('en-GB');
+                                  })()
+                                }
                                 maxDate={(() => {
                                   const today = new Date();
                                   const maxDate = new Date(today);
-                                  maxDate.setFullYear(today.getFullYear - 2);
+                                  maxDate.setDate(today.getDate() - 730); // 2 years ago
                                   return maxDate;
                                 })()}
                                 minDate={(() => {
                                   const today = new Date();
                                   const minDate = new Date(today);
-                                  minDate.setFullYear(today.getFullYear - 12);
+                                  minDate.setDate(today.getDate() - (365*12)); // 12 years ago
                                   return minDate;
                                 })()}
                                 selectRange={false}
@@ -272,7 +287,7 @@ const calculateAge = (dob) => {
                     disabled={isLoading}
                   >
                     {isLoading ? (
-                      <div className="spinner"></div>
+                      <div className="spinner">Loading  </div>
                     ) : (
                       'Check Prices'
                     )}
