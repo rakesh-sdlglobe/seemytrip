@@ -7,7 +7,8 @@ import { BsShieldFillCheck } from 'react-icons/bs';
 // This file centralizes the React Icons used in hotel components for easy import and maintenance.
 
 
-const TripSecure = ({ price = 89, currency = '₹', per = 'per person per night', gst = '18% GST Included' }) => (
+const TripSecure = ({pricedetails,hotelServiceTax,totalPrice,handlePayment}) => (
+  
   <div style={{
     background: '#fff',
     border: '1px solid #e0e0e0',
@@ -42,8 +43,19 @@ const TripSecure = ({ price = 89, currency = '₹', per = 'per person per night'
         <li style={{ color: '#0077cc', fontSize: 14, cursor: 'pointer', marginTop: 6 }}>11 more benefits</li>
       </ul>
     </div>
-    <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 6 }}>{currency}{price} <span style={{ fontWeight: 400, fontSize: 15, color: '#444' }}>{per}</span></div>
-    <div style={{ color: '#888', fontSize: 13, marginBottom: 12 }}>{gst}</div>
+    <div style={{ background: '#f6fafd', borderRadius: 8, padding: 16, marginBottom: 18, border: '1px solid #e0e0e0' }}>
+      <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: 15 }}>
+        <li style={{ marginBottom: 8 }}>Base Fare <span style={{ float: 'right', color: '#888', fontSize: 13 }}>{"INR "}{pricedetails.HotelServices[0].ServicePrice.toLocaleString()}</span></li>
+         {hotelServiceTax && hotelServiceTax.TaxSummary && hotelServiceTax.ServiceDetails.map((ser, index) => (<>
+          <span style={{ display: "none" }}>{totalPrice += ser.ServiceBookPrice}</span>
+        </>))}
+        {hotelServiceTax && hotelServiceTax.TaxSummary && hotelServiceTax.TaxSummary.map((tax, index) => (<>
+          <span style={{ display: "none" }}>{totalPrice += tax.TaxValue}</span>
+          <li style={{ marginBottom: 8 }}>{tax.TaxName} <span style={{ float: 'right', color: '#888', fontSize: 13 }}>{"INR "}{tax.TaxValue.toLocaleString()}</span></li>
+        </>))}
+      </ul>
+    </div>
+    <div style={{ fontWeight: 600, fontSize: 18, marginBottom: 6 }}>Total <span style={{ float: 'right' }}>{"INR "}{totalPrice.toLocaleString()}</span>  </div>
     <div style={{ border: '1px solid #e0e0e0', borderRadius: 8, padding: 16, marginBottom: 18 }}>
       <div style={{ marginBottom: 8 }}>
         <input type="radio" id="secureYes" name="tripSecure" style={{ marginRight: 8 }} />
@@ -60,7 +72,7 @@ const TripSecure = ({ price = 89, currency = '₹', per = 'per person per night'
         By proceeding, I agree to MakeMyTrip’s <a href="#" style={{ color: '#0077cc' }}>User Agreement</a>, <a href="#" style={{ color: '#0077cc' }}>Terms of Service</a> and <a href="#" style={{ color: '#0077cc' }}>Cancellation & Property Booking Policies</a>.
       </label>
     </div>
-    <button style={{ background: '#0077ff', color: '#fff', border: 'none', borderRadius: 6, padding: '12px 0', width: '100%', fontWeight: 700, fontSize: 17, cursor: 'pointer' }}>
+    <button onClick={() => handlePayment(totalPrice)} style={{ background: '#0077ff', color: '#fff', border: 'none', borderRadius: 6, padding: '12px 0', width: '100%', fontWeight: 700, fontSize: 17, cursor: 'pointer' }}>
       PAY NOW
     </button>
   </div>

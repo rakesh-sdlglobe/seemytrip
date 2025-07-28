@@ -1,11 +1,13 @@
-import React,{ useState} from 'react';
+import React,{ useState,useEffect} from 'react';
 import { useLocation } from 'react-router-dom';
 import Header02 from '../header02';
 import TripSecure from './TripSecure';
 import HotelTraveller from './hotelTraveller';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchHotelPrice } from '../../store/Actions/hotelActions';
-
+import { loadRazorpayScript } from '../../utils/loadRazorpay';
+import { fetchHotelPrice,fetchHotelServiceTax,fetchHotelPrebook } from '../../store/Actions/hotelActions';
+import { selectHotelPriceDetails,selectHotelServiceTaxDetails, selectHotelPrebookDetails,selectUpdatedPriceLoading,selectPrebookLoading } from '../../store/Selectors/hotelSelectors';
+export const RAZORPAY_KEY = process.env.REACT_APP_RAZORPAY_KEY_ID ;
 const getBookingData = (hotel) => {
   // Get all booking params from hotelSearchParams in localStorage
   const params = JSON.parse(localStorage.getItem('hotelSearchParams') || '{}');
@@ -31,19 +33,220 @@ const formatDate = (dateStr) => {
 };
 
 const HotelReview = () => {
+  const pricedetails = useSelector(selectHotelPriceDetails);
+  
+   
+  const [price_details, setPrice_details] = useState({});
     const dispatch = useDispatch();
   const { state } = useLocation();
   const { hotel, room, package: pkg, image } = state || {};
+  const [travellerDetails, setTravellerDetails] = useState([]);
   const [showAll, setShowAll] = useState(false);
+   const [totalPrice, setTotalPrice] = useState(0);  
+    const prebookResponse = useSelector(selectHotelPrebookDetails);
  const [isLoadingPrice, setIsLoadingPrice] = useState(false);
+ useEffect(() => {
+    if (
+      pricedetails?.HotelDetail?.HotelServices?.[0]
+    ) {
+      setPrice_details(pricedetails);
+      const { checkInDate, checkOutDate, roomsData } =
+        JSON.parse(localStorage.getItem('hotelSearchParams') || '{}');
+
+      const hotelService = pricedetails.HotelDetail.HotelServices[0];
+
+      const SerDetails = [{
+        SearchType: 'Hotel',
+        ServiceIndex: 1,
+        ProviderName: hotelService.ProviderName,
+        ServiceIdentifer: hotelService.ServiceIdentifer,
+        Currency: 'INR',
+        ServiceBookPrice: hotelService.ServicePrice,
+        OptionalToken: hotelService.OptionalToken,
+        FromDate: checkInDate,
+        ToDate: checkOutDate,
+        DiscountType: null,
+        DiscountValue: 0.0,
+        DiscountedAmount: 0.0,
+        ServiceTaxes: null,
+        ServiceTypeId: null,
+        ProviderPrice: 0.0,
+        PaxDetail: {
+          Senior: 0,
+          Adults: roomsData.reduce((sum, r) => sum + r.Adults, 0),
+          Youth: 0,
+          Children: roomsData.reduce((sum, r) => sum + r.Children, 0),
+          Infants: 0,
+          Saver: 0,
+          FreeChild: 0,
+        },
+        IsDom: false,
+        SrvCityId: 0,
+        IsPkgComp: false,
+        AddonPrice: 0.0,
+        AddonType: null,
+      }];
+
+      const ServiceTaxRequest = {
+        Credential: null,
+        ServiceDetails: SerDetails,
+        TaxSummary: null,
+        TaxKey: null,
+        BookCurrency: 'INR',
+      };
+
+      dispatch(fetchHotelServiceTax(ServiceTaxRequest));
+      
+    }
+  }, [pricedetails, dispatch]);
+  useEffect(() => {
+    loadRazorpay()
+  },[]);
+  const loadRazorpay = async () => {
+    const res = await loadRazorpayScript();
+    if (!res) {
+      alert('Razorpay SDK failed to load. Check your internet.');
+      return;
+    } 
+  }
+   useEffect(() => {
+    if (prebookResponse) {
+       if (typeof window.Razorpay === 'undefined') {
+      alert('Razorpay SDK not available');
+      return;
+    }
+    
+      const options = {
+      key: RAZORPAY_KEY, // from Razorpay dashboard
+      amount: totalPrice, // amount in paise
+      currency: 'INR',
+      name: 'Your Company',
+      description: 'Test Transaction',
+      order_id: prebookResponse.ReservationReference, // from backend
+      handler: function (response) {
+        alert(`Payment successful!\nPayment ID: ${response.razorpay_payment_id}`);
+        // Optionally: call backend to verify signature and store
+      },
+      theme: {
+        color: '#3399cc',
+      },
+    };
+
+    const paymentObject = new window.Razorpay(options);
+    paymentObject.open();
+      
+    }
+  }, [prebookResponse, totalPrice]);
+  const serviceTaxdetails = useSelector(selectHotelServiceTaxDetails);
+  const [hotelServiceTax, setHotelServiceTax] = useState(serviceTaxdetails);  
+  console.log("Hotel Review Component - serviceTaxdetails:", serviceTaxdetails);
   if (!hotel || !room || !pkg) {
     return <div>No booking data found.</div>;
   }
+  
+function generateUniqueString() {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+}
+const sanitizeTravellerDetails = (details) => {
+  return details.map(traveller => {
+    const cleanTraveller = {};
+
+    for (const key in traveller) {
+      const value = traveller[key];
+      if (typeof value !== "object" || value === null || value instanceof Date) {
+        cleanTraveller[key] = value;
+      } else if (Array.isArray(value)) {
+        cleanTraveller[key] = value;
+      } else {
+        // Skip DOM elements, React refs, or synthetic events
+        if (value.tagName || value.nativeEvent || value._reactName || value.currentTarget) {
+          continue;
+        }
+        // You can go deeper if needed
+        cleanTraveller[key] = JSON.parse(JSON.stringify(value));
+      }
+    }
+
+    return cleanTraveller;
+  });
+};
+
+  const  handlePayment = async (total) => 
+    {
+      
+      
+       const { checkInDate, checkOutDate, roomsData } =
+        JSON.parse(localStorage.getItem('hotelSearchParams') || '{}');const sanitizedTravellerDetails = sanitizeTravellerDetails(travellerDetails);
+        let LeadTraveller = sanitizedTravellerDetails.find((traveller) => traveller.LeadPax);
+      let UniqRef = generateUniqueString();
+       const hotelService = pricedetails.HotelDetail.HotelServices[0];
+       const hotelImage = pricedetails.HotelDetail.HotelImages[0];
+       let RoomDetails = [];
+       let PaxDetails = roomsData.reduce((sum, r) => sum + r.Adults, 0)+ "Adult" +  roomsData.reduce((sum, r) => sum + r.Adults, 0)>1?'s':'' + " & " + roomsData.reduce((sum, r) => sum + r.Children, 0) + " Child" + (roomsData.reduce((sum, r) => sum + r.Children, 0)>1?'ren':'') 
+        + roomsData.length > 1 ? " in " + roomsData.length + " Rooms" : " in 1 Room";
+
+      roomsData.forEach((room, index) => {
+        let Paxs = sanitizedTravellerDetails.find(traveller => traveller.RoomID === room.RoomNo) || [];
+        RoomDetails.push({
+          RoomId: Paxs.RoomId || index + 1,
+          Adults: room.Adults || 2,
+          Teens: room.Teens || 0,
+          Children: room.Children || 0,
+          Infants: room.Infants || 0,
+          RoomName: hotelService.Rooms[0].RoomName || "Room Name Not Available",
+          RoomType: hotelService.Rooms[0].RoomCode || "Room Type Not Available",
+          ConfirmationNumber: null,
+          Paxs: Paxs || [],
+          ExtraBed: room.ExtraBed || 0
+        });
+      })
+      let BookingDetails = [];
+          BookingDetails.push( {
+            "SearchType": "Hotel",
+            "UniqueReferencekey": UniqRef,
+            "HotelServiceDetail": {
+                "UniqueReferencekey": UniqRef,
+                "ProviderName": hotelService.ProviderName,
+                "ServiceIdentifer": hotelService.ServiceIdentifer,
+                "ServiceBookPrice": hotelService.ServicePrice,
+                "OptionalToken": hotelService.OptionalToken,
+                "ServiceCheckInTime": null,
+                "Image": hotelImage,
+                "HotelName": pricedetails.HotelDetail.HotelName,
+                "FromDate": checkInDate,
+                "ToDate": checkOutDate,
+                "ServiceName": hotelService.Rooms[0].RoomName,
+                "MealCode": hotelService.Rooms[0].BoardCode,
+                "PaxDetail": PaxDetails,
+                "BookCurrency": "INR",
+                "RoomDetails": RoomDetails
+            }
+        })
+
+        let PreBookRequest = {
+              "Credential": null,
+              "ReservationName": LeadTraveller?.Forename + " " + LeadTraveller?.Surname,
+              "ReservationArrivalDate": checkInDate,
+              "ReservationCurrency": "INR",
+              "ReservationAmount": total,
+              "ReservationClientReference": null,
+              "ReservationRemarks": null,
+              "BookingDetails": BookingDetails
+            }
+            console.log("PreBook Request:", PreBookRequest);
+      dispatch(fetchHotelPrebook(PreBookRequest));
+
+      setTotalPrice(total);
+  }
+   console.log("Hotel Review Component - prebookResponse:", prebookResponse);
+  
  const validatePrices = (travellerDetails) => {
   setIsLoadingPrice(true);
+  setTravellerDetails(travellerDetails);
    PriceValidation(travellerDetails);
   }
   const PriceValidation = (travellerDetails) => {
+    setTravellerDetails(travellerDetails);
     const { cityId,checkInDate,checkOutDate,roomsData
   } = JSON.parse(localStorage.getItem('hotelSearchParams') || '{}');
   var Provider = []
@@ -86,6 +289,7 @@ const HotelReview = () => {
     setIsLoadingPrice(false);
     // Make API call to validate prices
   }
+ 
   const RoomName = room.Rooms.length > 0 ? room.Rooms[0].RoomName : "Room Name Not Available";
 var RoomFyi = room.Rooms.length > 0 ? room.Rooms[0].FYI : [];
 var includes = RoomFyi.length > 0 ? RoomFyi : room.Includes || [];
@@ -282,7 +486,10 @@ var room_Details = hotel?.HotelRooms?.filter(x => x.Name.toLowerCase() === RoomN
           
         </div>
       </div>
-      <TripSecure />
+      {pricedetails && pricedetails && pricedetails?.HotelDetail && serviceTaxdetails && (
+         <TripSecure handlePayment={handlePayment} pricedetails={pricedetails?.HotelDetail} hotelServiceTax={serviceTaxdetails} totalPrice={0}/>
+      )}
+     
     </div>
   );
 };
