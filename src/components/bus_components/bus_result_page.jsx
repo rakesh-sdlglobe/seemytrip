@@ -3,10 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchBusSearch,
   fetchBusSeatLayout,
+  fetchBusBoardingPoints,
 } from "../../store/Actions/busActions";
 import {
   selectBusSearchList,
   selectBusSearchLayoutList,
+  selectBusBoardingPoints,
 } from "../../store/Selectors/busSelectors";
 import SeatSelection from "../seatselection";
 import BusSeatLayoutPage from "./BusSeatLayoutPage";
@@ -120,6 +122,7 @@ const BusResultPage = ({ filters, loading }) => {
   const dispatch = useDispatch();
   const searchList = useSelector(selectBusSearchList);
   const seatLayout = useSelector(selectBusSearchLayoutList);
+  const boardingPoints = useSelector(selectBusBoardingPoints);
   const busResults = searchList?.BusSearchResult?.BusResults || [];
   const [openSeatIndex, setOpenSeatIndex] = useState(null);
 
@@ -149,6 +152,12 @@ const BusResultPage = ({ filters, loading }) => {
     } else {
       setOpenSeatIndex(index);
       const { TokenId, EndUserIp } = getSearchParams();
+
+      console.log("Fetching seat layout and boarding points for bus:", bus);
+      console.log("Using TokenId:", TokenId, "EndUserIp:", EndUserIp);
+      console.log("TraceId:", searchList?.BusSearchResult?.TraceId);
+
+      // Fetch seat layout data
       dispatch(
         fetchBusSeatLayout(
           TokenId,
@@ -157,7 +166,59 @@ const BusResultPage = ({ filters, loading }) => {
           searchList?.BusSearchResult?.TraceId
         )
       );
+
+      // Fetch boarding points data using the same function pattern as fetchBusSeatLayout
+      dispatch(
+        fetchBusBoardingPoints(
+          TokenId,
+          EndUserIp,
+          bus.ResultIndex,
+          searchList?.BusSearchResult?.TraceId
+        )
+      );
     }
+  };
+
+  // Add a function to clean up bus type
+  const cleanBusType = (busType) => {
+    if (!busType) return "";
+    
+    let result = [];
+    
+    // Check for A/C or Non A/C - look for explicit "Non A/C" first
+    if (busType.toLowerCase().includes('non a/c') || busType.toLowerCase().includes('non ac')) {
+      result.push('Non A/C');
+    } else if (busType.toLowerCase().includes('a/c') || busType.toLowerCase().includes('ac')) {
+      result.push('A/C');
+    } else {
+      result.push('Non A/C');
+    }
+    
+    // Check for Sleeper types - handle both Sleeper and Semi Sleeper
+    if (busType.toLowerCase().includes('sleeper')) {
+      if (busType.toLowerCase().includes('sleeper/semi sleeper') || busType.toLowerCase().includes('sleeper semi sleeper')) {
+        result.push('Sleeper/Semi Sleeper');
+      }
+      else if (busType.toLowerCase().includes('semi sleeper') || busType.toLowerCase().includes('semi-sleeper')) {
+        result.push('Semi Sleeper');
+      }  else {
+        result.push('Sleeper');
+      }
+    }
+    
+    // Check for Seater types - handle both Seater and Pushback
+    if (busType.toLowerCase().includes('seater')) {
+      if (busType.toLowerCase().includes('seater/pushback') || busType.toLowerCase().includes('seater pushback')) {
+        result.push('Seater/Pushback');
+      }
+      else if (busType.toLowerCase().includes('pushback')) {
+        result.push('Pushback');
+      } else {
+        result.push('Seater');
+      }
+    }
+    
+    return result.join(' ');
   };
 
   const filteredResults = busResults.filter((bus) => {
@@ -223,11 +284,14 @@ const BusResultPage = ({ filters, loading }) => {
                   style={{ borderColor: "#007bff" }}
                   key={index}
                 >
-                  <div className="d-flex justify-content-between align-items-start flex-wrap">
+                  <div className="d-flex justify-content-between align-items-start flex-wrap position-relative">
                     {/* Left */}
-                    <div>
+                    <div className="flex-grow-1">
                       <h5 className="fw-bold mb-1">{bus.TravelName}</h5>
-                      <p className="text-muted mb-2">{bus.BusType}</p>
+                      {/* <p className="text-muted mb-2">{bus.BusType}</p> */}
+                      
+                        <p className="text-muted mb-2">{cleanBusType(bus.BusType)}</p>
+                      
                       <div className="d-flex align-items-center mb-2">
                         <span
                           className="bg-primary text-white px-2 py-1 rounded me-2"
@@ -247,35 +311,32 @@ const BusResultPage = ({ filters, loading }) => {
                       </button>
                     </div>
 
-                    {/* Middle (Aligned Departure - Duration - Arrival) */}
+                    {/* Middle (Positioned absolutely in center - Horizontal layout) */}
                     <div
-                      className="d-flex align-items-center justify-content-center mx-auto"
-                      style={{ minWidth: 300 }}
+                      className="position-absolute d-flex align-items-center justify-content-center"
+                      style={{
+                        left: "50%",
+                        top: "50%",
+                        transform: "translate(-50%, -50%)",
+                        minWidth: 200,
+                        pointerEvents: "none"
+                      }}
                     >
-                      <div
-                        className="text-center px-3"
-                        style={{ minWidth: 100 }}
-                      >
+                      <div className="text-center me-4">
                         <div className="fw-bold">{dep.time}</div>
                         <div className="text-muted small">{dep.date}</div>
                       </div>
-                      <div
-                        className="text-center px-3"
-                        style={{ minWidth: 100 }}
-                      >
+                      <div className="text-center mx-3">
                         <div className="text-muted fw-semibold">{duration}</div>
                       </div>
-                      <div
-                        className="text-center px-3"
-                        style={{ minWidth: 100 }}
-                      >
+                      <div className="text-center ms-4">
                         <div className="fw-bold">{arr.time}</div>
                         <div className="text-muted small">{arr.date}</div>
                       </div>
                     </div>
 
                     {/* Right */}
-                    <div className="text-end">
+                    <div className="text-end flex-grow-1">
                       <div className="fw-bold fs-4 mb-3">
                         ₹{bus.BusPrice?.PublishedPriceRoundedOff || "-"}
                       </div>

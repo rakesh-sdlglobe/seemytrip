@@ -1,173 +1,359 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { selectBusBoardingPoints } from '../../store/Selectors/busSelectors';
 import Header02 from '../header02';
 import FooterDark from '../footer-dark';
-import { bus} from '../../assets/images';
+import { bus } from '../../assets/images';
 
 export const BusBookingPage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const boardingPoints = useSelector(selectBusBoardingPoints);
+  
+  // Bus data from navigation state or localStorage
+  const busData = location.state?.busData || JSON.parse(localStorage.getItem('selectedBusData') || '{}');
+  
+  // State for form data
+  const [selectedSeat, setSelectedSeat] = useState('DU3');
+  const [selectedBoardingPoint, setSelectedBoardingPoint] = useState('');
+  const [selectedDroppingPoint, setSelectedDroppingPoint] = useState('');
+  const [showGSTDetails, setShowGSTDetails] = useState(false);
+  const [travelerDetails, setTravelerDetails] = useState({
+    name: '',
+    age: '',
+    gender: ''
+  });
+  const [contactDetails, setContactDetails] = useState({
+    email: '',
+    mobile: '',
+    gstNumber: '',
+    companyName: ''
+  });
+  const [addressDetails, setAddressDetails] = useState({
+    pincode: '',
+    state: ''
+  });
+
+  // Format time helper
+  const formatTime = (timeString) => {
+    if (!timeString) return '';
+    const time = new Date(`2000-01-01T${timeString}`);
+    return time.toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: true 
+    });
+  };
+
+  // Calculate duration
+  const getDuration = (departure, arrival) => {
+    if (!departure || !arrival) return '';
+    const dep = new Date(`2000-01-01T${departure}`);
+    const arr = new Date(`2000-01-01T${arrival}`);
+    const diff = arr - dep;
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    return `${hours}h ${minutes}m`;
+  };
+
   return (
-    <div>
-      {/* Preloader - style you can find in spinners.css */}
-      <div id="preloader">
-        <div className="preloader"><span /><span /></div>
+    <>
+      {/* Preloader */}
+      {/* <div id="preloader">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
       </div>
-      {/* Main wrapper - style you can find in pages.scss */}
-      <div id="main-wrapper">
-        {/* Top header */}
+      </div> */}
+
+      {/* Header */}
         <Header02 />
-        <div className="clearfix" />
-        {/* Booking Page */}
-        <section className="pt-4 gray-simple position-relative">
+
+      <section className="pt-4 pb-4 gray-simple position-relative">
           <div className="container">
+          {/* Breadcrumb Navigation */}
+          <nav aria-label="breadcrumb" className="mb-4">
+            <ol className="breadcrumb">
+              <li className="breadcrumb-item">
+                <a href="/" className="text-decoration-none">Home</a>
+              </li>
+              <li className="breadcrumb-item">
+                <a href="/bus-search" className="text-decoration-none">Bus</a>
+              </li>
+              <li className="breadcrumb-item active" aria-current="page">
+                {busData.OriginName || 'Delhi'} to {busData.DestinationName || 'Kanpur'}
+              </li>
+            </ol>
+          </nav>
+
+          {/* First Container - Bus Details and Journey Info */}
+          <div className="row mb-4">
+            <div className="col-12">
+              <div className="card shadow-sm">
+                                  <div className="card-body">
+                    <div className="row">
+                      {/* Left Side - Bus Details */}
+                      <div className="col-md-6">
+                        <div className="bus-details">
+                          <h5 className="fw-bold mb-2">{busData.TravelsName || 'Delhi Express'}</h5>
+                          <p className="text-muted mb-3">
+                            {busData.BusType || 'A/C Sleeper'} • {busData.BusCondition || 'Non-AC'}
+                          </p>
+                          
+                          {/* Boarding, Journey Time, and Dropping Details - Horizontal */}
             <div className="row">
-              <div className="col-xl-12 col-lg-12 col-md-12">
-                <div id="stepper" className="bs-stepper stepper-outline mb-5">
-                  <div className="bs-stepper-header">
-                    {/* Step 1 */}
-                    <div className="step active" data-target="#step-1">
+                            <div className="col-md-4">
                       <div className="text-center">
-                        <button type="button" className="step-trigger mb-0" id="steppertrigger1">
-                          <span className="bs-stepper-circle">1</span>
-                        </button>
-                        <h6 className="bs-stepper-label d-none d-md-block">Review Booking</h6>
+                                <div className="fw-bold text-primary">{formatTime(busData.DepartureTime) || '06:00 AM'}</div>
+                                <small className="text-muted">{busData.DepartureDate || '15 Jan 2024'}</small>
+                                <div className="mt-1">
+                                  <small className="text-muted">{busData.OriginName || 'Delhi'}</small>
+                                </div>
                       </div>
                     </div>
-                    <div className="line" />
-                    {/* Step 2 */}
-                    {/* <div className="step" data-target="#step-2">
+                            <div className="col-md-4">
                       <div className="text-center">
-                        <button type="button" className="step-trigger mb-0" id="steppertrigger2">
-                          <span className="bs-stepper-circle">2</span>
-                        </button>
-                        <h6 className="bs-stepper-label d-none d-md-block">Enter Details</h6>
+                                <div className="fw-bold text-info">{getDuration(busData.DepartureTime, busData.ArrivalTime) || '8h 30m'}</div>
+                                <small className="text-muted">Journey Time</small>
+                              </div>
                       </div>
-                    </div> */}
-                    <div className="line" />
-                    {/* Step 3 */}
-                    <div className="step" data-target="#step-3">
+                            <div className="col-md-4">
                       <div className="text-center">
-                        <button type="button" className="step-trigger mb-0" id="steppertrigger3">
-                          <span className="bs-stepper-circle">2</span>
-                        </button>
-                        <h6 className="bs-stepper-label d-none d-md-block">Make Payment</h6>
+                                <div className="fw-bold text-success">{formatTime(busData.ArrivalTime) || '02:30 PM'}</div>
+                                <small className="text-muted">{busData.ArrivalDate || '15 Jan 2024'}</small>
+                                <div className="mt-1">
+                                  <small className="text-muted">{busData.DestinationName || 'Kanpur'}</small>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="row align-items-start">
-              <div className="col-xl-12 col-lg-12 col-md-12">
-                <div className="row align-items-start">
-                  <div className="col-xl-8 col-lg-8 col-md-12">
-                    <div className="card p-3 mb-xl-0 mb-lg-0 mb-3">
-                      {/* Booking Info */}
-                      <div className="card-box list-layout-block border br-dashed rounded-3 p-2">
-                        <div className="row">
-                          <div className="col-xl-4 col-lg-3 col-md">
-                            <div className="cardImage__caps rounded-2 overflow-hidden h-100">
-                              <img className="img-fluid h-100 object-fit" src={bus} alt="Bus" />
+
+                      {/* Right Side - Seat Information */}
+                      <div className="col-md-6">
+                        <div className="seat-info text-end">
+                          <div className="seat-display">
+                            <h6 className="text-primary mb-2">Selected Seat</h6>
+                            <div className="seat-number">
+                              <span className="badge bg-primary fs-5 px-3 py-2">
+                                {selectedSeat}
+                              </span>
                             </div>
+                            <p className="text-muted mt-2">Seat Index: {selectedSeat}</p>
                           </div>
-                          <div className="col-xl col-lg col-md">
-                            <div className="listLayout_midCaps mt-md-0 mt-3 mb-md-0 mb-3">
-                              <div className="d-flex align-items-center justify-content-start">
-                                <div className="d-inline-block">
-                                  <i className="fa fa-star text-warning text-xs" />
-                                  <i className="fa fa-star text-warning text-xs" />
-                                  <i className="fa fa-star text-warning text-xs" />
-                                  <i className="fa fa-star text-warning text-xs" />
-                                  <i className="fa fa-star text-warning text-xs" />
-                                </div>
-                              </div>
-                              <h4 className="fs-5 fw-bold mb-1">Bus Booking</h4>
-                              <ul className="row g-2 p-0">
-                                <li className="col-auto">
-                                  <p className="text-muted-2 text-md">Pickup Location: </p>
-                                </li>
-                                <li className="col-auto">
-                                  <p className="text-muted-2 text-md fw-bold">.</p>
-                                </li>
-                                <li className="col-auto">
-                                  <p className="text-muted-2 text-md">Drop Location: </p>
-                                </li>
-                              </ul>
-                              <div className="d-flex align-items-center mb-3">
-                                <div className="col-auto">
-                                  <div className="square--40 rounded-2 bg-primary text-light fw-semibold">4.8</div>
-                                </div>
-                                <div className="col-auto text-start ps-2">
-                                  <div className="text-md text-dark fw-medium">Exceptional</div>
-                                  <div className="text-md text-muted-2">3,014 reviews</div>
-                                </div>
-                              </div>
-                              <div className="position-relative mt-3">
-                                <div className="d-flex flex-wrap align-items-center">
-                                  <div className="d-inline-flex align-items-center border br-dashed rounded-2 p-2 me-2 mb-2">
-                                    <div className="export-icon text-muted-2"><i className="fa-solid fa-bus" /></div>
-                                    <div className="export ps-2">
-                                      <span className="mb-0 text-muted-2 fw-semibold me-1">Luxury</span><span className="mb-0 text-muted-2 text-md">Bus Type</span>
-                                    </div>
-                                  </div>
-                                  <div className="d-inline-flex align-items-center border br-dashed rounded-2 p-2 me-2 mb-2">
-                                    <div className="export-icon text-muted-2"><i className="fa-solid fa-users" /></div>
-                                    <div className="export ps-2">
-                                      <span className="mb-0 text-muted-2 fw-semibold me-1">50</span><span className="mb-0 text-muted-2 text-md">Seats</span>
-                                    </div>
-                                  </div>
-                                  <div className="d-inline-flex align-items-center border br-dashed rounded-2 p-2 me-2 mb-2">
-                                    <div className="export-icon text-muted-2"><i className="fa-solid fa-road" /></div>
-                                    <div className="export ps-2">
-                                      <span className="mb-0 text-muted-2 fw-semibold me-1">5000</span><span className="mb-0 text-muted-2 text-md">Km Range</span>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      {/* Good to Know */}
-                      <div className="flight-boxyhc mt-4">
-                        <h4 className="fs-5">Good To Know</h4>
-                        <div className="effloration-wrap">
-                          <p>All Prices are in Indian Rupees and are subject to change without prior notice. The full amount of the bus ride will be payable at the time of booking.</p>
-                          <ul className="row align-items-center g-1 mb-0 p-0">
-                            <li className="col-12"><span className="text-success text-md"><i className="fa-solid fa-circle-dot me-2" />Free Cancellation till 24 hours before pickup</span></li>
-                            <li className="col-12"><span className="text-muted-2 text-md"><i className="fa-solid fa-circle-dot me-2" />After 24 hours: 50% cancellation fee</span></li>
-                            <li className="col-12"><span className="text-muted-2 text-md"><i className="fa-solid fa-circle-dot me-2" />No Show: 100% charge</span></li>
-                          </ul>
                         </div>
                       </div>
                     </div>
+
+
+                </div>
+              </div>
+                                </div>
+                              </div>
+
+          {/* Second Container - Traveler Details */}
+          <div className="row mb-4">
+            <div className="col-12">
+              <div className="card shadow-sm">
+                <div className="card-header">
+                  <h5 className="mb-0">
+                    <i className="fas fa-user me-2"></i>
+                    Traveler Details
+                  </h5>
+                                </div>
+                <div className="card-body">
+                  <div className="row">
+                    <div className="col-md-3">
+                      <div className="mb-3">
+                        <label className="form-label">Seat ID</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={selectedSeat}
+                          readOnly
+                          placeholder="Select seat first"
+                        />
+                                </div>
+                              </div>
+                    <div className="col-md-3">
+                      <div className="mb-3">
+                        <label className="form-label">Full Name *</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={travelerDetails.name}
+                          onChange={(e) => setTravelerDetails({...travelerDetails, name: e.target.value})}
+                          placeholder="Enter full name"
+                        />
+                                    </div>
+                                  </div>
+                    <div className="col-md-3">
+                      <div className="mb-3">
+                        <label className="form-label">Age *</label>
+                        <input
+                          type="number"
+                          className="form-control"
+                          value={travelerDetails.age}
+                          onChange={(e) => setTravelerDetails({...travelerDetails, age: e.target.value})}
+                          placeholder="Age"
+                          min="1"
+                          max="120"
+                        />
+                                    </div>
+                                  </div>
+                    <div className="col-md-3">
+                      <div className="mb-3">
+                        <label className="form-label">Gender *</label>
+                        <select
+                          className="form-select"
+                          value={travelerDetails.gender}
+                          onChange={(e) => setTravelerDetails({...travelerDetails, gender: e.target.value})}
+                        >
+                          <option value="">Select Gender</option>
+                          <option value="male">Male</option>
+                          <option value="female">Female</option>
+                          <option value="other">Other</option>
+                        </select>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+          {/* Third Container - Contact Details */}
+          <div className="row mb-4">
+            <div className="col-12">
+              <div className="card shadow-sm">
+                <div className="card-header">
+                  <h5 className="mb-0">
+                    <i className="fas fa-phone me-2"></i>
+                    Contact Details
+                  </h5>
+                </div>
+                <div className="card-body">
+                  <div className="row">
+                    <div className="col-md-6">
+                      <div className="mb-3">
+                        <label className="form-label">Email ID *</label>
+                        <input
+                          type="email"
+                          className="form-control"
+                          value={contactDetails.email}
+                          onChange={(e) => setContactDetails({...contactDetails, email: e.target.value})}
+                          placeholder="Enter email address"
+                        />
+                      </div>
+                        </div>
+                    <div className="col-md-6">
+                      <div className="mb-3">
+                        <label className="form-label">Mobile Number *</label>
+                        <input
+                          type="tel"
+                          className="form-control"
+                          value={contactDetails.mobile}
+                          onChange={(e) => setContactDetails({...contactDetails, mobile: e.target.value})}
+                          placeholder="Enter mobile number"
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <div className="col-xl-4 col-lg-4 col-md-12">
-                    <div className="side-block card rounded-2 p-3">
-                      <h5 className="fw-semibold fs-6">Reservation Summary</h5>
-                      <div className="mid-block rounded-2 border br-dashed p-2 mb-3">
-                        <div className="d-flex align-items-center justify-content-between">
-                          <div className="d-inline-block text-muted-2 text-md">Total Cost:</div>
-                          <div className="d-inline-block fw-bold text-end fs-5 text-dark">₹ 4,500</div>
+                  
+                  {/* GST Details Toggle */}
+                  <div className="mb-3">
+                    <div className="form-check form-switch">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="gstToggle"
+                        checked={showGSTDetails}
+                        onChange={(e) => setShowGSTDetails(e.target.checked)}
+                      />
+                      <label className="form-check-label" htmlFor="gstToggle">
+                        Add GST Details (Optional)
+                      </label>
                         </div>
-                        <div className="d-flex align-items-center justify-content-between">
-                          <div className="d-inline-block text-muted-2 text-md">Seats:</div>
-                          <div className="d-inline-block fw-bold text-end fs-5 text-dark">4</div>
                         </div>
-                        <div className="d-flex align-items-center justify-content-between">
-                          <div className="d-inline-block text-muted-2 text-md">Bus Type:</div>
-                          <div className="d-inline-block fw-bold text-end fs-5 text-dark">Luxury</div>
+
+                  {showGSTDetails && (
+                    <div className="row">
+                      <div className="col-md-6">
+                        <div className="mb-3">
+                          <label className="form-label">GST Number</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={contactDetails.gstNumber}
+                            onChange={(e) => setContactDetails({...contactDetails, gstNumber: e.target.value})}
+                            placeholder="Enter GST number"
+                          />
                         </div>
-                        <div className="d-flex align-items-center justify-content-between">
-                          <div className="d-inline-block text-muted-2 text-md">Pickup Location:</div>
-                          <div className="d-inline-block fw-bold text-end fs-5 text-dark">Delhi</div>
                         </div>
-                        <div className="d-flex align-items-center justify-content-between">
-                          <div className="d-inline-block text-muted-2 text-md">Drop Location:</div>
-                          <div className="d-inline-block fw-bold text-end fs-5 text-dark">Agra</div>
+                      <div className="col-md-6">
+                        <div className="mb-3">
+                          <label className="form-label">Company Name</label>
+                          <input
+                            type="text"
+                            className="form-control"
+                            value={contactDetails.companyName}
+                            onChange={(e) => setContactDetails({...contactDetails, companyName: e.target.value})}
+                            placeholder="Enter company name"
+                          />
                         </div>
                       </div>
-                      <div className="d-grid gap-2">
-                        <Link to="/busBookingpayment" className="btn btn-primary rounded-2 py-2">Proceed to Payment</Link>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Fourth Container - Address Details */}
+          <div className="row mb-4">
+            <div className="col-12">
+              <div className="card shadow-sm">
+                <div className="card-header">
+                  <h5 className="mb-0">
+                    <i className="fas fa-map-marker-alt me-2"></i>
+                    Address Details
+                  </h5>
+                </div>
+                <div className="card-body">
+                  <div className="row">
+                    <div className="col-md-6">
+                      <div className="mb-3">
+                        <label className="form-label">Pincode *</label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={addressDetails.pincode}
+                          onChange={(e) => setAddressDetails({...addressDetails, pincode: e.target.value})}
+                          placeholder="Enter pincode"
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6">
+                      <div className="mb-3">
+                        <label className="form-label">State *</label>
+                        <select
+                          className="form-select"
+                          value={addressDetails.state}
+                          onChange={(e) => setAddressDetails({...addressDetails, state: e.target.value})}
+                        >
+                          <option value="">Select State</option>
+                          <option value="delhi">Delhi</option>
+                          <option value="uttar-pradesh">Uttar Pradesh</option>
+                          <option value="maharashtra">Maharashtra</option>
+                          <option value="karnataka">Karnataka</option>
+                          <option value="tamil-nadu">Tamil Nadu</option>
+                          <option value="gujarat">Gujarat</option>
+                          <option value="west-bengal">West Bengal</option>
+                          <option value="rajasthan">Rajasthan</option>
+                          <option value="madhya-pradesh">Madhya Pradesh</option>
+                          <option value="bihar">Bihar</option>
+                        </select>
                       </div>
                     </div>
                   </div>
@@ -175,11 +361,24 @@ export const BusBookingPage = () => {
               </div>
             </div>
           </div>
+
+          {/* Proceed to Payment Button */}
+          <div className="row">
+            <div className="col-12">
+              <div className="text-center">
+                <button className="btn btn-primary btn-lg px-5">
+                  <i className="fas fa-credit-card me-2"></i>
+                  Proceed to Payment
+                </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
+
         {/* Footer */}
         <FooterDark />
-      </div>
-    </div>
+    </>
   );
 };
 

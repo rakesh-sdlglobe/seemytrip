@@ -221,3 +221,46 @@ export const fetchBusSeatLayout =
   };
 
 
+
+  export const FETCH_BUS_BOARDING_POINTS_REQUEST = "FETCH_BUS_BOARDING_POINTS_REQUEST";
+  export const FETCH_BUS_BOARDING_POINTS_SUCCESS = "FETCH_BUS_BOARDING_POINTS_SUCCESS";
+  export const FETCH_BUS_BOARDING_POINTS_FAILURE = "FETCH_BUS_BOARDING_POINTS_FAILURE";
+  export const fetchBusBoardingPointsRequest = () => ({
+    type: FETCH_BUS_BOARDING_POINTS_REQUEST,
+  });
+  export const fetchBusBoardingPointsSuccess = (boardingPoints) => ({
+    type: FETCH_BUS_BOARDING_POINTS_SUCCESS,
+    payload: boardingPoints,
+  });
+  export const fetchBusBoardingPointsFailure = (error) => ({
+    type: FETCH_BUS_BOARDING_POINTS_FAILURE,
+    payload: error,
+  });
+  export const fetchBusBoardingPoints = (TokenId, IpAddress, ResultIndex, TraceId) => async (dispatch) => {
+    console.log("Fetching bus boarding points from API");
+    console.log("Request parameters:", { TokenId, IpAddress, ResultIndex, TraceId });
+  
+    try {
+      dispatch(fetchBusBoardingPointsRequest());
+  
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/bus/getBoardingPointDetails`,
+        { TokenId, IpAddress, ResultIndex, TraceId }
+      );
+  
+      console.log("Response from bus boarding points API:", response.data);
+  
+      if (response.data) {
+        dispatch(fetchBusBoardingPointsSuccess(response.data));
+        console.log("Successfully dispatched boarding points data to store");
+      } else {
+        dispatch(fetchBusBoardingPointsFailure("No bus boarding points found"));
+      }
+    } catch (error) {
+      console.error("Error fetching bus boarding points:", error);
+      dispatch(fetchBusBoardingPointsFailure(error.message));
+    }
+  }; 
+   
+  
+  

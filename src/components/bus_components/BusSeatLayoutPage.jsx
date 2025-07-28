@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCouch } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router-dom';
 
 const BusSeatLayoutPage = () => {
+    const navigate = useNavigate();
     const [selectedSeats, setSelectedSeats] = useState([]);
     const [selectedBoardingStation, setSelectedBoardingStation] = useState('');
     const [selectedDroppingStation, setSelectedDroppingStation] = useState('');
@@ -267,7 +269,7 @@ const BusSeatLayoutPage = () => {
                 </div>
 
                 <div className="total-price">Total Price: ₹{ticketPrice}</div>
-                <button className="btn-proceed">Proceed to Payment</button>
+                <button className="btn-proceed" onClick={()=> navigate('/busbookingpage')}>Proceed to Payment</button>
             </div>
         </div>
     );
