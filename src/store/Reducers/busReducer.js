@@ -86,12 +86,13 @@ const busReducer = (state = initialState, action) => {
             };
 
         case FETCH_BUS_SEATLAYOUT_SUCCESS:
+            console.log('Redux: Received busSearchLayoutlist:', action.payload);
             return {
                 ...state,
                 loading: false,
                 busSearchLayoutlist: action.payload,
                 error: null,
-            }
+            };
         case FETCH_BUS_SEATLAYOUT_FAILURE:
             return {
                 ...state,

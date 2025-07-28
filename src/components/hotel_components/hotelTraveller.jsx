@@ -179,7 +179,7 @@ const calculateAge = (dob) => {
           ))}
 
           {/* Children */}
-          {[...Array(room.children)].map((_, i) => (
+          {room.children > 0 && [...Array(room.children)].map((_, i) => (
             <div key={`child-${i}`}>
               <h6>Child {i + 1}</h6>
               <div className="d-flex gap-3 align-items-center">

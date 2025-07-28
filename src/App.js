@@ -111,6 +111,7 @@ import ContactUs from './components/footer/ContactUs';
 import PrivacyPolicyFooter from './components/footer/PrivacyPolicy';
 import TermsAndConditions from './components/footer/TermsAndConditions';
 import CancellationAndRefundPolicy from './components/footer/CancellationAndRefundPolicy';
+import BusSeatLayoutPage from './components/bus_components/BusSeatLayoutPage.jsx';
 
 
 
@@ -216,6 +217,7 @@ function App() {
           <Route path="/home-bus" element={<HomeBus/>} />
           <Route path="/busbookingpage" element={<BusBookingPage/>} />
           <Route path="/bus-list" element={<BusList/>} />
+          <Route path="/bus-seat-layout" element={<BusSeatLayoutPage/>} />
           <Route path="/busBookingpayment" element={<BusBookingPayment/>} />
 
           {/* Cruise Routes */}

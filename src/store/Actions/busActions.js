@@ -1,5 +1,5 @@
 import axios from "axios";
-import { selectBusAuthData } from "../Selectors/busSelectors";
+import { selectBusAuthData,selectBusSearchList } from "../Selectors/busSelectors";
 
 // Action types
 export const FETCH_BUS_CITY_LIST_REQUEST = "FETCH_BUS_CITY_LIST_REQUEST";
@@ -136,7 +136,6 @@ export const fetchBusSearch = (searchParams) => async (dispatch) => {
   }
 };
 
-
 export const FETCH_BUS_SEATLAYOUT_REQUEST = "FETCH_BUS_SEATLAYOUT_REQUEST";
 export const FETCH_BUS_SEATLAYOUT_SUCCESS = "FETCH_BUS_SEATLAYOUT_SUCCESS";
 export const FETCH_BUS_SEATLAYOUT_FAILURE = "FETCH_BUS_SEATLAYOUT_FAILURE";
@@ -152,12 +151,13 @@ export const fetchBusSeatLayoutFailure = (error) => ({
   payload: error,
 });
 export const fetchBusSeatLayout =
-  (TokenId, IpAddress, ResultIndex, TraceId) => async (dispatch) => {
+  (TokenId, IpAddress, ResultIndex, TraceId) => async (dispatch, getState) => {
     console.log("Fetching bus seat layout from API");
 
     try {
       dispatch(fetchBusSeatLayoutRequest());
 
+      // 1. Try with current credentials
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/bus/getBusSeatLayout`,
         { TokenId, IpAddress, ResultIndex, TraceId }
@@ -165,6 +165,50 @@ export const fetchBusSeatLayout =
 
       console.log("Response from bus seat layout API:", response.data);
 
+      // 2. If token/trace error, refresh and retry ONCE
+      if (
+        response.data?.Error?.ErrorCode === 5 ||
+        (response.data?.Error?.ErrorMessage &&
+          (response.data.Error.ErrorMessage.toLowerCase().includes('token') ||
+           response.data.Error.ErrorMessage.toLowerCase().includes('trace')))
+      ) {
+        // Re-authenticate
+        await dispatch(fetchBusAuth());
+        const authData = selectBusAuthData(getState());
+        if (!authData?.TokenId || !authData?.EndUserIp) {
+          throw new Error("Failed to re-authenticate for seat layout");
+        }
+
+        // Re-search to get new TraceId
+        const searchParams = JSON.parse(localStorage.getItem('busSearchparams') || '{}');
+        await dispatch(fetchBusSearch({
+          ...searchParams,
+          TokenId: authData.TokenId,
+          EndUserIp: authData.EndUserIp,
+        }));
+        const searchList = selectBusSearchList(getState());
+        const newTraceId = searchList?.BusSearchResult?.TraceId;
+        if (!newTraceId) throw new Error("Failed to get new TraceId for seat layout");
+
+        // Retry seat layout with new credentials
+        const retryResponse = await axios.post(
+          `${process.env.REACT_APP_API_URL}/bus/getBusSeatLayout`,
+          {
+            TokenId: authData.TokenId,
+            IpAddress: authData.EndUserIp,
+            ResultIndex,
+            TraceId: newTraceId,
+          }
+        );
+        if (retryResponse.data) {
+          dispatch(fetchBusSeatLayoutSuccess(retryResponse.data));
+        } else {
+          dispatch(fetchBusSeatLayoutFailure("No bus seat layout found after retry"));
+        }
+        return;
+      }
+
+      // 3. Normal success
       if (response.data) {
         dispatch(fetchBusSeatLayoutSuccess(response.data));
       } else {
@@ -175,3 +219,5 @@ export const fetchBusSeatLayout =
       dispatch(fetchBusSeatLayoutFailure(error.message));
     }
   };
+
+
