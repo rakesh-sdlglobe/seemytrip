@@ -9,9 +9,11 @@ import {
   selectBusSearchList,
   selectBusSearchLayoutList,
   selectBusBoardingPoints,
+  selectBusLoading,
 } from "../../store/Selectors/busSelectors";
 import SeatSelection from "../seatselection";
 import BusSeatLayoutPage from "./BusSeatLayoutPage";
+
 
 const formatDateTime = (isoString) => {
   if (!isoString) return { time: "-", date: "-" };
@@ -118,13 +120,18 @@ const ResultSkeleton = () => (
   </div>
 );
 
-const BusResultPage = ({ filters, loading }) => {
+const BusResultPage = ({ filters }) => {
   const dispatch = useDispatch();
   const searchList = useSelector(selectBusSearchList);
   const seatLayout = useSelector(selectBusSearchLayoutList);
   const boardingPoints = useSelector(selectBusBoardingPoints);
+  const loading = useSelector(selectBusLoading);
   const busResults = searchList?.BusSearchResult?.BusResults || [];
   const [openSeatIndex, setOpenSeatIndex] = useState(null);
+  
+  // Add state for boarding/dropping points
+  // const [selectedBoardingPoint, setSelectedBoardingPoint] = useState('');
+  // const [selectedDroppingPoint, setSelectedDroppingPoint] = useState('');
 
   const getSearchParams = useCallback(() => {
     return JSON.parse(localStorage.getItem("busSearchparams") || "{}");
@@ -221,6 +228,33 @@ const BusResultPage = ({ filters, loading }) => {
     return result.join(' ');
   };
 
+  // Get boarding and dropping points from current bus data
+  const getBoardingPoints = (bus) => {
+    if (!bus || !bus.BoardingPointsDetails || bus.BoardingPointsDetails.length === 0) {
+      return [];
+    }
+    
+    return bus.BoardingPointsDetails.map(point => ({
+      location: point.CityPointName,
+      time: point.CityPointTime,
+      phone: '7303093510',
+      address: point.CityPointLocation || ''
+    }));
+  };
+
+  const getDroppingPoints = (bus) => {
+    if (!bus || !bus.DroppingPointsDetails || bus.DroppingPointsDetails.length === 0) {
+      return [];
+    }
+    
+    return bus.DroppingPointsDetails.map(point => ({
+      location: point.CityPointName,
+      time: point.CityPointTime,
+      address: point.CityPointLocation || '',
+      note: point.CityPointLocation || ''
+    }));
+  };
+
   const filteredResults = busResults.filter((bus) => {
     if (
       filters.busTypes.length > 0 &&
@@ -288,10 +322,7 @@ const BusResultPage = ({ filters, loading }) => {
                     {/* Left */}
                     <div className="flex-grow-1">
                       <h5 className="fw-bold mb-1">{bus.TravelName}</h5>
-                      {/* <p className="text-muted mb-2">{bus.BusType}</p> */}
-                      
-                        <p className="text-muted mb-2">{cleanBusType(bus.BusType)}</p>
-                      
+                      <p className="text-muted mb-2">{cleanBusType(bus.BusType)}</p>
                       <div className="d-flex align-items-center mb-2">
                         <span
                           className="bg-primary text-white px-2 py-1 rounded me-2"
@@ -352,10 +383,10 @@ const BusResultPage = ({ filters, loading }) => {
                     </div>
                   </div>
 
-                  {/* Seat Selection */}
+                  {/* Seat Selection (now includes boarding points as a tab) */}
                   {openSeatIndex === index && (
                     <div className="mt-3">
-                      <BusSeatLayoutPage seatLayout={seatLayout} />
+                      <BusSeatLayoutPage seatLayout={seatLayout} currentBus={bus} />
                     </div>
                   )}
                 </div>

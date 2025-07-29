@@ -23,6 +23,12 @@ export const FETCH_HOTEL_SERVICETAX_FAILURE = 'FETCH_HOTEL_SERVICETAX_FAILURE';
 export const FETCH_HOTEL_PREBOOK_REQUEST = 'FETCH_HOTEL_PREBOOK_REQUEST';
 export const FETCH_HOTEL_PREBOOK_SUCCESS = 'FETCH_HOTEL_PREBOOK_SUCCESS';
 export const FETCH_HOTEL_PREBOOK_FAILURE = 'FETCH_HOTEL_PREBOOK_FAILURE';
+export const FETCH_HOTEL_PAYMENT_REQUEST = 'FETCH_HOTEL_PAYMENT_REQUEST';
+export const FETCH_HOTEL_PAYMENT_SUCCESS = 'FETCH_HOTEL_PAYMENT_SUCCESS';
+export const FETCH_HOTEL_PAYMENT_FAILURE = 'FETCH_HOTEL_PAYMENT_FAILURE';
+export const FETCH_HOTEL_BOOKED_REQUEST = 'FETCH_HOTEL_BOOKED_REQUEST';
+export const FETCH_HOTEL_BOOKED_SUCCESS = 'FETCH_HOTEL_BOOKED_SUCCESS';
+export const FETCH_HOTEL_BOOKED_FAILURE = 'FETCH_HOTEL_BOOKED_FAILURE';
 
 
 
@@ -307,6 +313,80 @@ export const fetchHotelPrebook = (prebookRequest) => {
 
         } catch (err) {
             dispatch(fetchHotelPrebookFailure(err.message || 'Something went wrong'));
+            throw err;
+        }
+    }
+}
+
+export const fetchHotelPaymentRequest = () => ({
+    type: FETCH_HOTEL_PAYMENT_REQUEST,
+});
+
+export const fetchHotelPaymentSuccess = (data) => ({
+    type: FETCH_HOTEL_PAYMENT_SUCCESS,
+    payload: data,
+});
+
+export const fetchHotelPaymentFailure = (error) => ({
+    type: FETCH_HOTEL_PAYMENT_FAILURE,
+    payload: error,
+}); 
+
+export const fetchHotelPayment = (paymentRequest) => {
+    return async (dispatch) => {
+        dispatch(fetchHotelPaymentRequest());
+        try {
+            const payload = paymentRequest;
+
+            console.log("Final Payload to API for Payment:", payload);
+
+            const response = await axios.post(
+                `http://localhost:3002/api/hotels/processPayment`,
+                payload
+            );
+            console.log("Data from fetchHotelPayment API:", response.data);
+            dispatch(fetchHotelPaymentSuccess(response.data));
+            return response.data;
+
+        } catch (err) {
+            dispatch(fetchHotelPaymentFailure(err.message || 'Something went wrong'));
+            throw err;
+        }
+    }
+}
+
+export const fetchHotelBookedRequest = () => ({
+    type: FETCH_HOTEL_BOOKED_REQUEST,
+});
+
+export const fetchHotelBookedSuccess = (data) => ({
+    type: FETCH_HOTEL_BOOKED_SUCCESS,
+    payload: data,
+});
+
+export const fetchHotelBookedFailure = (error) => ({
+    type: FETCH_HOTEL_BOOKED_FAILURE,
+    payload: error,
+});
+
+export const fetchHotelBooked = (bookedRequest) => {
+    return async (dispatch) => {
+        dispatch(fetchHotelBookedRequest());
+        try {
+            const payload = bookedRequest;
+
+            console.log("Final Payload to API for Booking:", payload);
+
+            const response = await axios.post(
+                `http://localhost:3002/api/hotels/getHotelBooked`,
+                payload
+            );
+            console.log("Data from fetchHotelBooked API:", response.data);
+            dispatch(fetchHotelBookedSuccess(response.data));
+            return response.data;
+
+        } catch (err) {
+            dispatch(fetchHotelBookedFailure(err.message || 'Something went wrong'));
             throw err;
         }
     }

@@ -5,8 +5,8 @@ import TripSecure from './TripSecure';
 import HotelTraveller from './hotelTraveller';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadRazorpayScript } from '../../utils/loadRazorpay';
-import { fetchHotelPrice,fetchHotelServiceTax,fetchHotelPrebook } from '../../store/Actions/hotelActions';
-import { selectHotelPriceDetails,selectHotelServiceTaxDetails, selectHotelPrebookDetails,selectUpdatedPriceLoading,selectPrebookLoading } from '../../store/Selectors/hotelSelectors';
+import { fetchHotelPrice,fetchHotelServiceTax,fetchHotelPrebook,fetchHotelBooked } from '../../store/Actions/hotelActions';
+import { selectHotelPriceDetails,selectHotelServiceTaxDetails, selectHotelPrebookDetails,selectHotelPaymentDetails,selectUpdatedPriceLoading,selectPrebookLoading } from '../../store/Selectors/hotelSelectors';
 export const RAZORPAY_KEY = process.env.REACT_APP_RAZORPAY_KEY_ID ;
 const getBookingData = (hotel) => {
   // Get all booking params from hotelSearchParams in localStorage
@@ -44,6 +44,7 @@ const HotelReview = () => {
   const [showAll, setShowAll] = useState(false);
    const [totalPrice, setTotalPrice] = useState(0);  
     const prebookResponse = useSelector(selectHotelPrebookDetails);
+    const paymentResponse = useSelector(selectHotelPaymentDetails); 
  const [isLoadingPrice, setIsLoadingPrice] = useState(false);
  useEffect(() => {
     if (
@@ -99,9 +100,7 @@ const HotelReview = () => {
       
     }
   }, [pricedetails, dispatch]);
-  useEffect(() => {
-    loadRazorpay()
-  },[]);
+  
   const loadRazorpay = async () => {
     const res = await loadRazorpayScript();
     if (!res) {
@@ -110,21 +109,69 @@ const HotelReview = () => {
     } 
   }
    useEffect(() => {
+     loadRazorpay();
     if (prebookResponse) {
        if (typeof window.Razorpay === 'undefined') {
       alert('Razorpay SDK not available');
       return;
     }
-    
+      if (prebookResponse?.StatusCode !== 'S0001' 
+        || prebookResponse?.BookingsStatus[0]?.DbStatusCode !== 'S0001' 
+        || prebookResponse?.BookingsStatus[0]?.StatusCode !== 'S0001') {
+        alert('Unable to proceed with payment due to booking failed. Please try again later.');
+      return false;
+
+      }
+     let receipt = 'order_' + prebookResponse.ReservationReference;
+     let amount = totalPrice * 100; // Convert to paise
+     let currency = 'INR';
+
       const options = {
       key: RAZORPAY_KEY, // from Razorpay dashboard
-      amount: totalPrice, // amount in paise
-      currency: 'INR',
-      name: 'Your Company',
-      description: 'Test Transaction',
-      order_id: prebookResponse.ReservationReference, // from backend
+      amount: amount, // amount in paise
+      currency: currency,
+      name: 'seemytrip',
+      description: 'Hotel Booking Payment',
+      //order_id: receipt,//prebookResponse.ReservationReference, // from backend
       handler: function (response) {
-        alert(`Payment successful!\nPayment ID: ${response.razorpay_payment_id}`);
+        //alert(`Payment successful!\nPayment ID: ${response.razorpay_payment_id}`);
+        console.log('Payment response:', response);
+        // Optionally: call backend to verify signature and store
+      },
+      theme: {
+        color: '#3399cc',
+      },
+    };
+
+    const paymentObject = new window.Razorpay(options);
+    paymentObject.open();
+    
+      
+    }
+  }, [prebookResponse, totalPrice]);
+
+  useEffect(() => {
+    loadRazorpay();
+    if (paymentResponse) {
+       if (typeof window.Razorpay === 'undefined') {
+      alert('Razorpay SDK not available');
+      return;
+    }
+     let receipt = paymentResponse.receipt;
+     let amount = paymentResponse.amount;
+     let currency = paymentResponse.currency;
+
+      const options = {
+      key: RAZORPAY_KEY, // from Razorpay dashboard
+      amount: amount, // amount in paise
+      currency: currency,
+      name: 'seemytrip',
+      description: 'Hotel Booking Payment',
+      order_id: receipt,//prebookResponse.ReservationReference, // from backend
+      handler: function (response) {
+        //alert(`Payment successful!\nPayment ID: ${response.razorpay_payment_id}`);
+        console.log('Payment response:', response);
+        BookingComplete(totalPrice);
         // Optionally: call backend to verify signature and store
       },
       theme: {
@@ -136,7 +183,13 @@ const HotelReview = () => {
     paymentObject.open();
       
     }
-  }, [prebookResponse, totalPrice]);
+  }, [paymentResponse]);
+
+  const BookingComplete = (total) => {
+    let BookRequest = makeBookingRequest(total);
+    dispatch(fetchHotelBooked(BookRequest));
+
+  }
   const serviceTaxdetails = useSelector(selectHotelServiceTaxDetails);
   const [hotelServiceTax, setHotelServiceTax] = useState(serviceTaxdetails);  
   console.log("Hotel Review Component - serviceTaxdetails:", serviceTaxdetails);
@@ -171,11 +224,8 @@ const sanitizeTravellerDetails = (details) => {
   });
 };
 
-  const  handlePayment = async (total) => 
-    {
-      
-      
-       const { checkInDate, checkOutDate, roomsData } =
+const makeBookingRequest = (total) => {
+const { checkInDate, checkOutDate, roomsData } =
         JSON.parse(localStorage.getItem('hotelSearchParams') || '{}');const sanitizedTravellerDetails = sanitizeTravellerDetails(travellerDetails);
         let LeadTraveller = sanitizedTravellerDetails.find((traveller) => traveller.LeadPax);
       let UniqRef = generateUniqueString();
@@ -204,6 +254,7 @@ const sanitizeTravellerDetails = (details) => {
           BookingDetails.push( {
             "SearchType": "Hotel",
             "UniqueReferencekey": UniqRef,
+             "BookingId": prebookResponse?.BookingsStatus.length > 0 ? prebookResponse?.BookingsStatus[0]?.BookingId : null,
             "HotelServiceDetail": {
                 "UniqueReferencekey": UniqRef,
                 "ProviderName": hotelService.ProviderName,
@@ -219,23 +270,31 @@ const sanitizeTravellerDetails = (details) => {
                 "MealCode": hotelService.Rooms[0].BoardCode,
                 "PaxDetail": PaxDetails,
                 "BookCurrency": "INR",
-                "RoomDetails": RoomDetails
+                "RoomDetails": RoomDetails,
+               
             }
         })
 
         let PreBookRequest = {
               "Credential": null,
+              "ReservationId": prebookResponse?.ReservationId || null,
               "ReservationName": LeadTraveller?.Forename + " " + LeadTraveller?.Surname,
               "ReservationArrivalDate": checkInDate,
               "ReservationCurrency": "INR",
               "ReservationAmount": total,
               "ReservationClientReference": null,
               "ReservationRemarks": null,
+              "MemberId": "test@test.com", // pass user email id
+              "TempMemberId": "test@test.com", // pass user email id
               "BookingDetails": BookingDetails
             }
-            console.log("PreBook Request:", PreBookRequest);
+            return PreBookRequest;
+}
+  const  handlePayment = async (total) => 
+    {
+      
+      let PreBookRequest = makeBookingRequest(total);
       dispatch(fetchHotelPrebook(PreBookRequest));
-
       setTotalPrice(total);
   }
    console.log("Hotel Review Component - prebookResponse:", prebookResponse);

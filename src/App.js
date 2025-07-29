@@ -8,7 +8,6 @@ import Blogdetail from './components/blog-detail';
 import BookingPage2 from './components/bookingpage-02.jsx';
 import BookingPage3 from './components/bookingpage-03.jsx';
 import BookingPageSuccess from './components/bookingpage-success';
-import { BusBookingPage } from './components/bus_components/bus_booking_page.jsx';
 import { default as BusBookingPayment, default as CruiseBookingPayment } from './components/bus_components/bus_booking_payment.jsx';
 import BusList from './components/bus_components/bus_list_page.jsx';
 import BtBookingPayment from './components/business_tourism/booking_payment-page.jsx';
@@ -112,7 +111,7 @@ import PrivacyPolicyFooter from './components/footer/PrivacyPolicy';
 import TermsAndConditions from './components/footer/TermsAndConditions';
 import CancellationAndRefundPolicy from './components/footer/CancellationAndRefundPolicy';
 import BusSeatLayoutPage from './components/bus_components/BusSeatLayoutPage.jsx';
-
+import  {BusBookingPage}  from './components/bus_components/bus_booking_detail_page.jsx';
 
 
 function App() {

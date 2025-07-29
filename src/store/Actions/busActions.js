@@ -262,5 +262,42 @@ export const fetchBusSeatLayout =
     }
   }; 
    
-  
-  
+  export const FETCH_BUS_BLOCK_REQUEST = "FETCH_BUS_BLOCK_REQUEST";
+  export const FETCH_BUS_BLOCK_SUCCESS = "FETCH_BUS_BLOCK_SUCCESS";
+  export const FETCH_BUS_BLOCK_FAILURE = "FETCH_BUS_BLOCK_FAILURE";
+  export const fetchBusBlockRequest = () => ({
+    type: FETCH_BUS_BLOCK_REQUEST,
+  });
+  export const fetchBusBlockSuccess = (block) => ({
+    type: FETCH_BUS_BLOCK_SUCCESS,
+    payload: block,
+  });
+  export const fetchBusBlockFailure = (error) => ({
+    type: FETCH_BUS_BLOCK_FAILURE,
+    payload: error,
+  });
+  export const fetchBusBlock = (blockData) => async (dispatch, getState) => {
+    console.log("Fetching bus block from API");
+    console.log("Request data:", blockData);
+
+    try {
+      dispatch(fetchBusBlockRequest());
+
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/bus/getBlock`,
+        blockData
+      );
+
+      console.log("Response from bus block API:", response.data);
+
+      if (response.data) {
+        dispatch(fetchBusBlockSuccess(response.data));
+        console.log("Successfully dispatched block data to store");
+      } else {    
+        dispatch(fetchBusBlockFailure("No bus block found"));
+      }
+    } catch (error) {
+      console.error("Error fetching bus block:", error);
+      dispatch(fetchBusBlockFailure(error.message));
+    }
+  };

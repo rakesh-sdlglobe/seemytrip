@@ -5,3 +5,4 @@ export const selectBusError = (state) => state.bus.error;
 export const selectBusSearchList = (state) => state.bus.BusSearchList;
 export const selectBusSearchLayoutList = (state) => state.bus.busSearchLayoutlist;
 export const selectBusBoardingPoints = (state) => state.bus.busBoardingPoints;
+export const selectBusBlock = (state) => state.bus.busBlock;
