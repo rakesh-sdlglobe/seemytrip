@@ -21,7 +21,6 @@ const defaultFilters = {
 };
 
 const BusList = () => {
-    const [loading, setLoading] = useState(false);
     const [filters, setFilters] = useState(defaultFilters);
 
     // Handler for filter changes
@@ -76,14 +75,11 @@ const BusList = () => {
                                 onClear={handleClear}
                                 minPrice={minPrice}
                                 maxPrice={maxPrice}
-                                loading={loading}
-                                setLoading={setLoading}
                             />
 
                             {/* All List */}
                             <BusResultPage
                                 filters={filters}
-                                loading={loading}
                             />
                         </div>
                     </div>

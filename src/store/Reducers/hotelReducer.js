@@ -20,7 +20,13 @@ import {
     FETCH_HOTEL_SERVICETAX_FAILURE,
     FETCH_HOTEL_PREBOOK_REQUEST,
     FETCH_HOTEL_PREBOOK_SUCCESS,
-    FETCH_HOTEL_PREBOOK_FAILURE
+    FETCH_HOTEL_PREBOOK_FAILURE,
+    FETCH_HOTEL_PAYMENT_REQUEST,
+    FETCH_HOTEL_PAYMENT_SUCCESS,
+    FETCH_HOTEL_PAYMENT_FAILURE,
+    FETCH_HOTEL_BOOKED_REQUEST,
+    FETCH_HOTEL_BOOKED_SUCCESS,
+    FETCH_HOTEL_BOOKED_FAILURE
 } from "../Actions/hotelActions";
 
 
@@ -32,11 +38,15 @@ const initialState = {
     ServiceTaxLoading : false,
     UpdatedPriceLoading : false,
     prebookLoading : false,
+    paymentLoading : false,
+    bookedLoading : false,
     error: null,
     details: null,
     UpdatedPrice: null,
     ServiceTax:null,
     PreBook: null,
+    Payment:null,
+    Booked: null,
     CityHotels: [],
     HotelsList: [],
     HotelImages: [],
@@ -133,6 +143,18 @@ export const hotelReducer = (state = initialState, action) => {
             return { ...state, prebookLoading: false, PreBook: action.payload }
         case FETCH_HOTEL_PREBOOK_FAILURE:
             return { ...state, prebookLoading: false, error: action.payload }
+        case FETCH_HOTEL_PAYMENT_REQUEST:
+            return { ...state, paymentLoading: true, error: null }
+        case FETCH_HOTEL_PAYMENT_SUCCESS:
+            return { ...state, paymentLoading: false, Payment: action.payload }
+        case FETCH_HOTEL_PAYMENT_FAILURE:
+            return { ...state, paymentLoading: false, error: action.payload }
+        case FETCH_HOTEL_BOOKED_REQUEST:
+            return { ...state, bookedLoading: true, error: null }
+        case FETCH_HOTEL_BOOKED_SUCCESS:
+            return { ...state, bookedLoading: false, Booked: action.payload }
+        case FETCH_HOTEL_BOOKED_FAILURE:
+            return { ...state, bookedLoading: false, error: action.payload }
         default:
             return state;
     }

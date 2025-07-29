@@ -14,6 +14,9 @@ import {
     FETCH_BUS_BOARDING_POINTS_REQUEST,
     FETCH_BUS_BOARDING_POINTS_SUCCESS,
     FETCH_BUS_BOARDING_POINTS_FAILURE,
+    FETCH_BUS_BLOCK_REQUEST,
+    FETCH_BUS_BLOCK_SUCCESS,
+    FETCH_BUS_BLOCK_FAILURE,
 } from '../Actions/busActions';
 
 const initialState = {
@@ -31,7 +34,8 @@ const busReducer = (state = initialState, action) => {
         case FETCH_BUS_CITY_LIST_REQUEST:
         case FETCH_BUS_SEARCH_REQUEST:
         case FETCH_BUS_SEATLAYOUT_REQUEST:
-        case FETCH_BUS_BOARDING_POINTS_REQUEST:    
+        case FETCH_BUS_BOARDING_POINTS_REQUEST: 
+        case FETCH_BUS_BLOCK_REQUEST:
             return {
                 ...state,
                 loading: true,
@@ -118,7 +122,19 @@ const busReducer = (state = initialState, action) => {
                 loading: false,
                 error: action.payload,
             };
-           
+        case FETCH_BUS_BLOCK_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                busBlock: action.payload,
+                error: null,
+            };
+        case FETCH_BUS_BLOCK_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                error: action.payload,
+            };
         default:
             return state;
     }
