@@ -17,7 +17,7 @@ export const selectSessionId = (state) => state.hotels.HotelsList.SessionId;
 export const selectHotelsImages = (state) => state.hotels.HotelImages;
 export const selectHotelDetails = (state) => state.hotels.details;
 export const selectHotelDetailsImages = (state) => state.hotels.details?.HotelDetail?.HotelImages || [];
-export const selectHotelPriceDetails = (state) => state.hotels?.UpdatedPrice?.HotelDetailResponse;
+export const selectHotelPriceDetails = (state) => state.hotels?.UpdatedPrice;
 export const selectHotelServiceTaxDetails = (state) => state.hotels?.ServiceTax;
 export const selectHotelPrebookDetails = (state) => state.hotels?.PreBook;
 export const selectHotelPaymentDetails = (state) => state.hotels?.Payment;
