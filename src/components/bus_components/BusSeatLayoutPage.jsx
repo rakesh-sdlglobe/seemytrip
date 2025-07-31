@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   FaMale,
@@ -6,9 +6,9 @@ import {
   FaUser,
   FaBus,
   FaMapMarkerAlt,
-  FaClock,
-  FaPhone,
-  FaLocationArrow,
+  FaChair,
+  FaExclamationTriangle,
+  FaTimes,
 } from "react-icons/fa";
 import { fetchBusSeatLayout } from "../../store/Actions/busActions";
 import {
@@ -16,10 +16,12 @@ import {
   selectBusSearchList,
   selectBusSearchLayoutList,
   selectBusLoading,
+  selectBusBoardingPoints,
 } from "../../store/Selectors/busSelectors";
 import { useNavigate } from "react-router-dom";
 
 import BoardingPointsPage from "./BoardingPointsPage";
+import BusBookingModal from "./BusBookingModal";
 
 const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
   const dispatch = useDispatch();
@@ -29,21 +31,19 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
   const loading = useSelector(selectBusLoading);
   const navigate = useNavigate();
   const [selectedSeats, setSelectedSeats] = useState([]);
-  const [selectedBoarding, setSelectedBoarding] = useState(
-    localStorage.getItem("selectedBoardingPoint") || ""
-  );
-  const [selectedDropping, setSelectedDropping] = useState(
-    localStorage.getItem("selectedDroppingPoint") || ""
-  );
+  const [selectedBoarding, setSelectedBoarding] = useState("");
+  const [selectedDropping, setSelectedDropping] = useState("");
   const [activeTab, setActiveTab] = useState("seat");
   const [hoveredSeat, setHoveredSeat] = useState(null);
   const [priceFilter, setPriceFilter] = useState("All");
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
 
   // Save boarding point to localStorage when it changes
   useEffect(() => {
     if (selectedBoarding) {
       localStorage.setItem("selectedBoardingPoint", selectedBoarding);
-      console.log("Saved boarding point to localStorage:", selectedBoarding);
     }
   }, [selectedBoarding]);
 
@@ -51,23 +51,20 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
   useEffect(() => {
     if (selectedDropping) {
       localStorage.setItem("selectedDroppingPoint", selectedDropping);
-      console.log("Saved dropping point to localStorage:", selectedDropping);
     }
   }, [selectedDropping]);
-
-  // Debug: Log current values
-  useEffect(() => {
-    console.log("Current selectedBoarding:", selectedBoarding);
-    console.log("Current selectedDropping:", selectedDropping);
-  }, [selectedBoarding, selectedDropping]);
 
   // Get search parameters from localStorage
   const getSearchParams = () => {
     return JSON.parse(localStorage.getItem("busSearchparams") || "{}");
   };
 
-  // Fetch seat layout data when component mounts
+  // Clear old localStorage data and fetch seat layout data when component mounts
   useEffect(() => {
+    // Clear old boarding and dropping points from localStorage
+    localStorage.removeItem("selectedBoardingPoint");
+    localStorage.removeItem("selectedDroppingPoint");
+    
     const searchParams = getSearchParams();
     const { TokenId, EndUserIp } = searchParams;
 
@@ -90,22 +87,38 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
     }
   }, [dispatch, searchList]);
 
-  // Process seat layout data from API
-  const processSeatLayoutData = () => {
-    console.log("Processing seat layout data:", seatLayoutData);
+  // Determine seat status from API seat object
+  const getSeatStatusFromAPI = (seat) => {
+    // Determine if it's a seater or sleeper based on SeatType
+    const isSeater = seat.SeatType === 1 || seat.SeatType === "1" || seat.SeatType === "Seater";
+    const seatType = isSeater ? "Seater" : "Sleeper";
+    
+    if (seat.IsBooked || seat.Status === "Booked") return `booked${seatType}`;
+    if (seat.Gender === "Male") return `male${seatType}`;
+    if (seat.Gender === "Female") return `female${seatType}`;
+    if (seat.IsAvailable === false) return `booked${seatType}`;
+    return `available${seatType}`;
+  };
 
+  // Determine seat status from HTML class
+  const getSeatStatusFromClass = (className) => {
+    if (className.includes("bhseat")) return "bookedSleeper";
+    if (className.includes("hseat")) return "availableSleeper";
+    return "availableSleeper";
+  };
+
+  // Process seat layout data from API
+  const processSeatLayoutData = useMemo(() => {
     if (
       !seatLayoutData ||
       !seatLayoutData.GetBusSeatLayOutResult ||
       !seatLayoutData.GetBusSeatLayOutResult.SeatLayoutDetails
     ) {
-      console.log("No seat layout data found, using fallback");
       return { upperDeck: [], lowerDeck: [], prices: ["All"] };
     }
 
     const seatLayoutDetails =
       seatLayoutData.GetBusSeatLayOutResult.SeatLayoutDetails;
-    console.log("Seat layout details:", seatLayoutDetails);
 
     const seatLayout = seatLayoutDetails.SeatLayout;
     const upperDeck = [];
@@ -114,25 +127,18 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
 
     // Helper function to extract price value
     const extractPrice = (priceData) => {
-      console.log(
-        "Extracting price from:",
-        priceData,
-        "Type:",
-        typeof priceData
-      );
       if (typeof priceData === "number") return priceData;
       if (typeof priceData === "string") return parseFloat(priceData) || 0;
       if (priceData && typeof priceData === "object") {
         // Handle price object with multiple properties
-        const extractedPrice =
+        return (
           priceData.PublishedPriceRoundedOff ||
           priceData.OfferedPriceRoundedOff ||
           priceData.BasePrice ||
           priceData.PublishedPrice ||
           priceData.OfferedPrice ||
-          0;
-        console.log("Extracted price from object:", extractedPrice);
-        return extractedPrice;
+          0
+        );
       }
       return 0;
     };
@@ -143,26 +149,10 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
       seatLayout.SeatDetails &&
       Array.isArray(seatLayout.SeatDetails)
     ) {
-      console.log("Processing SeatDetails array:", seatLayout.SeatDetails);
       seatLayout.SeatDetails.forEach((row, rowIndex) => {
         if (Array.isArray(row)) {
           row.forEach((seat, colIndex) => {
             if (seat) {
-              console.log("Processing seat:", seat);
-              console.log("Original seat data structure:", {
-                ColumnNo: seat.ColumnNo,
-                Height: seat.Height,
-                IsLadiesSeat: seat.IsLadiesSeat,
-                IsMalesSeat: seat.IsMalesSeat,
-                IsUpper: seat.IsUpper,
-                RowNo: seat.RowNo,
-                SeatIndex: seat.SeatIndex,
-                SeatName: seat.SeatName,
-                SeatStatus: seat.SeatStatus,
-                SeatType: seat.SeatType,
-                Width: seat.Width,
-                Price: seat.Price
-              });
               const priceValue = extractPrice(seat.Price || seat.Fare);
               const seatData = {
                 id: `${rowIndex}-${colIndex}`,
@@ -172,6 +162,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
                   `${rowIndex + 1}${String.fromCharCode(65 + colIndex)}`,
                 price: priceValue,
                 status: getSeatStatusFromAPI(seat),
+                seatType: seat.SeatType === 1 || seat.SeatType === "1" || seat.SeatType === "Seater" ? "Seater" : "Sleeper",
                 seatInfo: seat, // Store the original seat data
                 row: rowIndex,
                 col: colIndex,
@@ -200,22 +191,15 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
       lowerDeck.length === 0 &&
       seatLayoutDetails.HTMLLayout
     ) {
-      console.log("No seats found in SeatDetails, parsing HTMLLayout");
       return parseHTMLSeatLayout(seatLayoutDetails.HTMLLayout, prices);
     }
 
-    console.log(
-      "Processed seats - Upper deck:",
-      upperDeck.length,
-      "Lower deck:",
-      lowerDeck.length
-    );
     return {
       upperDeck,
       lowerDeck,
       prices: Array.from(prices).sort((a, b) => (a === "All" ? -1 : a - b)),
     };
-  };
+  }, [seatLayoutData]);
 
   // Parse HTML layout as fallback
   const parseHTMLSeatLayout = (htmlLayout, prices) => {
@@ -254,6 +238,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
         label: seatNumber,
         price: seatPrice,
         status: getSeatStatusFromClass(className),
+        seatType: "Sleeper", // Default to sleeper for HTML layout
         seatInfo: { id, className, seatNumber, price: seatPrice },
       };
 
@@ -276,23 +261,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
     };
   };
 
-  // Determine seat status from API seat object
-  const getSeatStatusFromAPI = (seat) => {
-    if (seat.IsBooked || seat.Status === "Booked") return "bookedSleeper";
-    if (seat.Gender === "Male") return "maleSleeper";
-    if (seat.Gender === "Female") return "femaleSleeper";
-    if (seat.IsAvailable === false) return "bookedSleeper";
-    return "availableSleeper";
-  };
-
-  // Determine seat status from HTML class
-  const getSeatStatusFromClass = (className) => {
-    if (className.includes("bhseat")) return "bookedSleeper";
-    if (className.includes("hseat")) return "availableSleeper";
-    return "availableSleeper";
-  };
-
-  const { upperDeck, lowerDeck, prices } = processSeatLayoutData();
+  const { upperDeck, lowerDeck, prices } = processSeatLayoutData;
 
   const allSeats = [...upperDeck, ...lowerDeck];
 
@@ -312,7 +281,6 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
     if (seatLayoutData && seatLayoutData.GetBusSeatLayOutResult) {
       const originalSeatLayout = seatLayoutData.GetBusSeatLayOutResult.SeatLayoutDetails;
       localStorage.setItem("originalSeatLayoutData", JSON.stringify(originalSeatLayout));
-      console.log("Stored original seat layout data:", originalSeatLayout);
     }
     
     // Also store simplified seat data for compatibility
@@ -323,9 +291,9 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
         rowNo: s.rowNo || "001",
         columnNo: s.columnNo || "001",
         isUpper: s.isUpper || false,
-        isLadiesSeat: s.status === "femaleSleeper",
-        isMalesSeat: s.status === "maleSleeper",
-        seatType: s.seatType || 1,
+        isLadiesSeat: s.status === "femaleSleeper" || s.status === "femaleSeater",
+        isMalesSeat: s.status === "maleSleeper" || s.status === "maleSeater",
+        seatType: s.seatType || "Sleeper",
         price: s.price,
         height: s.height || 1,
         width: s.width || 1,
@@ -338,11 +306,13 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
   const getSeatClass = (seat) => {
     const base = "seat";
     const isHighlighted = priceFilter !== "All" && seat.price === priceFilter;
+    const seatTypeClass = seat.seatType === "Seater" ? "seater" : "sleeper";
+    
     if (selectedSeats.includes(seat.label))
-      return `${base} selected ${seat.status} ${
+      return `${base} selected ${seat.status} ${seatTypeClass} ${
         isHighlighted ? "highlight" : ""
       }`;
-    return `${base} ${seat.status} ${isHighlighted ? "highlight" : ""}`;
+    return `${base} ${seat.status} ${seatTypeClass} ${isHighlighted ? "highlight" : ""}`;
   };
 
   const total = selectedSeats.reduce((acc, label) => {
@@ -368,11 +338,21 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
         const deckPrefix = upperDeck.includes(seat) ? "U" : "L";
         const seatNumber = `${deckPrefix}${seat.label}`;
 
-        // Determine which icon to show based on seat status
+        // Determine which icon to show based on seat status and type
         const getSeatIcon = () => {
-          if (seat.status === "maleSleeper")
+          // For seater seats, show chair icon
+          if (seat.seatType === "Seater") {
+            if (seat.status === "maleSeater")
+              return <FaMale className="seat-icon" />;
+            if (seat.status === "femaleSeater")
+              return <FaFemale className="seat-icon" />;
+            return <FaChair className="seat-icon" />;
+          }
+          
+          // For sleeper seats, show user icon
+          if (seat.status === "maleSleeper" || seat.status === "maleSeater")
             return <FaMale className="seat-icon" />;
-          if (seat.status === "femaleSleeper")
+          if (seat.status === "femaleSleeper" || seat.status === "femaleSeater")
             return <FaFemale className="seat-icon" />;
           return <FaUser className="seat-icon" />;
         };
@@ -405,59 +385,42 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
   );
 
   // Get boarding and dropping points from current bus data
-  const getBoardingPoints = () => {
-    console.log("Current bus prop:", currentBus);
-    console.log("BoardingPointsDetails:", currentBus?.BoardingPointsDetails);
-
+  const getBoardingPoints = useMemo(() => {
     if (
       !currentBus ||
       !currentBus.BoardingPointsDetails ||
       currentBus.BoardingPointsDetails.length === 0
     ) {
-      console.log("No boarding points data found, returning empty array");
       return [];
     }
 
-    const boardingPoints = currentBus.BoardingPointsDetails.map((point) => ({
+    return currentBus.BoardingPointsDetails.map((point) => ({
       location: point.CityPointName,
       time: point.CityPointTime,
       phone: "7303093510", // Default phone number since it's not in the data
       address: point.CityPointLocation || "",
     }));
+  }, [currentBus]);
 
-    console.log("Processed boarding points:", boardingPoints);
-    return boardingPoints;
-  };
-
-  const getDroppingPoints = () => {
-    console.log("DroppingPointsDetails:", currentBus?.DroppingPointsDetails);
-
+  const getDroppingPoints = useMemo(() => {
     if (
       !currentBus ||
       !currentBus.DroppingPointsDetails ||
       currentBus.DroppingPointsDetails.length === 0
     ) {
-      console.log("No dropping points data found, returning empty array");
       return [];
     }
 
-    const droppingPoints = currentBus.DroppingPointsDetails.map((point) => ({
+    return currentBus.DroppingPointsDetails.map((point) => ({
       location: point.CityPointName,
       time: point.CityPointTime,
       address: point.CityPointLocation || "",
       note: point.CityPointLocation || "",
     }));
+  }, [currentBus]);
 
-    console.log("Processed dropping points:", droppingPoints);
-    return droppingPoints;
-  };
-
-  const boardingPoints = getBoardingPoints();
-  const droppingPoints = getDroppingPoints();
-
-  // Debug logging
-  console.log("Component - boardingPoints:", boardingPoints);
-  console.log("Component - droppingPoints:", droppingPoints);
+  const boardingPoints = getBoardingPoints;
+  const droppingPoints = getDroppingPoints;
 
   if (loading) {
     return (
@@ -494,37 +457,37 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
           padding-bottom: 10px;
         }
 
-        .tabs > div {
-          padding: 10px 20px;
-          border-radius: 8px;
-          transition: all 0.3s ease;
-          display: flex;
-          align-items: center;
-          gap: 8px;
+        .tabs div {
+          padding: 12px 24px;
+          border-bottom: 3px solid transparent;
           font-weight: 500;
           color: #6c757d;
+          transition: all 0.3s ease;
+          border-radius: 8px 8px 0 0;
         }
 
-        .tabs > div.active {
-          background: #007bff;
-          color: white;
+        .tabs div:hover {
+          color: #cd2c22;
+          background: rgba(205, 44, 34, 0.1);
         }
 
-        .tabs > div:hover:not(.active) {
-          background: #f8f9fa;
-          color: #495057;
+        .tabs .active {
+          border-bottom: 3px solid #cd2c22;
+          font-weight: 600;
+          color: #cd2c22;
+          background: rgba(205, 44, 34, 0.1);
         }
 
-        .tabs > div.disabled {
-          opacity: 0.5;
+        .tabs div.disabled {
+          color: #adb5bd;
           cursor: not-allowed;
+          opacity: 0.6;
         }
 
         .seat {
           padding: 12px 8px;
           width: 40px;
           height: 55px;
-          border-radius: 8px;
           text-align: center;
           font-size: 12px;
           font-weight: 600;
@@ -537,19 +500,65 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
           border: 2px solid transparent;
         }
 
-        .maleSleeper {
+        /* Seater seat design - rectangular with rounded corners */
+        .seat.seater {
+          border-radius: 8px;
+          width: 45px;
+          height: 50px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Sleeper seat design - more rounded, pillow-like appearance */
+        .seat.sleeper {
+          border-radius: 12px 12px 8px 8px;
+          width: 42px;
+          height: 58px;
+          position: relative;
+          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .seat.sleeper::before {
+          content: '';
+          position: absolute;
+          top: 2px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 30px;
+          height: 8px;
+          background: inherit;
+          border-radius: 4px;
+          opacity: 0.8;
+        }
+
+        /* Add subtle texture to sleeper seats */
+        .seat.sleeper::after {
+          content: '';
+          position: absolute;
+          top: 12px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 20px;
+          height: 2px;
+          background: rgba(0, 0, 0, 0.1);
+          border-radius: 1px;
+        }
+
+        /* Male seats - both seater and sleeper */
+        .maleSleeper, .maleSeater {
           background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
           border: 2px solid #28a745;
           color: #155724;
         }
 
-        .femaleSleeper {
+        /* Female seats - both seater and sleeper */
+        .femaleSleeper, .femaleSeater {
           background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
           border: 2px solid #e91e63;
           color: #c2185b;
         }
 
-        .bookedSleeper {
+        /* Booked seats - both seater and sleeper */
+        .bookedSleeper, .bookedSeater {
           background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
           border: 2px solid #6c757d;
           color: #6c757d;
@@ -557,7 +566,8 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
           opacity: 0.7;
         }
 
-        .femaleBookedSleeper {
+        /* Female booked seats - both seater and sleeper */
+        .femaleBookedSleeper, .femaleBookedSeater {
           background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
           border: 2px solid #e91e63;
           color: #c2185b;
@@ -565,13 +575,14 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
           opacity: 0.7;
         }
 
-        .availableSleeper {
+        /* Available seats - both seater and sleeper */
+        .availableSleeper, .availableSeater {
           background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
           border: 2px solid #007bff;
           color: #0056b3;
         }
 
-        .availableSleeper:hover {
+        .availableSleeper:hover, .availableSeater:hover {
           transform: translateY(-2px);
           box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
         }
@@ -617,6 +628,11 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
 
         .seat-icon {
           font-size: 14px;
+        }
+
+        /* Make chair icon slightly smaller for seater seats */
+        .seat.seater .seat-icon {
+          font-size: 12px;
         }
 
         .seat-tooltip {
@@ -681,6 +697,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
 
         .filters .btn-outline-secondary:hover {
           background-color: #6c757d;
+          color: white;
           border-color: #6c757d;
         }
 
@@ -695,7 +712,10 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
         }
 
         .deck-container {
+          display: flex;
+          flex-direction: column;
           background: white;
+          align-items: center;
           border-radius: 12px;
           padding: 20px;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -764,6 +784,49 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
           display: flex;
           align-items: center;
           justify-content: center;
+          font-size: 12px;
+          font-weight: 600;
+          border: 2px solid transparent;
+        }
+
+        .seat-instructions .seat.seater {
+          width: 45px;
+          height: 50px;
+          border-radius: 8px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .seat-instructions .seat.sleeper {
+          width: 42px;
+          height: 58px;
+          border-radius: 12px 12px 8px 8px;
+          position: relative;
+          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .seat-instructions .seat.sleeper::before {
+          content: '';
+          position: absolute;
+          top: 2px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 30px;
+          height: 8px;
+          background: inherit;
+          border-radius: 4px;
+          opacity: 0.8;
+        }
+
+        .seat-instructions .seat.sleeper::after {
+          content: '';
+          position: absolute;
+          top: 12px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 20px;
+          height: 2px;
+          background: rgba(0, 0, 0, 0.1);
+          border-radius: 1px;
         }
 
         .available-seat {
@@ -775,6 +838,11 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
         .seat-type-icon {
           font-size: 16px;
           color: inherit;
+        }
+
+        /* Adjust icon size for seater seats in instructions */
+        .seat-instructions .seat.seater .seat-type-icon {
+          font-size: 14px;
         }
 
         .total-section {
@@ -902,10 +970,12 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
         .payment-summary .btn-danger {
           background: linear-gradient(135deg, #cd2c22 0%, #b30000 100%);
           border: none;
+          color: white;
         }
 
         .payment-summary .btn-danger:hover {
           background: linear-gradient(135deg, #b30000 0%, #8b0000 100%);
+          color: white;
         }
 
         .payment-summary .btn-secondary {
@@ -917,6 +987,131 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
         .payment-summary .btn-secondary:hover {
           background: #6c757d;
           transform: none;
+        }
+        
+        .btn-danger:disabled {
+          background: #6c757d !important;
+          border-color: #6c757d !important;
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+        
+        .btn-danger:disabled:hover {
+          background: #6c757d !important;
+          border-color: #6c757d !important;
+          box-shadow: none !important;
+        }
+
+        /* Book Now button specific styles */
+        .btn-danger {
+          color: white !important;
+          background: linear-gradient(135deg, #cd2c22 0%, #b30000 100%) !important;
+          border: none !important;
+          transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+          color: white !important;
+          background: linear-gradient(135deg, #b30000 0%, #8b0000 100%) !important;
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(205, 44, 34, 0.3);
+        }
+
+        .btn-danger:focus {
+          color: white !important;
+          background: linear-gradient(135deg, #b30000 0%, #8b0000 100%) !important;
+          box-shadow: 0 0 0 0.2rem rgba(205, 44, 34, 0.25);
+        }
+
+        /* Custom Alert Styles */
+        .custom-alert-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 10000;
+        }
+
+        .custom-alert {
+          background: white;
+          border-radius: 12px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+          max-width: 400px;
+          width: 90%;
+          border: 2px solid #cd2c22;
+        }
+
+        .alert-header {
+          background: #cd2c22;
+          color: white;
+          padding: 15px 20px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          border-radius: 10px 10px 0 0;
+        }
+
+        .alert-icon {
+          font-size: 18px;
+          color: white;
+        }
+
+        .alert-title {
+          font-weight: 600;
+          font-size: 16px;
+          flex: 1;
+        }
+
+        .alert-close-btn {
+          background: none;
+          border: none;
+          color: white;
+          font-size: 16px;
+          cursor: pointer;
+          padding: 5px;
+        }
+
+        .alert-body {
+          padding: 20px;
+          color: #333;
+          font-size: 14px;
+          text-align: center;
+        }
+
+        .alert-footer {
+          padding: 15px 20px 20px;
+          text-align: center;
+        }
+
+        .alert-ok-btn {
+          background: #cd2c22;
+          color: white;
+          border: none;
+          padding: 10px 30px;
+          border-radius: 6px;
+          font-weight: 600;
+          cursor: pointer;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+          from { 
+            opacity: 0;
+            transform: translateY(-50px) scale(0.9);
+          }
+          to { 
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
         }
 
         @media (max-width: 768px) {
@@ -983,7 +1178,8 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
             if (selectedSeats.length > 0) {
               setActiveTab("boarding");
             } else {
-              alert("Please select at least one seat to continue.");
+              setAlertMessage("Please select at least one seat to continue.");
+              setShowAlert(true);
             }
           }}
         >
@@ -1017,11 +1213,11 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
                       <FaBus className="text-primary" />
                       Lower Deck
                     </h4>
-                    <div className="d-flex gap-4">
-                      <div>{renderRow(lowerDeck, [2, 5, 8, 11, 14, 17])}</div>
-                      <div className="d-flex gap-2">
-                        {renderRow(lowerDeck, [1, 4, 7, 10, 13, 16])}
-                        {renderRow(lowerDeck, [0, 3, 6, 9, 12, 15])}
+                    <div className="d-flex gap-5">
+                      <div>{renderRow(lowerDeck, [2, 5, 8, 11, 14, 17,20])}</div>
+                      <div className="d-flex gap-3">
+                        {renderRow(lowerDeck, [1, 4, 7, 10, 13, 16,19])}
+                        {renderRow(lowerDeck, [0, 3, 6, 9, 12, 15,18])}
                       </div>
                     </div>
                   </div>
@@ -1032,11 +1228,11 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
                       <FaBus className="text-primary" />
                       Upper Deck
                     </h4>
-                    <div className="d-flex gap-4">
-                      <div>{renderRow(upperDeck, [2, 5, 8, 11, 14, 17])}</div>
-                      <div className="d-flex gap-2">
-                        {renderRow(upperDeck, [1, 4, 7, 10, 13, 16])}
-                        {renderRow(upperDeck, [0, 3, 6, 9, 12, 15])}
+                    <div className="d-flex gap-5">
+                      <div>{renderRow(upperDeck, [2, 5, 8, 11, 14, 17,20])}</div>
+                      <div className="d-flex gap-3">
+                        {renderRow(upperDeck, [1, 4, 7, 10, 13, 16,19])}
+                        {renderRow(upperDeck, [0, 3, 6, 9, 12, 15,18])}
                       </div>
                     </div>
                   </div>
@@ -1052,9 +1248,17 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
                 <table className="table table-borderless">
                   <tbody>
                     <tr>
-                      <td>Available</td>
+                      <td>Available Seater</td>
                       <td>
-                        <div className="available-seat">
+                        <div className="available-seat seat seater availableSeater">
+                          <FaChair className="seat-type-icon" />
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Available Sleeper</td>
+                      <td>
+                        <div className="available-seat seat sleeper availableSleeper">
                           <FaUser className="seat-type-icon" />
                         </div>
                       </td>
@@ -1062,7 +1266,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
                     <tr>
                       <td>Male Only</td>
                       <td>
-                        <div className="maleSleeper">
+                        <div className="maleSleeper seat sleeper">
                           <FaMale className="seat-type-icon" />
                         </div>
                       </td>
@@ -1070,7 +1274,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
                     <tr>
                       <td>Female Only</td>
                       <td>
-                        <div className="femaleSleeper">
+                        <div className="femaleSleeper seat sleeper">
                           <FaFemale className="seat-type-icon" />
                         </div>
                       </td>
@@ -1078,7 +1282,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
                     <tr>
                       <td>Booked</td>
                       <td>
-                        <div className="bookedSleeper">
+                        <div className="bookedSleeper seat sleeper">
                           <FaUser className="seat-type-icon" />
                         </div>
                       </td>
@@ -1086,7 +1290,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
                     <tr>
                       <td>Selected</td>
                       <td>
-                        <div className="selected">
+                        <div className="selected seat sleeper">
                           <FaUser className="seat-type-icon" />
                         </div>
                       </td>
@@ -1116,9 +1320,9 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
             right: 0,
             bottom: 0,
             zIndex: 9999,
-            background: "#007bff",
             color: "white",
             padding: "16px 0",
+            background:"#fb6666",
             textAlign: "center",
             boxShadow: "0 -2px 10px rgba(0,0,0,0.15)",
           }}
@@ -1162,16 +1366,33 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
           <button 
             className="btn btn-danger" 
             onClick={() => {
-              // Check if both boarding and dropping points are selected
-              if (!selectedBoarding || !selectedDropping) {
-                alert("Please select both boarding and dropping points before proceeding.");
+              // Check if seats are selected
+              if (selectedSeats.length === 0) {
+                setAlertMessage("Please select at least one seat before proceeding.");
+                setShowAlert(true);
                 return;
               }
               
-              // Store current bus data in localStorage
-              localStorage.setItem("selectedBusData", JSON.stringify(currentBus));
-              console.log("Stored bus data in localStorage:", currentBus);
-              navigate("/busbookingpage");
+              // Check if both boarding and dropping points are selected
+              if (!selectedBoarding || !selectedDropping) {
+                setAlertMessage("Please select both boarding and dropping points before proceeding.");
+                setShowAlert(true);
+                return;
+              }
+              
+              // Additional validation to ensure points are actually selected
+              if (selectedBoarding.trim() === "" || selectedDropping.trim() === "") {
+                setAlertMessage("Please select both boarding and dropping points before proceeding.");
+                setShowAlert(true);
+                return;
+              }
+              
+              // Only open modal if both boarding and dropping points are selected
+              if (selectedBoarding.trim() && selectedDropping.trim()) {
+                // Store current bus data in localStorage
+                localStorage.setItem("selectedBusData", JSON.stringify(currentBus));
+                setShowBookingModal(true);
+              }
             }}
             style={{ padding: "12px 30px", fontSize: "16px", fontWeight: "600" }}
           >
@@ -1180,6 +1401,43 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
         </div>
       )}
 
+      <BusBookingModal
+        isOpen={showBookingModal}
+        onClose={() => setShowBookingModal(false)}
+        currentBus={currentBus}
+        selectedSeats={selectedSeats}
+        selectedBoarding={selectedBoarding}
+        selectedDropping={selectedDropping}
+      />
+
+      {/* Custom Alert Modal */}
+      {showAlert && (
+        <div className="custom-alert-overlay">
+          <div className="custom-alert">
+            <div className="alert-header">
+              <FaExclamationTriangle className="alert-icon" />
+              <span className="alert-title">Please Complete</span>
+              <button 
+                className="alert-close-btn"
+                onClick={() => setShowAlert(false)}
+              >
+                <FaTimes />
+              </button>
+            </div>
+            <div className="alert-body">
+              {alertMessage}
+            </div>
+            <div className="alert-footer">
+              <button 
+                className="alert-ok-btn"
+                onClick={() => setShowAlert(false)}
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     
     </div>
   );

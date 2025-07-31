@@ -17,6 +17,12 @@ import {
     FETCH_BUS_BLOCK_REQUEST,
     FETCH_BUS_BLOCK_SUCCESS,
     FETCH_BUS_BLOCK_FAILURE,
+    FETCH_BUS_BOOKING_REQUEST,
+    FETCH_BUS_BOOKING_SUCCESS,
+    FETCH_BUS_BOOKING_FAILURE,
+    FETCH_BUS_BOOKING_DETAILS_REQUEST,
+    FETCH_BUS_BOOKING_DETAILS_SUCCESS,
+    FETCH_BUS_BOOKING_DETAILS_FAILURE,
 } from '../Actions/busActions';
 
 const initialState = {
@@ -36,6 +42,14 @@ const busReducer = (state = initialState, action) => {
         case FETCH_BUS_SEATLAYOUT_REQUEST:
         case FETCH_BUS_BOARDING_POINTS_REQUEST: 
         case FETCH_BUS_BLOCK_REQUEST:
+        case FETCH_BUS_BOOKING_DETAILS_REQUEST:
+            console.log("=== BUS BOOKING DETAILS REDUCER - REQUEST ===");
+            console.log("1. Previous state:", {
+                loading: state.loading,
+                hasBookingDetails: !!state.busBookingDetails,
+                error: state.error
+            });
+            console.log("2. Setting loading to true");
             return {
                 ...state,
                 loading: true,
@@ -135,7 +149,85 @@ const busReducer = (state = initialState, action) => {
                 loading: false,
                 error: action.payload,
             };
-        default:
+
+        case FETCH_BUS_BOOKING_REQUEST:
+            console.log('Redux: Fetching bus booking data...');
+            
+            return {     
+                ...state,
+                loading: true,
+                error: null,
+            };       
+
+        case FETCH_BUS_BOOKING_SUCCESS:
+            console.log('Redux: Received busBookingData:', action.payload);
+            return {
+                ...state,
+                loading: false,
+                busBookingData: action.payload,
+                error: null,
+            };
+
+        case FETCH_BUS_BOOKING_FAILURE:
+            return {
+                ...state,
+                loading: false,
+                error: action.payload,
+            };
+
+        case FETCH_BUS_BOOKING_DETAILS_SUCCESS:
+            console.log("=== BUS BOOKING DETAILS REDUCER - SUCCESS ===");
+            console.log("1. Action payload received:", JSON.stringify(action.payload, null, 2));
+            console.log("2. Payload structure keys:", Object.keys(action.payload || {}));
+            console.log("3. Previous state:", {
+                loading: state.loading,
+                hasBookingDetails: !!state.busBookingDetails,
+                error: state.error
+            });
+            console.log("4. Setting loading to false and storing booking details");
+            
+            const newState = {
+                ...state,
+                loading: false,
+                busBookingDetails: action.payload,
+                error: null,
+            };
+            
+            console.log("5. New state:", {
+                loading: newState.loading,
+                hasBookingDetails: !!newState.busBookingDetails,
+                error: newState.error,
+                bookingDetailsKeys: Object.keys(newState.busBookingDetails || {})
+            });
+            console.log("=== BUS BOOKING DETAILS REDUCER - SUCCESS COMPLETE ===");
+            
+            return newState;
+        case FETCH_BUS_BOOKING_DETAILS_FAILURE:
+            console.log("=== BUS BOOKING DETAILS REDUCER - FAILURE ===");
+            console.log("1. Error payload received:", action.payload);
+            console.log("2. Previous state:", {
+                loading: state.loading,
+                hasBookingDetails: !!state.busBookingDetails,
+                error: state.error
+            });
+            console.log("3. Setting loading to false and storing error");
+            
+            const errorState = {
+                ...state,
+                loading: false,
+                error: action.payload,
+            };
+            
+            console.log("4. New state:", {
+                loading: errorState.loading,
+                hasBookingDetails: !!errorState.busBookingDetails,
+                error: errorState.error
+            });
+            console.log("=== BUS BOOKING DETAILS REDUCER - FAILURE COMPLETE ===");
+            
+            return errorState;
+            
+            default:
             return state;
     }
 };

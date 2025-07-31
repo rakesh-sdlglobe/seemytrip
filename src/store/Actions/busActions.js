@@ -293,11 +293,188 @@ export const fetchBusSeatLayout =
       if (response.data) {
         dispatch(fetchBusBlockSuccess(response.data));
         console.log("Successfully dispatched block data to store");
+        return response.data; // Return the response data
       } else {    
         dispatch(fetchBusBlockFailure("No bus block found"));
+        return null;
       }
     } catch (error) {
       console.error("Error fetching bus block:", error);
       dispatch(fetchBusBlockFailure(error.message));
+      return null;
     }
   };
+
+
+  export  const FETCH_BUS_BOOKING_REQUEST = "FETCH_BUS_BOOKING_REQUEST";
+  export const FETCH_BUS_BOOKING_SUCCESS = "FETCH_BUS_BOOKING_SUCCESS";
+  export const FETCH_BUS_BOOKING_FAILURE = "FETCH_BUS_BOOKING_FAILURE";
+  export const fetchBusBookingRequest = () => ({
+    type: FETCH_BUS_BOOKING_REQUEST,
+  });
+
+export const fetchBusBookingSuccess = (booking) => ({
+    type: FETCH_BUS_BOOKING_SUCCESS,
+    payload: booking,
+  });
+
+export const fetchBusBookingFailure = (error) => ({
+    type: FETCH_BUS_BOOKING_FAILURE,
+    payload: error,
+  });
+
+export const fetchBusBooking = (bookingData) => async (dispatch, getState) => {
+    console.log("Fetching bus booking from API");
+    console.log("Request data:", bookingData);
+
+    try {
+      dispatch(fetchBusBookingRequest());
+
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/bus/getBooking`,
+        bookingData
+      );
+
+      console.log("Response from bus booking API:", response.data);
+
+      // Check if booking was successful
+      if (response.data && response.data.BookResult) {
+        const bookResult = response.data.BookResult;
+        
+        // Check for session expiry error
+        if (bookResult.Error && bookResult.Error.ErrorCode === 5) {
+          console.log("Session expired, refreshing and retrying...");
+          
+          // Re-authenticate
+          await dispatch(fetchBusAuth());
+          const authData = selectBusAuthData(getState());
+          if (!authData?.TokenId || !authData?.EndUserIp) {
+            throw new Error("Failed to re-authenticate for booking");
+          }
+
+          // Re-search to get new TraceId
+          const searchParams = JSON.parse(localStorage.getItem('busSearchparams') || '{}');
+          await dispatch(fetchBusSearch({
+            ...searchParams,
+            TokenId: authData.TokenId,
+            EndUserIp: authData.EndUserIp,
+          }));
+          const searchList = selectBusSearchList(getState());
+          const newTraceId = searchList?.BusSearchResult?.TraceId;
+          if (!newTraceId) throw new Error("Failed to get new TraceId for booking");
+
+          // Update booking data with new credentials
+          const updatedBookingData = {
+            ...bookingData,
+            TokenId: authData.TokenId,
+            EndUserIp: authData.EndUserIp,
+            TraceId: newTraceId
+          };
+
+          // Retry booking with new credentials
+          const retryResponse = await axios.post(
+            `${process.env.REACT_APP_API_URL}/bus/getBooking`,
+            updatedBookingData
+          );
+          
+          console.log("1 Retry booking response:", retryResponse.data);
+          
+          if (retryResponse.data) {
+            dispatch(fetchBusBookingSuccess(retryResponse.data));
+            console.log("Successfully dispatched booking data to store after retry");
+            return retryResponse.data;
+          } else {
+            dispatch(fetchBusBookingFailure("No bus booking found after retry"));
+            return null;
+          }
+        } else {
+          // Normal success
+          dispatch(fetchBusBookingSuccess(response.data));
+          console.log("Successfully dispatched booking data to store");
+          return response.data;
+        }
+      } else {
+        dispatch(fetchBusBookingFailure("No bus booking found"));
+        return null;
+      }
+    } catch (error) {
+      console.error("Error fetching bus booking:", error);
+      dispatch(fetchBusBookingFailure(error.message));
+      return null;
+    }
+  };
+
+
+  export const FETCH_BUS_BOOKING_DETAILS_REQUEST = "FETCH_BUS_BOOKING_DETAILS_REQUEST";
+  export const FETCH_BUS_BOOKING_DETAILS_SUCCESS = "FETCH_BUS_BOOKING_DETAILS_SUCCESS";
+  export const FETCH_BUS_BOOKING_DETAILS_FAILURE = "FETCH_BUS_BOOKING_DETAILS_FAILURE";
+  export const fetchBusBookingDetailsRequest = () => ({
+    type: FETCH_BUS_BOOKING_DETAILS_REQUEST,
+  });
+  export const fetchBusBookingDetailsSuccess = (bookingDetails) => ({ 
+    type: FETCH_BUS_BOOKING_DETAILS_SUCCESS,
+    payload: bookingDetails,
+  });
+  export const fetchBusBookingDetailsFailure = (error) => ({
+    type: FETCH_BUS_BOOKING_DETAILS_FAILURE,
+    payload: error,
+  });   
+  
+export const fetchBusBookingDetails = (bookingDetailsData) => async (dispatch) => {
+    console.log("=== BUS BOOKING DETAILS ACTION START ===");
+    console.log("1. Request data:", JSON.stringify(bookingDetailsData, null, 2));
+    console.log("2. API endpoint:", `${process.env.REACT_APP_API_URL}/bus/getBookingDetails`);
+
+    try {
+      console.log("3. Dispatching FETCH_BUS_BOOKING_DETAILS_REQUEST");
+      dispatch(fetchBusBookingDetailsRequest());
+
+      console.log("4. Making API call...");
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/bus/getBookingDetails`,
+        bookingDetailsData
+      );
+       console.log("Response from bus booking details API:", response.data);
+
+      console.log("5. API Response received:");
+      console.log("Response from bus booking details API:", response.data);
+      console.log("   - Status:", response.status);
+      console.log("   - Status Text:", response.statusText);
+      console.log("   - Response data:", JSON.stringify(response.data, null, 2));
+      console.log("   - Response structure keys:", Object.keys(response.data || {}));
+
+      if (response.data) {
+        console.log("6. Dispatching FETCH_BUS_BOOKING_DETAILS_SUCCESS");
+        dispatch(fetchBusBookingDetailsSuccess(response.data));
+        console.log("7. Successfully dispatched booking details data to store");
+        console.log("8. Returning response data to component");
+        console.log("=== BUS BOOKING DETAILS ACTION SUCCESS ===");
+        return response.data; // Return the response data
+      } else {
+        console.log("6. No response data found");
+        dispatch(fetchBusBookingDetailsFailure("No bus booking details found"));
+        console.log("=== BUS BOOKING DETAILS ACTION FAILURE - NO DATA ===");
+        return null;
+      }   
+    } catch (error) {
+      console.error("=== BUS BOOKING DETAILS ACTION ERROR ===");
+      console.error("Error details:", {
+        message: error.message,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        responseData: error.response?.data,
+        config: {
+          url: error.config?.url,
+          method: error.config?.method,
+          data: error.config?.data
+        }
+      });
+      dispatch(fetchBusBookingDetailsFailure(error.message));
+      console.log("=== BUS BOOKING DETAILS ACTION FAILURE - ERROR ===");
+      return null;
+    }
+  };
+
+
+
+        

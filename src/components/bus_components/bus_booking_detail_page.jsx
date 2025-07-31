@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { selectBusBoardingPoints, selectBusAuthData, selectBusSearchList } from "../../store/Selectors/busSelectors";
@@ -8,7 +8,7 @@ import FooterDark from "../footer-dark";
 import { bus } from "../../assets/images";
 import * as Yup from "yup";
 
-export const BusBookingPage = () => {
+export const BusBookingPage = ({ isModal = false }) => {
   const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate();
@@ -20,6 +20,17 @@ export const BusBookingPage = () => {
   const busData =
     location.state?.busData ||
     JSON.parse(localStorage.getItem("selectedBusData") || "{}");
+    
+  // Debug log for bus data
+  console.log('Bus data:', busData);
+  console.log('Departure time:', busData.DepartureTime);
+  console.log('Arrival time:', busData.ArrivalTime);
+  console.log('Bus data keys:', busData ? Object.keys(busData) : 'No bus data');
+  console.log('Duration field:', busData.Duration);
+  console.log('Full bus data structure:', JSON.stringify(busData, null, 2));
+
+  // Check if bus data is available
+  const isBusDataAvailable = busData && Object.keys(busData).length > 0;
 
   // State for form data
   const [selectedSeat, setSelectedSeat] = useState("DU3");
@@ -30,15 +41,73 @@ export const BusBookingPage = () => {
     localStorage.getItem("selectedDroppingPoint") || ""
   );
   const [showGSTDetails, setShowGSTDetails] = useState(false);
-  const [travelerDetails, setTravelerDetails] = useState({
-    title: "",
-    firstName: "",
-    lastName: "",
-    age: "",
-    gender: "",
-    idType: "",
-    idNumber: "",
-  });
+  
+  // State for selected seats - make it reactive
+  const [selectedSeats, setSelectedSeats] = useState([]);
+  
+  // Initialize traveler details for each selected seat
+  const [travelerDetails, setTravelerDetails] = useState({});
+  
+  // State for expanded traveler dropdown - initialize with all seats expanded
+  const [expandedTraveler, setExpandedTraveler] = useState("all");
+
+  // Load selected seats from localStorage on component mount
+  useEffect(() => {
+    const seatsFromStorage = JSON.parse(localStorage.getItem("selectedSeats") || "[]");
+    console.log('Loading selected seats from localStorage:', seatsFromStorage);
+    setSelectedSeats(seatsFromStorage);
+    
+    // Debug: Check seat layout data
+    try {
+      const seatLayoutData = JSON.parse(localStorage.getItem("seatLayoutData") || "{}");
+      console.log('Seat layout data:', seatLayoutData);
+      if (seatLayoutData.seats) {
+        console.log('Available seats:', seatLayoutData.seats);
+      }
+    } catch (error) {
+      console.error('Error parsing seat layout data:', error);
+    }
+    
+    // Initialize traveler details for each seat
+    const initialDetails = {};
+    seatsFromStorage.forEach((seatLabel) => {
+      initialDetails[seatLabel] = {
+        title: "",
+        firstName: "",
+        lastName: "",
+        age: "",
+        gender: "",
+        idType: "",
+        idNumber: "",
+      };
+    });
+    console.log('Initializing traveler details:', initialDetails);
+    setTravelerDetails(initialDetails);
+    
+    // Set all seats as expanded by default
+    if (seatsFromStorage.length > 0) {
+      setExpandedTraveler("all");
+    }
+  }, []);
+
+  // Update traveler details when selected seats change
+  useEffect(() => {
+    const newTravelerDetails = {};
+    selectedSeats.forEach((seatLabel) => {
+      // Preserve existing data if available
+      newTravelerDetails[seatLabel] = {
+        title: travelerDetails[seatLabel]?.title || "",
+        firstName: travelerDetails[seatLabel]?.firstName || "",
+        lastName: travelerDetails[seatLabel]?.lastName || "",
+        age: travelerDetails[seatLabel]?.age || "",
+        gender: travelerDetails[seatLabel]?.gender || "",
+        idType: travelerDetails[seatLabel]?.idType || "",
+        idNumber: travelerDetails[seatLabel]?.idNumber || "",
+      };
+    });
+    setTravelerDetails(newTravelerDetails);
+  }, [selectedSeats]);
+  
   const [contactDetails, setContactDetails] = useState({
     email: "",
     mobile: "",
@@ -107,78 +176,228 @@ export const BusBookingPage = () => {
   };
 
   // Add this function to handle input and enforce pattern
-  const handleIdNumberChange = (e) => {
+  const handleIdNumberChange = (seatLabel, e) => {
     const { value } = e.target;
-    const { idType } = travelerDetails;
+    const { idType } = travelerDetails[seatLabel];
     if (!idType) return;
     const pattern = idValidationPatterns[idType];
     let filtered = pattern.filter(value);
     if (filtered.length > pattern.maxLength) {
       filtered = filtered.slice(0, pattern.maxLength);
     }
-    setTravelerDetails({
-      ...travelerDetails,
-      idNumber: filtered,
+    setTravelerDetails(prev => ({
+      ...prev,
+      [seatLabel]: {
+        ...prev[seatLabel],
+        idNumber: filtered,
+      }
+    }));
+    
+    // Clear error for this field
+    setErrors((prev) => {
+      const newErrors = { ...prev, [`travelerDetails.${seatLabel}.idNumber`]: undefined };
+      // If all errors are cleared, reset hasSubmitted
+      if (Object.keys(newErrors).every(key => newErrors[key] === undefined)) {
+        setHasSubmitted(false);
+      }
+      return newErrors;
     });
   };
 
   // Format time helper
   const formatTime = (timeString) => {
-    if (!timeString) return "";
-    const time = new Date(`2000-01-01T${timeString}`);
-    return time.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
+    if (!timeString) return ""; // Return empty string instead of hardcoded fallback
+    
+    try {
+      let time;
+      
+      // Check if it's already a full datetime string (ISO format)
+      if (typeof timeString === 'string' && timeString.includes('T')) {
+        // Handle full datetime format like "2025-08-04T06:00:00"
+        time = new Date(timeString);
+      } else if (typeof timeString === 'string' && timeString.includes(':')) {
+        // Handle time-only format like "06:00"
+        time = new Date(`2000-01-01T${timeString}`);
+      } else {
+        // Try to parse as is
+        time = new Date(timeString);
+      }
+      
+      // Check if date is valid
+      if (isNaN(time.getTime())) {
+        console.log('Invalid time format:', timeString);
+        return ""; // Return empty string instead of hardcoded fallback
+      }
+      
+      return time.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      });
+    } catch (error) {
+      console.error('Error formatting time:', error, timeString);
+      return ""; // Return empty string instead of hardcoded fallback
+    }
   };
 
-  // Calculate duration
+  // Format date helper
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    
+    try {
+      let date;
+      
+      // Check if it's already a full datetime string (ISO format)
+      if (typeof dateString === 'string' && dateString.includes('T')) {
+        // Handle full datetime format like "2025-08-04T06:00:00"
+        date = new Date(dateString);
+      } else {
+        // Try to parse as is
+        date = new Date(dateString);
+      }
+      
+      if (isNaN(date.getTime())) {
+        console.log('Invalid date format:', dateString);
+        return "";
+      }
+      
+      return date.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "2-digit",
+        weekday: "short"
+      });
+    } catch (error) {
+      console.error('Error formatting date:', error, dateString);
+      return "";
+    }
+  };
+
+  // Calculate duration - using the same approach as bus result page
   const getDuration = (departure, arrival) => {
-    if (!departure || !arrival) return "";
-    const dep = new Date(`2000-01-01T${departure}`);
-    const arr = new Date(`2000-01-01T${arrival}`);
-    const diff = arr - dep;
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    return `${hours}h ${minutes}m`;
+    if (!departure || !arrival) {
+      console.log('Missing departure or arrival time:', { departure, arrival });
+      return "";
+    }
+    
+    try {
+      console.log('Calculating duration for:', { departure, arrival });
+      
+      let startDate, endDate;
+      
+      // Handle full datetime format like "2025-08-04T06:00:00"
+      if (typeof departure === 'string' && departure.includes('T')) {
+        startDate = new Date(departure);
+      } else {
+        startDate = new Date(departure);
+      }
+      
+      if (typeof arrival === 'string' && arrival.includes('T')) {
+        endDate = new Date(arrival);
+      } else {
+        endDate = new Date(arrival);
+      }
+      
+      // Check if dates are valid
+      if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        console.log('Invalid time format:', { departure, arrival, startDate, endDate });
+        return "";
+      }
+      
+      let diff = (endDate - startDate) / 1000;
+      if (diff < 0) diff += 24 * 3600; // Handle next day arrival
+      
+      const hours = Math.floor(diff / 3600);
+      const minutes = Math.floor((diff % 3600) / 60);
+      
+      console.log('Duration calculated:', `${hours}h ${minutes}m`);
+      return `${hours}h ${minutes}m`;
+    } catch (error) {
+      console.error('Error calculating duration:', error, { departure, arrival });
+      return "";
+    }
   };
 
-  // Yup validation schema
-  const validationSchema = Yup.object().shape({
-    travelerDetails: Yup.object().shape({
-      title: Yup.string().required("Title is required"),
-      firstName: Yup.string()
-        .required("First name is required")
-        .matches(/^[a-zA-Z\s]+$/, "First name can only contain letters and spaces")
-        .min(2, "First name must be at least 2 characters")
-        .max(50, "First name must be less than 50 characters"),
-      lastName: Yup.string()
-        .required("Last name is required")
-        .matches(/^[a-zA-Z\s]+$/, "Last name can only contain letters and spaces")
-        .min(2, "Last name must be at least 2 characters")
-        .max(50, "Last name must be less than 50 characters"),
-      age: Yup.number()
-        .typeError("Age must be a number")
-        .required("Age is required")
-        .min(1, "Age must be at least 1")
-        .max(120, "Age must be less than 120"),
-      gender: Yup.string().required("Gender is required"),
-      idType: Yup.string().required("ID Type is required"),
-      idNumber: Yup.string()
-        .required("ID Number is required")
-        .test("idNumber-format", "Invalid ID Number format", function (value) {
-          const { idType } = this.parent;
-          if (!idType || !value) return false;
-          const pattern = idValidationPatterns[idType];
-          return pattern && pattern.regex.test(value);
-        })
-        .test("idNumber-validation", "Invalid ID format", function (value) {
-          if (!value) return true;
-          const validationResult = validateId(value);
-          return validationResult !== "Invalid ID format";
-        }),
-    }),
+  // Format seat number to display properly (L1, U1, L2, U2, etc.)
+  const formatSeatNumber = (seatLabel) => {
+    if (!seatLabel) return "";
+    
+    // If seat label already has L or U prefix, return as is
+    if (seatLabel.startsWith('L') || seatLabel.startsWith('U')) {
+      return seatLabel;
+    }
+    
+    // Get seat layout data from localStorage to determine deck
+    try {
+      const seatLayoutData = JSON.parse(localStorage.getItem("seatLayoutData") || "{}");
+      const seatData = seatLayoutData.seats?.find(s => s.label === seatLabel);
+      
+      if (seatData) {
+        // Use the isUpper property from stored seat data
+        const deckPrefix = seatData.isUpper ? "U" : "L";
+        return `${deckPrefix}${seatLabel}`;
+      }
+    } catch (error) {
+      console.error('Error parsing seat layout data:', error);
+    }
+    
+    // Fallback: Try to determine if it's upper or lower deck based on the number
+    const seatNumber = parseInt(seatLabel);
+    
+    if (isNaN(seatNumber)) {
+      return seatLabel; // Return original if not a number
+    }
+    
+    // Assuming seats 1-20 are lower deck and 21+ are upper deck
+    // Adjust this logic based on your actual seat layout
+    if (seatNumber <= 20) {
+      return `L${seatNumber}`;
+    } else {
+      return `U${seatNumber - 20}`;
+    }
+  };
+
+  // Yup validation schema - create it dynamically based on selectedSeats
+  const validationSchema = useMemo(() => {
+    return Yup.object().shape({
+      travelerDetails: Yup.object().shape(
+        selectedSeats.reduce((acc, seatLabel) => {
+          acc[seatLabel] = Yup.object().shape({
+            title: Yup.string().required("Title is required"),
+            firstName: Yup.string()
+              .required("First name is required")
+              .matches(/^[a-zA-Z\s]+$/, "First name can only contain letters and spaces")
+              .min(2, "First name must be at least 2 characters")
+              .max(50, "First name must be less than 50 characters"),
+            lastName: Yup.string()
+              .required("Last name is required")
+              .matches(/^[a-zA-Z\s]+$/, "Last name can only contain letters and spaces")
+              .min(2, "Last name must be at least 2 characters")
+              .max(50, "Last name must be less than 50 characters"),
+            age: Yup.number()
+              .typeError("Age must be a number")
+              .required("Age is required")
+              .min(1, "Age must be at least 1")
+              .max(120, "Age must be less than 120"),
+            gender: Yup.string().required("Gender is required"),
+            idType: Yup.string().optional(),
+            idNumber: Yup.string()
+              .optional()
+              .test("idNumber-format", "Invalid ID Number format", function (value) {
+                const { idType } = this.parent;
+                if (!idType || !value) return true; // Allow empty values
+                const pattern = idValidationPatterns[idType];
+                return pattern && pattern.regex.test(value);
+              })
+              .test("idNumber-validation", "Invalid ID format", function (value) {
+                if (!value) return true; // Allow empty values
+                const validationResult = validateId(value);
+                return validationResult !== "Invalid ID format";
+              }),
+          });
+          return acc;
+        }, {})
+      ),
     contactDetails: Yup.object().shape({
       email: Yup.string()
         .email("Invalid email format")
@@ -235,19 +454,39 @@ export const BusBookingPage = () => {
       state: Yup.string().required("State is required"),
     }),
   });
+  }, [selectedSeats]);
 
   // Error state
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   // Handlers for form fields
-  const handleTravelerChange = (field, value) => {
-    setTravelerDetails((prev) => ({
-      ...prev,
-      [field]: value,
-      ...(field === "idType" ? { idNumber: "" } : {}),
-    }));
-    setErrors((prev) => ({ ...prev, [`travelerDetails.${field}`]: undefined }));
+  const handleTravelerChange = (seatLabel, field, value) => {
+    console.log('handleTravelerChange called:', { seatLabel, field, value });
+    console.log('Current travelerDetails:', travelerDetails);
+    
+    setTravelerDetails(prev => {
+      const newState = {
+        ...prev,
+        [seatLabel]: {
+          ...prev[seatLabel],
+          [field]: value,
+          ...(field === "idType" ? { idNumber: "" } : {}),
+        }
+      };
+      console.log('New travelerDetails state:', newState);
+      return newState;
+    });
+    
+    setErrors((prev) => {
+      const newErrors = { ...prev, [`travelerDetails.${seatLabel}.${field}`]: undefined };
+      // If all errors are cleared, reset hasSubmitted
+      if (Object.keys(newErrors).every(key => newErrors[key] === undefined)) {
+        setHasSubmitted(false);
+      }
+      return newErrors;
+    });
   };
 
   const handleAddressChange = (field, value) => {
@@ -255,7 +494,15 @@ export const BusBookingPage = () => {
       ...prev,
       [field]: value,
     }));
-    setErrors((prev) => ({ ...prev, [`addressDetails.${field}`]: undefined }));
+    
+    setErrors((prev) => {
+      const newErrors = { ...prev, [`addressDetails.${field}`]: undefined };
+      // If all errors are cleared, reset hasSubmitted
+      if (Object.keys(newErrors).every(key => newErrors[key] === undefined)) {
+        setHasSubmitted(false);
+      }
+      return newErrors;
+    });
   };
 
   const handleContactChange = (field, value) => {
@@ -263,7 +510,15 @@ export const BusBookingPage = () => {
       ...prev,
       [field]: value,
     }));
-    setErrors((prev) => ({ ...prev, [`contactDetails.${field}`]: undefined }));
+    
+    setErrors((prev) => {
+      const newErrors = { ...prev, [`contactDetails.${field}`]: undefined };
+      // If all errors are cleared, reset hasSubmitted
+      if (Object.keys(newErrors).every(key => newErrors[key] === undefined)) {
+        setHasSubmitted(false);
+      }
+      return newErrors;
+    });
   };
 
   // Helper function to format block request data
@@ -366,15 +621,15 @@ export const BusBookingPage = () => {
       return {
         LeadPassenger: isLeadPassenger,
         PassengerId: index,
-        Title: formData.travelerDetails.title,
+        Title: formData.travelerDetails[seatLabel].title,
         Address: isLeadPassenger ? formData.addressDetails.address : null,
-        Age: parseInt(formData.travelerDetails.age),
+        Age: parseInt(formData.travelerDetails[seatLabel].age),
         Email: formData.contactDetails.email,
-        FirstName: formData.travelerDetails.firstName,
-        Gender: formData.travelerDetails.gender === "Male" ? 1 : 2,
-        IdNumber: formData.travelerDetails.idNumber || null,
-        IdType: formData.travelerDetails.idType || null,
-        LastName: formData.travelerDetails.lastName,
+        FirstName: formData.travelerDetails[seatLabel].firstName,
+        Gender: formData.travelerDetails[seatLabel].gender === "Male" ? 1 : 2,
+        IdNumber: formData.travelerDetails[seatLabel].idNumber || null,
+        IdType: formData.travelerDetails[seatLabel].idType || null,
+        LastName: formData.travelerDetails[seatLabel].lastName,
         Phoneno: formData.contactDetails.mobile,
         Seat: seatStructure
       };
@@ -391,9 +646,34 @@ export const BusBookingPage = () => {
     };
   };
 
+  // Function to scroll to first error
+  const scrollToFirstError = () => {
+    // Wait for state update and DOM re-render
+    setTimeout(() => {
+      const firstErrorElement = document.querySelector('.text-danger');
+      if (firstErrorElement) {
+        const formSection = firstErrorElement.closest('.card');
+        if (formSection) {
+          formSection.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+          // Add highlight effect
+          formSection.style.border = '2px solid #dc3545';
+          formSection.style.boxShadow = '0 0 10px rgba(220, 53, 69, 0.3)';
+          setTimeout(() => {
+            formSection.style.border = '';
+            formSection.style.boxShadow = '';
+          }, 3000);
+        }
+      }
+    }, 100);
+  };
+
   // Updated handleSubmit function
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setHasSubmitted(true); // Mark that form has been submitted
     setLoading(true);
     
     try {
@@ -402,9 +682,7 @@ export const BusBookingPage = () => {
         { abortEarly: false, context: { showGSTDetails } }
       );
       setErrors({});
-      
-      // Get selected seats from localStorage
-      const selectedSeats = JSON.parse(localStorage.getItem("selectedSeats") || "[]");
+      setHasSubmitted(false); // Reset submission flag on success
       
       if (selectedSeats.length === 0) {
         alert("Please select at least one seat before proceeding.");
@@ -445,22 +723,44 @@ export const BusBookingPage = () => {
 
       console.log("Block request data:", blockRequestData);
 
+      // Store the block request data in localStorage for booking API
+      localStorage.setItem("blockRequestData", JSON.stringify(blockRequestData));
+      console.log("Block request data stored in localStorage for booking API");
+
       // Call the block API
       const result = await dispatch(fetchBusBlock(blockRequestData));
       
-      if (result.payload) {
-        console.log("Block successful:", result.payload);
+      console.log("Block result:", result);
+      
+      if (result && result.BlockResult) {
+        console.log("Block successful:", result);
         // Store block response for payment page
-        localStorage.setItem("blockResponse", JSON.stringify(result.payload));
-        alert("Seats blocked successfully! Proceeding to payment...");
-        // Navigate to payment page
-        navigate('/bus-payment', { 
-          state: { 
-            blockData: result.payload,
-            busData: busData,
-            formData: { travelerDetails, contactDetails, addressDetails }
-          } 
+        localStorage.setItem("blockResponse", JSON.stringify(result));
+        
+        // Navigate immediately to payment page without any loading states
+        setLoading(false); // Stop local loading first
+        
+        // Use React Router navigation with replace to prevent back navigation
+        const stateData = {
+          blockData: result,
+          busData: busData,
+          formData: { travelerDetails, contactDetails, addressDetails }
+        };
+        
+              // Store state data in localStorage as backup
+      localStorage.setItem("paymentPageState", JSON.stringify(stateData));
+      
+      // Store bus search list for booking details API
+      if (searchList) {
+        localStorage.setItem("busSearchList", JSON.stringify(searchList));
+      }
+        
+        // Navigate immediately using React Router with replace
+        navigate('/busBookingpayment', { 
+          state: stateData,
+          replace: true // Use replace to prevent back navigation
         });
+        return; // Exit early to prevent further execution
       } else {
         alert("Failed to block seats. Please try again.");
       }
@@ -476,6 +776,9 @@ export const BusBookingPage = () => {
         console.log("=== VALIDATION ERRORS ===");
         console.log("Errors:", formErrors);
         console.log("Raw validation error:", err);
+        
+        // Scroll to first error after setting errors
+        scrollToFirstError();
       }
     } finally {
       setLoading(false);
@@ -492,21 +795,79 @@ export const BusBookingPage = () => {
       </div> */}
 
       {/* Header */}
-      <Header02 />
+      {!isModal && <Header02 />}
 
-      <section className="pt-4 pb-4 gray-simple position-relative">
+      <section className={`${isModal ? 'modal-section' : 'pt-5 pb-5 gray-simple position-relative'}`}>
+        {!isBusDataAvailable ? (
+          <div className="container">
+            <div className="row justify-content-center">
+              <div className="col-12 col-lg-10">
+                <div className="text-center py-5">
+                  <div className="alert alert-warning" role="alert">
+                    <i className="fas fa-exclamation-triangle me-2"></i>
+                    <strong>No Bus Data Available</strong>
+                    <p className="mb-0 mt-2">Please go back and select a bus to continue with booking.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
         <div className="container">
+          <div className="row justify-content-center">
+            <div className="col-12 col-lg-10">
           {/* Breadcrumb Navigation */}
           <nav aria-label="breadcrumb" className="mb-4">
             <ol className="breadcrumb">
               <li className="breadcrumb-item">
-                <a href="/bus-search" className="text-decoration-none">
-                  Bus
+                <a 
+                  href="/bus-list" 
+                  className="text-decoration-none"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    console.log('Navigating to bus-list page...');
+                    // Force a page reload to ensure we get fresh data
+                    window.location.href = '/bus-list';
+                  }}
+                >
+                  <i className="fas fa-bus me-1"></i>
+                  Bus Results
+                </a>
+              </li>
+              <li className="breadcrumb-item">
+                <i className="fas fa-chevron-right mx-2 text-muted"></i>
+                <a 
+                  href="#" 
+                  className="text-decoration-none"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const hasFormData = Object.values(travelerDetails).some(details => 
+                      details.firstName || details.lastName || details.email
+                    );
+                    
+                    if (hasFormData) {
+                      const confirmNavigation = window.confirm(
+                        "You have entered traveler details. Are you sure you want to go back to seat selection? Your current form data will be lost."
+                      );
+                      if (!confirmNavigation) return;
+                    }
+                    
+                    navigate('/bus-seat-layout', { 
+                      state: { 
+                        busData: busData,
+                          searchParams: JSON.parse(localStorage.getItem("busSearchparams") || "{}")
+                      } 
+                    });
+                  }}
+                >
+                  Seat Selection
                 </a>
               </li>
               <li className="breadcrumb-item active" aria-current="page">
-                {busData.OriginName || "Delhi"} to{" "}
-                {busData.DestinationName || "Kanpur"}
+                <i className="fas fa-chevron-right mx-2 text-muted"></i>
+                <i className="fas fa-user-edit me-1"></i>
+                {busData.OriginName || ""} to{" "}
+                {busData.DestinationName || ""}
               </li>
             </ol>
           </nav>
@@ -514,101 +875,115 @@ export const BusBookingPage = () => {
           {/* First Container - Bus Details and Journey Info */}
           <div className="row mb-4">
             <div className="col-12">
-              <div className="card shadow-sm">
-                <div className="card-body">
-                  <div className="row">
-                    {/* Left Side - Bus Details */}
-                    <div className="col-md-6">
-                      <div className="bus-details">
-                        <h5 className="fw-bold mb-2">
-                          {busData.TravelsName || "Delhi Express"}
-                        </h5>
-                        <p className="text-muted mb-3">
-                          {busData.BusType || "A/C Sleeper"} •{" "}
-                          {busData.BusCondition || "Non-AC"}
-                        </p>
+              <div className="card shadow-sm bus-ticket-card">
+                <div className="card-body p-0">
+                  {/* Bus Ticket Header */}
+                  <div className="bus-ticket-header">
+                    <div className="row align-items-center">
+                      <div className="col-md-6">
+                        <div className="operator-info">
+                          <h4 className="operator-name mb-1">
+                            {busData.TravelName || busData.TravelsName || ""}
+                          </h4>
+                          <p className="vehicle-type mb-0">
+                            {busData.BusType || ""}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="col-md-6 text-end">
+                        <div className="ticket-codes">
+                          <div className="codes mb-2">
+                            {selectedSeats.length > 0 ? (
+                              <span className="code-badge">
+                                Seat {selectedSeats.map(seatLabel => formatSeatNumber(seatLabel)).join(', Seat ')}
+                              </span>
+                            ) : (
+                              <span className="code-badge">No seats selected</span>
+                            )}
+                          </div>
+                          <a href="#" className="view-policies-link">
+                            View Policies
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
-                        {/* Boarding, Journey Time, and Dropping Details - Horizontal */}
-                        <div className="row">
-                          <div className="col-md-4">
-                            <div className="text-center">
-                              <div className="fw-bold text-primary">
-                                {formatTime(busData.DepartureTime) ||
-                                  "06:00 AM"}
-                              </div>
-                              <small className="text-muted">
-                                {busData.DepartureDate || "15 Jan 2024"}
-                              </small>
-                              <div className="mt-1">
-                                <small className="text-muted">
-                                  {busData.OriginName || "Delhi"}
-                                </small>
-                              </div>
-                            </div>
+                  {/* Journey Details */}
+                  <div className="journey-details">
+                    <div className="row align-items-center">
+                      {/* Departure Details */}
+                      <div className="col-md-4">
+                        <div className="departure-info">
+                          <div className="time-display">
+                            <span className="time">{formatTime(busData.DepartureTime)}</span>
                           </div>
-                          <div className="col-md-4">
-                            <div className="text-center">
-                              <div className="fw-bold text-info">
-                                {getDuration(
-                                  busData.DepartureTime,
-                                  busData.ArrivalTime
-                                ) || "8h 30m"}
-                              </div>
-                              <small className="text-muted">Journey Time</small>
-                            </div>
+                          <div className="date-day">
+                            {formatDate(busData.DepartureDate) || formatDate(busData.DepartureTime)}
                           </div>
-                          <div className="col-md-4">
-                            <div className="text-center">
-                              <div className="fw-bold text-success">
-                                {formatTime(busData.ArrivalTime) || "02:30 PM"}
-                              </div>
-                              <small className="text-muted">
-                                {busData.ArrivalDate || "15 Jan 2024"}
-                              </small>
-                              <div className="mt-1">
-                                <small className="text-muted">
-                                  {busData.DestinationName || "Kanpur"}
-                                </small>
-                              </div>
-                            </div>
+                          <div className="city-name">
+                            {busData.OriginName || ""}
+                          </div>
+                          <div className="boarding-instructions">
+                            {selectedBoardingPoint || ""}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Journey Duration */}
+                      <div className="col-md-4">
+                        <div className="journey-duration">
+                          <div className="duration-line">
+                            <span className="line"></span>
+                            <span className="duration-text">
+                              {getDuration(busData.DepartureTime, busData.ArrivalTime) || 
+                               (busData.Duration ? `${busData.Duration}h` : "Duration not available")}
+                            </span>
+                            <span className="line"></span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Arrival Details */}
+                      <div className="col-md-4">
+                        <div className="arrival-info">
+                          <div className="time-display">
+                            <span className="time">{formatTime(busData.ArrivalTime)}</span>
+                          </div>
+                          <div className="date-day">
+                            {formatDate(busData.ArrivalDate) || formatDate(busData.ArrivalTime)}
+                          </div>
+                          <div className="city-name">
+                            {busData.DestinationName || ""} {busData.DestinationState ? `(${busData.DestinationState})` : ""}
+                          </div>
+                          <div className="dropping-instructions">
+                            {selectedDroppingPoint || ""}
                           </div>
                         </div>
                       </div>
                     </div>
+                  </div>
 
-                    {/* Right Side - Seat Information */}
-                    <div className="col-md-6">
-                      <div className="seat-info text-end">
-                        <div className="seat-display">
-                          <h6 className="text-primary mb-2">Selected Seat</h6>
-                          <div className="seat-number">
-                            <span className="badge bg-primary fs-5 px-3 py-2">
-                              {selectedSeat}
-                            </span>
-                          </div>
-                          <p className="text-muted mt-2">
-                            Seat Index: {selectedSeat}
-                          </p>
+                  {/* Price Summary */}
+                  <div className="price-summary-section">
+                    <div className="row align-items-center">
+                      <div className="col-md-6">
+                        <div className="seats-selected">
+                          <i className="fas fa-chair me-2"></i>
+                          <strong>Seats Selected: {selectedSeats.length}</strong>
                         </div>
-                        
-                        {/* Boarding and Dropping Points */}
-                        {(selectedBoardingPoint || selectedDroppingPoint) && (
-                          <div className="boarding-dropping-info mt-3">
-                            <h6 className="text-success mb-2">Selected Points</h6>
-                            {selectedBoardingPoint && (
-                              <div className="mb-2">
-                                <small className="text-muted">Boarding Point:</small>
-                                <div className="fw-bold text-success">{selectedBoardingPoint}</div>
-                              </div>
-                            )}
-                            {selectedDroppingPoint && (
-                              <div>
-                                <small className="text-muted">Dropping Point:</small>
-                                <div className="fw-bold text-success">{selectedDroppingPoint}</div>
-                              </div>
-                            )}
+                      </div>
+                      <div className="col-md-6 text-end">
+                        <div className="price-info">
+                          <div className="total-price">
+                            ₹{selectedSeats.reduce((acc, label) => {
+                              const seatLayoutData = JSON.parse(localStorage.getItem("seatLayoutData") || "{}");
+                              const seatData = seatLayoutData.seats?.find(s => s.label === label);
+                              return acc + (seatData?.price || busData.BusPrice?.PublishedPriceRoundedOff || 0);
+                            }, 0)}
                           </div>
-                        )}
+                          <div className="price-label">Total Amount</div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -617,157 +992,242 @@ export const BusBookingPage = () => {
             </div>
           </div>
 
+          {/* Error Summary */}
+          {hasSubmitted && Object.keys(errors).length > 0 && (
+            <div className="row mb-4">
+              <div className="col-12">
+                <div className="alert alert-danger" role="alert">
+                  <div className="d-flex align-items-center">
+                    <i className="fas fa-exclamation-triangle me-3 fs-4"></i>
+                    <div>
+                      <h6 className="alert-heading mb-2">Please fix the following errors:</h6>
+                      <ul className="mb-0">
+                        {Object.entries(errors).slice(0, 5).map(([field, message]) => (
+                          <li key={field} className="error-item">
+                            {message}
+                          </li>
+                        ))}
+                        {Object.keys(errors).length > 5 && (
+                          <li className="text-muted">... and {Object.keys(errors).length - 5} more errors</li>
+                        )}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Second Container - Traveler Details */}
           <form onSubmit={handleSubmit}>
             <div className="row mb-4">
               <div className="col-12">
-                <div className="card shadow-sm">
+                <div className={`card ${hasSubmitted && Object.keys(errors).some(key => key.startsWith('travelerDetails')) ? 'error-card' : ''}`}>
                   <div className="card-header">
                     <h5 className="mb-0">
                       <i className="fas fa-user me-2"></i>
                       Traveler Details
+                      {hasSubmitted && Object.keys(errors).some(key => key.startsWith('travelerDetails')) && (
+                        <span className="error-badge ms-2">
+                          <i className="fas fa-exclamation-circle me-1"></i>
+                          Errors
+                        </span>
+                      )}
                     </h5>
                   </div>
                   <div className="card-body">
-                    <div className="row">
-                      <div className="col-md-2">
-                        <div className="mb-3">
-                          <label className="form-label">Title *</label>
-                          <select
-                            className="form-select"
-                            value={travelerDetails.title}
-                            onChange={e => handleTravelerChange("title", e.target.value)}
-                          >
-                            <option value="">Select</option>
-                            <option value="mr">Mr</option>
-                            <option value="mrs">Mrs</option>
-                            <option value="miss">Miss</option>
-                          </select>
-                          {errors["travelerDetails.title"] && (
-                            <div className="text-danger">{errors["travelerDetails.title"]}</div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="col-md-3">
-                        <div className="mb-3">
-                          <label className="form-label">First Name *</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            value={travelerDetails.firstName}
-                            onChange={e => handleTravelerChange("firstName", e.target.value)}
-                            placeholder="Enter first name"
-                          />
-                          {errors["travelerDetails.firstName"] && (
-                            <div className="text-danger">{errors["travelerDetails.firstName"]}</div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="col-md-3">
-                        <div className="mb-3">
-                          <label className="form-label">Last Name *</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            value={travelerDetails.lastName}
-                            onChange={e => handleTravelerChange("lastName", e.target.value)}
-                            placeholder="Enter last name"
-                          />
-                          {errors["travelerDetails.lastName"] && (
-                            <div className="text-danger">{errors["travelerDetails.lastName"]}</div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="col-md-2">
-                        <div className="mb-3">
-                          <label className="form-label">Age *</label>
-                          <input
-                            type="number"
-                            className="form-control"
-                            value={travelerDetails.age}
-                            onChange={e => handleTravelerChange("age", e.target.value)}
-                            placeholder="Age"
-                            min="1"
-                            max="120"
-                          />
-                          {errors["travelerDetails.age"] && (
-                            <div className="text-danger">{errors["travelerDetails.age"]}</div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="col-md-2">
-                        <div className="mb-3">
-                          <label className="form-label">Gender *</label>
-                          <select
-                            className="form-select"
-                            value={travelerDetails.gender}
-                            onChange={e => handleTravelerChange("gender", e.target.value)}
-                          >
-                            <option value="">Select Gender</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="other">Other</option>
-                          </select>
-                          {errors["travelerDetails.gender"] && (
-                            <div className="text-danger">{errors["travelerDetails.gender"]}</div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="row">
-                      <div className="col-md-3">
-                        <div className="mb-3">
-                          <label className="form-label">ID Type *</label>
-                          <select
-                            className="form-select"
-                            value={travelerDetails.idType}
-                            onChange={e => handleTravelerChange("idType", e.target.value)}
-                          >
-                            <option value="">Select ID Type</option>
-                            <option value="pan-card">PAN Card</option>
-                            <option value="voter-id">Voter ID Card</option>
-                            <option value="passport">Passport</option>
-                            <option value="aadhar-card">Aadhar Card</option>
-                          </select>
-                          {errors["travelerDetails.idType"] && (
-                            <div className="text-danger">{errors["travelerDetails.idType"]}</div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="col-md-4">
-                        <div className="mb-3">
-                          <label className="form-label">
-                            ID Number *
-                            {travelerDetails.idType &&
-                              idValidationPatterns[travelerDetails.idType] && (
-                                <span className="text-muted ms-2" style={{ fontSize: "0.8em" }}>
-                                  ({idValidationPatterns[travelerDetails.idType].description})
-                                </span>
+                    {console.log('Rendering traveler forms for seats:', selectedSeats)}
+                    {console.log('Current travelerDetails:', travelerDetails)}
+                    
+                    {selectedSeats.map((seatLabel, index) => (
+                      <div key={seatLabel} className="traveler-dropdown mb-3">
+                        {/* Traveler Dropdown Header */}
+                        <div 
+                          className="traveler-dropdown-header"
+                          onClick={() => {
+                            if (expandedTraveler === "all") {
+                              setExpandedTraveler(seatLabel);
+                            } else if (expandedTraveler === seatLabel) {
+                              setExpandedTraveler("");
+                            } else {
+                              setExpandedTraveler(seatLabel);
+                            }
+                          }}
+                        >
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className="traveler-info">
+                              <h6 className="mb-0">
+                                <i className="fas fa-chair me-2"></i>
+                                Seat {formatSeatNumber(seatLabel)} - Traveler {index + 1}
+                              </h6>
+                              {travelerDetails[seatLabel]?.firstName && (
+                                <small className="text-muted">
+                                  {travelerDetails[seatLabel].firstName} {travelerDetails[seatLabel].lastName}
+                                </small>
                               )}
-                          </label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            value={travelerDetails.idNumber}
-                            onChange={handleIdNumberChange}
-                            placeholder={
-                              travelerDetails.idType
-                                ? idValidationPatterns[travelerDetails.idType].placeholder
-                                : "Enter ID number"
-                            }
-                            maxLength={
-                              travelerDetails.idType
-                                ? idValidationPatterns[travelerDetails.idType].maxLength
-                                : undefined
-                            }
-                            disabled={!travelerDetails.idType}
-                          />
-                          {errors["travelerDetails.idNumber"] && (
-                            <div className="text-danger">{errors["travelerDetails.idNumber"]}</div>
-                          )}
+                            </div>
+                            <div className="dropdown-indicator">
+                              <i className={`fas fa-chevron-${expandedTraveler === "all" || expandedTraveler === seatLabel ? 'up' : 'down'}`}></i>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* Traveler Form (Collapsible) */}
+                        <div className={`traveler-form ${expandedTraveler === "all" || expandedTraveler === seatLabel ? 'expanded' : 'collapsed'}`}>
+                          <div className="traveler-form-content">
+                            <div className="row">
+                              <div className="col-md-2">
+                                <div className="mb-3">
+                                  <label className="form-label">Title *</label>
+                                  <select
+                                    className={`form-select ${hasSubmitted && errors[`travelerDetails.${seatLabel}.title`] ? 'is-invalid' : ''}`}
+                                    value={travelerDetails[seatLabel]?.title || ""}
+                                    onChange={e => handleTravelerChange(seatLabel, "title", e.target.value)}
+                                  >
+                                    <option value="">Select</option>
+                                    <option value="mr">Mr</option>
+                                    <option value="mrs">Mrs</option>
+                                    <option value="miss">Miss</option>
+                                  </select>
+                                  {hasSubmitted && errors[`travelerDetails.${seatLabel}.title`] && (
+                                    <div className="text-danger">{errors[`travelerDetails.${seatLabel}.title`]}</div>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="col-md-3">
+                                <div className="mb-3">
+                                  <label className="form-label">First Name *</label>
+                                  <input
+                                    type="text"
+                                    className={`form-control ${hasSubmitted && errors[`travelerDetails.${seatLabel}.firstName`] ? 'is-invalid' : ''}`}
+                                    value={travelerDetails[seatLabel]?.firstName || ""}
+                                    onChange={e => {
+                                      console.log('Input change for', seatLabel, 'firstName:', e.target.value);
+                                      handleTravelerChange(seatLabel, "firstName", e.target.value);
+                                    }}
+                                    placeholder="Enter first name"
+                                  />
+                                  {hasSubmitted && errors[`travelerDetails.${seatLabel}.firstName`] && (
+                                    <div className="text-danger">{errors[`travelerDetails.${seatLabel}.firstName`]}</div>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="col-md-3">
+                                <div className="mb-3">
+                                  <label className="form-label">Last Name *</label>
+                                  <input
+                                    type="text"
+                                    className={`form-control ${hasSubmitted && errors[`travelerDetails.${seatLabel}.lastName`] ? 'is-invalid' : ''}`}
+                                    value={travelerDetails[seatLabel]?.lastName || ""}
+                                    onChange={e => handleTravelerChange(seatLabel, "lastName", e.target.value)}
+                                    placeholder="Enter last name"
+                                  />
+                                  {hasSubmitted && errors[`travelerDetails.${seatLabel}.lastName`] && (
+                                    <div className="text-danger">{errors[`travelerDetails.${seatLabel}.lastName`]}</div>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="col-md-2">
+                                <div className="mb-3">
+                                  <label className="form-label">Age *</label>
+                                  <input
+                                    type="number"
+                                    className={`form-control ${hasSubmitted && errors[`travelerDetails.${seatLabel}.age`] ? 'is-invalid' : ''}`}
+                                    value={travelerDetails[seatLabel]?.age || ""}
+                                    onChange={e => handleTravelerChange(seatLabel, "age", e.target.value)}
+                                    placeholder="Age"
+                                    min="1"
+                                    max="120"
+                                  />
+                                  {hasSubmitted && errors[`travelerDetails.${seatLabel}.age`] && (
+                                    <div className="text-danger">{errors[`travelerDetails.${seatLabel}.age`]}</div>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="col-md-2">
+                                <div className="mb-3">
+                                  <label className="form-label">Gender *</label>
+                                  <select
+                                    className={`form-select ${hasSubmitted && errors[`travelerDetails.${seatLabel}.gender`] ? 'is-invalid' : ''}`}
+                                    value={travelerDetails[seatLabel]?.gender || ""}
+                                    onChange={e => handleTravelerChange(seatLabel, "gender", e.target.value)}
+                                  >
+                                    <option value="">Select Gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                  </select>
+                                  {hasSubmitted && errors[`travelerDetails.${seatLabel}.gender`] && (
+                                    <div className="text-danger">{errors[`travelerDetails.${seatLabel}.gender`]}</div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="row">
+                              <div className="col-md-12 mb-2">
+                                <small className="text-muted">
+                                  <i className="fas fa-info-circle me-1"></i>
+                                  ID details are optional but recommended for faster check-in
+                                </small>
+                              </div>
+                              <div className="col-md-6">
+                                <div className="mb-3">
+                                  <label className="form-label">ID Type (Optional)</label>
+                                  <select
+                                    className={`form-select ${hasSubmitted && errors[`travelerDetails.${seatLabel}.idType`] ? 'is-invalid' : ''}`}
+                                    value={travelerDetails[seatLabel]?.idType || ""}
+                                    onChange={e => handleTravelerChange(seatLabel, "idType", e.target.value)}
+                                  >
+                                    <option value="">Select ID Type</option>
+                                    <option value="pan-card">PAN Card</option>
+                                    <option value="voter-id">Voter ID Card</option>
+                                    <option value="passport">Passport</option>
+                                    <option value="aadhar-card">Aadhar Card</option>
+                                  </select>
+                                  {hasSubmitted && errors[`travelerDetails.${seatLabel}.idType`] && (
+                                    <div className="text-danger">{errors[`travelerDetails.${seatLabel}.idType`]}</div>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="col-md-6">
+                                <div className="mb-3">
+                                  <label className="form-label">
+                                    ID Number (Optional)
+                                    {travelerDetails[seatLabel]?.idType &&
+                                      idValidationPatterns[travelerDetails[seatLabel].idType] && (
+                                        <span className="text-muted ms-2" style={{ fontSize: "0.8em" }}>
+                                          ({idValidationPatterns[travelerDetails[seatLabel].idType].description})
+                                        </span>
+                                      )}
+                                  </label>
+                                  <input
+                                    type="text"
+                                    className={`form-control ${hasSubmitted && errors[`travelerDetails.${seatLabel}.idNumber`] ? 'is-invalid' : ''}`}
+                                    value={travelerDetails[seatLabel]?.idNumber || ""}
+                                    onChange={(e) => handleIdNumberChange(seatLabel, e)}
+                                    placeholder={
+                                      travelerDetails[seatLabel]?.idType
+                                        ? idValidationPatterns[travelerDetails[seatLabel].idType].placeholder
+                                        : "Enter ID number (optional)"
+                                    }
+                                    maxLength={
+                                      travelerDetails[seatLabel]?.idType
+                                        ? idValidationPatterns[travelerDetails[seatLabel].idType].maxLength
+                                        : undefined
+                                    }
+                                    disabled={false}
+                                  />
+                                  {hasSubmitted && errors[`travelerDetails.${seatLabel}.idNumber`] && (
+                                    <div className="text-danger">{errors[`travelerDetails.${seatLabel}.idNumber`]}</div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -776,11 +1236,17 @@ export const BusBookingPage = () => {
             {/* Third Container - Contact Details */}
             <div className="row mb-4">
               <div className="col-12">
-                <div className="card shadow-sm">
+                <div className={`card ${hasSubmitted && Object.keys(errors).some(key => key.startsWith('contactDetails')) ? 'error-card' : ''}`}>
                   <div className="card-header">
                     <h5 className="mb-0">
                       <i className="fas fa-phone me-2"></i>
                       Contact Details
+                      {hasSubmitted && Object.keys(errors).some(key => key.startsWith('contactDetails')) && (
+                        <span className="error-badge ms-2">
+                          <i className="fas fa-exclamation-circle me-1"></i>
+                          Errors
+                        </span>
+                      )}
                     </h5>
                   </div>
                   <div className="card-body">
@@ -790,14 +1256,14 @@ export const BusBookingPage = () => {
                           <label className="form-label">Email ID *</label>
                           <input
                             type="email"
-                            className="form-control"
+                            className={`form-control ${hasSubmitted && errors["contactDetails.email"] ? 'is-invalid' : ''}`}
                             value={contactDetails.email}
                             onChange={(e) =>
                               handleContactChange("email", e.target.value)
                             }
                             placeholder="Enter email address"
                           />
-                          {errors["contactDetails.email"] && (
+                          {hasSubmitted && errors["contactDetails.email"] && (
                             <div className="text-danger">{errors["contactDetails.email"]}</div>
                           )}
                         </div>
@@ -807,14 +1273,14 @@ export const BusBookingPage = () => {
                           <label className="form-label">Mobile Number *</label>
                           <input
                             type="tel"
-                            className="form-control"
+                            className={`form-control ${hasSubmitted && errors["contactDetails.mobile"] ? 'is-invalid' : ''}`}
                             value={contactDetails.mobile}
                             onChange={(e) =>
                               handleContactChange("mobile", e.target.value)
                             }
                             placeholder="Enter mobile number"
                           />
-                          {errors["contactDetails.mobile"] && (
+                          {hasSubmitted && errors["contactDetails.mobile"] && (
                             <div className="text-danger">{errors["contactDetails.mobile"]}</div>
                           )}
                         </div>
@@ -844,14 +1310,14 @@ export const BusBookingPage = () => {
                             <label className="form-label">GST Number</label>
                             <input
                               type="text"
-                              className="form-control"
+                              className={`form-control ${hasSubmitted && errors["contactDetails.gstNumber"] ? 'is-invalid' : ''}`}
                               value={contactDetails.gstNumber}
                               onChange={(e) =>
                                 handleContactChange("gstNumber", e.target.value)
                               }
                               placeholder="Enter GST number"
                             />
-                            {errors["contactDetails.gstNumber"] && (
+                            {hasSubmitted && errors["contactDetails.gstNumber"] && (
                               <div className="text-danger">{errors["contactDetails.gstNumber"]}</div>
                             )}
                           </div>
@@ -861,14 +1327,14 @@ export const BusBookingPage = () => {
                             <label className="form-label">Company Name</label>
                             <input
                               type="text"
-                              className="form-control"
+                              className={`form-control ${hasSubmitted && errors["contactDetails.companyName"] ? 'is-invalid' : ''}`}
                               value={contactDetails.companyName}
                               onChange={(e) =>
                                 handleContactChange("companyName", e.target.value)
                               }
                               placeholder="Enter company name"
                             />
-                            {errors["contactDetails.companyName"] && (
+                            {hasSubmitted && errors["contactDetails.companyName"] && (
                               <div className="text-danger">{errors["contactDetails.companyName"]}</div>
                             )}
                           </div>
@@ -883,11 +1349,17 @@ export const BusBookingPage = () => {
             {/* Fourth Container - Address Details */}
             <div className="row mb-4">
               <div className="col-12">
-                <div className="card shadow-sm">
+                <div className={`card ${hasSubmitted && Object.keys(errors).some(key => key.startsWith('addressDetails')) ? 'error-card' : ''}`}>
                   <div className="card-header">
                     <h5 className="mb-0">
                       <i className="fas fa-map-marker-alt me-2"></i>
                       Address Details
+                      {hasSubmitted && Object.keys(errors).some(key => key.startsWith('addressDetails')) && (
+                        <span className="error-badge ms-2">
+                          <i className="fas fa-exclamation-circle me-1"></i>
+                          Errors
+                        </span>
+                      )}
                     </h5>
                   </div>
                   <div className="card-body">
@@ -897,12 +1369,12 @@ export const BusBookingPage = () => {
                           <label className="form-label">Address *</label>
                           <input
                             type="text"
-                            className="form-control"
+                            className={`form-control ${hasSubmitted && errors["addressDetails.address"] ? 'is-invalid' : ''}`}
                             value={addressDetails.address}
                             onChange={e => handleAddressChange("address", e.target.value)}
                             placeholder="Enter address"
                           />
-                          {errors["addressDetails.address"] && (
+                          {hasSubmitted && errors["addressDetails.address"] && (
                             <div className="text-danger">{errors["addressDetails.address"]}</div>
                           )}
                         </div>
@@ -911,7 +1383,7 @@ export const BusBookingPage = () => {
                         <div className="mb-3">
                           <label className="form-label">State *</label>
                           <select
-                            className="form-select"
+                            className={`form-select ${hasSubmitted && errors["addressDetails.state"] ? 'is-invalid' : ''}`}
                             value={addressDetails.state}
                             onChange={e => handleAddressChange("state", e.target.value)}
                           >
@@ -927,7 +1399,7 @@ export const BusBookingPage = () => {
                             <option value="madhya-pradesh">Madhya Pradesh</option>
                             <option value="bihar">Bihar</option>
                           </select>
-                          {errors["addressDetails.state"] && (
+                          {hasSubmitted && errors["addressDetails.state"] && (
                             <div className="text-danger">{errors["addressDetails.state"]}</div>
                           )}
                         </div>
@@ -937,12 +1409,12 @@ export const BusBookingPage = () => {
                           <label className="form-label">Country *</label>
                           <input
                             type="text"
-                            className="form-control"
+                            className={`form-control ${hasSubmitted && errors["addressDetails.country"] ? 'is-invalid' : ''}`}
                             value={addressDetails.country}
                             onChange={e => handleAddressChange("country", e.target.value)}
                             placeholder="Enter country"
                           />
-                          {errors["addressDetails.country"] && (
+                          {hasSubmitted && errors["addressDetails.country"] && (
                             <div className="text-danger">{errors["addressDetails.country"]}</div>
                           )}
                         </div>
@@ -952,12 +1424,12 @@ export const BusBookingPage = () => {
                           <label className="form-label">City *</label>
                           <input
                             type="text"
-                            className="form-control"
+                            className={`form-control ${hasSubmitted && errors["addressDetails.city"] ? 'is-invalid' : ''}`}
                             value={addressDetails.city}
                             onChange={e => handleAddressChange("city", e.target.value)}
                             placeholder="Enter city"
                           />
-                          {errors["addressDetails.city"] && (
+                          {hasSubmitted && errors["addressDetails.city"] && (
                             <div className="text-danger">{errors["addressDetails.city"]}</div>
                           )}
                         </div>
@@ -967,12 +1439,12 @@ export const BusBookingPage = () => {
                           <label className="form-label">Pincode *</label>
                           <input
                             type="text"
-                            className="form-control"
+                            className={`form-control ${hasSubmitted && errors["addressDetails.pincode"] ? 'is-invalid' : ''}`}
                             value={addressDetails.pincode}
                             onChange={e => handleAddressChange("pincode", e.target.value)}
                             placeholder="Enter pincode"
                           />
-                          {errors["addressDetails.pincode"] && (
+                          {hasSubmitted && errors["addressDetails.pincode"] && (
                             <div className="text-danger">{errors["addressDetails.pincode"]}</div>
                           )}
                         </div>
@@ -1005,11 +1477,668 @@ export const BusBookingPage = () => {
               </div>
             </div>
           </form>
+            </div>
+          </div>
         </div>
+        )}
       </section>
 
       {/* Footer */}
-      <FooterDark />
+      {!isModal && <FooterDark />}
+      
+      <style jsx>{`
+        /* Bus Ticket Card Styles */
+        .bus-ticket-card {
+          background: #ffffff;
+          border-radius: 8px;
+          border: 1px solid #e9ecef;
+          overflow: hidden;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .bus-ticket-header {
+          background: #f8f9fa;
+          padding: 16px;
+          border-bottom: 1px solid #dee2e6;
+        }
+
+        .operator-name {
+          color: #343a40;
+          font-weight: 700;
+          font-size: 1.3rem;
+          margin: 0;
+        }
+
+        .vehicle-type {
+          color: #6c757d;
+          font-size: 0.85rem;
+          font-weight: 500;
+        }
+
+        .ticket-codes {
+          text-align: right;
+        }
+
+        .code-badge {
+          background: #343a40;
+          color: white;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-size: 0.8rem;
+          font-weight: 600;
+        }
+
+        .view-policies-link {
+          color: #007bff;
+          text-decoration: none;
+          font-size: 0.9rem;
+          font-weight: 500;
+        }
+
+        .view-policies-link:hover {
+          color: #0056b3;
+          text-decoration: underline;
+        }
+
+        .journey-details {
+          padding: 24px 20px;
+          background: #ffffff;
+        }
+
+        .departure-info,
+        .arrival-info {
+          text-align: center;
+        }
+
+        .time-display {
+          margin-bottom: 6px;
+        }
+
+        .time {
+          font-size: 1.6rem;
+          font-weight: 700;
+          color: #343a40;
+        }
+
+        .date-day {
+          font-size: 0.85rem;
+          color: #6c757d;
+          margin-bottom: 6px;
+        }
+
+        .city-name {
+          font-size: 1rem;
+          font-weight: 600;
+          color: #343a40;
+          margin-bottom: 10px;
+        }
+
+        .boarding-instructions,
+        .dropping-instructions {
+          font-size: 0.75rem;
+          color: #6c757d;
+          line-height: 1.3;
+          max-width: 180px;
+          margin: 0 auto;
+        }
+
+        .journey-duration {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .duration-line {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          width: 100%;
+        }
+
+        .line {
+          flex: 1;
+          height: 2px;
+          background: #dee2e6;
+        }
+
+        .duration-text {
+          font-size: 0.85rem;
+          color: #6c757d;
+          font-weight: 500;
+          white-space: nowrap;
+        }
+
+        .price-summary-section {
+          background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+          padding: 16px 20px;
+          border-top: 1px solid #dee2e6;
+        }
+
+        .seats-selected {
+          color: #343a40;
+          font-size: 0.9rem;
+          margin-bottom: 0;
+        }
+
+        .price-info {
+          text-align: right;
+        }
+
+        .total-price {
+          font-size: 1.3rem;
+          font-weight: 700;
+          color: #cd2c22;
+          margin-bottom: 2px;
+        }
+
+        .price-label {
+          font-size: 0.8rem;
+          color: #6c757d;
+          font-weight: 500;
+        }
+
+        /* Custom styles for bus booking page */
+        .traveler-section {
+          border: 1px solid #e9ecef;
+          border-radius: 12px;
+          padding: 24px;
+          background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+          margin-bottom: 24px;
+          transition: all 0.3s ease;
+        }
+        
+        .traveler-section:hover {
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+          transform: translateY(-2px);
+        }
+        
+        .seat-header {
+          background: linear-gradient(135deg, #cd2c22 0%, #e74c3c 100%);
+          padding: 16px 20px;
+          border-radius: 10px;
+          border-left: 4px solid #ffffff;
+          margin-bottom: 20px;
+          position: relative;
+          overflow: hidden;
+        }
+        
+        .seat-header::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+          pointer-events: none;
+        }
+        
+        .seat-header h6 {
+          color: #ffffff !important;
+          font-weight: 600;
+          margin: 0;
+          position: relative;
+          z-index: 1;
+        }
+        
+        .seat-numbers {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: flex-end;
+          gap: 8px;
+        }
+        
+        .seat-numbers .badge {
+          font-size: 0.875rem;
+          font-weight: 600;
+          padding: 6px 10px;
+          border-radius: 4px;
+          background: #cd2c22;
+          border: 1px solid #cd2c22;
+          transition: all 0.3s ease;
+          box-shadow: 0 1px 3px rgba(205, 44, 34, 0.2);
+        }
+        
+        .seat-numbers .badge:hover {
+          background: #b71c1c;
+          border-color: #b71c1c;
+          box-shadow: 0 2px 6px rgba(205, 44, 34, 0.3);
+        }
+        
+        .traveler-summary .alert {
+          background: #e3f2fd;
+          border: 1px solid #90caf9;
+          border-radius: 6px;
+          border-left: 4px solid #2196f3;
+          padding: 16px;
+        }
+        
+        .traveler-summary .alert-icon {
+          background: rgba(33, 150, 243, 0.1);
+          border-radius: 50%;
+          width: 50px;
+          height: 50px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #2196f3;
+        }
+        
+        .card {
+          border: 1px solid #e9ecef;
+          border-radius: 8px;
+          background: #ffffff;
+          transition: all 0.3s ease;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card:hover {
+          border-color: #cd2c22;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+          background: #f8f9fa;
+          border-bottom: 1px solid #dee2e6;
+          border-radius: 8px 8px 0 0 !important;
+          padding: 20px 24px;
+        }
+        
+        .card-header h5 {
+          color: #cd2c22;
+          font-weight: 600;
+          margin: 0;
+        }
+        
+        .form-control {
+          border-radius: 6px;
+          border: 1px solid #ced4da;
+          padding: 12px 16px;
+          transition: all 0.3s ease;
+          background: #ffffff;
+          height: 48px;
+          font-size: 14px;
+          width: 100%;
+          box-shadow: none !important;
+          -webkit-box-shadow: none !important;
+          -moz-box-shadow: none !important;
+        }
+        
+        .form-control:focus {
+          border-color: #cd2c22;
+          box-shadow: none !important;
+          -webkit-box-shadow: none !important;
+          -moz-box-shadow: none !important;
+          outline: none;
+        }
+        
+        .form-control.is-invalid {
+          border-color: #dc3545 !important;
+          background-color: #fff5f5;
+        }
+        
+        .form-select.is-invalid {
+          border-color: #dc3545 !important;
+          background-color: #fff5f5;
+        }
+        
+        .form-select {
+          border-radius: 6px;
+          border: 1px solid #ced4da;
+          padding: 12px 16px;
+          transition: all 0.3s ease;
+          background: #ffffff;
+          height: 48px;
+          font-size: 14px;
+          width: 100%;
+          background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e");
+          background-repeat: no-repeat;
+          background-position: right 12px center;
+          background-size: 16px 12px;
+          padding-right: 40px;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          appearance: none;
+          box-shadow: none !important;
+          -webkit-box-shadow: none !important;
+          -moz-box-shadow: none !important;
+        }
+        
+        .form-select:focus {
+          border-color: #cd2c22;
+          box-shadow: none !important;
+          -webkit-box-shadow: none !important;
+          -moz-box-shadow: none !important;
+          outline: none;
+        }
+        
+        .btn-primary {
+          background: #cd2c22;
+          border: 1px solid #cd2c22;
+          border-radius: 6px;
+          padding: 12px 24px;
+          font-weight: 600;
+          transition: all 0.3s ease;
+          box-shadow: 0 2px 4px rgba(205, 44, 34, 0.2);
+        }
+        
+        .btn-primary:hover {
+          background: #b71c1c;
+          border-color: #b71c1c;
+          box-shadow: 0 4px 8px rgba(205, 44, 34, 0.3);
+        }
+        
+        .btn-primary:focus {
+          box-shadow: 0 2px 4px rgba(205, 44, 34, 0.2);
+          outline: none;
+        }
+        
+        .modal-section {
+          padding: 20px;
+          max-height: calc(95vh - 140px);
+          overflow-y: auto;
+          overflow-x: hidden;
+        }
+        
+        /* Remove duplicate scrollbars in modal */
+        .modal-section::-webkit-scrollbar {
+          width: 8px;
+        }
+        
+        .modal-section::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 4px;
+        }
+        
+        .modal-section::-webkit-scrollbar-thumb {
+          background: #c1c1c1;
+          border-radius: 4px;
+        }
+        
+        .modal-section::-webkit-scrollbar-thumb:hover {
+          background: #a8a8a8;
+        }
+        
+        .text-primary {
+          color: #cd2c22 !important;
+        }
+        
+        .text-info {
+          color: #17a2b8 !important;
+        }
+        
+        .text-success {
+          color: #28a745 !important;
+        }
+        
+        /* Error styling */
+        .error-card {
+          border: 2px solid #dc3545 !important;
+          box-shadow: 0 0 10px rgba(220, 53, 69, 0.2) !important;
+        }
+        
+        .error-badge {
+          background: #dc3545;
+          color: white;
+          padding: 2px 8px;
+          border-radius: 12px;
+          font-size: 0.75rem;
+          font-weight: 600;
+        }
+        
+        .error-item {
+          margin-bottom: 4px;
+          font-size: 0.9rem;
+        }
+        
+        .alert-danger {
+          background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+          border: 1px solid #f5c6cb;
+          border-left: 4px solid #dc3545;
+        }
+        
+        .alert-danger .alert-heading {
+          color: #721c24;
+          font-weight: 600;
+        }
+        
+        .alert-danger ul {
+          color: #721c24;
+        }
+        
+        .alert-danger .text-muted {
+          color: #6c757d !important;
+        }
+        
+        .breadcrumb {
+          background: transparent;
+          padding: 0;
+          margin-bottom: 24px;
+        }
+        
+        .breadcrumb-item a {
+          color: #cd2c22;
+          text-decoration: none;
+          font-weight: 500;
+        }
+        
+        .breadcrumb-item a:hover {
+          color: #b71c1c;
+          text-decoration: underline !important;
+          cursor: pointer;
+        }
+        
+        .breadcrumb-item a {
+          transition: all 0.3s ease;
+        }
+        
+        .breadcrumb-item a:active {
+          transform: scale(0.98);
+        }
+        
+        .breadcrumb-item.active {
+          color: #6c757d;
+        }
+        
+        .bus-details h5 {
+          color: #cd2c22;
+          font-weight: 700;
+        }
+        
+        .seat-info {
+          background: #f8f9fa;
+          padding: 16px;
+          border-radius: 6px;
+          border: 1px solid #dee2e6;
+        }
+        
+        .boarding-dropping-info {
+          background: #d4edda;
+          padding: 12px;
+          border-radius: 6px;
+          border: 1px solid #c3e6cb;
+        }
+        
+        .form-check-input:checked {
+          background-color: #cd2c22;
+          border-color: #cd2c22;
+        }
+        
+        .form-check-input:focus {
+          border-color: #cd2c22;
+          box-shadow: none;
+          outline: none;
+        }
+        
+        .form-label {
+          font-size: 14px;
+          font-weight: 600;
+          color: #495057;
+          margin-bottom: 8px;
+        }
+        
+        /* Traveler Dropdown Styles */
+        .traveler-dropdown {
+          border: 1px solid #dee2e6;
+          border-radius: 8px;
+          overflow: hidden;
+          background: #ffffff;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          transition: all 0.3s ease;
+        }
+        
+        .traveler-dropdown:hover {
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .traveler-dropdown-header {
+          background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+          padding: 16px 20px;
+          cursor: pointer;
+          border-bottom: 1px solid #dee2e6;
+          transition: all 0.3s ease;
+        }
+        
+        .traveler-dropdown-header:hover {
+          background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+        }
+        
+        .traveler-info h6 {
+          color: #cd2c22;
+          font-weight: 600;
+          margin: 0;
+        }
+        
+        .traveler-info small {
+          font-size: 0.85rem;
+          color: #6c757d;
+        }
+        
+        .dropdown-indicator {
+          color: #cd2c22;
+          font-size: 1.1rem;
+          transition: transform 0.3s ease;
+        }
+        
+        .traveler-dropdown-header:hover .dropdown-indicator {
+          transform: scale(1.1);
+        }
+        
+        .traveler-form {
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height 0.3s ease;
+        }
+        
+        .traveler-form.expanded {
+          max-height: 1000px;
+        }
+        
+        .traveler-form.collapsed {
+          max-height: 0;
+        }
+        
+        .traveler-form-content {
+          padding: 20px;
+          background: #ffffff;
+        }
+        
+        .mb-3 {
+          margin-bottom: 1rem !important;
+        }
+        
+        /* Global shadow removal for all form elements */
+        .card-body input,
+        .card-body select,
+        .card-body textarea {
+          box-shadow: none !important;
+          -webkit-box-shadow: none !important;
+          -moz-box-shadow: none !important;
+        }
+        
+        .card-body input:focus,
+        .card-body select:focus,
+        .card-body textarea:focus {
+          box-shadow: none !important;
+          -webkit-box-shadow: none !important;
+          -moz-box-shadow: none !important;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+          .bus-ticket-header {
+            padding: 14px;
+          }
+
+          .operator-name {
+            font-size: 1.1rem;
+          }
+
+          .vehicle-type {
+            font-size: 0.75rem;
+          }
+
+          .journey-details {
+            padding: 16px 14px;
+          }
+
+          .time {
+            font-size: 1.3rem;
+          }
+
+          .city-name {
+            font-size: 0.9rem;
+          }
+
+          .boarding-instructions,
+          .dropping-instructions {
+            font-size: 0.7rem;
+            max-width: 140px;
+          }
+
+          .price-summary-section {
+            padding: 12px 14px;
+          }
+
+          .total-price {
+            font-size: 1.1rem;
+          }
+
+          .traveler-section {
+            padding: 16px;
+            margin-bottom: 16px;
+          }
+          
+          .traveler-dropdown-header {
+            padding: 12px 16px;
+          }
+          
+          .traveler-form-content {
+            padding: 16px;
+          }
+          
+          .traveler-info h6 {
+            font-size: 0.9rem;
+          }
+          
+          .traveler-info small {
+            font-size: 0.75rem;
+          }
+          
+          .seat-header {
+            padding: 12px 16px;
+          }
+          
+          .card-header {
+            padding: 16px 20px;
+          }
+          
+          .btn-primary {
+            padding: 12px 24px;
+          }
+        }
+      `}</style>
     </>
   );
 };

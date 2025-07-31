@@ -7,6 +7,7 @@ export const selectServiceTaxLoading = (state) => state.hotels.hotelDetailsLoadi
 export const selectPrebookLoading = (state) => state.hotels.prebookLoading;
 export const selectPaymentLoading = (state) => state.hotels.paymentLoading;
 export const selectBookedLoading = (state) => state.hotels.bookedLoading;
+export const selectBookedDetailsLoading = (state) => state.hotels.BookedDetailsLoading;
 
 export const selectCityHotels = (state) => state.hotels.CityHotels.AcList;
 export const selectHotelsList = (state) => state.hotels.HotelsList.Hotels;
@@ -22,3 +23,4 @@ export const selectHotelServiceTaxDetails = (state) => state.hotels?.ServiceTax;
 export const selectHotelPrebookDetails = (state) => state.hotels?.PreBook;
 export const selectHotelPaymentDetails = (state) => state.hotels?.Payment;
 export const selectHotelBookedDetails = (state) => state.hotels?.Booked;
+export const selectHotelBookedDetailsData = (state) => state.hotels?.BookedDetails;
