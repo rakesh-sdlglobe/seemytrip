@@ -27,6 +27,9 @@ import {
   FETCH_HOTEL_BOOKED_REQUEST,
   FETCH_HOTEL_BOOKED_SUCCESS,
   FETCH_HOTEL_BOOKED_FAILURE,
+  FETCH_HOTEL_BOOKEDDETAIL_FAILURE,
+  FETCH_HOTEL_BOOKEDDETAIL_REQUEST,
+  FETCH_HOTEL_BOOKEDDETAIL_SUCCESS,
 } from "../Actions/hotelActions";
 
 const initialState = {
@@ -36,6 +39,7 @@ const initialState = {
   hotelDetailsLoading: false,
   ServiceTaxLoading: false,
   UpdatedPriceLoading: false,
+  BookedDetailsLoading: false,
   prebookLoading: false,
   paymentLoading: false,
   bookedLoading: false,
@@ -46,6 +50,7 @@ const initialState = {
   PreBook: null,
   Payment: null,
   Booked: null,
+  BookedDetails: null,
   CityHotels: [],
   HotelsList: [],
   HotelImages: [],
@@ -160,6 +165,20 @@ export const hotelReducer = (state = initialState, action) => {
       return { ...state, bookedLoading: false, Booked: action.payload };
     case FETCH_HOTEL_BOOKED_FAILURE:
       return { ...state, bookedLoading: false, error: action.payload };
+    case FETCH_HOTEL_BOOKEDDETAIL_REQUEST:
+      return { ...state, BookedDetailsLoading: true, error: null };
+    case FETCH_HOTEL_BOOKEDDETAIL_SUCCESS:
+      return {
+        ...state,
+        BookedDetailsLoading: false,
+        BookedDetails: action.payload,
+      };
+    case FETCH_HOTEL_BOOKEDDETAIL_FAILURE:
+      return {
+        ...state,
+        BookedDetailsLoading: false,
+        error: action.payload,
+      };
     default:
       return state;
   }

@@ -29,6 +29,9 @@ export const FETCH_HOTEL_PAYMENT_FAILURE = "FETCH_HOTEL_PAYMENT_FAILURE";
 export const FETCH_HOTEL_BOOKED_REQUEST = "FETCH_HOTEL_BOOKED_REQUEST";
 export const FETCH_HOTEL_BOOKED_SUCCESS = "FETCH_HOTEL_BOOKED_SUCCESS";
 export const FETCH_HOTEL_BOOKED_FAILURE = "FETCH_HOTEL_BOOKED_FAILURE";
+export const FETCH_HOTEL_BOOKEDDETAIL_REQUEST = "FETCH_HOTEL_BOOKEDDETAIL_REQUEST";
+export const FETCH_HOTEL_BOOKEDDETAIL_SUCCESS = "FETCH_HOTEL_BOOKEDDETAIL_SUCCESS";
+export const FETCH_HOTEL_BOOKEDDETAIL_FAILURE = "FETCH_HOTEL_BOOKEDDETAIL_FAILURE";
 
 export const fetchCityHotelsRequest = () => ({
   type: FETCH_CITY_HOTELS_REQUEST,
@@ -396,6 +399,42 @@ export const fetchHotelBooked = (bookedRequest) => {
       return response.data;
     } catch (err) {
       dispatch(fetchHotelBookedFailure(err.message || "Something went wrong"));
+      throw err;
+    }
+  };
+};
+
+export const fetchHotelBookedDetailRequest = () => ({
+  type: FETCH_HOTEL_BOOKEDDETAIL_REQUEST,
+});
+
+export const fetchHotelBookedDetailSuccess = (data) => ({
+  type: FETCH_HOTEL_BOOKEDDETAIL_SUCCESS,
+  payload: data,
+});
+
+export const fetchHotelBookedDetailFailure = (error) => ({
+  type: FETCH_HOTEL_BOOKEDDETAIL_FAILURE,
+  payload: error,
+});
+
+export const fetchHotelBookedDetail = (bookedDetailRequest) => {
+  return async (dispatch) => {
+    dispatch(fetchHotelBookedDetailRequest());
+    try {
+      const payload = bookedDetailRequest;
+
+      console.log("Final Payload to API for Booking Detail:", payload);
+
+      const response = await axios.post(
+        `http://localhost:3002/api/hotels/getHotelBookedDetails`,
+        payload
+      );
+      console.log("Data from fetchHotelBookedDetail API:", response.data);
+      dispatch(fetchHotelBookedDetailSuccess(response.data));
+      return response.data;
+    } catch (err) {
+      dispatch(fetchHotelBookedDetailFailure(err.message || "Something went wrong"));
       throw err;
     }
   };

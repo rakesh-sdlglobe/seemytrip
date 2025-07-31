@@ -15,24 +15,53 @@ const BoardingPointsPage = ({
   // Format time and include date/month
   const formatTimeWithDate = (timeString) => {
 
- if (!timeString) return { time: "-", date: "-" }; 
-    
-    // Get current date for display
-    const currentDate = new Date();
-    const day = currentDate.getDate();
-    const month = currentDate.toLocaleString('en-US', { month: 'short' });
-    
-    // Format time
-    const [h, m] = timeString.split(':');
-    let hour = parseInt(h, 10);
-    const minute = m;
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    hour = hour % 12 || 12;
-    
-    return {
-      time: `${hour}:${minute} ${ampm}`,
-      date: `${day} ${month}`
-    };
+    try {
+      // Parse the ISO date string to get the actual date
+      const dateObj = new Date(timeString);
+      
+      // Check if the date is valid
+      if (isNaN(dateObj.getTime())) {
+        console.log("Invalid date string, using current date");
+        const currentDate = new Date();
+        const day = currentDate.getDate();
+        const month = currentDate.toLocaleString('en-US', { month: 'short' });
+        
+        // Format time from the original string
+        const timePart = timeString.split('T')[1] || timeString;
+        const [h, m] = timePart.split(':');
+        let hour = parseInt(h, 10);
+        const minute = m;
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        hour = hour % 12 || 12;
+        
+        return {
+          time: `${hour}:${minute} ${ampm}`,
+          date: `${day} ${month}`
+        };
+      }
+      
+      // Get the actual date from the time string
+      const day = dateObj.getDate();
+      const month = dateObj.toLocaleString('en-US', { month: 'short' });
+      
+      // Format time
+      const hours = dateObj.getHours();
+      const minutes = dateObj.getMinutes();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      const hour = hours % 12 || 12;
+      const minute = minutes.toString().padStart(2, '0');
+      
+      const result = {
+        time: `${hour}:${minute} ${ampm}`,
+        date: `${day} ${month}`
+      };
+      
+      console.log("formatTimeWithDate result:", result);
+      return result;
+    } catch (error) {
+      console.error("Error parsing date:", error);
+      return { time: "-", date: "-" };
+    }
   };
 
   // Format boarding points
@@ -85,8 +114,8 @@ const BoardingPointsPage = ({
         }
 
         .point-item input[type="radio"]:checked + .point-content {
-          border-color: #007bff;
-          background: #f8f9ff;
+          border-color: #cd2c22;
+          background: rgba(205, 44, 34, 0.1);
         }
 
         .point-item input[type="radio"]:checked + .point-content::before {
@@ -94,7 +123,7 @@ const BoardingPointsPage = ({
           position: absolute;
           top: 10px;
           right: 10px;
-          background: #007bff;
+          background: #cd2c22;
           color: white;
           width: 24px;
           height: 24px;
@@ -124,7 +153,7 @@ const BoardingPointsPage = ({
         .point-icon {
           width: 40px;
           height: 40px;
-          background: #007bff;
+          background: #cd2c22;
           color: white;
           border-radius: 50%;
           display: flex;
@@ -151,7 +180,7 @@ const BoardingPointsPage = ({
 
         .point-time {
           font-weight: 600;
-          color: #007bff;
+          color: #cd2c22;
           font-size: 1rem;
           text-align: right;
           background: none;
@@ -180,8 +209,8 @@ const BoardingPointsPage = ({
         }
 
         .contact-info {
-          background: #e3f2fd;
-          border: 1px solid #bbdefb;
+          background: rgba(205, 44, 34, 0.1);
+          border: 1px solid #cd2c22;
           border-radius: 8px;
           padding: 15px;
           margin-top: 20px;
@@ -190,7 +219,7 @@ const BoardingPointsPage = ({
         .contact-info h6 {
         width: 100%;
     
-          color: #1976d2;
+          color: #cd2c22;
           margin-bottom: 10px;
           display: flex;
           align-items: center;
