@@ -218,15 +218,27 @@ const HotelReview = () => {
 
   useEffect(() => {
     if (bookedDetails && bookedDetails?.BookingsStatus.length > 0) {
+      // Store booking data for confirmation page
+      const confirmationData = {
+        ReservationId: bookedDetails.ReservationId,
+        status: bookedDetails.StatusCode,
+        ReservationReference: bookedDetails.ReservationReference,
+        totalPrice: totalPrice,
+        travelers: travellerDetails
+      };
+      
+      localStorage.setItem("hotelConfirmationData", JSON.stringify(confirmationData));
       navigate("/hotel-confirmation", {
         state: {
           ReservationId: bookedDetails.ReservationId,
           status: bookedDetails.StatusCode,
           ReservationReference: bookedDetails.ReservationReference,
+          totalPrice: totalPrice,
+          travelers: travellerDetails
         },
       });
     }
-  }, [bookedDetails, navigate]);
+  }, [bookedDetails, navigate, totalPrice, travellerDetails]);
 
   // Function to make booking request
   const makeBookingRequest = useCallback(
@@ -330,6 +342,9 @@ const HotelReview = () => {
     let PreBookRequest = makeBookingRequest(total);
     dispatch(fetchHotelPrebook(PreBookRequest));
     setTotalPrice(total);
+    
+    // Store total price for confirmation page
+    localStorage.setItem("hotelTotalPrice", total.toString());
   };
 
   // Function to validate prices

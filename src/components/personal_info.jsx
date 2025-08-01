@@ -31,12 +31,42 @@ const PersonalInfo = () => {
 
     useEffect(() => {
         if (userProfile) {
+            // Convert backend marital status to frontend format
+            let maritalStatusDisplay = '';
+            if (userProfile.maritalStatus) {
+                switch (userProfile.maritalStatus.toLowerCase()) {
+                    case 'u':
+                        maritalStatusDisplay = 'Single';
+                        break;
+                    case 'm':
+                        maritalStatusDisplay = 'Married';
+                        break;
+                    default:
+                        maritalStatusDisplay = userProfile.maritalStatus;
+                }
+            }
+
+            // Convert backend gender to frontend format
+            let genderDisplay = '';
+            if (userProfile.gender) {
+                switch (userProfile.gender.toLowerCase()) {
+                    case 'm':
+                        genderDisplay = 'Male';
+                        break;
+                    case 'f':
+                        genderDisplay = 'Female';
+                        break;
+                    default:
+                        genderDisplay = userProfile.gender;
+                }
+            }
+
             setFormData({
                 fullName: `${userProfile.firstName || ''} ${userProfile.middleName || ''} ${userProfile.lastName || ''}`.trim(),
                 mobile: userProfile.mobile || '',
                 dob: userProfile.dob ? new Date(userProfile.dob).toISOString().split('T')[0] : null,
-                gender: userProfile.gender || 'Male',
-                maritalStatus: userProfile.maritalStatus || '',
+                gender: genderDisplay || 'Male',
+                maritalStatus: maritalStatusDisplay || '',
                 email: userProfile.email || '',
                 isEmailVerified: userProfile.isEmailVerified || 0,
                 isMobileVerified: userProfile.isMobileVerified || 0,
@@ -96,9 +126,25 @@ const PersonalInfo = () => {
     }, []);
 
     const handleSave = useCallback(async () => {
-        const [firstName, ...middleLast] = formData.fullName.split(" "), 
-              lastName = middleLast.pop() || "", 
-              middleName = middleLast.join(" ");
+        // Split full name properly
+        const nameParts = formData.fullName.trim().split(' ').filter(part => part.length > 0);
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts[nameParts.length - 1] || '';
+        const middleName = nameParts.slice(1, -1).join(' ') || '';
+        
+        // Convert marital status to ENUM values for database
+        let maritalStatusValue;
+        switch (formData.maritalStatus?.toLowerCase()) {
+            case 'single':
+            case 'unmarried':
+                maritalStatusValue = 'U';
+                break;
+            case 'married':
+                maritalStatusValue = 'M';
+                break;
+            default:
+                maritalStatusValue = formData.maritalStatus; // Keep original if not recognized
+        }
         
         const userData = {
             firstName,
@@ -109,13 +155,18 @@ const PersonalInfo = () => {
             gender: formData.gender,
             email: formData.email,
             isEmailVerified: formData.isEmailVerified,
-            maritalStatus: formData.maritalStatus,
+            maritalStatus: maritalStatusValue, // Use the correct ENUM value
         };
         console.log("114 userData ", userData);
         
-        await dispatch(editUserProfile(userData)); // Wait for update to finish
-        await dispatch(getUserProfile());          // Then fetch the latest profile
-        setIsEditable(false);
+        try {
+            await dispatch(editUserProfile(userData));
+            // Refresh the user profile data after successful update
+            await dispatch(getUserProfile());
+            setIsEditable(false);
+        } catch (error) {
+            console.error('Error saving profile:', error);
+        }
     }, [formData, dispatch]);
 
     const handleMobileVerifyClick = useCallback(() => {
@@ -314,8 +365,6 @@ const PersonalInfo = () => {
                                 <option value="">Select</option>
                                 <option value="Single">Single</option>
                                 <option value="Married">Married</option>
-                                {/* <option value="Divorced">Divorced</option> */}
-                                {/* <option value="Widowed">Widowed</option> */}
                             </select>
                         </div>
                     </div>

@@ -235,6 +235,23 @@ export default function HotelDetails() {
       return;
     }
 
+    // Store the selected room data in localStorage for confirmation page
+    const bookingData = {
+      hotel: details.HotelDetail,
+      room: roomDetails.room,
+      package: roomDetails.package,
+      image: roomDetails.image,
+      roomPrice: roomDetails.room.ServicePrice,
+      hotelName: details.HotelDetail.HotelName,
+      hotelAddress: details.HotelDetail.HotelAddress,
+      checkInDate: checkInDate,
+      checkOutDate: checkOutDate,
+      rooms: Rooms,
+      adults: adults,
+      children: children
+    };
+    
+    localStorage.setItem("selectedHotelBooking", JSON.stringify(bookingData));
     navigate("/hotel-review", { state: roomDetails });
   };
   useEffect(() => {
@@ -277,7 +294,7 @@ export default function HotelDetails() {
   const handleAuthSuccess = useCallback(() => {
     console.log("Header02: Authentication successful, updating state...");
     setShowAuthPopup(false);
-    // Force a re-check of localStorage
+    
     setTimeout(() => {
       const token = localStorage.getItem("authToken");
       const user = getEncryptedItem("user1");
@@ -287,10 +304,27 @@ export default function HotelDetails() {
           isLoggedIn: true,
           user,
         });
-        localStorage.setItem("userloginemail", user.email ); 
+        localStorage.setItem("userloginemail", user.email);
+        
+        // Store the selected room data in localStorage for confirmation page
+        const bookingData = {
+          hotel: details.HotelDetail,
+          room: seletedRoomState.room,
+          package: seletedRoomState.package,
+          image: seletedRoomState.image,
+          roomPrice: seletedRoomState.room.ServicePrice,
+          hotelName: details.HotelDetail.HotelName,
+          hotelAddress: details.HotelDetail.HotelAddress,
+          checkInDate: checkInDate,
+          checkOutDate: checkOutDate,
+          rooms: Rooms,
+          adults: adults,
+          children: children
+        };
+        
+        localStorage.setItem("selectedHotelBooking", JSON.stringify(bookingData));
         navigate("/hotel-review", { state: seletedRoomState });
 
-        // Dispatch a custom event to notify other components
         window.dispatchEvent(
           new CustomEvent("authStateChanged", {
             detail: { isLoggedIn: true, user },
@@ -298,7 +332,7 @@ export default function HotelDetails() {
         );
       }
     }, 100);
-  }, [navigate, seletedRoomState]);
+  }, [navigate, seletedRoomState, details, checkInDate, checkOutDate, Rooms, adults, children]);
 
   const searchParams = JSON.parse(
     localStorage.getItem("hotelSearchParams") || "{}"
