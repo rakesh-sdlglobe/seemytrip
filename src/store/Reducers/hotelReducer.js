@@ -30,6 +30,10 @@ import {
   FETCH_HOTEL_BOOKEDDETAIL_FAILURE,
   FETCH_HOTEL_BOOKEDDETAIL_REQUEST,
   FETCH_HOTEL_BOOKEDDETAIL_SUCCESS,
+  FETCH_HOTELS_GEOLIST_REQUEST,
+  FETCH_HOTELS_GEOLIST_SUCCESS,
+  FETCH_HOTELS_GEOLIST_FAILURE,
+  CLEAR_HOTELS_GEOLIST
 } from "../Actions/hotelActions";
 
 const initialState = {
@@ -179,6 +183,12 @@ export const hotelReducer = (state = initialState, action) => {
         BookedDetailsLoading: false,
         error: action.payload,
       };
+      case FETCH_HOTELS_GEOLIST_SUCCESS:
+        return { ...state, hotelsGeoListLoading: false, hotelsGeoList: action.payload, hotelsGeoListError: null };
+    case FETCH_HOTELS_GEOLIST_FAILURE:
+        return { ...state, hotelsGeoListLoading: false, hotelsGeoListError: action.payload, hotelsGeoList: [] };
+    case CLEAR_HOTELS_GEOLIST:
+        return { ...state, hotelsGeoListLoading: false, hotelsGeoListError: null, hotelsGeoList: [] };
     default:
       return state;
   }

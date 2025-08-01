@@ -60,7 +60,7 @@ export const getUserProfile = () => {
   };
 };
 // Edit user profile
-export const editUserProfile = (userData,navigate) => {
+export const editUserProfile = (userData, navigate) => {
   console.log("69 userData ", userData);
   
   return async (dispatch) => {
@@ -72,15 +72,24 @@ export const editUserProfile = (userData,navigate) => {
           'Content-Type': 'application/json'
         }
       });
-      console.log("64 data ",response.data)
-      localStorage.googleUserName = JSON.stringify(userData.name)
+      console.log("64 data ", response.data);
+      
+      // Update localStorage with the new user data
+      localStorage.googleUserName = JSON.stringify(userData.name);
       console.log("Now user name is ", localStorage.googleUserName);
       
+      // Dispatch the updated user data to Redux
+      dispatch({ type: EDIT_USER_PROFILE_SUCCESS, payload: response.data });
       
-      dispatch({ type: EDIT_USER_PROFILE_SUCCESS, payload: response.data.user });
-       // Navigate to home page
+      // Update encrypted user data in localStorage
+      setEncryptedItem('user1', response.data);
+      
+      // Navigate to home page if navigate function is provided
+      if (navigate) {
+        navigate('/');
+      }
     } catch (error) {    
-      dispatch({ type: EDIT_USER_PROFILE_FAILURE, payload: error.response.data.message });
+      dispatch({ type: EDIT_USER_PROFILE_FAILURE, payload: error.response?.data?.message || 'Failed to update profile' });
     }
   };
 };

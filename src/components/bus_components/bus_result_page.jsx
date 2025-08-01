@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchBusSearch,
@@ -131,6 +131,12 @@ const BusResultPage = ({ filters }) => {
   const busResults = searchList?.BusSearchResult?.BusResults || [];
   const [openSeatIndex, setOpenSeatIndex] = useState(null);
   
+  // Add pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const observerRef = useRef();
+  const ITEMS_PER_PAGE = 5;
+
   // Add state for boarding/dropping points
   // const [selectedBoardingPoint, setSelectedBoardingPoint] = useState('');
   // const [selectedDroppingPoint, setSelectedDroppingPoint] = useState('');
@@ -257,18 +263,69 @@ const BusResultPage = ({ filters }) => {
     }));
   };
 
+  const getHour = (dateTimeStr) => {
+    if (!dateTimeStr) return null;
+    const date = new Date(dateTimeStr);
+    return date.getHours();
+  };
+
+  const TIME_BLOCKS = [
+    { id: 'earlyMorning', start: 0, end: 6 },
+    { id: 'morning', start: 6, end: 12 },
+    { id: 'afternoon', start: 12, end: 18 },
+    { id: 'evening', start: 18, end: 24 },
+  ];
+
+  const isInSelectedBlock = (hour, selectedBlocks) => {
+    if (!selectedBlocks || selectedBlocks.length === 0) return true;
+    return selectedBlocks.some(blockId => {
+      const block = TIME_BLOCKS.find(b => b.id === blockId);
+      return block && hour >= block.start && hour < block.end;
+    });
+  };
+
   const filteredResults = busResults.filter((bus) => {
-    if (
-      filters.busTypes.length > 0 &&
-      !filters.busTypes.some(
-        (type) =>
-          bus.BusType &&
-          bus.BusType.toLowerCase()
-            .replace(/[\s\-\/]/g, "")
-            .includes(type.toLowerCase().replace(/[\s\-\/]/g, ""))
-      )
-    )
-      return false;
+    // Fix the bus type filtering logic
+    if (filters.busTypes.length > 0) {
+      const busType = bus.BusType ? bus.BusType.toLowerCase() : '';
+      const cleanBusTypeStr = cleanBusType(bus.BusType).toLowerCase();
+      
+      // Check if any of the selected filter types match the bus type
+      const hasMatchingType = filters.busTypes.some(filterType => {
+        const filterTypeLower = filterType.toLowerCase();
+        
+        // Handle AC/Non-AC filtering more precisely
+        if (filterTypeLower === 'ac') {
+          // Only match if bus type contains A/C but NOT "Non A/C"
+          return (busType.includes('a/c') || busType.includes('ac')) && 
+                 !busType.includes('non a/c') && 
+                 !busType.includes('nonac');
+        }
+        
+        if (filterTypeLower === 'nonac') {
+          // Only match if bus type contains "Non A/C" or doesn't contain A/C at all
+          return busType.includes('non a/c') || 
+                 busType.includes('nonac') || 
+                 (!busType.includes('a/c') && !busType.includes('ac'));
+        }
+        
+        // Handle other filter types
+        if (filterTypeLower === 'sleeper') {
+          return busType.includes('sleeper') && !busType.includes('semi sleeper');
+        }
+        
+        if (filterTypeLower === 'semisleeper') {
+          return busType.includes('semi sleeper') || busType.includes('semi-sleeper');
+        }
+        
+        // Default matching for other types
+        return busType.includes(filterTypeLower.replace(/[\s\-]/g, ''));
+      });
+      
+      if (!hasMatchingType) {
+        return false;
+      }
+    }
 
     const price = bus.BusPrice?.PublishedPriceRoundedOff || 0;
     if (price < (filters.priceMin || 0) || price > filters.priceMax)
@@ -281,18 +338,68 @@ const BusResultPage = ({ filters }) => {
     )
       return false;
 
+    // Departure time filter
+    const depHour = getHour(bus.DepartureTime);
+    if (!isInSelectedBlock(depHour, filters.departureTimes)) return false;
+
+    // Arrival time filter
+    const arrHour = getHour(bus.ArrivalTime);
+    if (!isInSelectedBlock(arrHour, filters.arrivalTimes)) return false;
+
     return true;
   });
 
+  let sortedResults = [...filteredResults];
+  if (filters.priceSort === 'lowToHigh') {
+    sortedResults.sort((a, b) => (a.BusPrice?.PublishedPriceRoundedOff || 0) - (b.BusPrice?.PublishedPriceRoundedOff || 0));
+  } else if (filters.priceSort === 'highToLow') {
+    sortedResults.sort((a, b) => (b.BusPrice?.PublishedPriceRoundedOff || 0) - (a.BusPrice?.PublishedPriceRoundedOff || 0));
+  }
+
+  // Intersection Observer for infinite scroll
+  const lastBusElementRef = useCallback(node => {
+    if (loading) return;
+    if (observerRef.current) observerRef.current.disconnect();
+    observerRef.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMoreBuses()) {
+        loadMoreBuses();
+      }
+    });
+    if (node) observerRef.current.observe(node);
+  }, [loading]);
+
+  const hasMoreBuses = () => {
+    return currentPage * ITEMS_PER_PAGE < sortedResults.length;
+  };
+
+  const loadMoreBuses = () => {
+    if (!isLoadingMore && hasMoreBuses()) {
+      setIsLoadingMore(true);
+      // Simulate loading delay
+      setTimeout(() => {
+        setCurrentPage(prev => prev + 1);
+        setIsLoadingMore(false);
+      }, 500);
+    }
+  };
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters]);
+
+  // Get paginated results
+  const paginatedResults = sortedResults.slice(0, currentPage * ITEMS_PER_PAGE);
+
   return (
-    <div className="col-xl-9 col-lg-8 col-md-12">
-      <div className="row align-items-center justify-content-between">
+    <div className="col-xl-9 col-lg-5 col-md-0 mt-lg-0">
+      {/* <div className="row align-items-center justify-content-between">
         <div className="col-xl-4 col-lg-4 col-md-4">
           <h5 className="fw-bold fs-6 mb-lg-0 mb-3">
-            Showing {loading ? "..." : filteredResults.length} Search Results
+            Showing {loading ? "..." : paginatedResults.length} of {sortedResults.length} Search Results
           </h5>
         </div>
-      </div>
+      </div> */}
 
       <div className="row align-items-center g-2 mt-2">
         {loading ? (
@@ -309,22 +416,26 @@ const BusResultPage = ({ filters }) => {
           </>
         ) : (
           <>
-            {filteredResults.map((bus, index) => {
+            {paginatedResults.map((bus, index) => {
               const dep = formatDateTime(bus.DepartureTime);
               const arr = formatDateTime(bus.ArrivalTime);
               const duration = getDuration(bus.DepartureTime, bus.ArrivalTime);
+              const isLastElement = index === paginatedResults.length - 1;
 
               return (
                 <div
+                  ref={isLastElement ? lastBusElementRef : null}
                   className="border rounded p-3 mb-3 bg-white"
                   style={{ borderColor: "#007bff" }}
-                  key={index}
+                  key={`${bus.TravelName}-${index}`}
                 >
                   <div className="d-flex justify-content-between align-items-start flex-wrap position-relative">
                     {/* Left */}
                     <div className="flex-grow-1">
                       <h5 className="fw-bold mb-1">{bus.TravelName}</h5>
+                      <p className="text-muted mb-2">{bus.BusType}</p>
                       <p className="text-muted mb-2">{cleanBusType(bus.BusType)}</p>
+
                       <div className="d-flex align-items-center mb-2">
                         <span
                           className="bg-primary text-white px-2 py-1 rounded me-2"
@@ -402,6 +513,16 @@ const BusResultPage = ({ filters }) => {
                 </div>
               );
             })}
+            
+            {/* Loading more indicator */}
+            {isLoadingMore && (
+              <div className="col-xl-12">
+                <ResultSkeleton />
+              </div>
+            )}
+            
+       
+            
           </>
         )}
       </div>

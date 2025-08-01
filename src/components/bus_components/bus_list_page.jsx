@@ -6,22 +6,24 @@ import BusFilterPage from './bus_filter_page';
 import BusResultPage from './bus_result_page';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { selectBusSearchList } from '../../store/Selectors/busSelectors';
+import { selectBusSearchList, selectBusSearchLoading } from '../../store/Selectors/busSelectors';
 
 const defaultFilters = {
   busTypes: [],
   wifi: false,
   charging: false,
   snacks: false,
-  priceMin: 0,      // <-- add this
-  priceMax: 5000,   // <-- and this
   rating45: false,
   rating4: false,
   rating35: false,
+  departureTimes: [],
+  arrivalTimes: [],
+  priceSort: '', // <-- add this
 };
 
 const BusList = () => {
     const [filters, setFilters] = useState(defaultFilters);
+    const loading = useSelector(selectBusSearchLoading);
 
     // Handler for filter changes
     const handleFilterChange = (newFilters) => setFilters(prev => ({ ...prev, ...newFilters }));
@@ -75,6 +77,7 @@ const BusList = () => {
                                 onClear={handleClear}
                                 minPrice={minPrice}
                                 maxPrice={maxPrice}
+                                loading={loading}
                             />
 
                             {/* All List */}

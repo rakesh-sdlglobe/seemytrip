@@ -5,10 +5,12 @@ import {
   fetchTravelers,
   removeTraveler,
   updateTraveler,
+  getUserProfile, // Add this import
 } from "../store/Actions/userActions";
 import {
   selectTravelers,
   selectTravelerLoading,
+  selectUserProfile, // Add this import
 } from "../store/Selectors/userSelector";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from 'react-toastify';
@@ -25,10 +27,14 @@ const PersonalTravel = () => {
 
   const dispatch = useDispatch();
   const travelers = useSelector(selectTravelers) || [];
+  console.log(travelers);
   const loading = useSelector(selectTravelerLoading);
+  const userProfile = useSelector(selectUserProfile); // Add this selector
   
   useEffect(() => {
+    // Fetch both travelers and user profile
     dispatch(fetchTravelers());
+    dispatch(getUserProfile());
   }, [dispatch]);
 
   const handleAddTraveler = () => {
@@ -73,10 +79,10 @@ const PersonalTravel = () => {
 
   const handleEdit = (traveler) => {
     setIsEditing(true);
-    setEditingId(traveler.passengerId);
-    setFirstName(traveler.firstname);
-    setMobile(traveler.mobile);
-    setBirthDate(formatDOB(traveler.dob));
+    setEditingId(traveler.id);
+    setFirstName(traveler.passengerName || ''); // Use passengerName
+    setMobile(traveler.passengerMobileNumber || ''); // Use passengerMobileNumber
+    setBirthDate(formatDOB(traveler.pasenger_dob)); // Use pasenger_dob
     setShowModal(true);
     toast.info("Editing traveler details");
   };
@@ -94,6 +100,7 @@ const PersonalTravel = () => {
 
   const formatDOB = (dob) => {
     if (!dob) return "";
+    // Handles both "YYYY-MM-DD" and "YYYY-MM-DDTHH:mm:ss.sssZ"
     return dob.split("T")[0];
   };
 
@@ -113,20 +120,22 @@ const PersonalTravel = () => {
       />
 
       {/* Saved Travelers Card */}
-      <div className="card">
+      <div className="card mb-4">
         <div className="card-header d-flex justify-content-between align-items-center">
-          <h4 className="mb-0">
-            <i className="fa-solid fa-users me-2 text-primary"></i>
-            Saved Travelers
+          <h4>
+            <i className="fa-solid fa-users me-2" />
+            Travelers
+            {userProfile && (
+              <small className="text-muted ms-2">
+                ({userProfile.firstName} {userProfile.lastName})
+              </small>
+            )}
           </h4>
-          <button 
-            className="btn btn-primary" 
-            onClick={() => {
-              resetForm();
-              setShowModal(true);
-            }}
+          <button
+            className="btn btn-primary"
+            onClick={() => setShowModal(true)}
           >
-            <i className="fa-solid fa-plus me-2"></i>
+            <i className="fa fa-plus me-2" />
             Add Traveler
           </button>
         </div>
@@ -145,7 +154,7 @@ const PersonalTravel = () => {
                       <div className="d-flex justify-content-between align-items-center mb-3">
                         <div className="d-flex align-items-center">
                           <div className="avatar-circle me-3">
-                            {(traveler.firstname?.[0] || '')}
+                            {(traveler.passengerName?.[0] || '')}
                           </div>
                           <div>
                             <h5 className="mb-1">
@@ -153,7 +162,11 @@ const PersonalTravel = () => {
                             </h5>
                             <p className="text-muted small mb-0">
                               <i className="fa-solid fa-phone me-2"></i>
-                              {traveler.mobile}
+                              {traveler.passengerMobileNumber || 'N/A'}
+                            </p>
+                            <p className="text-muted small mb-0">
+                              <i className="fa-solid fa-calendar me-2"></i>
+                              {traveler.pasenger_dob ? formatDOB(traveler.pasenger_dob) : 'N/A'}
                             </p>
                           </div>
                         </div>
@@ -170,14 +183,6 @@ const PersonalTravel = () => {
                           >
                             <i className="fa-solid fa-trash-can"></i>
                           </button>
-                        </div>
-                      </div>
-                      <div className="border-top pt-3">
-                        <div className="row">
-                          <div className="col-6">
-                            <small className="text-muted d-block">Date of Birth</small>
-                            <span>{formatDOB(traveler.dob)}</span>
-                          </div>
                         </div>
                       </div>
                     </div>

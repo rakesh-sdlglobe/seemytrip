@@ -24,3 +24,9 @@ export const selectHotelPrebookDetails = (state) => state.hotels?.PreBook;
 export const selectHotelPaymentDetails = (state) => state.hotels?.Payment;
 export const selectHotelBookedDetails = (state) => state.hotels?.Booked;
 export const selectHotelBookedDetailsData = (state) => state.hotels?.BookedDetails;
+
+
+
+export const selectHotelsGeoList = (state) => state.hotels.hotelsGeoList;
+export const selectHotelsGeoListLoading = (state) => state.hotels.hotelsGeoListLoading;
+export const selectHotelsGeoListError = (state) => state.hotels.hotelsGeoListError;

@@ -16,66 +16,75 @@ import Footer from './footer';
 import TopHeader from './topHeader';
 import SideBarProfilePage from './sidebar_profilepage';
 import PersonalTravel from './personal-travel';
-
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { getUserProfile } from '../store/Actions/userActions';
 
 const Travelers = () => {
-      return (
-        <div>
-          
-          {/* ============================================================== */}
-          {/* Preloader - style you can find in spinners.css */}
-          {/* ============================================================== */}
-          <div id="preloader">
-            <div className="preloader"><span /><span /></div>
-          </div>
-          {/* ============================================================== */}
-          {/* Main wrapper - style you can find in pages.scss */}
-          {/* ============================================================== */}
-          <div id="main-wrapper">
-            {/* ============================================================== */}
-            {/* Top header  */}
-            {/* ============================================================== */}
-            {/* Start Navigation */}
-            <Header02/>
-            {/* End Navigation */}
-            <div className="clearfix" />
-            {/* ============================================================== */}
-            {/* Top header  */}
-            {/* ============================================================== */}
-            {/* ============================ User Dashboard Menu ============================ */}
-          <TopHeader/>
-            {/* ============================ End user Dashboard Menu ============================ */}
-            {/* ============================ Booking Page ================================== */}
-            <section className="pt-5 gray-simple position-relative">
-              <div className="container">
-                <div className="row align-items-center justify-content-center">
-                  <div className="col-xl-12 col-lg-12 col-md-12 mb-4">
-                    <button className="btn btn-dark fw-medium full-width d-block d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDashboard" aria-controls="offcanvasDashboard"><i className="fa-solid fa-gauge me-2" />Dashboard
-                      Navigation</button>
-                    <div className="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabIndex={-1} id="offcanvasDashboard" aria-labelledby="offcanvasScrollingLabel">
-                      <div className="offcanvas-header gray-simple">
-                        <h5 className="offcanvas-title" id="offcanvasScrollingLabel">Offcanvas with body scrolling</h5>
-                        <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" />
-                      </div>
-                     <TopHeader/>
-                    </div>
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // Fetch user profile when component mounts
+    dispatch(getUserProfile());
+  }, [dispatch]);
+
+  return (
+    <div>
+      {/* ============================================================== */}
+      {/* Preloader - style you can find in spinners.css */}
+      {/* ============================================================== */}
+      <div id="preloader">
+        <div className="preloader"><span /><span /></div>
+      </div>
+      {/* ============================================================== */}
+      {/* Main wrapper - style you can find in pages.scss */}
+      {/* ============================================================== */}
+      <div id="main-wrapper">
+        {/* ============================================================== */}
+        {/* Top header  */}
+        {/* ============================================================== */}
+        {/* Start Navigation */}
+        <Header02/>
+        {/* End Navigation */}
+        <div className="clearfix" />
+        {/* ============================================================== */}
+        {/* Top header  */}
+        {/* ============================================================== */}
+        {/* ============================ User Dashboard Menu ============================ */}
+        <TopHeader/>
+        {/* ============================ End user Dashboard Menu ============================ */}
+        {/* ============================ Booking Page ================================== */}
+        <section className="pt-5 gray-simple position-relative">
+          <div className="container">
+            <div className="row align-items-center justify-content-center">
+              <div className="col-xl-12 col-lg-12 col-md-12 mb-4">
+                <button className="btn btn-dark fw-medium full-width d-block d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDashboard" aria-controls="offcanvasDashboard"><i className="fa-solid fa-gauge me-2" />Dashboard
+                  Navigation</button>
+                <div className="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabIndex={-1} id="offcanvasDashboard" aria-labelledby="offcanvasScrollingLabel">
+                  <div className="offcanvas-header gray-simple">
+                    <h5 className="offcanvas-title" id="offcanvasScrollingLabel">Offcanvas with body scrolling</h5>
+                    <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" />
                   </div>
-                </div>
-                <div className="row align-items-start justify-content-between gx-xl-4">
-                <SideBarProfilePage/>
-                  <div className="col-xl-8 col-lg-8 col-md-12">
-                    {/* Personal Information */}
-                    <PersonalTravel/>
-                  </div>
+                  <TopHeader/>
                 </div>
               </div>
-            </section>
-            {/* ============================ Booking Page End ================================== */}
-            {/* ============================ Footer Start ================================== */}
-            <Footer/>
-            {/* ============================ Footer End ================================== */}
+            </div>
+            <div className="row align-items-start justify-content-between gx-xl-4">
+              <SideBarProfilePage/>
+              <div className="col-xl-8 col-lg-8 col-md-12">
+                {/* Personal Information */}
+                <PersonalTravel/>
+              </div>
+            </div>
           </div>
-        </div>
-      );
-    }
+        </section>
+        {/* ============================ Booking Page End ================================== */}
+        {/* ============================ Footer Start ================================== */}
+        <Footer/>
+        {/* ============================ Footer End ================================== */}
+      </div>
+    </div>
+  );
+};
+
 export default Travelers;

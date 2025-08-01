@@ -32,6 +32,10 @@ export const FETCH_HOTEL_BOOKED_FAILURE = "FETCH_HOTEL_BOOKED_FAILURE";
 export const FETCH_HOTEL_BOOKEDDETAIL_REQUEST = "FETCH_HOTEL_BOOKEDDETAIL_REQUEST";
 export const FETCH_HOTEL_BOOKEDDETAIL_SUCCESS = "FETCH_HOTEL_BOOKEDDETAIL_SUCCESS";
 export const FETCH_HOTEL_BOOKEDDETAIL_FAILURE = "FETCH_HOTEL_BOOKEDDETAIL_FAILURE";
+export const FETCH_HOTELS_GEOLIST_REQUEST = 'FETCH_HOTELS_GEOLIST_REQUEST';
+export const FETCH_HOTELS_GEOLIST_SUCCESS = 'FETCH_HOTELS_GEOLIST_SUCCESS';
+export const FETCH_HOTELS_GEOLIST_FAILURE = 'FETCH_HOTELS_GEOLIST_FAILURE';
+export const CLEAR_HOTELS_GEOLIST = 'CLEAR_HOTELS_GEOLIST';
 
 export const fetchCityHotelsRequest = () => ({
   type: FETCH_CITY_HOTELS_REQUEST,
@@ -112,6 +116,11 @@ export const fetchHotelsList =
     console.log("Page No:", PageNo);
     console.log("Is Pagination:", isPagination);
 
+    // Clear old geo list data when starting a new search (not pagination)
+    if (!isPagination) {
+      dispatch(clearHotelsGeoList());
+    }
+
     try {
       dispatch(fetchHotelsListRequest());
 
@@ -119,19 +128,45 @@ export const fetchHotelsList =
         cityId,
         checkInDate,
         checkOutDate,
-        Rooms: Rooms,
-        PageNo: PageNo || 1,
-        SessionID: SessionID || null,
-        Filter: Filter || null,
-        Sort: Sort || { SortBy: "StarRating", SortOrder: "Desc" },
+        "Rooms": Rooms,
+        "PageNo": PageNo || 1,
+        "SessionID": SessionID || null,
+        "Filter": Filter || null,
+        "Sort": Sort || { "SortBy": "StarRating", "SortOrder": "Desc" }
       });
 
       console.log("Response from hotels list API:", response.data);
       if (response.data && response.data !== null) {
-        console.log(
-          " *** Yeah , count for hotels is ",
-          response.data.Hotels.length
-        );
+        console.log(" *** Yeah , count for hotels is ", response.data.Hotels.length);
+        
+        // Debug: Log the full response structure to find SessionId
+        console.log("Full API response structure:", JSON.stringify(response.data, null, 2));
+        console.log("Response keys:", Object.keys(response.data));
+        
+        // Check for SessionId in different possible locations
+        const sessionId = response.data.SessionId || 
+                        response.data.SessionID || 
+                        response.data.sessionId || 
+                        response.data.sessionID ||
+                        response.data.Session_Id ||
+                        response.data.Session_ID;
+        
+        console.log("Found SessionId:", sessionId);
+        
+        // Store SessionId and search params in localStorage for later use (e.g., for geo list)
+        if (sessionId) {
+          const currentParams = JSON.parse(localStorage.getItem('hotelSearchParams') || '{}');
+          const updatedParams = {
+            ...currentParams,
+            SessionId: sessionId
+          };
+          localStorage.setItem('hotelSearchParams', JSON.stringify(updatedParams));
+          console.log("SessionId stored in localStorage:", sessionId);
+          console.log("Updated hotelSearchParams:", updatedParams);
+        } else {
+          console.log("No SessionId found in API response");
+        }
+        
         if (isPagination) {
           dispatch(fetchHotelsListPaginationSuccess(response.data));
         } else {
@@ -438,4 +473,44 @@ export const fetchHotelBookedDetail = (bookedDetailRequest) => {
       throw err;
     }
   };
+};
+
+
+export const fetchHotelsGeoListRequest = () => ({ type: FETCH_HOTELS_GEOLIST_REQUEST });
+export const fetchHotelsGeoListSuccess = (geoList) => ({
+  type: FETCH_HOTELS_GEOLIST_SUCCESS,
+  payload: geoList,
+});
+export const fetchHotelsGeoListFailure = (error) => ({
+  type: FETCH_HOTELS_GEOLIST_FAILURE,
+  payload: error,
+});
+export const clearHotelsGeoList = () => ({ type: CLEAR_HOTELS_GEOLIST });
+
+export const fetchHotelsGeoList = (SessionId) => async (dispatch) => {
+  console.log("fetchHotelsGeoList - Starting with SessionId:", SessionId);
+  dispatch(fetchHotelsGeoListRequest());
+  try {
+    const payload = { SessionId };
+    console.log("fetchHotelsGeoList - Sending payload to backend:", payload);
+    
+    const response = await axios.post(`${API_URL}/hotels/getGeoList`, payload);
+    console.log("fetchHotelsGeoList - Backend response:", response.data);
+    console.log("fetchHotelsGeoList - Response keys:", Object.keys(response.data || {}));
+    
+    if (response.data && response.data.GpsCoordinates) {
+      console.log("fetchHotelsGeoList - Found GpsCoordinates:", response.data.GpsCoordinates);
+      dispatch(fetchHotelsGeoListSuccess(response.data.GpsCoordinates));
+      return response.data; // for local use in component
+    } else {
+      console.log("fetchHotelsGeoList - No GpsCoordinates found in response");
+      dispatch(fetchHotelsGeoListFailure("No geo list found"));
+      return null;
+    }
+  } catch (error) {
+    console.error("fetchHotelsGeoList - Error:", error.message);
+    console.error("fetchHotelsGeoList - Error response:", error.response?.data);
+    dispatch(fetchHotelsGeoListFailure(error.message));
+    return null;
+  }
 };
