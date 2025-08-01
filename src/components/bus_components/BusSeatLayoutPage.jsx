@@ -15,7 +15,7 @@ import {
   selectBusAuthData,
   selectBusSearchList,
   selectBusSearchLayoutList,
-  selectBusLoading,
+  selectBusSeatLayoutLoading,
   selectBusBoardingPoints,
 } from "../../store/Selectors/busSelectors";
 import { useNavigate } from "react-router-dom";
@@ -28,7 +28,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
   const authData = useSelector(selectBusAuthData);
   const searchList = useSelector(selectBusSearchList);
   const seatLayoutData = useSelector(selectBusSearchLayoutList);
-  const loading = useSelector(selectBusLoading);
+  const loading = useSelector(selectBusSeatLayoutLoading);
   const navigate = useNavigate();
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [selectedBoarding, setSelectedBoarding] = useState("");

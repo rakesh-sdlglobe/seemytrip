@@ -9,7 +9,8 @@ import {
   selectBusSearchList,
   selectBusSearchLayoutList,
   selectBusBoardingPoints,
-  selectBusLoading,
+  selectBusSearchLoading,
+  selectBusSeatLayoutLoading,
 } from "../../store/Selectors/busSelectors";
 import SeatSelection from "../seatselection";
 import BusSeatLayoutPage from "./BusSeatLayoutPage";
@@ -125,7 +126,8 @@ const BusResultPage = ({ filters }) => {
   const searchList = useSelector(selectBusSearchList);
   const seatLayout = useSelector(selectBusSearchLayoutList);
   const boardingPoints = useSelector(selectBusBoardingPoints);
-  const loading = useSelector(selectBusLoading);
+  const loading = useSelector(selectBusSearchLoading);
+  const seatLayoutLoading = useSelector(selectBusSeatLayoutLoading);
   const busResults = searchList?.BusSearchResult?.BusResults || [];
   const [openSeatIndex, setOpenSeatIndex] = useState(null);
   
@@ -377,8 +379,16 @@ const BusResultPage = ({ filters }) => {
                       <button
                         className="btn btn-secondary"
                         onClick={() => handleSeatToggle(bus, index)}
+                        disabled={seatLayoutLoading && openSeatIndex === index}
                       >
-                        {openSeatIndex === index ? "Hide Seats" : "Show Seats"}
+                        {seatLayoutLoading && openSeatIndex === index ? (
+                          <>
+                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            Loading Seats...
+                          </>
+                        ) : (
+                          openSeatIndex === index ? "Hide Seats" : "Show Seats"
+                        )}
                       </button>
                     </div>
                   </div>

@@ -1,26 +1,32 @@
-import React, { useState, useEffect, useRef } from 'react';
-import 'react-datepicker/dist/react-datepicker.css';
-import DatePicker from 'react-datepicker';
-import Select from 'react-select';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchBusSearch, fetchBusAuth, fetchBusCityListIfNeeded } from '../../store/Actions/busActions';
-import { selectBusLoading, selectBusError, selectBusCityList } from '../../store/Selectors/busSelectors';
-import { useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import Select from "react-select";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import {
+  fetchBusSearch,
+  fetchBusCityListIfNeeded,
+} from "../../store/Actions/busActions";
+import {
+  selectBusSearchLoading,
+  selectBusError,
+  selectBusCityList,
+} from "../../store/Selectors/busSelectors";
 
 const BusSearch = () => {
-  const [fromCity, setFromCity] = useState(null);
-  const [toCity, setToCity] = useState(null);
-  const [startDate, setStartDate] = useState(null);
-
-  // For debounced input
-  const [fromInput, setFromInput] = useState('');
-  const [toInput, setToInput] = useState('');
-  const [fromOptions, setFromOptions] = useState([]);
-  const [toOptions, setToOptions] = useState([]);
-  const debounceRef = useRef();
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  // State for form inputs
+  const [fromCity, setFromCity] = useState(null);
+  const [toCity, setToCity] = useState(null);
+  const [startDate, setStartDate] = useState(new Date());
+  const [fromInput, setFromInput] = useState("");
+  const [toInput, setToInput] = useState("");
+  const [fromOptions, setFromOptions] = useState([]);
+  const [toOptions, setToOptions] = useState([]);
+  const debounceRef = useRef(null);
 
   // Refs for focus management
   const fromRef = useRef();
@@ -28,7 +34,7 @@ const BusSearch = () => {
   const dateRef = useRef();
   const searchBtnRef = useRef();
 
-  const loading = useSelector(selectBusLoading);
+  const loading = useSelector(selectBusSearchLoading);
   const error = useSelector(selectBusError);
   const cityList = useSelector(selectBusCityList);
   const authData = useSelector(state => state.bus.authData);

@@ -1,76 +1,75 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Header02 from '../header02';
-import { UPI } from '../../assets/images';
 import FooterDark from '../footer-dark';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { fetchBusBooking, fetchBusBookingDetails, fetchBusAuth, fetchBusSearch } from '../../store/Actions/busActions';
-import { selectBusBookingDetails } from '../../store/Selectors/busSelectors';
+import { useSelector, useDispatch } from 'react-redux';
+import { 
+  selectBusBookingLoading, 
+  selectBusBookingDetailsLoading 
+} from '../../store/Selectors/busSelectors';
+import { 
+  fetchBusBooking, 
+  fetchBusBookingDetails 
+} from '../../store/Actions/busActions';
 
 const BusBookingPayment = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const bookingDetails = useSelector(selectBusBookingDetails);
-  console.log("Booking details:", bookingDetails);
+
   // Get data from navigation state or localStorage
   const blockResponse = location.state?.blockData || JSON.parse(localStorage.getItem("blockResponse") || "{}");
-  const blockData = blockResponse.BlockResult || blockResponse; // Handle both structures
+  const blockData = blockResponse.BlockResult || blockResponse;
   const busData = location.state?.busData || JSON.parse(localStorage.getItem("selectedBusData") || "{}");
-  const formData = location.state?.formData || JSON.parse(localStorage.getItem("paymentPageState") || "{}");
-  
-  // Extract form data - handle both direct state and nested state
-  const { travelerDetails, contactDetails, addressDetails } = formData.formData || formData;
-  
-  // Debug logging - only log once when component mounts
-  useEffect(() => {
-    console.log("Payment page - blockResponse:", blockResponse);
-    console.log("Payment page - blockData:", blockData);
-    console.log("Payment page - busData:", busData);
-    console.log("Payment page - formData:", formData);
-    console.log("Payment page - travelerDetails:", travelerDetails);
-    console.log("Payment page - contactDetails:", contactDetails);
-    console.log("Payment page - addressDetails:", addressDetails);
-    console.log("Payment page - blockData.Passenger:", blockData?.Passenger);
-    console.log("Payment page - blockData.DepartureTime:", blockData?.DepartureTime);
-    console.log("Payment page - blockData.ArrivalTime:", blockData?.ArrivalTime);
-    
-    // Log fare details once
-    if (blockData && blockData.Passenger && blockData.Passenger.length > 0) {
-      const baseFare = blockData.Passenger.reduce((total, passenger) => {
-        const seatPrice = passenger.Seat?.PublishedPrice || 
-                         passenger.Seat?.SeatFare || 
-                         passenger.Seat?.Fare ||
-                         passenger.Fare ||
-                         0;
-        return total + (parseFloat(seatPrice) || 0);
-      }, 0);
-      const assuredCharge = blockData.AssuredCharge || 0;
-      
-      console.log("Calculated fare details:", {
-        baseFare,
-        assuredCharge,
-        passengerCount: blockData.Passenger.length,
-        passengerData: blockData.Passenger.map(p => ({
-          name: `${p.FirstName} ${p.LastName}`,
-          seatPrice: p.Seat?.PublishedPrice || p.Seat?.SeatFare || p.Seat?.Fare || p.Fare
-        }))
-      });
-    }
-  }, []); // Empty dependency array means this runs only once when component mounts
+  const formData = location.state?.formData || {};
 
-  
+  // Extract form data
+  const travelerDetails = formData.travelerDetails || {};
+  const contactDetails = formData.contactDetails || {};
+  const addressDetails = formData.addressDetails || {};
+
   // State for payment
-  const [selectedPayment, setSelectedPayment] = useState('razorpay');
   const [couponCode, setCouponCode] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [apiCallMade, setApiCallMade] = useState(false);
+  const bookingLoading = useSelector(selectBusBookingLoading);
+  const bookingDetailsLoading = useSelector(selectBusBookingDetailsLoading);
+  const [timeLeft, setTimeLeft] = useState(360); // 6 minutes in seconds
+  const [hasLogged, setHasLogged] = useState(false); // NEW: Track if we've already logged
   
-  const [timeLeft, setTimeLeft] = useState(600); // 10 minutes in seconds
-  
-  // Timer countdown
+  // Check if block data is available - RUN ONLY ONCE
+  useEffect(() => {
+    // Only log once when component mounts
+    if (!hasLogged) {
+      console.log("Payment page - blockResponse:", blockResponse);
+      console.log("Payment page - blockData:", blockData);
+      console.log("Payment page - busData:", busData);
+      console.log("Payment page - formData:", formData);
+      setHasLogged(true);
+    }
+    
+    // Check if we have any block data in any format
+    const hasBlockData = blockData && Object.keys(blockData).length > 0;
+    const hasBlockResponse = blockResponse && Object.keys(blockResponse).length > 0;
+    
+    if (!hasBlockData && !hasBlockResponse) {
+      console.log("No block data available, checking localStorage...");
+      const storedBlockResponse = localStorage.getItem("blockResponse");
+      if (storedBlockResponse) {
+        console.log("Found block data in localStorage, reloading page...");
+        window.location.reload();
+        return;
+      }
+      
+      console.log("No block data found anywhere");
+      toast.error("No booking data found. Please start over.");
+      navigate('/bus-list');
+    } else {
+      console.log("Block data found, proceeding with payment page");
+    }
+  }, []); // REMOVED ALL DEPENDENCIES - Run only once on mount
+
+  // Timer countdown - SEPARATE useEffect
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft(prev => {
@@ -83,17 +82,28 @@ const BusBookingPayment = () => {
         return prev - 1;
       });
     }, 1000);
-    
-    return () => clearInterval(timer);
-  }, [navigate]);
 
-  // Reset API call state when component unmounts
-  useEffect(() => {
+    // Check block expiry every 30 seconds
+    const blockCheckTimer = setInterval(() => {
+      const blockTimestamp = localStorage.getItem("blockTimestamp");
+      if (blockTimestamp) {
+        const blockTime = parseInt(blockTimestamp);
+        const currentTime = Date.now();
+        const timeDiff = currentTime - blockTime;
+        const maxBlockTime = 6 * 60 * 1000; // 6 minutes in milliseconds
+        
+        if (timeDiff > maxBlockTime) {
+          toast.error('Seat block has expired. Please start over.');
+          navigate('/bus-list');
+        }
+      }
+    }, 30000); // Check every 30 seconds
+    
     return () => {
-      setApiCallMade(false);
-      setLoading(false);
+      clearInterval(timer);
+      clearInterval(blockCheckTimer);
     };
-  }, []);
+  }, [navigate]);
   
   // Format time
   const formatTime = (seconds) => {
@@ -106,7 +116,6 @@ const BusBookingPayment = () => {
   const calculateTotal = () => {
     try {
       if (!blockData || !blockData.Passenger || blockData.Passenger.length === 0) {
-        console.log("No passenger data available");
         return {
           baseFare: 0,
           assuredCharge: 0,
@@ -116,7 +125,6 @@ const BusBookingPayment = () => {
       
       // Calculate base fare from passenger seat data
       const baseFare = blockData.Passenger.reduce((total, passenger) => {
-        // Try different possible price fields
         const seatPrice = passenger.Seat?.PublishedPrice || 
                          passenger.Seat?.SeatFare || 
                          passenger.Seat?.Fare ||
@@ -128,15 +136,12 @@ const BusBookingPayment = () => {
       // Get assured charge from API
       const assuredCharge = blockData.AssuredCharge || 0;
       
-      
-      
       return {
         baseFare: baseFare,
         assuredCharge: assuredCharge,
         total: baseFare + assuredCharge
       };
     } catch (error) {
-      console.error("Error calculating total:", error);
       return {
         baseFare: 0,
         assuredCharge: 0,
@@ -148,7 +153,10 @@ const BusBookingPayment = () => {
   const fareDetails = calculateTotal();
   
   // Show loading state if no data is available
-  if (!blockData || Object.keys(blockData).length === 0) {
+  const hasBlockData = blockData && Object.keys(blockData).length > 0;
+  const hasBlockResponse = blockResponse && Object.keys(blockResponse).length > 0;
+  
+  if (!hasBlockData && !hasBlockResponse) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
         <div className="text-center">
@@ -168,11 +176,6 @@ const BusBookingPayment = () => {
     );
   }
   
-  // Handle payment method selection
-  const handlePaymentSelection = (method) => {
-    setSelectedPayment(method);
-  };
-  
   // Handle coupon application
   const handleApplyCoupon = () => {
     if (!couponCode.trim()) {
@@ -182,269 +185,73 @@ const BusBookingPayment = () => {
     toast.info('Coupon code applied successfully!');
   };
   
-  // Helper function to get stored booking details request from localStorage
-  const getStoredBookingDetailsRequest = () => {
-    try {
-      const storedData = localStorage.getItem("bookingDetailsRequest");
-      return storedData ? JSON.parse(storedData) : null;
-    } catch (error) {
-      console.error("Error parsing stored booking details request:", error);
-      return null;
-    }
-  };
-
-  // Helper function to validate booking details request structure
-  const validateBookingDetailsRequest = (request) => {
-    const requiredFields = ['EndUserIp', 'TraceId', 'TokenId', 'BusId', 'IsBaseCurrencyRequired'];
-    
-    // Check for missing fields, but handle boolean values properly
-    const missingFields = requiredFields.filter(field => {
-      const value = request[field];
-      // For boolean fields, check if the value is defined (not undefined/null)
-      if (field === 'IsBaseCurrencyRequired') {
-        return value === undefined || value === null;
-      }
-      // For other fields, check if they have truthy values
-      return !value;
-    });
-    
-    if (missingFields.length > 0) {
-      console.error("Missing required fields in booking details request:", missingFields);
-      console.error("Request object:", request);
+  // Validate block status before payment
+  const validateBlockStatus = () => {
+    const blockTimestamp = localStorage.getItem("blockTimestamp");
+    if (!blockTimestamp) {
+      toast.error('No valid seat block found. Please start over.');
+      navigate('/bus-list');
       return false;
     }
+
+    const blockTime = parseInt(blockTimestamp);
+    const currentTime = Date.now();
+    const timeDiff = currentTime - blockTime;
+    const maxBlockTime = 6 * 60 * 1000; // 6 minutes in milliseconds
     
-    // Check for extra fields that shouldn't be there
-    const extraFields = Object.keys(request).filter(key => !requiredFields.includes(key));
-    if (extraFields.length > 0) {
-      console.warn("Extra fields in booking details request:", extraFields);
+    if (timeDiff > maxBlockTime) {
+      toast.error('Seat block has expired. Please start over.');
+      navigate('/bus-list');
+      return false;
     }
-    
-    console.log("Booking details request validation passed");
-    console.log("Validated request:", request);
+
     return true;
   };
 
-  // Helper function to refresh session data
-  const refreshSessionData = async () => {
-    try {
-      console.log("Refreshing session data...");
-      
-      // Re-authenticate
-      await dispatch(fetchBusAuth());
-      
-      // Get updated auth data
-      const authData = JSON.parse(localStorage.getItem("busAuthData") || "{}");
-      console.log("Updated auth data:", authData);
-      
-      // Re-search to get new TraceId
-      const searchParams = JSON.parse(localStorage.getItem('busSearchparams') || '{}');
-      await dispatch(fetchBusSearch({
-        ...searchParams,
-        TokenId: authData.TokenId,
-        EndUserIp: authData.EndUserIp,
-      }));
-      
-      console.log("Session data refreshed successfully");
-      return true;
-    } catch (error) {
-      console.error("Error refreshing session data:", error);
-      return false;
-    }
+  // Helper: Prepare booking request (usually same as block request)
+  const getBookingRequest = () => {
+    return JSON.parse(localStorage.getItem("blockRequestData") || "{}");
   };
 
-  // Helper function to format booking request data
-  const formatBookingRequest = () => {
-    // Get the stored block request data from localStorage
-    const storedBlockRequest = JSON.parse(localStorage.getItem("blockRequestData") || "{}");
-    
-    console.log("Using stored block request data for booking:", storedBlockRequest);
-    
-    // The booking request uses the same structure as block request
-    return storedBlockRequest;
-  };
-
-    // Helper function to format booking details request
-  const formatBookingDetailsRequest = (busId) => {
-    // Get auth data from localStorage or blockData
+  // Helper: Prepare booking details request
+  const getBookingDetailsRequest = (busId) => {
     const authData = JSON.parse(localStorage.getItem("busAuthData") || "{}");
     const searchList = JSON.parse(localStorage.getItem("busSearchList") || "{}");
     const blockRequestData = JSON.parse(localStorage.getItem("blockRequestData") || "{}");
-    
-    // Use multiple sources to get the required data
-    const TokenId = authData.TokenId || blockData.TokenId || blockRequestData.TokenId;
-    const EndUserIp = authData.EndUserIp || blockData.EndUserIp || blockRequestData.EndUserIp;
-    const TraceId = searchList?.BusSearchResult?.TraceId || blockData.TraceId || blockRequestData.TraceId;
-    
-    console.log("Auth data from localStorage:", authData);
-    console.log("Block data:", blockData);
-    console.log("Block request data:", blockRequestData);
-    console.log("Search list:", searchList);
-    
-    console.log("Extracted values:", { TokenId, EndUserIp, TraceId, BusId: busId });
-    
-    // Validate that we have all required data
-    if (!TokenId || !EndUserIp || !TraceId) {
-      console.error("Missing required data for booking details request:");
-      console.error("TokenId:", TokenId);
-      console.error("EndUserIp:", EndUserIp);
-      console.error("TraceId:", TraceId);
-      
-      // Try to get from the most recent block response
-      const blockResponse = JSON.parse(localStorage.getItem("blockResponse") || "{}");
-      const blockResult = blockResponse.BlockResult || blockResponse;
-      
-      console.log("Block response as fallback:", blockResult);
-      
-      // Use block response as final fallback
-      const finalTokenId = TokenId || blockResult.TokenId;
-      const finalEndUserIp = EndUserIp || blockResult.EndUserIp;
-      const finalTraceId = TraceId || blockResult.TraceId;
-      
-      console.log("Final fallback values:", { finalTokenId, finalEndUserIp, finalTraceId });
-      
-      if (!finalTokenId || !finalEndUserIp || !finalTraceId) {
-        throw new Error("Cannot create booking details request - missing required authentication data");
-      }
-      
-             const bookingDetailsRequest = {
-         EndUserIp: finalEndUserIp,
-         TraceId: finalTraceId,
-         TokenId: finalTokenId,
-         BusId: busId,
-         IsBaseCurrencyRequired: false
-       };
-      
-      console.log("Booking details request with fallback data:", bookingDetailsRequest);
-      
-      return bookingDetailsRequest;
-    }
-    
-    // Create booking details request with ONLY the required fields
-    const bookingDetailsRequest = {
-      EndUserIp: EndUserIp,
-      TraceId: TraceId,
-      TokenId: TokenId,
+    const TokenId = authData.TokenId || blockRequestData.TokenId;
+    const EndUserIp = authData.EndUserIp || blockRequestData.EndUserIp;
+    const TraceId = searchList?.BusSearchResult?.TraceId || blockRequestData.TraceId;
+    return {
+      EndUserIp,
+      TraceId,
+      TokenId,
       BusId: busId,
       IsBaseCurrencyRequired: false
     };
-    
-    console.log("Booking details request:", bookingDetailsRequest);
-    
-    return bookingDetailsRequest;
   };
 
-  // Handle payment
+  // Main handler for payment
   const handleProceedToPay = async () => {
-    // Prevent multiple API calls
-    if (loading || apiCallMade) {
-      console.log("API call already in progress or completed - preventing duplicate call");
-      return;
-    }
-    
-    setLoading(true);
-    setApiCallMade(true);
-    
     try {
-      console.log("Starting booking process...");
-      
-      // Step 1: Call the booking API
-      const bookingRequestData = formatBookingRequest();
-      console.log("Booking request data:", bookingRequestData);
-      
-      const bookingResult = await dispatch(fetchBusBooking(bookingRequestData));
-      console.log("Booking result:", bookingResult);
-      
-      if (!bookingResult || !bookingResult.BookResult) {
-        throw new Error("Booking failed. Please try again.");
-      }
-      
-      // Check if booking was successful (ResponseStatus === 1 and no error)
-      if (bookingResult.BookResult.ResponseStatus === 1 && 
-          (!bookingResult.BookResult.Error || bookingResult.BookResult.Error.ErrorCode === 0)) {
-        console.log("Booking successful! Status:", bookingResult.BookResult.BusBookingStatus);
-        
-        // Step 2: Get booking details
+      // 1. Book the bus
+      const bookingRequest = getBookingRequest();
+      const bookingResult = await dispatch(fetchBusBooking(bookingRequest));
+      // bookingResult is a redux-thunk action, so you may need to unwrap it if using redux-toolkit, or get it from state after success
+
+      // 2. If booking is successful, get booking details
+      if (bookingResult && bookingResult.BookResult && bookingResult.BookResult.ResponseStatus === 1) {
         const busId = bookingResult.BookResult.BusId;
-        console.log("Bus ID from booking:", busId);
-        
-        // Ensure we have auth data before making booking details request
-        const authData = JSON.parse(localStorage.getItem("busAuthData") || "{}");
-        if (!authData.TokenId || !authData.EndUserIp) {
-          console.log("Auth data missing, refreshing...");
-          await dispatch(fetchBusAuth());
-        }
-        
-        const bookingDetailsRequest = formatBookingDetailsRequest(busId);
-        console.log("Booking details request:", bookingDetailsRequest);
-        
-        // Validate the booking details request structure
-        if (!validateBookingDetailsRequest(bookingDetailsRequest)) {
-          throw new Error("Invalid booking details request structure");
-        }
-        
-                 // Log the booking details request for verification
-         console.log("=== VERIFICATION: BOOKING DETAILS REQUEST ===");
-         console.log("Request object:", JSON.stringify(bookingDetailsRequest, null, 2));
-         console.log("=== END VERIFICATION ===");
-        
-                         const bookingDetailsResult = await dispatch(fetchBusBookingDetails(bookingDetailsRequest));
-        console.log("Booking details result:", bookingDetailsResult);
-        console.log("Booking details result structure:", Object.keys(bookingDetailsResult || {}));
-        
-        // Check if booking details response is valid
-        if (bookingDetailsResult && (bookingDetailsResult.BookingDetailsResult || bookingDetailsResult.BookingDetailResult)) {
-          console.log("Booking details retrieved successfully!");
-          
-          // Log complete booking data for backend team reference
-          const completeBookingData = {
-            bookingType: 'bus',
-            blockData: blockData,
-            bookingData: bookingResult,
-            bookingDetailsData: bookingDetailsResult,
-            busData: busData,
-            paymentMethod: 'razorpay',
-            totalAmount: fareDetails.total,
-            travelerDetails: travelerDetails,
-            contactDetails: contactDetails,
-            addressDetails: addressDetails,
-            couponCode: couponCode
-          };
-          
-          console.log('Complete booking data for backend team:', completeBookingData);
-          
-          toast.success('Payment successful! Your booking has been confirmed.');
-          
-          // Navigate to success page or show booking confirmation
-          setTimeout(() => {
-            navigate('/booking-success', { 
-              state: { 
-                bookingData: bookingResult,
-                bookingDetailsData: bookingDetailsResult,
-                busData: busData,
-                formData: { travelerDetails, contactDetails, addressDetails }
-              } 
-            });
-          }, 2000);
-          
-        } else {
-          console.error("Booking details response structure:", bookingDetailsResult);
-          throw new Error("Failed to retrieve booking details. Response structure is invalid.");
-        }
-        
+        const bookingDetailsRequest = getBookingDetailsRequest(busId);
+        await dispatch(fetchBusBookingDetails(bookingDetailsRequest));
+        // Now both results are in Redux state
+        toast.success('Payment successful! Your booking has been confirmed.');
+        // Optionally navigate to a success page here
       } else {
-        // Handle booking failure
-        const errorMessage = bookingResult.BookResult?.Error?.ErrorMessage || "Booking failed. Please try again.";
-        throw new Error(errorMessage);
+        // Handle booking error
+        toast.error(bookingResult?.BookResult?.Error?.ErrorMessage || "Booking failed");
       }
-      
     } catch (error) {
-      console.error("Payment/Booking error:", error);
-      toast.error(error.message || 'Payment failed. Please try again.');
-      // Reset API call state on error so user can retry
-      setApiCallMade(false);
-    } finally {
-      setLoading(false);
+      toast.error(error.message || "Payment failed");
     }
   };
   
@@ -459,7 +266,6 @@ const BusBookingPayment = () => {
         month: 'short' 
       });
     } catch (error) {
-      console.error("Error formatting date:", error);
       return '';
     }
   };
@@ -476,21 +282,15 @@ const BusBookingPayment = () => {
         hour12: false 
       });
     } catch (error) {
-      console.error("Error formatting time:", error);
       return '';
     }
   };
   
   // Get gender text
   const getGenderText = (genderCode) => {
-    try {
-      if (genderCode === 1) return 'Male';
-      if (genderCode === 2) return 'Female';
-      return 'Other';
-    } catch (error) {
-      console.error("Error getting gender text:", error);
-      return 'Other';
-    }
+    if (genderCode === 1) return 'Male';
+    if (genderCode === 2) return 'Female';
+    return 'Other';
   };
 
   return (
@@ -764,26 +564,24 @@ const BusBookingPayment = () => {
                       </div>
                     </div>
 
-                                         {/* Proceed to Pay Button */}
-                     <div className="text-center mt-5">
-                       <button 
-                         className="btn btn-danger btn-lg px-5 py-3 fw-bold"
-                         onClick={handleProceedToPay}
-                         disabled={loading || apiCallMade}
-                         style={{ minWidth: '200px' }}
-                       >
-                         {loading ? (
-                           <>
-                             <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                             Processing...
-                           </>
-                         ) : apiCallMade ? (
-                           'Processing Complete'
-                         ) : (
-                           'Proceed to pay'
-                         )}
-                       </button>
-                     </div>
+                    {/* Proceed to Pay Button */}
+                    <div className="text-center mt-5">
+                      <button 
+                        className="btn btn-danger btn-lg px-5 py-3 fw-bold"
+                        onClick={handleProceedToPay}
+                        disabled={bookingLoading || bookingDetailsLoading}
+                        style={{ minWidth: '200px' }}
+                      >
+                        {(bookingLoading || bookingDetailsLoading) ? (
+                          <>
+                            <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                            Processing...
+                          </>
+                        ) : (
+                          'Proceed to pay'
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

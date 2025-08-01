@@ -460,6 +460,7 @@ export const BusBookingPage = ({ isModal = false }) => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [showSkeleton, setShowSkeleton] = useState(false);
 
   // Handlers for form fields
   const handleTravelerChange = (seatLabel, field, value) => {
@@ -834,35 +835,6 @@ export const BusBookingPage = ({ isModal = false }) => {
                   Bus Results
                 </a>
               </li>
-              <li className="breadcrumb-item">
-                <i className="fas fa-chevron-right mx-2 text-muted"></i>
-                <a 
-                  href="#" 
-                  className="text-decoration-none"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    const hasFormData = Object.values(travelerDetails).some(details => 
-                      details.firstName || details.lastName || details.email
-                    );
-                    
-                    if (hasFormData) {
-                      const confirmNavigation = window.confirm(
-                        "You have entered traveler details. Are you sure you want to go back to seat selection? Your current form data will be lost."
-                      );
-                      if (!confirmNavigation) return;
-                    }
-                    
-                    navigate('/bus-seat-layout', { 
-                      state: { 
-                        busData: busData,
-                          searchParams: JSON.parse(localStorage.getItem("busSearchparams") || "{}")
-                      } 
-                    });
-                  }}
-                >
-                  Seat Selection
-                </a>
-              </li>
               <li className="breadcrumb-item active" aria-current="page">
                 <i className="fas fa-chevron-right mx-2 text-muted"></i>
                 <i className="fas fa-user-edit me-1"></i>
@@ -1019,7 +991,7 @@ export const BusBookingPage = ({ isModal = false }) => {
           )}
 
           {/* Second Container - Traveler Details */}
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} autoComplete="on">
             <div className="row mb-4">
               <div className="col-12">
                 <div className={`card ${hasSubmitted && Object.keys(errors).some(key => key.startsWith('travelerDetails')) ? 'error-card' : ''}`}>

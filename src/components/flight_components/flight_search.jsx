@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
 import "react-datepicker/dist/react-datepicker.css";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { airportData } from "./model/airportData";
+//import { airportData } from "./model/airportData";
+import { fetchFlightsAirport } from "../../store/Actions/flightActions";
+import { selectFlightAirports } from "../../store/Selectors/flightSelectors";
 import { flightData } from "./model/flightData";
 import { seatData } from "./model/seatData";
 import { format, parse } from "date-fns";
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // Utility function to calculate duration
 const calculateDuration = (departureTime, arrivalTime) => {
@@ -37,6 +40,8 @@ const FlightSearch = ({
   ReturnLable = "auto",
   hindenswap = "auto",
 }) => {
+  const dispatch = useDispatch();
+  const airportDataList = useSelector(selectFlightAirports);
   const [tripType, setTripType] = useState("one-way"); // State for radio buttons
   const [travellers, setTravellers] = useState(1); // State for number of travellers
   const [travelClass, setTravelClass] = useState("Economy"); // State for travel class
@@ -48,7 +53,7 @@ const FlightSearch = ({
   };
 
   const findAirportByName = (name) => {
-    return airportData.find((airport) => airport.name === name);
+    return airportDataList.find((airport) => airport.Display === name);
   };
 
   const [fromAirport, setFromAirport] = useState(() => {
@@ -85,7 +90,29 @@ const FlightSearch = ({
       sessionStorage.setItem("journeyDate", format(journeyDate, "dd/MM/yyyy"));
   }, [fromAirport, toAirport, journeyDate]);
 
-  const [warningMessage, setWarningMessage] = useState('');
+  useEffect(() => {
+    dispatch(fetchFlightsAirport());
+  }, [dispatch]);
+
+ 
+  
+   const airportOptions = useMemo(() => {
+      const sortedAirport = [...(airportDataList || [])]
+        .sort((a, b) => b.Count - a.Count)
+        .slice(0, 15); // Take top 15 most popular
+  
+      return sortedAirport.map((air) => ({
+        value: air.Id,
+        label: air.Display,
+        airportData: air,
+      }));
+    }, [airportDataList]);
+
+    
+
+    console.log("Airport Options:", airportOptions);
+
+  const [warningMessage, setWarningMessage] = useState("");
 
   const handleFromAirportChange = (selectedOption) => {
     setFromAirport(selectedOption);
@@ -93,9 +120,15 @@ const FlightSearch = ({
       setWarningMessage("Source and destination airports can't be the same");
       toast.error("Source and destination airports can't be the same");
     } else {
-      setWarningMessage('');
+      setWarningMessage("");
     }
   };
+
+  // Handle input change for search
+    const handleInputChange = (inputValue) => {
+      dispatch(fetchFlightsAirport(inputValue));
+      return inputValue; // Important to return the input value
+    };
 
   const handleToAirportChange = (selectedOption) => {
     setToAirport(selectedOption);
@@ -103,7 +136,7 @@ const FlightSearch = ({
       setWarningMessage("Source and destination airports can't be the same");
       toast.error("Source and destination airports can't be the same");
     } else {
-      setWarningMessage('');
+      setWarningMessage("");
     }
   };
 
@@ -113,7 +146,7 @@ const FlightSearch = ({
     const temp = fromAirport;
     setFromAirport(toAirport);
     setToAirport(temp);
-    setWarningMessage('');
+    setWarningMessage("");
   };
 
   const handleSearch = () => {
@@ -121,7 +154,7 @@ const FlightSearch = ({
       toast.warning("Please select both airports and journey date.");
       return;
     }
-    
+
     if (fromAirport.value === toAirport.value) {
       setWarningMessage("Source and destination airports can't be the same");
       toast.error("Source and destination airports can't be the same");
@@ -140,10 +173,10 @@ const FlightSearch = ({
   const handleTravelClassChange = (event) => setTravelClass(event.target.value);
 
   const findFlightsBetweenAirports = (fromAirportId, toAirportId, date) => {
-    const fromAirportName = airportData.find(
+    const fromAirportName = airportDataList.find(
       (airport) => airport.id === fromAirportId
     )?.name;
-    const toAirportName = airportData.find(
+    const toAirportName = airportDataList.find(
       (airport) => airport.id === toAirportId
     )?.name;
 
@@ -164,7 +197,7 @@ const FlightSearch = ({
       const formattedStops = flight.stops.map((stop) => ({
         ...stop,
         airport:
-          airportData.find((airport) => airport.id === stop.airportId)?.name ||
+          airportDataList.find((airport) => airport.id === stop.airportId)?.Display ||
           "Unknown",
       }));
       const duration = calculateDuration(
@@ -187,10 +220,8 @@ const FlightSearch = ({
     return resultsWithEconomyPrice;
   };
 
-  const airportOptions = airportData.map((airport) => ({
-    value: airport.id,
-    label: airport.name,
-  }));
+
+
   const customSelectStyles = {
     control: (provided) => ({
       ...provided,
@@ -202,26 +233,20 @@ const FlightSearch = ({
       boxShadow: "none",
       "&:hover": {
         border: "none",
-       
       },
-      
     }),
-    menu: (provided) => ({ 
-      ...provided, 
+    menu: (provided) => ({
+      ...provided,
       borderRadius: "12px",
       width: "100%",
-      marginTop:'10px',
-      backgroundColor: 'white',
-      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'
+      marginTop: "10px",
+      backgroundColor: "white",
+      boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
     }),
     menuList: (provided) => ({
       ...provided,
       fontWeight: 500,
-      padding:'16px 0px',
-
-      
-      
-    
+      padding: "16px 0px",
     }),
     placeholder: (provided) => ({ ...provided, color: "#999" }),
     singleValue: (provided) => ({ ...provided, color: "#333" }),
@@ -231,29 +256,26 @@ const FlightSearch = ({
     }),
     option: (provided, state) => ({
       ...provided,
-      backgroundColor: 'white',
-      color: state.isSelected ? 'white' : '#333',
-      backgroundColor: state.isSelected ? '#cd2c22' : 'white',
-      '&:hover': {
-        backgroundColor: '#e5e8e8',
-        color:'#17181c',
-        cursor: 'pointer'
+      backgroundColor: "white",
+      color: state.isSelected ? "white" : "#333",
+      backgroundColor: state.isSelected ? "#cd2c22" : "white",
+      "&:hover": {
+        backgroundColor: "#e5e8e8",
+        color: "#17181c",
+        cursor: "pointer",
       },
       fontWeight: 500,
-      fontSize: '14px',
-      padding: '8px 12px',
+      fontSize: "14px",
+      padding: "8px 12px",
     }),
-    singleValue: (provided) => ({ 
-      ...provided, 
+    singleValue: (provided) => ({
+      ...provided,
       color: "#333",
-     
     }),
-    placeholder: (provided) => ({ 
-      ...provided, 
+    placeholder: (provided) => ({
+      ...provided,
       color: "#999",
-      
     }),
-    
   };
 
   useEffect(() => {
@@ -282,34 +304,43 @@ const FlightSearch = ({
     const maxGuests = 9; // Maximum total guests allowed
     const totalGuests = adultsCount + childrenCount + infantsCount;
 
-    if (operation === 'add' && totalGuests >= maxGuests) return;
+    if (operation === "add" && totalGuests >= maxGuests) return;
 
     switch (type) {
-      case 'adults':
-        if (operation === 'add') setAdultsCount(prev => prev + 1);
-        else if (operation === 'subtract' && adultsCount > 1) setAdultsCount(prev => prev - 1);
+      case "adults":
+        if (operation === "add") setAdultsCount((prev) => prev + 1);
+        else if (operation === "subtract" && adultsCount > 1)
+          setAdultsCount((prev) => prev - 1);
         break;
-      case 'children':
-        if (operation === 'add') setChildrenCount(prev => prev + 1);
-        else if (operation === 'subtract' && childrenCount > 0) setChildrenCount(prev => prev - 1);
+      case "children":
+        if (operation === "add") setChildrenCount((prev) => prev + 1);
+        else if (operation === "subtract" && childrenCount > 0)
+          setChildrenCount((prev) => prev - 1);
         break;
-      case 'infants':
-        if (operation === 'add') setInfantsCount(prev => prev + 1);
-        else if (operation === 'subtract' && infantsCount > 0) setInfantsCount(prev => prev - 1);
+      case "infants":
+        if (operation === "add") setInfantsCount((prev) => prev + 1);
+        else if (operation === "subtract" && infantsCount > 0)
+          setInfantsCount((prev) => prev - 1);
+        break;
+      default:
         break;
     }
   };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (isGuestInputOpen && !event.target.closest('.guests-dropdown') && !event.target.closest('.guest-selector-btn')) {
+      if (
+        isGuestInputOpen &&
+        !event.target.closest(".guests-dropdown") &&
+        !event.target.closest(".guest-selector-btn")
+      ) {
         setIsGuestInputOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isGuestInputOpen]);
 
@@ -329,7 +360,7 @@ const FlightSearch = ({
 
   return (
     <>
-      <ToastContainer 
+      <ToastContainer
         position="top-right"
         autoClose={3000}
         hideProgressBar={false}
@@ -672,29 +703,37 @@ color:gray;
                       </div>
                       <div className="dropdown-container d-flex gap-2">
                         <div className="position-relative">
-                          <button 
+                          <button
                             className="guest-selector-btn d-flex align-items-center gap-2"
-                            onClick={() => setIsGuestInputOpen(!isGuestInputOpen)}
+                            onClick={() =>
+                              setIsGuestInputOpen(!isGuestInputOpen)
+                            }
                           >
                             <i className="fa-solid fa-user"></i>
-                            <span>{`${adultsCount + childrenCount + infantsCount} Traveller(s)`}</span>
+                            <span>{`${
+                              adultsCount + childrenCount + infantsCount
+                            } Traveller(s)`}</span>
                           </button>
-                          
+
                           {isGuestInputOpen && (
                             <div className="guests-dropdown">
                               <div className="guest-type-row">
                                 <span>Adults (12y+)</span>
                                 <div className="counter-controls">
-                                  <button 
-                                    className={`ctrl-btn ${adultsCount <= 1 ? 'disabled' : ''}`}
-                                    onClick={() => updateCount('adults', 'subtract')}
+                                  <button
+                                    className={`ctrl-btn ${
+                                      adultsCount <= 1 ? "disabled" : ""
+                                    }`}
+                                    onClick={() =>
+                                      updateCount("adults", "subtract")
+                                    }
                                   >
                                     <i className="fa-solid fa-minus"></i>
                                   </button>
                                   <span>{adultsCount}</span>
-                                  <button 
+                                  <button
                                     className="ctrl-btn"
-                                    onClick={() => updateCount('adults', 'add')}
+                                    onClick={() => updateCount("adults", "add")}
                                   >
                                     <i className="fa-solid fa-plus"></i>
                                   </button>
@@ -704,16 +743,22 @@ color:gray;
                               <div className="guest-type-row">
                                 <span>Children (2-12y)</span>
                                 <div className="counter-controls">
-                                  <button 
-                                    className={`ctrl-btn ${childrenCount <= 0 ? 'disabled' : ''}`}
-                                    onClick={() => updateCount('children', 'subtract')}
+                                  <button
+                                    className={`ctrl-btn ${
+                                      childrenCount <= 0 ? "disabled" : ""
+                                    }`}
+                                    onClick={() =>
+                                      updateCount("children", "subtract")
+                                    }
                                   >
                                     <i className="fa-solid fa-minus"></i>
                                   </button>
                                   <span>{childrenCount}</span>
-                                  <button 
+                                  <button
                                     className="ctrl-btn"
-                                    onClick={() => updateCount('children', 'add')}
+                                    onClick={() =>
+                                      updateCount("children", "add")
+                                    }
                                   >
                                     <i className="fa-solid fa-plus"></i>
                                   </button>
@@ -723,16 +768,22 @@ color:gray;
                               <div className="guest-type-row">
                                 <span>Infants (below 2y)</span>
                                 <div className="counter-controls">
-                                  <button 
-                                    className={`ctrl-btn ${infantsCount <= 0 ? 'disabled' : ''}`}
-                                    onClick={() => updateCount('infants', 'subtract')}
+                                  <button
+                                    className={`ctrl-btn ${
+                                      infantsCount <= 0 ? "disabled" : ""
+                                    }`}
+                                    onClick={() =>
+                                      updateCount("infants", "subtract")
+                                    }
                                   >
                                     <i className="fa-solid fa-minus"></i>
                                   </button>
                                   <span>{infantsCount}</span>
-                                  <button 
+                                  <button
                                     className="ctrl-btn"
-                                    onClick={() => updateCount('infants', 'add')}
+                                    onClick={() =>
+                                      updateCount("infants", "add")
+                                    }
                                   >
                                     <i className="fa-solid fa-plus"></i>
                                   </button>
@@ -757,16 +808,21 @@ color:gray;
                     </div>
                   </div>
 
-                
-
                   {/* Select Fields */}
                   <div className="position-relative new-wrap">
                     <div className="row g-2 align-items-center">
                       {/* From Airport */}
                       <div className="col-lg-3 col-md-6 col-12">
                         <div className="form-group form-control mb-0 d-flex align-items-center position-relative">
-                       
-                          <i className="fa-solid fa-plane-departure position-absolute" style={{ left: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 100 }}></i>
+                          <i
+                            className="fa-solid fa-plane-departure position-absolute"
+                            style={{
+                              left: "10px",
+                              top: "50%",
+                              transform: "translateY(-50%)",
+                              zIndex: 100,
+                            }}
+                          ></i>
                           {/* {leavingLabel && (
                             <label className="text-light text-uppercase opacity-75">
                               {leavingLabel}
@@ -777,6 +833,7 @@ color:gray;
                             onChange={handleFromAirportChange}
                             options={airportOptions}
                             styles={customSelectStyles}
+                            onInputChange={handleInputChange}
                             placeholder="From"
                             className="airport_input"
                           />
@@ -789,7 +846,7 @@ color:gray;
                           type="button"
                           className="btn swap-button"
                           onClick={handleSwapLocations}
-                          style={{ padding: '10px' }}
+                          style={{ padding: "10px" }}
                         >
                           <i className="fa-solid fa-arrow-right-arrow-left text-black"></i>
                         </button>
@@ -798,7 +855,15 @@ color:gray;
                       {/* To Airport */}
                       <div className="col-lg-3 col-md-6 col-12">
                         <div className="form-group form-control  mb-0 d-flex align-items-center position-relative">
-                          <i className="fa-solid fa-plane-arrival position-absolute" style={{ left: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 100 }}></i>
+                          <i
+                            className="fa-solid fa-plane-arrival position-absolute"
+                            style={{
+                              left: "10px",
+                              top: "50%",
+                              transform: "translateY(-50%)",
+                              zIndex: 100,
+                            }}
+                          ></i>
                           {goingLabel && (
                             <label className="text-light text-uppercase opacity-75">
                               {goingLabel}
@@ -809,28 +874,31 @@ color:gray;
                             onChange={handleToAirportChange}
                             options={airportOptions}
                             styles={customSelectStyles}
+                            onInputChange={handleInputChange}
                             placeholder="To"
                             className="airport_input"
                           />
                           {warningMessage && (
-                            <div 
+                            <div
                               className="text-danger mt-2 d-flex align-items-center justify-content-end"
                               style={{
-                                position: 'absolute',
-                                bottom: '-45px',
-                                right: '0',
+                                position: "absolute",
+                                bottom: "-45px",
+                                right: "0",
                                 zIndex: 1000,
-                                width: '100%'
+                                width: "100%",
                               }}
                             >
-                              <div style={{ 
-                                fontWeight: "500",
-                                backgroundColor: "#ffeeee", 
-                                padding: "10px 15px", 
-                                borderRadius: "8px",
-                                boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-                                marginTop: "8px"
-                              }}>
+                              <div
+                                style={{
+                                  fontWeight: "500",
+                                  backgroundColor: "#ffeeee",
+                                  padding: "10px 15px",
+                                  borderRadius: "8px",
+                                  boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                                  marginTop: "8px",
+                                }}
+                              >
                                 <i className="fa fa-exclamation-circle me-2"></i>
                                 <span>{warningMessage}</span>
                               </div>
@@ -840,17 +908,32 @@ color:gray;
                       </div>
 
                       {/* Journey Date */}
-                      <div className="col-lg-2 col-md-6 col-12" style={{width:'14%'}}>
+                      <div
+                        className="col-lg-2 col-md-6 col-12"
+                        style={{ width: "14%" }}
+                      >
                         <div className="form-group mb-0 position-relative">
-                          <i className="fa-regular fa-calendar position-absolute" style={{ left: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}></i>
+                          <i
+                            className="fa-regular fa-calendar position-absolute"
+                            style={{
+                              left: "10px",
+                              top: "50%",
+                              transform: "translateY(-50%)",
+                              zIndex: 1,
+                            }}
+                          ></i>
                           <input
                             type="text"
                             className="form-control"
                             placeholder="Journey Date"
-                            value={journeyDate ? format(journeyDate, "dd/MM/yyyy") : ""}
+                            value={
+                              journeyDate
+                                ? format(journeyDate, "dd/MM/yyyy")
+                                : ""
+                            }
                             readOnly
                             onClick={handleJourneyCalendarClick}
-                            style={{paddingLeft:"30px"}}
+                            style={{ paddingLeft: "30px" }}
                           />
                           {showJourneyCalendar && (
                             <Calendar
@@ -865,31 +948,45 @@ color:gray;
                           )}
                         </div>
                       </div>
-                      
 
                       {/* Return Date */}
-                      <div className="col-lg-1 col-md-6 col-12" style={{width:'16%'}}>
+                      <div
+                        className="col-lg-1 col-md-6 col-12"
+                        style={{ width: "16%" }}
+                      >
                         <div className="form-group mb-0 position-relative">
-                          <i className="fa-regular fa-calendar position-absolute" style={{ left: '10px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}></i>
+                          <i
+                            className="fa-regular fa-calendar position-absolute"
+                            style={{
+                              left: "10px",
+                              top: "50%",
+                              transform: "translateY(-50%)",
+                              zIndex: 1,
+                            }}
+                          ></i>
                           <input
                             type="text"
-                            className={`form-control ${tripType === "one-way" ? "disabled-input" : ""}`}
+                            className={`form-control ${
+                              tripType === "one-way" ? "disabled-input" : ""
+                            }`}
                             placeholder="Return Date"
-                            value={returnDate ? format(returnDate, "dd/MM/yyyy") : ""}
+                            value={
+                              returnDate ? format(returnDate, "dd/MM/yyyy") : ""
+                            }
                             readOnly
                             onClick={handleReturnCalendarClick}
-                            style={{paddingLeft:"30px"}}
+                            style={{ paddingLeft: "30px" }}
                           />
                           {returnDate && (
-                            <i 
-                              className="fa-solid fa-times position-absolute" 
-                              style={{ 
-                                right: '10px', 
-                                top: '50%', 
-                                transform: 'translateY(-50%)', 
-                                cursor: 'pointer',
-                                fontSize:'18px',
-                                zIndex: 1 
+                            <i
+                              className="fa-solid fa-times position-absolute"
+                              style={{
+                                right: "10px",
+                                top: "50%",
+                                transform: "translateY(-50%)",
+                                cursor: "pointer",
+                                fontSize: "18px",
+                                zIndex: 1,
                               }}
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -920,13 +1017,12 @@ color:gray;
                           style={{
                             backgroundColor: buttonBackgroundColor,
                             color: buttonTextColor,
-                            height: '100%',
-                            height:'62px',
-                            borderRadius:'12px',
-                          
+                            height: "100%",
+                            height: "62px",
+                            borderRadius: "12px",
                           }}
                         >
-                           <i className="fa-solid fa-magnifying-glass me-2" />
+                          <i className="fa-solid fa-magnifying-glass me-2" />
                           {buttonText}
                         </button>
                       </div>

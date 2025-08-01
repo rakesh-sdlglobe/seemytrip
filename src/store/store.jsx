@@ -4,6 +4,7 @@ import authReducer from './Reducers/authReducer';
 import userReducer from './Reducers/userReducer';
 import { trainReducer } from './Reducers/trainReducer';
 import { hotelReducer } from './Reducers/hotelReducer';
+import { flightReducer } from './Reducers/flightReducer';
 import mobileOtpReducer from './Reducers/mobileOtpreducer';
 import emailAuthReducer from './Reducers/emailreducer';
 import busReducer from './Reducers/busReducer';
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
   user: userReducer,
   filters: trainReducer,
   hotels: hotelReducer,
+  flights: flightReducer,
   bus:busReducer,
   mobileOtp: mobileOtpReducer,
   emailAuth: emailAuthReducer,
