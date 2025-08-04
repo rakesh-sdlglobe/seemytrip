@@ -22,7 +22,25 @@ import {
     FETCH_BUS_BOOKING_FAILURE,
     FETCH_BUS_BOOKING_DETAILS_SUCCESS,
     FETCH_BUS_BOOKING_DETAILS_FAILURE,
-    FETCH_BUS_BOOKING_DETAILS_REQUEST // NEW
+    FETCH_BUS_BOOKING_DETAILS_REQUEST,
+    CREATE_BUS_BOOKING_REQUEST,
+    CREATE_BUS_BOOKING_SUCCESS,
+    CREATE_BUS_BOOKING_FAILURE,
+    FETCH_USER_BUS_BOOKINGS_REQUEST,
+    FETCH_USER_BUS_BOOKINGS_SUCCESS,
+    FETCH_USER_BUS_BOOKINGS_FAILURE,
+    FETCH_BUS_BOOKING_DETAILS_DB_REQUEST,
+    FETCH_BUS_BOOKING_DETAILS_DB_SUCCESS,
+    FETCH_BUS_BOOKING_DETAILS_DB_FAILURE,
+    UPDATE_BUS_BOOKING_STATUS_REQUEST,
+    UPDATE_BUS_BOOKING_STATUS_SUCCESS,
+    UPDATE_BUS_BOOKING_STATUS_FAILURE,
+    CANCEL_BUS_BOOKING_REQUEST,
+    CANCEL_BUS_BOOKING_SUCCESS,
+    CANCEL_BUS_BOOKING_FAILURE,
+    FETCH_BUS_BOOKING_STATS_REQUEST,
+    FETCH_BUS_BOOKING_STATS_SUCCESS,
+    FETCH_BUS_BOOKING_STATS_FAILURE,
 } from '../Actions/busActions';
 
 const initialState = {
@@ -42,8 +60,17 @@ const initialState = {
     busBookingData: null,
     busBookingDetails: null,
     error: null,
-    bookingLoading: false,           // NEW
-    bookingDetailsLoading: false,    // NEW
+    bookingLoading: false,
+    bookingDetailsLoading: false,
+    createBookingLoading: false,
+    userBookingsLoading: false,
+    bookingDetailsDbLoading: false,
+    updateStatusLoading: false,
+    cancelBookingLoading: false,
+    bookingStatsLoading: false,
+    userBusBookings: [],
+    busBookingDetailsDb: null,
+    busBookingStats: null,
 };
 
 const busReducer = (state = initialState, action) => {
@@ -137,7 +164,7 @@ const busReducer = (state = initialState, action) => {
             break;
 
         // BOOKING DETAILS
-        case FETCH_BUS_BOOKING_DETAILS_REQUEST: // <-- ADD THIS CASE
+        case FETCH_BUS_BOOKING_DETAILS_REQUEST:
             newState = { ...state, bookingDetailsLoading: true, error: null };
             break;
         case FETCH_BUS_BOOKING_DETAILS_SUCCESS:
@@ -145,6 +172,95 @@ const busReducer = (state = initialState, action) => {
             break;
         case FETCH_BUS_BOOKING_DETAILS_FAILURE:
             newState = { ...state, bookingDetailsLoading: false, error: action.payload };
+            break;
+
+        // CREATE BUS BOOKING
+        case CREATE_BUS_BOOKING_REQUEST:
+            newState = { ...state, createBookingLoading: true, error: null };
+            break;
+        case CREATE_BUS_BOOKING_SUCCESS:
+            newState = { 
+                ...state, 
+                createBookingLoading: false, 
+                userBusBookings: [action.payload, ...state.userBusBookings],
+                error: null 
+            };
+            break;
+        case CREATE_BUS_BOOKING_FAILURE:
+            newState = { ...state, createBookingLoading: false, error: action.payload };
+            break;
+
+        // FETCH USER BUS BOOKINGS
+        case FETCH_USER_BUS_BOOKINGS_REQUEST:
+            newState = { ...state, userBookingsLoading: true, error: null };
+            break;
+        case FETCH_USER_BUS_BOOKINGS_SUCCESS:
+            newState = { ...state, userBookingsLoading: false, userBusBookings: action.payload, error: null };
+            break;
+        case FETCH_USER_BUS_BOOKINGS_FAILURE:
+            newState = { ...state, userBookingsLoading: false, error: action.payload };
+            break;
+
+        // FETCH BUS BOOKING DETAILS FROM DB
+        case FETCH_BUS_BOOKING_DETAILS_DB_REQUEST:
+            newState = { ...state, bookingDetailsDbLoading: true, error: null };
+            break;
+        case FETCH_BUS_BOOKING_DETAILS_DB_SUCCESS:
+            newState = { ...state, bookingDetailsDbLoading: false, busBookingDetailsDb: action.payload, error: null };
+            break;
+        case FETCH_BUS_BOOKING_DETAILS_DB_FAILURE:
+            newState = { ...state, bookingDetailsDbLoading: false, error: action.payload };
+            break;
+
+        // UPDATE BUS BOOKING STATUS
+        case UPDATE_BUS_BOOKING_STATUS_REQUEST:
+            newState = { ...state, updateStatusLoading: true, error: null };
+            break;
+        case UPDATE_BUS_BOOKING_STATUS_SUCCESS:
+            newState = { 
+                ...state, 
+                updateStatusLoading: false, 
+                userBusBookings: state.userBusBookings.map(booking => 
+                    booking.booking_id === action.payload.booking_id 
+                        ? { ...booking, ...action.payload }
+                        : booking
+                ),
+                error: null 
+            };
+            break;
+        case UPDATE_BUS_BOOKING_STATUS_FAILURE:
+            newState = { ...state, updateStatusLoading: false, error: action.payload };
+            break;
+
+        // CANCEL BUS BOOKING
+        case CANCEL_BUS_BOOKING_REQUEST:
+            newState = { ...state, cancelBookingLoading: true, error: null };
+            break;
+        case CANCEL_BUS_BOOKING_SUCCESS:
+            newState = { 
+                ...state, 
+                cancelBookingLoading: false, 
+                userBusBookings: state.userBusBookings.map(booking => 
+                    booking.booking_id === action.payload.booking_id 
+                        ? { ...booking, booking_status: 'Cancelled' }
+                        : booking
+                ),
+                error: null 
+            };
+            break;
+        case CANCEL_BUS_BOOKING_FAILURE:
+            newState = { ...state, cancelBookingLoading: false, error: action.payload };
+            break;
+
+        // FETCH BUS BOOKING STATS
+        case FETCH_BUS_BOOKING_STATS_REQUEST:
+            newState = { ...state, bookingStatsLoading: true, error: null };
+            break;
+        case FETCH_BUS_BOOKING_STATS_SUCCESS:
+            newState = { ...state, bookingStatsLoading: false, busBookingStats: action.payload, error: null };
+            break;
+        case FETCH_BUS_BOOKING_STATS_FAILURE:
+            newState = { ...state, bookingStatsLoading: false, error: action.payload };
             break;
 
         default:
@@ -157,7 +273,13 @@ const busReducer = (state = initialState, action) => {
                        newState.searchLoading ||
                        newState.seatLayoutLoading ||
                        newState.boardingPointsLoading ||
-                       newState.blockLoading;
+                       newState.blockLoading ||
+                       newState.createBookingLoading ||
+                       newState.userBookingsLoading ||
+                       newState.bookingDetailsDbLoading ||
+                       newState.updateStatusLoading ||
+                       newState.cancelBookingLoading ||
+                       newState.bookingStatsLoading;
 
     return newState;
 };

@@ -101,20 +101,6 @@ export default function HotelTraveller({
 
   useEffect(() => {
     localStorage.setItem("hotelTravelers", JSON.stringify(travellerDetails));
-    
-    // Also store in a more accessible format for confirmation page
-    const travelersForConfirmation = travellerDetails.map(traveler => ({
-      id: `${traveler.RoomID}-${traveler.PaxType}-${traveler.PaxId}`,
-      Forename: traveler.Forename,
-      Surname: traveler.Surname,
-      PaxEmail: traveler.PaxEmail,
-      PaxMobile: traveler.PaxMobile,
-      PaxType: traveler.PaxType,
-      RoomID: traveler.RoomID,
-      LeadPax: traveler.LeadPax
-    }));
-    
-    localStorage.setItem("hotelTravelersForConfirmation", JSON.stringify(travelersForConfirmation));
   }, [travellerDetails]);
 
   return (

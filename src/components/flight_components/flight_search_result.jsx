@@ -1,44 +1,42 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { indigo } from '../../assets/images';
-
-import AccordionApp from './AccrodionApp';
-
-import {indigo1} from '../../assets/images';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { indigo } from "../../assets/images";
+import AccordionApp from "./AccrodionApp";
+import "react-toastify/dist/ReactToastify.css";
 
 const FlightSearchResult = ({ flightData, filters }) => {
-    const navigate = useNavigate();
-    const [filteredFlightData, setFilteredFlightData] = useState([]);
+  const navigate = useNavigate();
+  const [filteredFlightData, setFilteredFlightData] = useState([]);
 
-    useEffect(() => {
-        if (!flightData || flightData.length === 0) {
-            // Clear the filteredFlightData if flightData is empty
-            setFilteredFlightData([]);
-        } else {
-            // Apply filters to flightData
-            const filteredData = flightData.filter(flight => {
-                return (
-                    (!filters.direct || flight.direct) &&
-                    (!filters.stopovers || flight.stopovers <= filters.stopovers)
-                );
-            });
+  // useEffect(() => {
+  //     if (!flightData || flightData.length === 0) {
+  //         // Clear the filteredFlightData if flightData is empty
+  //         setFilteredFlightData([]);
+  //     } else {
+  //         // Apply filters to flightData
+  //         const filteredData = flightData.filter(flight => {
+  //             return (
+  //                 (!filters.direct || flight.direct) &&
+  //                 (!filters.stopovers || flight.stopovers <= filters.stopovers)
+  //             );
+  //         });
 
-            // Update state with filtered data
-            setFilteredFlightData(filteredData);
-            sessionStorage.setItem('filteredFlightData', JSON.stringify(filteredData));
-        }
-    }, [flightData, filters]);
+  //         // Update state with filtered data
+  //         setFilteredFlightData(filteredData);
+  //         sessionStorage.setItem('filteredFlightData', JSON.stringify(filteredData));
+  //     }
+  // }, [flightData, filters]);
+  if (!filteredFlightData) {
+    return <p>No data available</p>;
+  }
+  const handleBooking = (flight) => {
+    navigate("/flight-Bookingpage", { state: { flightData: flight } });
+  };
 
-    const handleBooking = (flight) => {
-        navigate('/flight-Bookingpage', { state: { flightData: flight } });
-    };
-
-    return (
-        <div className="row align-items-center g-4 mt-2">
-            <style>
-                {`
+  return (
+    <div className="row align-items-center g-4 mt-2">
+      <style>
+        {`
                 .no-flight-found-wrapper {
                     display: flex;
                     flex-direction: column;
@@ -154,99 +152,131 @@ const FlightSearchResult = ({ flightData, filters }) => {
         border:transparent;
                 }
             `}
-            </style>
-            {/* Offer Coupon Box */}
-            <div className="col-xl-12 col-lg-12 col-md-12">
-                <div className="d-md-flex bg-success rounded-2 align-items-center justify-content-between px-3 py-3">
-                    <div className="d-md-flex align-items-center justify-content-start">
-                        <div className="flx-icon-first mb-md-0 mb-3">
-                            <div className="square--60 circle bg-white">
-                                <i className="fa-solid fa-gift fs-3 text-success" />
-                            </div>
-                        </div>
-                        <div className="flx-caps-first ps-2">
-                            <h6 className="fs-5 fw-medium text-light mb-0">Start Exploring The World</h6>
-                            <p className="text-light mb-0">Book Flights Effortlessly and Earn $50+ for each booking with SeeMyTrip.com</p>
-                        </div>
-                    </div>
-                    <div className="flx-last text-md-end mt-md-0 mt-4">
-                        <button type="button" className="btn btn-black getstarted bg-white border fw-medium full-width  px-xl-4">Get Started</button>
-                    </div>
-                </div>
+      </style>
+      {/* Offer Coupon Box */}
+      <div className="col-xl-12 col-lg-12 col-md-12">
+        <div className="d-md-flex bg-success rounded-2 align-items-center justify-content-between px-3 py-3">
+          <div className="d-md-flex align-items-center justify-content-start">
+            <div className="flx-icon-first mb-md-0 mb-3">
+              <div className="square--60 circle bg-white">
+                <i className="fa-solid fa-gift fs-3 text-success" />
+              </div>
             </div>
-
-            {/* Flight List */}
-            {filteredFlightData.length > 0 ? (
-                filteredFlightData.map(flight => (
-                    <div key={flight.flightId} className="col-xl-12 col-lg-12 col-md-12">
-                        <div className="flights-list-item">
-                            <div className="d-flex align-items-center justify-content-between">
-                                {/* Airline Info */}
-                                <div className="airline-section">
-                                    <img className="img-fluid" src={indigo} width={35} alt="Airline Logo" />
-                                    <div>
-                                        <div className="text-dark fw-medium"> Indigo{flight.airline}</div>
-                                        <div className="text-sm text-muted">1234{flight.classType}</div>
-                                    </div>
-                                </div>
-
-                                {/* Flight Info */}
-                                <div className="flight-info-section">
-                                    {/* Departure */}
-                                    <div className="time-airport-group">
-                                        <div className="text-dark fw-bold">{flight.departureTime}</div>
-                                        <div className="text-muted text-sm">{flight.fromAirportShort || flight.fromAirport}</div>
-                                    </div>
-
-                                    {/* Duration & Stops */}
-                                    <div className="flight-duration-section">
-                                        <div className="text-dark small">{flight.duration}</div>
-                                        <div className="flightLine"></div>
-                                        <div className="text-muted small">
-                                            {flight.stopovers === 0 ? 'Direct' : 
-                                             flight.stopovers ? `${flight.stopovers} Stop${flight.stopovers > 1 ? 's' : ''}` : 
-                                             'Direct'}
-                                        </div>
-                                    </div>
-
-                                    {/* Arrival */}
-                                    <div className="time-airport-group">
-                                        <div className="text-dark fw-bold">{flight.arrivalTime}</div>
-                                        <div className="text-muted text-sm">{flight.toAirportShort || flight.toAirport}</div>
-                                    </div>
-                                </div>
-
-                                {/* Price & Action */}
-                                <div className="price-section">
-                                    <div className="text-dark fs-5 fw-bold">{flight.economyPrice}</div>
-                                    <button 
-                                        className="btn btn-primary select-flight-btn" 
-                                        onClick={() => handleBooking(flight)}
-                                    >
-                                        Select Flight
-                                    </button>
-                                   
-                                </div>
-                                
-                            </div>
-                            <AccordionApp flight={flight} />
-                        </div>
-                        <div className='text-end'>
-                        
-                            </div>
-                    </div>
-                ))
-            ) : (
-                <div className="col-12 text-center mt-5">
-                    <div className="no-flight-found-wrapper">
-                        <i className="fas fa-plane fa-5x text-muted mb-3"></i>
-                        <h3 className="text-muted">No Flights Found</h3>
-                        <p className="text-muted">Please adjust your search filters or try again later.</p>
-                    </div>
-                </div>
-            )}
+            <div className="flx-caps-first ps-2">
+              <h6 className="fs-5 fw-medium text-light mb-0">
+                Start Exploring The World
+              </h6>
+              <p className="text-light mb-0">
+                Book Flights Effortlessly and Earn $50+ for each booking with
+                SeeMyTrip.com
+              </p>
+            </div>
+          </div>
+          <div className="flx-last text-md-end mt-md-0 mt-4">
+            <button
+              type="button"
+              className="btn btn-black getstarted bg-white border fw-medium full-width  px-xl-4"
+            >
+              Get Started
+            </button>
+          </div>
         </div>
-    );
+      </div>
+
+      {/* Flight List */}
+      {filteredFlightData.length > 0 ? (
+        filteredFlightData.map((flight) => (
+          <div key={flight.flightId} className="col-xl-12 col-lg-12 col-md-12">
+            <div className="flights-list-item">
+              <div className="d-flex align-items-center justify-content-between">
+                {/* Airline Info */}
+                <div className="airline-section">
+                  <img
+                    className="img-fluid"
+                    src={indigo}
+                    width={35}
+                    alt="Airline Logo"
+                  />
+                  <div>
+                    <div className="text-dark fw-medium">
+                      {" "}
+                      Indigo{flight.airline}
+                    </div>
+                    <div className="text-sm text-muted">
+                      1234{flight.classType}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Flight Info */}
+                <div className="flight-info-section">
+                  {/* Departure */}
+                  <div className="time-airport-group">
+                    <div className="text-dark fw-bold">
+                      {flight.departureTime}
+                    </div>
+                    <div className="text-muted text-sm">
+                      {flight.fromAirportShort || flight.fromAirport}
+                    </div>
+                  </div>
+
+                  {/* Duration & Stops */}
+                  <div className="flight-duration-section">
+                    <div className="text-dark small">{flight.duration}</div>
+                    <div className="flightLine"></div>
+                    <div className="text-muted small">
+                      {flight.stopovers === 0
+                        ? "Direct"
+                        : flight.stopovers
+                        ? `${flight.stopovers} Stop${
+                            flight.stopovers > 1 ? "s" : ""
+                          }`
+                        : "Direct"}
+                    </div>
+                  </div>
+
+                  {/* Arrival */}
+                  <div className="time-airport-group">
+                    <div className="text-dark fw-bold">
+                      {flight.arrivalTime}
+                    </div>
+                    <div className="text-muted text-sm">
+                      {flight.toAirportShort || flight.toAirport}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Price & Action */}
+                <div className="price-section">
+                  <div className="text-dark fs-5 fw-bold">
+                    {flight.economyPrice}
+                  </div>
+                  <button
+                    className="btn btn-primary select-flight-btn"
+                    onClick={() => handleBooking(flight)}
+                  >
+                    Select Flight
+                  </button>
+                </div>
+              </div>
+              <AccordionApp flight={flight} />
+            </div>
+            <div className="text-end"></div>
+          </div>
+        ))
+      ) : (
+        <div className="col-12 text-center mt-5">
+          <div className="no-flight-found-wrapper">
+            <i className="fas fa-plane fa-5x text-muted mb-3"></i>
+            <h3 className="text-muted">No Flights Found</h3>
+            <p className="text-muted">
+              Please adjust your search filters or try again later.
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default FlightSearchResult;

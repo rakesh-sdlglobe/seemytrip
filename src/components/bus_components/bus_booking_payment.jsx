@@ -7,11 +7,15 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { 
   selectBusBookingLoading, 
-  selectBusBookingDetailsLoading 
+  selectBusBookingDetailsLoading,
+  selectCreateBookingLoading,
+  selectUpdateStatusLoading
 } from '../../store/Selectors/busSelectors';
 import { 
   fetchBusBooking, 
-  fetchBusBookingDetails 
+  fetchBusBookingDetails,
+  createBusBooking,
+  updateBusBookingStatus
 } from '../../store/Actions/busActions';
 
 const BusBookingPayment = () => {
@@ -34,12 +38,13 @@ const BusBookingPayment = () => {
   const [couponCode, setCouponCode] = useState('');
   const bookingLoading = useSelector(selectBusBookingLoading);
   const bookingDetailsLoading = useSelector(selectBusBookingDetailsLoading);
+  const createBookingLoading = useSelector(selectCreateBookingLoading);
+  const updateStatusLoading = useSelector(selectUpdateStatusLoading);
   const [timeLeft, setTimeLeft] = useState(360); // 6 minutes in seconds
-  const [hasLogged, setHasLogged] = useState(false); // NEW: Track if we've already logged
-  
+  const [hasLogged, setHasLogged] = useState(false);
+
   // Check if block data is available - RUN ONLY ONCE
   useEffect(() => {
-    // Only log once when component mounts
     if (!hasLogged) {
       console.log("Payment page - blockResponse:", blockResponse);
       console.log("Payment page - blockData:", blockData);
@@ -48,7 +53,6 @@ const BusBookingPayment = () => {
       setHasLogged(true);
     }
     
-    // Check if we have any block data in any format
     const hasBlockData = blockData && Object.keys(blockData).length > 0;
     const hasBlockResponse = blockResponse && Object.keys(blockResponse).length > 0;
     
@@ -67,7 +71,7 @@ const BusBookingPayment = () => {
     } else {
       console.log("Block data found, proceeding with payment page");
     }
-  }, []); // REMOVED ALL DEPENDENCIES - Run only once on mount
+  }, []);
 
   // Timer countdown - SEPARATE useEffect
   useEffect(() => {
@@ -83,7 +87,6 @@ const BusBookingPayment = () => {
       });
     }, 1000);
 
-    // Check block expiry every 30 seconds
     const blockCheckTimer = setInterval(() => {
       const blockTimestamp = localStorage.getItem("blockTimestamp");
       if (blockTimestamp) {
@@ -97,7 +100,7 @@ const BusBookingPayment = () => {
           navigate('/bus-list');
         }
       }
-    }, 30000); // Check every 30 seconds
+    }, 30000);
     
     return () => {
       clearInterval(timer);
@@ -123,7 +126,6 @@ const BusBookingPayment = () => {
         };
       }
       
-      // Calculate base fare from passenger seat data
       const baseFare = blockData.Passenger.reduce((total, passenger) => {
         const seatPrice = passenger.Seat?.PublishedPrice || 
                          passenger.Seat?.SeatFare || 
@@ -133,7 +135,6 @@ const BusBookingPayment = () => {
         return total + (parseFloat(seatPrice) || 0);
       }, 0);
       
-      // Get assured charge from API
       const assuredCharge = blockData.AssuredCharge || 0;
       
       return {
@@ -230,24 +231,85 @@ const BusBookingPayment = () => {
     };
   };
 
+  // Save booking to database using Redux
+  const saveBookingToDatabase = async () => {
+    try {
+      const bookingData = {
+        user_id: 1, // Replace with actual user ID from your auth context
+        busData,
+        blockData,
+        contactDetails,
+        addressDetails,
+        travelerDetails,
+        fareDetails,
+        token_id: JSON.parse(localStorage.getItem("busAuthData") || "{}").TokenId
+      };
+
+      const result = await dispatch(createBusBooking(bookingData));
+      
+      if (result && result.success) {
+        toast.success('Booking saved to database successfully!');
+        localStorage.setItem('currentBookingId', result.booking_id);
+        return result.booking_id;
+      } else {
+        toast.error('Failed to save booking to database');
+        return null;
+      }
+    } catch (error) {
+      console.error('Error saving booking to database:', error);
+      toast.error('Error saving booking to database');
+      return null;
+    }
+  };
+
+  // Update booking status using Redux
+  const updateBookingStatus = async (bookResult) => {
+    try {
+      const bookingId = localStorage.getItem('currentBookingId');
+      if (!bookingId) return;
+
+      const statusData = {
+        booking_status: 'Confirmed',
+        payment_status: 'Completed',
+        ticket_no: bookResult.TicketNo,
+        travel_operator_pnr: bookResult.TravelOperatorPNR
+      };
+
+      const result = await dispatch(updateBusBookingStatus(bookingId, statusData));
+      
+      if (result && result.success) {
+        console.log('Booking status updated successfully');
+      } else {
+        console.error('Failed to update booking status');
+      }
+    } catch (error) {
+      console.error('Error updating booking status:', error);
+    }
+  };
+
   // Main handler for payment
   const handleProceedToPay = async () => {
     try {
       // 1. Book the bus
       const bookingRequest = getBookingRequest();
       const bookingResult = await dispatch(fetchBusBooking(bookingRequest));
-      // bookingResult is a redux-thunk action, so you may need to unwrap it if using redux-toolkit, or get it from state after success
 
-      // 2. If booking is successful, get booking details
       if (bookingResult && bookingResult.BookResult && bookingResult.BookResult.ResponseStatus === 1) {
-        const busId = bookingResult.BookResult.BusId;
-        const bookingDetailsRequest = getBookingDetailsRequest(busId);
-        await dispatch(fetchBusBookingDetails(bookingDetailsRequest));
-        // Now both results are in Redux state
-        toast.success('Payment successful! Your booking has been confirmed.');
-        // Optionally navigate to a success page here
+        // 2. Save to database using Redux
+        const bookingId = await saveBookingToDatabase();
+        
+        if (bookingId) {
+          // 3. Update booking status using Redux
+          await updateBookingStatus(bookingResult.BookResult);
+          
+          // 4. Get booking details
+          const busId = bookingResult.BookResult.BusId;
+          const bookingDetailsRequest = getBookingDetailsRequest(busId);
+          await dispatch(fetchBusBookingDetails(bookingDetailsRequest));
+          
+          toast.success('Payment successful! Your booking has been confirmed.');
+        }
       } else {
-        // Handle booking error
         toast.error(bookingResult?.BookResult?.Error?.ErrorMessage || "Booking failed");
       }
     } catch (error) {
@@ -569,10 +631,10 @@ const BusBookingPayment = () => {
                       <button 
                         className="btn btn-danger btn-lg px-5 py-3 fw-bold"
                         onClick={handleProceedToPay}
-                        disabled={bookingLoading || bookingDetailsLoading}
+                        disabled={bookingLoading || createBookingLoading || updateStatusLoading}
                         style={{ minWidth: '200px' }}
                       >
-                        {(bookingLoading || bookingDetailsLoading) ? (
+                        {(bookingLoading || createBookingLoading || updateStatusLoading) ? (
                           <>
                             <span className="spinner-border spinner-border-sm me-2" role="status"></span>
                             Processing...
