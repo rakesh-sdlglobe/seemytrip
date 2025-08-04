@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
 import "react-datepicker/dist/react-datepicker.css";
@@ -7,23 +7,14 @@ import "react-calendar/dist/Calendar.css";
 //import { airportData } from "./model/airportData";
 import { fetchFlightsAirport } from "../../store/Actions/flightActions";
 import { selectFlightAirports } from "../../store/Selectors/flightSelectors";
-import { flightData } from "./model/flightData";
-import { seatData } from "./model/seatData";
-import { format, parse } from "date-fns";
+import { addMilliseconds, format, parse } from "date-fns";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-// Utility function to calculate duration
-const calculateDuration = (departureTime, arrivalTime) => {
-  const dep = new Date(`1970-01-01T${departureTime}:00Z`);
-  const arr = new Date(`1970-01-01T${arrivalTime}:00Z`);
-  if (arr < dep) {
-    arr.setDate(arr.getDate() + 1); // Crosses midnight
-  }
-  const duration = new Date(arr - dep);
-  return `${duration.getUTCHours()}h ${duration.getUTCMinutes()}m`;
-};
-
+const today = new Date();
+const JDate = new Date();
+const RDate = new Date();
+JDate.setDate(today.getDate() + 1);
+RDate.setDate(today.getDate() + 7);
 const FlightSearch = ({
   onSearchResults = () => {},
   buttonText = "Search",
@@ -43,49 +34,97 @@ const FlightSearch = ({
   const dispatch = useDispatch();
   const airportDataList = useSelector(selectFlightAirports);
   const [tripType, setTripType] = useState("one-way"); // State for radio buttons
-  const [travellers, setTravellers] = useState(1); // State for number of travellers
   const [travelClass, setTravelClass] = useState("Economy"); // State for travel class
-
-  const [returnDate, setReturnDate] = useState(null);
-
-  const handleReturnDateChange = (date) => {
-    setReturnDate(date);
-  };
-
-  const findAirportByName = (name) => {
-    return airportDataList.find((airport) => airport.Display === name);
-  };
-
-  const [fromAirport, setFromAirport] = useState(() => {
-    const storedFromAirport = sessionStorage.getItem("fromAirport");
-    return storedFromAirport
-      ? {
-          value: findAirportByName(storedFromAirport)?.id,
-          label: storedFromAirport,
-        }
-      : null;
-  });
+  const [isGuestInputOpen, setIsGuestInputOpen] = useState(false);
+  const [adultsCount, setAdultsCount] = useState(1);
+  const [childrenCount, setChildrenCount] = useState(0);
+  const [infantsCount, setInfantsCount] = useState(0);
+  const [flightType, setFlightType] = useState("O");
+  const [flightClass, setFlightClass] = useState("E");
+  const [routeType, setRouteType] = useState("oneway");
+  const [isReturn, setIsReturn] = useState(false);
+  const [nationalityCode, setNationalityCode] = useState("IN");
+  const [nationalityName, setNationalityName] = useState("Indian");
+  const [currency, setCurrency] = useState("INR");
+  const [fromCountry, setFromCountry] = useState("");
+  const [toCountry, setToCountry] = useState("");
+  const [isDom, setIsDom] = useState(false);
+  const [fromAirport, setFromAirport] = useState({});
   const [showJourneyCalendar, setShowJourneyCalendar] = useState(false);
   const [showReturnCalendar, setShowReturnCalendar] = useState(false);
-
-  const [toAirport, setToAirport] = useState(() => {
-    const storedToAirport = sessionStorage.getItem("toAirport");
-    return storedToAirport
-      ? {
-          value: findAirportByName(storedToAirport)?.id,
-          label: storedToAirport,
-        }
-      : null;
-  });
-
-  const [journeyDate, setJourneyDate] = useState(() => {
-    const storedDate = sessionStorage.getItem("journeyDate");
-    return storedDate ? parse(storedDate, "dd/MM/yyyy", new Date()) : null;
-  });
+  const [toAirport, setToAirport] = useState({});
+  const [journeyDate, setJourneyDate] = useState(JDate);
+  const [returnDate, setReturnDate] = useState(null);
+  const [warningMessage, setWarningMessage] = useState("");
 
   useEffect(() => {
-    if (fromAirport) sessionStorage.setItem("fromAirport", fromAirport.label);
-    if (toAirport) sessionStorage.setItem("toAirport", toAirport.label);
+    if (localStorage.getItem("SearchRequest")) {
+      const selectedData = JSON.parse(localStorage.getItem("SearchRequest"));
+      setFromAirport({
+        value: selectedData.FromAirport,
+        label: selectedData.FromAirporttxt,
+      });
+      setToAirport({
+        value: selectedData.ToAirport,
+        label: selectedData.ToAirporttxt,
+      });
+      setTravelClass(selectedData.Classtxt);
+      setFlightClass(selectedData.Class);
+      setFromCountry(selectedData.FromCountry);
+      setToCountry(selectedData.ToCountry);
+      setFlightType(selectedData.FlightType);
+      setRouteType(selectedData.RouteType);
+      setIsReturn(selectedData.IsReturn);
+      setJourneyDate(new Date(selectedData.DepartDate));
+      setAdultsCount(selectedData.Adults);
+      setChildrenCount(selectedData.Children);
+      setInfantsCount(selectedData.Infants);
+      setIsDom(selectedData.isDom);
+      setNationalityCode(selectedData.TravellerNationality);
+      setNationalityName(selectedData.NationalityName);
+      setCurrency(selectedData.Currency);
+      if (selectedData.FlightType !== "O") {
+        setTripType("round-trip");
+        setReturnDate(new Date(selectedData.ReturnDate));
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (fromCountry === toCountry && tripType !== "one-way") {
+      setIsDom(true);
+    } else {
+      setIsDom(false);
+    }
+  }, [fromCountry, toCountry, tripType]);
+
+  useEffect(() => {
+    if (tripType === "one-way") {
+      setIsReturn(false);
+      setRouteType("oneway");
+      setFlightType("O");
+    } else {
+      setIsReturn(true);
+      setRouteType("roundtrip");
+      setFlightType("R");
+    }
+  }, [tripType]);
+
+  useEffect(() => {
+    if (travelClass === "First Class") {
+      setFlightClass("FC");
+    } else if (travelClass === "Business") {
+      setFlightClass("B");
+    } else if (travelClass === "Premium Economy") {
+      setFlightClass("PE");
+    } else if (travelClass === "Economy") {
+      setFlightClass("E");
+    }
+  }, [travelClass]);
+
+  useEffect(() => {
+    if (fromAirport) sessionStorage.setItem("fromAirport", fromAirport);
+    if (toAirport) sessionStorage.setItem("toAirport", toAirport);
     if (journeyDate)
       sessionStorage.setItem("journeyDate", format(journeyDate, "dd/MM/yyyy"));
   }, [fromAirport, toAirport, journeyDate]);
@@ -94,29 +133,63 @@ const FlightSearch = ({
     dispatch(fetchFlightsAirport());
   }, [dispatch]);
 
- 
-  
-   const airportOptions = useMemo(() => {
-      const sortedAirport = [...(airportDataList || [])]
-        .sort((a, b) => b.Count - a.Count)
-        .slice(0, 15); // Take top 15 most popular
-  
-      return sortedAirport.map((air) => ({
-        value: air.Id,
-        label: air.Display,
-        airportData: air,
-      }));
-    }, [airportDataList]);
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (
+        !e.target.closest(".calendar-popup") &&
+        !e.target.closest(".form-control")
+      ) {
+        setShowReturnCalendar(false);
+      }
+    };
 
-    
+    document.addEventListener("click", handleOutsideClick);
 
-    console.log("Airport Options:", airportOptions);
+    return () => {
+      document.removeEventListener("click", handleOutsideClick);
+    };
+  }, []);
 
-  const [warningMessage, setWarningMessage] = useState("");
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        isGuestInputOpen &&
+        !event.target.closest(".guests-dropdown") &&
+        !event.target.closest(".guest-selector-btn")
+      ) {
+        setIsGuestInputOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isGuestInputOpen]);
+
+  const handleReturnDateChange = (date) => {
+    setReturnDate(date);
+  };
+  const airportOptions = useMemo(() => {
+    const sortedAirport = [...(airportDataList || [])]
+      .sort((a, b) => b.Count - a.Count)
+      .slice(0, 15); // Take top 15 most popular
+
+    return sortedAirport.map((air) => ({
+      value: air.Code,
+      label: air.Display,
+      airportData: air,
+    }));
+  }, [airportDataList]);
+
+  console.log("Airport Options:", airportOptions);
 
   const handleFromAirportChange = (selectedOption) => {
     setFromAirport(selectedOption);
+    setFromCountry(selectedOption.airportData?.Desc2);
     if (toAirport && selectedOption?.value === toAirport.value) {
+      setFromAirport({});
+      setFromCountry({});
       setWarningMessage("Source and destination airports can't be the same");
       toast.error("Source and destination airports can't be the same");
     } else {
@@ -125,14 +198,16 @@ const FlightSearch = ({
   };
 
   // Handle input change for search
-    const handleInputChange = (inputValue) => {
-      dispatch(fetchFlightsAirport(inputValue));
-      return inputValue; // Important to return the input value
-    };
+  const handleInputChange = (inputValue) => {
+    dispatch(fetchFlightsAirport(inputValue));
+    return inputValue; // Important to return the input value
+  };
 
   const handleToAirportChange = (selectedOption) => {
     setToAirport(selectedOption);
+    setToCountry(selectedOption.airportData?.Desc2);
     if (fromAirport && selectedOption?.value === fromAirport.value) {
+      setToAirport({});
       setWarningMessage("Source and destination airports can't be the same");
       toast.error("Source and destination airports can't be the same");
     } else {
@@ -161,66 +236,33 @@ const FlightSearch = ({
       return;
     }
 
-    const results = findFlightsBetweenAirports(
-      fromAirport.value,
-      toAirport.value,
-      journeyDate
-    );
-    onSearchResults(results);
+    const SearchRequest = {
+      FromAirporttxt: fromAirport.label,
+      ToAirporttxt: toAirport.label,
+      FromAirport: fromAirport.value,
+      ToAirport: toAirport.value,
+      Class: flightClass,
+      Classtxt: travelClass,
+      IsReturn: isReturn,
+      DepartDate: format(journeyDate,"yyyy-MM-dd"),
+      ReturnDate: returnDate !== null ? format(returnDate,"yyyy-MM-dd") : "",
+      Adults: adultsCount,
+      Infants: infantsCount,
+      Children: childrenCount,
+      TravellerNationality: nationalityCode,
+      NationalityName: nationalityName,
+      Currency: currency,
+      RouteType: routeType,
+      FlightType: flightType,
+      FromCountry: fromCountry,
+      ToCountry: toCountry,
+      isDom,
+    };
+    localStorage.setItem("SearchRequest", JSON.stringify(SearchRequest));
+    onSearchResults(SearchRequest);
   };
 
-  const handleTravellersChange = (event) => setTravellers(event.target.value);
   const handleTravelClassChange = (event) => setTravelClass(event.target.value);
-
-  const findFlightsBetweenAirports = (fromAirportId, toAirportId, date) => {
-    const fromAirportName = airportDataList.find(
-      (airport) => airport.id === fromAirportId
-    )?.name;
-    const toAirportName = airportDataList.find(
-      (airport) => airport.id === toAirportId
-    )?.name;
-
-    const filteredFlights = flightData.filter((flight) => {
-      return (
-        flight.stops.some((stop) => stop.airportId === fromAirportId) &&
-        flight.stops.some((stop) => stop.airportId === toAirportId)
-      );
-    });
-
-    const resultsWithEconomyPrice = filteredFlights.map((flight) => {
-      const seatInfo = seatData.find(
-        (seat) => seat.flightId === flight.flightId
-      );
-      const economyPrice =
-        seatInfo?.classes.find((cls) => cls.classType === "Economy")?.price ||
-        "Not Available";
-      const formattedStops = flight.stops.map((stop) => ({
-        ...stop,
-        airport:
-          airportDataList.find((airport) => airport.id === stop.airportId)?.Display ||
-          "Unknown",
-      }));
-      const duration = calculateDuration(
-        flight.departureTime,
-        flight.arrivalTime
-      );
-
-      return {
-        ...flight,
-        fromAirport: fromAirportName,
-        toAirport: toAirportName,
-        economyPrice: `₹${economyPrice}`,
-        stops: formattedStops,
-        departureTime: flight.departureTime,
-        arrivalTime: flight.arrivalTime,
-        duration: duration,
-      };
-    });
-
-    return resultsWithEconomyPrice;
-  };
-
-
 
   const customSelectStyles = {
     control: (provided) => ({
@@ -278,28 +320,6 @@ const FlightSearch = ({
     }),
   };
 
-  useEffect(() => {
-    const handleOutsideClick = (e) => {
-      if (
-        !e.target.closest(".calendar-popup") &&
-        !e.target.closest(".form-control")
-      ) {
-        setShowReturnCalendar(false);
-      }
-    };
-
-    document.addEventListener("click", handleOutsideClick);
-
-    return () => {
-      document.removeEventListener("click", handleOutsideClick);
-    };
-  }, []);
-
-  const [isGuestInputOpen, setIsGuestInputOpen] = useState(false);
-  const [adultsCount, setAdultsCount] = useState(1);
-  const [childrenCount, setChildrenCount] = useState(0);
-  const [infantsCount, setInfantsCount] = useState(0);
-
   const updateCount = (type, operation) => {
     const maxGuests = 9; // Maximum total guests allowed
     const totalGuests = adultsCount + childrenCount + infantsCount;
@@ -327,23 +347,6 @@ const FlightSearch = ({
     }
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        isGuestInputOpen &&
-        !event.target.closest(".guests-dropdown") &&
-        !event.target.closest(".guest-selector-btn")
-      ) {
-        setIsGuestInputOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isGuestInputOpen]);
-
   const handleJourneyCalendarClick = () => {
     setShowReturnCalendar(false);
     setShowJourneyCalendar(!showJourneyCalendar);
@@ -351,10 +354,14 @@ const FlightSearch = ({
 
   const handleReturnCalendarClick = (e) => {
     e.stopPropagation();
+    if(returnDate === null){
+      setReturnDate(journeyDate);
+    }
     setShowJourneyCalendar(false);
     if (tripType === "one-way") {
       setTripType("round-trip");
     }
+    
     setShowReturnCalendar(!showReturnCalendar);
   };
 
@@ -800,8 +807,11 @@ color:gray;
                             className="class-selector"
                           >
                             <option value="Economy">Economy</option>
+                            <option value="Premium Economy">
+                              Premium Economy
+                            </option>
                             <option value="Business">Business</option>
-                            <option value="First">First Class</option>
+                            <option value="First Class">First Class</option>
                           </select>
                         </div>
                       </div>
@@ -938,6 +948,7 @@ color:gray;
                           {showJourneyCalendar && (
                             <Calendar
                               onChange={(date) => {
+                                console.log("jdate "  + date)
                                 handleJourneyDateChange(date);
                                 setShowJourneyCalendar(false);
                               }}
@@ -1017,7 +1028,7 @@ color:gray;
                           style={{
                             backgroundColor: buttonBackgroundColor,
                             color: buttonTextColor,
-                            height: "100%",
+                            width: "100%",
                             height: "62px",
                             borderRadius: "12px",
                           }}

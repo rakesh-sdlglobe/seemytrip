@@ -16,3 +16,13 @@ export const selectBusBookingLoading = (state) => state.bus.bookingLoading;
 export const selectBusBookingDetailsLoading = (state) => state.bus.bookingDetailsLoading;
 export const selectBusBookingData = (state) => state.bus.busBookingData;
 export const selectBusBookingDetails = (state) => state.bus.busBookingDetails;
+
+// Database selectors
+export const selectCreateBookingLoading = (state) => state.bus.createBookingLoading;
+export const selectUserBookingsLoading = (state) => state.bus.userBookingsLoading;
+export const selectUpdateStatusLoading = (state) => state.bus.updateStatusLoading;
+export const selectCancelBookingLoading = (state) => state.bus.cancelBookingLoading;
+export const selectBookingStatsLoading = (state) => state.bus.bookingStatsLoading;
+
+export const selectUserBusBookings = (state) => state.bus.userBusBookings;
+export const selectBusBookingStats = (state) => state.bus.busBookingStats;

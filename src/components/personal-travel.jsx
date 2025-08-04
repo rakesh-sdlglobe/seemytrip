@@ -27,9 +27,20 @@ const PersonalTravel = () => {
 
   const dispatch = useDispatch();
   const travelers = useSelector(selectTravelers) || [];
-  console.log(travelers);
+  console.log('🔍 Travelers data from Redux:', travelers);
+  console.log('🔍 Travelers data type:', typeof travelers);
+  console.log('🔍 Travelers array length:', travelers.length);
+  
+  if (travelers.length > 0) {
+    console.log('🔍 First traveler object:', travelers[0]);
+    console.log('🔍 First traveler keys:', Object.keys(travelers[0]));
+  }
+  
   const loading = useSelector(selectTravelerLoading);
-  const userProfile = useSelector(selectUserProfile); // Add this selector
+  const userProfile = useSelector(selectUserProfile);
+  
+  console.log('🔍 User profile data:', userProfile);
+  console.log('🔍 Loading state:', loading);
   
   useEffect(() => {
     // Fetch both travelers and user profile
@@ -78,16 +89,23 @@ const PersonalTravel = () => {
   };
 
   const handleEdit = (traveler) => {
+    console.log('🔍 Editing traveler:', traveler);
+    console.log('🔍 Traveler ID:', traveler.id);
+    console.log('🔍 Traveler firstname:', traveler.firstname);
+    console.log('🔍 Traveler mobile:', traveler.mobile);
+    console.log('🔍 Traveler dob:', traveler.dob);
+    
     setIsEditing(true);
     setEditingId(traveler.id);
-    setFirstName(traveler.passengerName || ''); // Use passengerName
-    setMobile(traveler.passengerMobileNumber || ''); // Use passengerMobileNumber
-    setBirthDate(formatDOB(traveler.pasenger_dob)); // Use pasenger_dob
+    setFirstName(traveler.firstname || '');
+    setMobile(traveler.mobile || '');
+    setBirthDate(formatDOB(traveler.dob));
     setShowModal(true);
     toast.info("Editing traveler details");
   };
 
   const handleRemoveTraveler = (id) => {
+    console.log('🔍 Removing traveler with ID:', id);
     if (window.confirm('Are you sure you want to remove this traveler?')) {
       dispatch(removeTraveler(id));
       toast.success("Traveler removed successfully");
@@ -99,9 +117,12 @@ const PersonalTravel = () => {
   };
 
   const formatDOB = (dob) => {
+    console.log('🔍 Formatting DOB:', dob);
     if (!dob) return "";
     // Handles both "YYYY-MM-DD" and "YYYY-MM-DDTHH:mm:ss.sssZ"
-    return dob.split("T")[0];
+    const formatted = dob.split("T")[0];
+    console.log('🔍 Formatted DOB:', formatted);
+    return formatted;
   };
 
   return (
@@ -154,19 +175,19 @@ const PersonalTravel = () => {
                       <div className="d-flex justify-content-between align-items-center mb-3">
                         <div className="d-flex align-items-center">
                           <div className="avatar-circle me-3">
-                            {(traveler.passengerName?.[0] || '')}
+                            {(traveler.firstname?.[0] || '')}
                           </div>
                           <div>
                             <h5 className="mb-1">
-                              {traveler.passengerName}
+                              {traveler.firstname}
                             </h5>
                             <p className="text-muted small mb-0">
                               <i className="fa-solid fa-phone me-2"></i>
-                              {traveler.passengerMobileNumber || 'N/A'}
+                              {traveler.mobile || 'N/A'}
                             </p>
                             <p className="text-muted small mb-0">
                               <i className="fa-solid fa-calendar me-2"></i>
-                              {traveler.pasenger_dob ? formatDOB(traveler.pasenger_dob) : 'N/A'}
+                              {traveler.dob ? formatDOB(traveler.dob) : 'N/A'}
                             </p>
                           </div>
                         </div>

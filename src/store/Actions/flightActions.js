@@ -4,6 +4,9 @@ import { API_URL } from "./authActions";
 export const FETCH_FLIGHT_AIRPORTS_REQUEST = "FETCH_FLIGHT_AIRPORTS_REQUEST";
 export const FETCH_FLIGHT_AIRPORTS_SUCCESS = "FETCH_FLIGHT_AIRPORTS_SUCCESS";
 export const FETCH_FLIGHT_AIRPORTS_FAILURE = "FETCH_FLIGHT_AIRPORTS_FAILURE";
+export const FETCH_FLIGHT_RESULTS_REQUEST = "FETCH_FLIGHT_RESULTS_REQUEST";
+export const FETCH_FLIGHT_RESULTS_SUCCESS = "FETCH_FLIGHT_RESULTS_SUCCESS";
+export const FETCH_FLIGHT_RESULTS_FAILURE = "FETCH_FLIGHT_RESULTS_FAILURE";
 
 export const fetchFlightsAirportRequest = () => ({
   type: FETCH_FLIGHT_AIRPORTS_REQUEST,
@@ -39,3 +42,41 @@ export const fetchFlightsAirport = (searchtext) => async (dispatch) => {
     dispatch(fetchFlightsAirportFailure(error.message));
   }
 };
+
+const fetchFlightsResultsRequest = () => ({
+  type: FETCH_FLIGHT_RESULTS_REQUEST,
+});
+
+const fetchFlightsResultsSuccess = (data) => ({
+  type: FETCH_FLIGHT_RESULTS_SUCCESS,
+  payload: data,
+});
+
+const fetchFlightsResultsFailure = (error) => ({
+  type: FETCH_FLIGHT_RESULTS_FAILURE,
+  payload: error,
+});
+
+export const fetchFlightsResultsList = (searchrequest) => {
+  return async (dispatch) => {
+    dispatch(fetchFlightsResultsRequest());
+    try {
+      const payload = searchrequest;
+
+      console.log("Final Payload to API:", payload);
+
+      const response = await axios.post(
+        `http://localhost:3002/api/flights/getFlightsList`,
+        payload
+      );
+      console.log("Data from fetchFlightsResultsList API:", response.data);
+      dispatch(fetchFlightsResultsSuccess(response.data));
+      return response.data;
+    } catch (err) {
+      dispatch(fetchFlightsResultsFailure(err.message || "Something went wrong"));
+      throw err;
+    }
+  };
+};
+
+
