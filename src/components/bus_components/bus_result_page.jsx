@@ -284,14 +284,33 @@ const BusResultPage = ({ filters }) => {
     });
   };
 
+  // Check if bus has matching pickup points
+  const hasMatchingPickupPoints = (bus) => {
+    if (!filters.pickupPoints || filters.pickupPoints.length === 0) return true;
+    
+    const busPickupPoints = bus.BoardingPointsDetails?.map(point => point.CityPointName) || [];
+    return filters.pickupPoints.some(selectedPoint => 
+      busPickupPoints.includes(selectedPoint)
+    );
+  };
+
+  // Check if bus has matching dropping points
+  const hasMatchingDroppingPoints = (bus) => {
+    if (!filters.droppingPoints || filters.droppingPoints.length === 0) return true;
+    
+    const busDroppingPoints = bus.DroppingPointsDetails?.map(point => point.CityPointName) || [];
+    return filters.droppingPoints.some(selectedPoint => 
+      busDroppingPoints.includes(selectedPoint)
+    );
+  };
+
   const filteredResults = busResults.filter((bus) => {
-    // Fix the bus type filtering logic
+    // Bus type filtering - improved logic for combinations
     if (filters.busTypes.length > 0) {
       const busType = bus.BusType ? bus.BusType.toLowerCase() : '';
-      const cleanBusTypeStr = cleanBusType(bus.BusType).toLowerCase();
       
-      // Check if any of the selected filter types match the bus type
-      const hasMatchingType = filters.busTypes.some(filterType => {
+      // Check if bus matches ALL selected filter types (AND logic, not OR)
+      const hasMatchingType = filters.busTypes.every(filterType => {
         const filterTypeLower = filterType.toLowerCase();
         
         // Handle AC/Non-AC filtering more precisely
@@ -325,6 +344,16 @@ const BusResultPage = ({ filters }) => {
       if (!hasMatchingType) {
         return false;
       }
+    }
+
+    // Pickup points filtering
+    if (!hasMatchingPickupPoints(bus)) {
+      return false;
+    }
+
+    // Dropping points filtering
+    if (!hasMatchingDroppingPoints(bus)) {
+      return false;
     }
 
     const price = bus.BusPrice?.PublishedPriceRoundedOff || 0;
@@ -433,7 +462,6 @@ const BusResultPage = ({ filters }) => {
                     {/* Left */}
                     <div className="flex-grow-1">
                       <h5 className="fw-bold mb-1">{bus.TravelName}</h5>
-                      <p className="text-muted mb-2">{bus.BusType}</p>
                       <p className="text-muted mb-2">{cleanBusType(bus.BusType)}</p>
 
                       <div className="d-flex align-items-center mb-2">
@@ -453,6 +481,8 @@ const BusResultPage = ({ filters }) => {
                       <button className="btn btn-outline-secondary btn-sm px-3 py-1">
                         On Time
                       </button>
+
+                      
                     </div>
 
                     {/* Middle (Positioned absolutely in center - Horizontal layout) */}

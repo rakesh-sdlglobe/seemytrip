@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaMapMarkerAlt, FaClock, FaPhone, FaInfoCircle } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaClock, FaPhone, FaInfoCircle, FaSearch } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const BoardingPointsPage = ({
@@ -12,6 +12,11 @@ const BoardingPointsPage = ({
   showContactInfo = true
 }) => { 
   const navigate = useNavigate();
+  
+  // Add search state
+  const [boardingSearch, setBoardingSearch] = useState('');
+  const [droppingSearch, setDroppingSearch] = useState('');
+
   // Format time and include date/month
   const formatTimeWithDate = (timeString) => {
 
@@ -68,8 +73,8 @@ const BoardingPointsPage = ({
   const processedBoardingPoints = boardingPoints.map(point => ({
     location: point.CityPointName || point.location,
     timeData: formatTimeWithDate(point.CityPointTime || point.time),
-    phone: point.phone || '7303093510',
-    address: point.CityPointLocation || point.address || '',
+    phone: point.ContactNumber || point.PhoneNumber || point.MobileNumber || point.phone || '',
+    address: point.CityPointLocation || point.Address || point.address || '',
     id: point.CityPointId || point.id
   }));
 
@@ -77,10 +82,20 @@ const BoardingPointsPage = ({
   const processedDroppingPoints = droppingPoints.map(point => ({
     location: point.CityPointName || point.location,
     timeData: formatTimeWithDate(point.CityPointTime || point.time),
-    address: point.CityPointLocation || point.address || '',
-    note: point.note || '',
+    address: point.CityPointLocation || point.Address || point.address || '',
+    note: point.Note || point.Description || point.note || '',
     id: point.CityPointId || point.id
   }));
+
+  // Filter boarding points based on search
+  const filteredBoardingPoints = processedBoardingPoints.filter(point =>
+    point.location.toLowerCase().includes(boardingSearch.toLowerCase())
+  );
+
+  // Filter dropping points based on search
+  const filteredDroppingPoints = processedDroppingPoints.filter(point =>
+    point.location.toLowerCase().includes(droppingSearch.toLowerCase())
+  );
 
   return (
     <>
@@ -92,6 +107,42 @@ const BoardingPointsPage = ({
           padding: 20px;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
           margin-top: 20px;
+        }
+
+        .search-container {
+          margin-bottom: 20px;
+        }
+
+        .search-input {
+          width: 100%;
+          padding: 10px 15px;
+          border: 2px solid #e9ecef;
+          border-radius: 8px;
+          font-size: 14px;
+          transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+          outline: none;
+          border-color: #cd2c22;
+          box-shadow: 0 0 0 3px rgba(205, 44, 34, 0.1);
+        }
+
+        .search-wrapper {
+          position: relative;
+        }
+
+        .search-icon {
+          position: absolute;
+          left: 12px;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #6c757d;
+          z-index: 1;
+        }
+
+        .search-input-with-icon {
+          padding-left: 40px;
         }
 
         .point-item {
@@ -232,6 +283,13 @@ const BoardingPointsPage = ({
           color: #424242;
           font-size: 0.9rem;
         }
+
+        .search-results-info {
+          font-size: 0.9rem;
+          color: #6c757d;
+          margin-bottom: 15px;
+          font-style: italic;
+        }
       `}</style>
 
       {/* Boarding Points Section */}
@@ -242,44 +300,70 @@ const BoardingPointsPage = ({
             Boarding Points
           </h5>
 
-          {processedBoardingPoints.map((point, idx) => (
-            <label key={idx} className="point-item d-block">
+          {/* Boarding Points Search */}
+          <div className="search-container">
+            <div className="search-wrapper">
+              <FaSearch className="search-icon" />
               <input
-                type="radio"
-                name="boarding"
-                value={point.location}
-                checked={selectedBoarding === point.location}
-                onChange={(e) => {
-                  console.log("Boarding point selected:", e.target.value);
-                  onBoardingChange(e.target.value);
-                }}
-                className="d-none"
+                type="text"
+                placeholder="Search boarding points..."
+                value={boardingSearch}
+                onChange={(e) => setBoardingSearch(e.target.value)}
+                className="search-input search-input-with-icon"
               />
-              <div className="point-content">
-                <div className="point-icon">
-                  <FaClock />
-                </div>
-                <div className="point-details">
-                  <h6>{point.location}</h6>
-                  {/* {showContactInfo && (
-                    <p>
-                      <FaPhone className="me-1" />
-                      Contact: {point.phone}
-                    </p>
-                  )} */}
-                  {point.address && (
-                    <p>
-                      {point.address}
-                    </p>
-                  )}
-                </div>
-                <div className="point-time">
-                    <div className="time">{point.timeData.time}</div>
-                    <div className="date">{point.timeData.date}</div>
-                  </div>
+            </div>
+            {boardingSearch && (
+              <div className="search-results-info">
+                Showing {filteredBoardingPoints.length} of {processedBoardingPoints.length} boarding points
               </div>
-            </label>
-          ))}
+            )}
+          </div>
+
+          {filteredBoardingPoints.length > 0 ? (
+            filteredBoardingPoints.map((point, idx) => (
+              <label key={idx} className="point-item d-block">
+                <input
+                  type="radio"
+                  name="boarding"
+                  value={point.location}
+                  checked={selectedBoarding === point.location}
+                  onChange={(e) => {
+                    console.log("Boarding point selected:", e.target.value);
+                    onBoardingChange(e.target.value);
+                  }}
+                  className="d-none"
+                />
+                <div className="point-content">
+                  <div className="point-icon">
+                    <FaClock />
+                  </div>
+                  <div className="point-details">
+                    <h6>{point.location}</h6>
+                    {/* {showContactInfo && (
+                      <p>
+                        <FaPhone className="me-1" />
+                        Contact: {point.phone}
+                      </p>
+                    )} */}
+                    {point.address && (
+                      <p>
+                        {point.address}
+                      </p>
+                    )}
+                  </div>
+                  <div className="point-time">
+                      <div className="time">{point.timeData.time}</div>
+                      <div className="date">{point.timeData.date}</div>
+                    </div>
+                </div>
+              </label>
+            ))
+          ) : (
+            <div className="no-data">
+              <FaInfoCircle className="no-data-icon" />
+              <p>No boarding points found matching "{boardingSearch}"</p>
+            </div>
+          )}
         </div>
       )}
 
@@ -291,41 +375,67 @@ const BoardingPointsPage = ({
             Dropping Points
           </h5>
 
-          {processedDroppingPoints.map((point, idx) => (
-            <label key={idx} className="point-item d-block">
+          {/* Dropping Points Search */}
+          <div className="search-container">
+            <div className="search-wrapper">
+              <FaSearch className="search-icon" />
               <input
-                type="radio"
-                name="dropping"
-                value={point.location}
-                checked={selectedDropping === point.location}
-                onChange={(e) => {
-                  console.log("Dropping point selected:", e.target.value);
-                  onDroppingChange(e.target.value);
-                }}
-                className="d-none"
+                type="text"
+                placeholder="Search dropping points..."
+                value={droppingSearch}
+                onChange={(e) => setDroppingSearch(e.target.value)}
+                className="search-input search-input-with-icon"
               />
-              <div className="point-content">
-                <div className="point-icon">
-                  <FaClock />
-                </div>
-                <div className="point-details">
-                  <h6>{point.location}</h6>
-                  {point.address && (
-                    <p>
-                      {point.address}
-                    </p>
-                  )}
-                  {/* {point.note && (
-                    <p className="text-muted">{point.note}</p>
-                  )} */}
-                </div>
-                <div className="point-time">
-                    <div className="time">{point.timeData.time}</div>
-                    <div className="date">{point.timeData.date}</div>
-                  </div>
+            </div>
+            {droppingSearch && (
+              <div className="search-results-info">
+                Showing {filteredDroppingPoints.length} of {processedDroppingPoints.length} dropping points
               </div>
-            </label>
-          ))}
+            )}
+          </div>
+
+          {filteredDroppingPoints.length > 0 ? (
+            filteredDroppingPoints.map((point, idx) => (
+              <label key={idx} className="point-item d-block">
+                <input
+                  type="radio"
+                  name="dropping"
+                  value={point.location}
+                  checked={selectedDropping === point.location}
+                  onChange={(e) => {
+                    console.log("Dropping point selected:", e.target.value);
+                    onDroppingChange(e.target.value);
+                  }}
+                  className="d-none"
+                />
+                <div className="point-content">
+                  <div className="point-icon">
+                    <FaClock />
+                  </div>
+                  <div className="point-details">
+                    <h6>{point.location}</h6>
+                    {point.address && (
+                      <p>
+                        {point.address}
+                      </p>
+                    )}
+                    {/* {point.note && (
+                      <p className="text-muted">{point.note}</p>
+                    )} */}
+                  </div>
+                  <div className="point-time">
+                      <div className="time">{point.timeData.time}</div>
+                      <div className="date">{point.timeData.date}</div>
+                    </div>
+                </div>
+              </label>
+            ))
+          ) : (
+            <div className="no-data">
+              <FaInfoCircle className="no-data-icon" />
+              <p>No dropping points found matching "{droppingSearch}"</p>
+            </div>
+          )}
         </div>
       )}
 

@@ -36,6 +36,20 @@ const HotelList = ({ hotelsList: hotels }) => {
   const hotelsGeoList = useSelector(selectHotelsGeoList);
   const hotelsGeoListError = useSelector(selectHotelsGeoListError);
 
+  // Get searched location from localStorage
+  const getSearchedLocation = () => {
+    try {
+      const savedSearchParams = localStorage.getItem("hotelSearchParams");
+      if (savedSearchParams) {
+        const searchParams = JSON.parse(savedSearchParams);
+        return searchParams.selectedCity?.label || searchParams.selectedCity || "Hotels";
+      }
+    } catch (error) {
+      console.error("Error parsing hotel search params:", error);
+    }
+    return "Hotels";
+  };
+
   // Clear geo list when component unmounts to prevent stale data
   useEffect(() => {
     return () => {
@@ -181,14 +195,22 @@ const HotelList = ({ hotelsList: hotels }) => {
                 />
               )}
             </div>
-            <button
-              className="btn btn-primary ms-2"
-              type="submit"
-              style={{ minWidth: 100 }}
-              disabled={searchInput.trim() === ""}
-            >
-              Search
-            </button>
+                                                   <button
+                className="btn ms-2"
+                type="submit"
+                style={{ 
+                  minWidth: 100,
+                  backgroundColor: '#05264E',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  fontWeight: '500',
+                  transition: 'all 0.3s ease'
+                }}
+                disabled={searchInput.trim() === ""}
+              >
+                Search
+              </button>
             <button
               type="button"
               className="btn ms-2 d-flex align-items-center justify-content-center"
@@ -460,57 +482,108 @@ const HotelList = ({ hotelsList: hotels }) => {
         </div>
       )}
 
-      {/* All Hotels Map Modal */}
-      {showAllMapModal && (
-        <DialogContent style={{ maxWidth: '120vw', width: '1200px', height: '90vh' }}>
-          <div className="modal-header">
-            <h5 className="modal-title">All Hotels Map</h5>
-            <button type="button" className="btn-close" aria-label="Close" onClick={handleCloseAllMapModal}></button>
-          </div>
-          <div className="modal-body" style={{ height: 'calc(80vh - 120px)', padding: '20px' }}>
-            {hotelsGeoListLoading && <div>Loading map...</div>}
-            {hotelsGeoListError && <div className="text-danger">{hotelsGeoListError}</div>}
-            {!hotelsGeoListLoading && hotelsGeoList && hotelsGeoList.length > 0 && (
-              <MapContainer
-                center={[
-                  parseFloat(hotelsGeoList[0]?.HotelAddress?.Latitude) || 25.08047,
-                  parseFloat(hotelsGeoList[0]?.HotelAddress?.Longitude) || 55.13652
-                ]}
-                zoom={13}
-                style={{ height: '100%', width: '100%' }}
-                scrollWheelZoom={true}
-                zoomControl={true}
-                dragging={true}
-              >
-                <TileLayer
-                  attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
-                  url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-                />
-                {hotelsGeoList.map((hotel, idx) => (
-                  <Marker
-                    key={hotel.HotelProviderSearchId || idx}
-                    position={[
-                      parseFloat(hotel.HotelAddress?.Latitude) || 25.08047,
-                      parseFloat(hotel.HotelAddress?.Longitude) || 55.13652
-                    ]}
-                  >
-                    <Popup>
-                      <div>
-                        <h6 className="fw-bold">{hotel.HotelName}</h6>
-                        <p className="mb-1">{hotel.HotelAddress?.Address}</p>
-                        <p className="mb-0 text-muted">{hotel.HotelAddress?.City}, {hotel.HotelAddress?.Country}</p>
-                      </div>
-                    </Popup>
-                  </Marker>
-                ))}
-              </MapContainer>
-            )}
-            {!hotelsGeoListLoading && hotelsGeoList && hotelsGeoList.length === 0 && (
-              <div>No hotel locations found.</div>
-            )}
-          </div>
-        </DialogContent>
-      )}
+                           {/* All Hotels Map Modal */}
+        {showAllMapModal && (
+          <div className="modal fade show d-block" style={{ 
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            zIndex: 1055,
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            overflowX: 'hidden',
+            overflowY: 'auto',
+            outline: 0
+          }}>
+                         <div className="modal-dialog modal-xl" style={{
+               maxWidth: '70vw',
+               width: '50vw',
+               maxHeight: '50vh',
+               height: '50vh',
+               margin: '1rem auto',
+               position: 'relative',
+               pointerEvents: 'auto',
+               outline: 0
+             }}>
+             <div className="modal-content" style={{
+               position: 'relative',
+               display: 'flex',
+               flexDirection: 'column',
+               width: '100%',
+               height: '95vh',
+               backgroundColor: 'var(--bs-body-bg)',
+               border: 'var(--bs-modal-border-width) solid var(--bs-modal-border-color)',
+               borderRadius: 'var(--bs-modal-border-radius)',
+               boxShadow: 'var(--bs-modal-box-shadow)',
+               outline: 0
+             }}>
+               <div className="modal-header" style={{
+                 display: 'flex',
+                   flexShrink: 0,
+                   alignItems: 'center',
+                   justifyContent: 'space-between',
+                   padding: 'var(--bs-modal-header-padding)',
+                   borderBottom: 'var(--bs-modal-header-border-width) solid var(--bs-modal-header-border-color)',
+                   borderTopLeftRadius: 'var(--bs-modal-inner-border-radius)',
+                   borderTopRightRadius: 'var(--bs-modal-inner-border-radius)'
+               }}>
+                 <h5 className="modal-title" style={{ lineHeight: 'var(--bs-modal-title-line-height)' }}>
+                   {getSearchedLocation()} Hotels Map
+                 </h5>
+                 <button type="button" className="btn-close" aria-label="Close" onClick={handleCloseAllMapModal}></button>
+               </div>
+                                                             <div className="modal-body" style={{ 
+                  flex: '1 1 auto',
+                  padding: 'var(--bs-modal-padding)',
+                  height: 'calc(70vh - 120px)',
+                  overflow: 'hidden'
+                }}>
+                 {hotelsGeoListLoading && <div>Loading map...</div>}
+                 {hotelsGeoListError && <div className="text-danger">{hotelsGeoListError}</div>}
+                 {!hotelsGeoListLoading && hotelsGeoList && hotelsGeoList.length > 0 && (
+                   <MapContainer
+                     center={[
+                       parseFloat(hotelsGeoList[0]?.HotelAddress?.Latitude) || 25.08047,
+                       parseFloat(hotelsGeoList[0]?.HotelAddress?.Longitude) || 55.13652
+                     ]}
+                     zoom={13}
+                     style={{ height: '100%', width: '100%' }}
+                     scrollWheelZoom={true}
+                     zoomControl={true}
+                     dragging={true}
+                   >
+                     <TileLayer
+                       attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
+                       url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+                     />
+                     {hotelsGeoList.map((hotel, idx) => (
+                       <Marker
+                         key={hotel.HotelProviderSearchId || idx}
+                         position={[
+                           parseFloat(hotel.HotelAddress?.Latitude) || 25.08047,
+                           parseFloat(hotel.HotelAddress?.Longitude) || 55.13652
+                         ]}
+                       >
+                         <Popup>
+                           <div>
+                             <h6 className="fw-bold">{hotel.HotelName}</h6>
+                             <p className="mb-1">{hotel.HotelAddress?.Address}</p>
+                             <p className="mb-0 text-muted">{hotel.HotelAddress?.City}, {hotel.HotelAddress?.Country}</p>
+                           </div>
+                         </Popup>
+                       </Marker>
+                     ))}
+                   </MapContainer>
+                 )}
+                 {!hotelsGeoListLoading && hotelsGeoList && hotelsGeoList.length === 0 && (
+                   <div>No hotel locations found.</div>
+                 )}
+               </div>
+             </div>
+           </div>
+         </div>
+       )}
     </>
   );
 };
