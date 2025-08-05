@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Skeleton from './FilterSkeleton';
 
 const BUS_TYPE_OPTIONS = [
@@ -17,7 +17,43 @@ const TIME_BLOCKS = [
   { id: 'evening', label: 'Evening', range: '18:00 - 24:00', start: 18, end: 24 },
 ];
 
-const BusFilterPage = ({ filters, onFilterChange, onClear, minPrice, maxPrice, loading = false }) => {
+const BusFilterPage = ({ filters, onFilterChange, onClear, minPrice, maxPrice, loading = false, busResults = [] }) => {
+  const [pickupPoints, setPickupPoints] = useState([]);
+  const [droppingPoints, setDroppingPoints] = useState([]);
+  const [showAllPickup, setShowAllPickup] = useState(false);
+  const [showAllDropping, setShowAllDropping] = useState(false);
+
+  // Extract unique pickup and dropping points from bus results
+  useEffect(() => {
+    if (busResults && busResults.length > 0) {
+      const pickupSet = new Set();
+      const droppingSet = new Set();
+
+      busResults.forEach(bus => {
+        // Extract pickup points
+        if (bus.BoardingPointsDetails && Array.isArray(bus.BoardingPointsDetails)) {
+          bus.BoardingPointsDetails.forEach(point => {
+            if (point.CityPointName) {
+              pickupSet.add(point.CityPointName);
+            }
+          });
+        }
+
+        // Extract dropping points
+        if (bus.DroppingPointsDetails && Array.isArray(bus.DroppingPointsDetails)) {
+          bus.DroppingPointsDetails.forEach(point => {
+            if (point.CityPointName) {
+              droppingSet.add(point.CityPointName);
+            }
+          });
+        }
+      });
+
+      setPickupPoints(Array.from(pickupSet).sort());
+      setDroppingPoints(Array.from(droppingSet).sort());
+    }
+  }, [busResults]);
+
   // Show skeleton if loading
   if (loading) {
     return <Skeleton />;
@@ -50,6 +86,22 @@ const BusFilterPage = ({ filters, onFilterChange, onClear, minPrice, maxPrice, l
       ? filters.arrivalTimes.filter((t) => t !== id)
       : [...filters.arrivalTimes, id];
     onFilterChange({ arrivalTimes: newArrivalTimes });
+  };
+
+  // Handler for pickup points
+  const handlePickupPoint = (point) => {
+    const newPickupPoints = filters.pickupPoints?.includes(point)
+      ? filters.pickupPoints.filter((p) => p !== point)
+      : [...(filters.pickupPoints || []), point];
+    onFilterChange({ pickupPoints: newPickupPoints });
+  };
+
+  // Handler for dropping points
+  const handleDroppingPoint = (point) => {
+    const newDroppingPoints = filters.droppingPoints?.includes(point)
+      ? filters.droppingPoints.filter((p) => p !== point)
+      : [...(filters.droppingPoints || []), point];
+    onFilterChange({ droppingPoints: newDroppingPoints });
   };
 
   // Handler for price sort
@@ -94,6 +146,104 @@ const BusFilterPage = ({ filters, onFilterChange, onClear, minPrice, maxPrice, l
               </ul>
             </div>
           </div>
+
+          {/* Pickup Points */}
+          {pickupPoints.length > 0 && (
+            <div className="searchBar-single px-3 py-3 border-bottom">
+              <div className="searchBar-single-title d-flex mb-3 justify-content-between align-items-center">
+                <h6 className="sidebar-subTitle fs-6 fw-medium m-0">Pickup Points</h6>
+                {filters.pickupPoints && filters.pickupPoints.length > 0 && (
+                  <button 
+                    className="btn btn-sm btn-outline-secondary"
+                    onClick={() => onFilterChange({ pickupPoints: [] })}
+                    style={{ fontSize: '0.75rem' }}
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+              <div className="searchBar-single-wrap">
+                <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2 mb-0">
+                  {(showAllPickup ? pickupPoints : pickupPoints.slice(0, 4)).map(point => (
+                    <li className="col-12" key={point}>
+                      <div className="form-check">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id={`pickup_${point}`}
+                          checked={filters.pickupPoints?.includes(point) || false}
+                          onChange={() => handlePickupPoint(point)}
+                        />
+                        <label className="form-check-label" htmlFor={`pickup_${point}`}>
+                          {point}
+                        </label>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                {pickupPoints.length > 4 && (
+                  <div className="text-center mt-2">
+                    <button
+                      className="btn btn-sm btn-link text-primary p-0"
+                      onClick={() => setShowAllPickup(!showAllPickup)}
+                      style={{ fontSize: '0.8rem' }}
+                    >
+                      {showAllPickup ? 'Show Less' : `Show More (${pickupPoints.length - 4} more)`}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Dropping Points */}
+          {droppingPoints.length > 0 && (
+            <div className="searchBar-single px-3 py-3 border-bottom">
+              <div className="searchBar-single-title d-flex mb-3 justify-content-between align-items-center">
+                <h6 className="sidebar-subTitle fs-6 fw-medium m-0">Dropping Points</h6>
+                {filters.droppingPoints && filters.droppingPoints.length > 0 && (
+                  <button 
+                    className="btn btn-sm btn-outline-secondary"
+                    onClick={() => onFilterChange({ droppingPoints: [] })}
+                    style={{ fontSize: '0.75rem' }}
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+              <div className="searchBar-single-wrap">
+                <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2 mb-0">
+                  {(showAllDropping ? droppingPoints : droppingPoints.slice(0, 4)).map(point => (
+                    <li className="col-12" key={point}>
+                      <div className="form-check">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id={`dropping_${point}`}
+                          checked={filters.droppingPoints?.includes(point) || false}
+                          onChange={() => handleDroppingPoint(point)}
+                        />
+                        <label className="form-check-label" htmlFor={`dropping_${point}`}>
+                          {point}
+                        </label>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                {droppingPoints.length > 4 && (
+                  <div className="text-center mt-2">
+                    <button
+                      className="btn btn-sm btn-link text-primary p-0"
+                      onClick={() => setShowAllDropping(!showAllDropping)}
+                      style={{ fontSize: '0.8rem' }}
+                    >
+                      {showAllDropping ? 'Show Less' : `Show More (${droppingPoints.length - 4} more)`}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Departure Time */}
           <div className="searchBar-single px-3 py-3 border-bottom">

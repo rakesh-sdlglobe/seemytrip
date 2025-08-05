@@ -93,10 +93,42 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
     const isSeater = seat.SeatType === 1 || seat.SeatType === "1" || seat.SeatType === "Seater";
     const seatType = isSeater ? "Seater" : "Sleeper";
     
-    if (seat.IsBooked || seat.Status === "Booked") return `booked${seatType}`;
-    if (seat.Gender === "Male") return `male${seatType}`;
-    if (seat.Gender === "Female") return `female${seatType}`;
-    if (seat.IsAvailable === false) return `booked${seatType}`;
+    // Check multiple possible booking status indicators
+    const isBooked = 
+      seat.IsBooked === true || 
+      seat.Status === "Booked" || 
+      seat.SeatStatus === false || 
+      seat.IsAvailable === false ||
+      seat.BookingStatus === "Booked" ||
+      seat.SeatStatus === "Booked" ||
+      seat.IsOccupied === true ||
+      seat.Occupied === true ||
+      seat.Booked === true ||
+      seat.Available === false ||
+      seat.Availability === false ||
+      seat.IsReserved === true ||
+      seat.Reserved === true ||
+      seat.IsBlocked === true ||
+      seat.Blocked === true ||
+      seat.Status === "Occupied" ||
+      seat.Status === "Reserved" ||
+      seat.Status === "Blocked" ||
+      seat.Status === "Unavailable";
+    
+    if (isBooked) {
+      return `booked${seatType}`;
+    }
+    
+    // Check for gender-specific seats
+    if (seat.Gender === "Female" || seat.IsLadiesSeat === true) {
+      return `female${seatType}`;
+    }
+    
+    if (seat.Gender === "Male" || seat.IsMalesSeat === true) {
+      return `male${seatType}`;
+    }
+    
+    // Default to available
     return `available${seatType}`;
   };
 
@@ -154,6 +186,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
           row.forEach((seat, colIndex) => {
             if (seat) {
               const priceValue = extractPrice(seat.Price || seat.Fare);
+              const seatStatus = getSeatStatusFromAPI(seat);
               const seatData = {
                 id: `${rowIndex}-${colIndex}`,
                 label:
@@ -161,16 +194,16 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
                   seat.SeatName ||
                   `${rowIndex + 1}${String.fromCharCode(65 + colIndex)}`,
                 price: priceValue,
-                status: getSeatStatusFromAPI(seat),
+                status: seatStatus,
                 seatType: seat.SeatType === 1 || seat.SeatType === "1" || seat.SeatType === "Seater" ? "Seater" : "Sleeper",
                 seatInfo: seat, // Store the original seat data
                 row: rowIndex,
                 col: colIndex,
               };
 
-              // Determine if it's upper or lower deck based on row position
-              // First 2 rows are typically upper deck, rest are lower deck
-              if (rowIndex < 2) {
+              // Determine if it's upper or lower deck based on IsUpper property
+              const isUpper = seat.IsUpper === true || seat.IsUpper === "true";
+              if (isUpper) {
                 upperDeck.push(seatData);
               } else {
                 lowerDeck.push(seatData);
@@ -192,6 +225,38 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
       seatLayoutDetails.HTMLLayout
     ) {
       return parseHTMLSeatLayout(seatLayoutDetails.HTMLLayout, prices);
+    }
+
+    // If still no seats found, check if there are other possible structures
+    if (upperDeck.length === 0 && lowerDeck.length === 0) {
+      // Check if seats might be in a different property
+      if (seatLayoutDetails.Seats && Array.isArray(seatLayoutDetails.Seats)) {
+        seatLayoutDetails.Seats.forEach((seat, index) => {
+          if (seat) {
+            const priceValue = extractPrice(seat.Price || seat.Fare);
+            const seatStatus = getSeatStatusFromAPI(seat);
+            const seatData = {
+              id: `seat-${index}`,
+              label: seat.SeatNumber || seat.SeatName || `Seat${index + 1}`,
+              price: priceValue,
+              status: seatStatus,
+              seatType: seat.SeatType === 1 || seat.SeatType === "1" || seat.SeatType === "Seater" ? "Seater" : "Sleeper",
+              seatInfo: seat,
+            };
+
+            // Distribute seats between upper and lower deck
+            if (index % 2 === 0) {
+              upperDeck.push(seatData);
+            } else {
+              lowerDeck.push(seatData);
+            }
+
+            if (priceValue > 0) {
+              prices.add(priceValue);
+            }
+          }
+        });
+      }
     }
 
     return {
@@ -223,6 +288,10 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
       return 0;
     };
 
+    // Find the positions of upper and lower deck sections
+    const upperSectionStart = htmlLayout.indexOf('<div class=\'outerseat\'>');
+    const lowerSectionStart = htmlLayout.indexOf('<div class=\'outerlowerseat\'>');
+
     // Extract seat information from HTML
     const seatRegex =
       /id="([^"]+)"[^>]*class="([^"]+)"[^>]*onclick="[^"]*'([^']+)'[^"]*'([^']+)'[^"]*'([^']+)'/g;
@@ -232,6 +301,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
     while ((match = seatRegex.exec(htmlLayout)) !== null) {
       const [fullMatch, id, className, seatNumber, price] = match;
       const seatPrice = extractPrice(price);
+      const seatPosition = match.index; // Position of this seat in the HTML
 
       const seatData = {
         id: seatId++,
@@ -242,11 +312,16 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
         seatInfo: { id, className, seatNumber, price: seatPrice },
       };
 
-      // Determine deck based on HTML structure
-      if (htmlLayout.indexOf("upper") < htmlLayout.indexOf(id)) {
+      // Determine deck based on which section the seat appears in
+      // If seat appears after upper section start but before lower section start, it's upper deck
+      // If seat appears after lower section start, it's lower deck
+      if (seatPosition > upperSectionStart && (lowerSectionStart === -1 || seatPosition < lowerSectionStart)) {
         upperDeck.push(seatData);
-      } else {
+      } else if (lowerSectionStart !== -1 && seatPosition > lowerSectionStart) {
         lowerDeck.push(seatData);
+      } else {
+        // Fallback: if we can't determine, put in upper deck
+        upperDeck.push(seatData);
       }
 
       if (seatPrice > 0) {
@@ -370,10 +445,15 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
               {getSeatIcon()}
               {hoveredSeat === seat.label && (
                 <div className="seat-tooltip">
-                  <div className="tooltip-content">
-                    <div className="tooltip-seat">{seatNumber}</div>
-                    <div className="tooltip-price">₹{displayPrice}</div>
-                  </div>
+                                              <div className="tooltip-content">
+                              <div className="tooltip-seat">{seatNumber}</div>
+                              <div className="tooltip-status">
+                                {seat.status.includes('booked') ? 'Sold' :
+                                 seat.status.includes('female') ? 'Female Only' :
+                                 seat.status.includes('male') ? 'Male Only' :
+                                 'Available'}
+                              </div>
+                            </div>
                 </div>
               )}
             </div>
@@ -425,11 +505,257 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
   if (loading) {
     return (
       <div className="seat-wrapper">
-        <div className="text-center py-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
+        <style jsx>{`
+          .skeleton-seat {
+            width: 40px;
+            height: 55px;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+            margin: 2px;
+          }
+
+          .skeleton-seat.sleeper {
+            border-radius: 12px 12px 8px 8px;
+            width: 42px;
+            height: 58px;
+          }
+
+          .skeleton-seat.seater {
+            border-radius: 8px;
+            width: 45px;
+            height: 50px;
+          }
+
+          .skeleton-price {
+            width: 40px;
+            height: 20px;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+            margin: 2px auto;
+          }
+
+          .skeleton-deck-title {
+            width: 120px;
+            height: 24px;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+            margin-bottom: 20px;
+          }
+
+          .skeleton-filter {
+            width: 80px;
+            height: 32px;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 20px;
+            margin: 4px;
+          }
+
+          .skeleton-tab {
+            width: 120px;
+            height: 40px;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px 8px 0 0;
+            margin: 0 10px;
+          }
+
+          .skeleton-instructions-title {
+            width: 100px;
+            height: 24px;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+            margin-bottom: 15px;
+          }
+
+          .skeleton-instruction-row {
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+            margin-bottom: 8px;
+          }
+
+          @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+          }
+
+          .skeleton-wrapper-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+          }
+
+          .skeleton-row {
+            display: flex;
+            gap: 3px;
+            flex-direction: column;
+            justify-content: center;
+            margin-bottom: 12px;
+          }
+
+          .skeleton-deck-container {
+            display: flex;
+            flex-direction: column;
+            background: white;
+            align-items: center;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+          }
+
+          .skeleton-filters {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+            justify-content: center;
+          }
+
+          .skeleton-tabs {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            justify-content: center;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 10px;
+          }
+
+          .skeleton-instructions {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          }
+
+          .skeleton-seats-grid {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+          }
+
+          .skeleton-seats-column {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+          }
+
+          .skeleton-seat-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+          }
+        `}</style>
+
+        {/* Skeleton Tabs */}
+        <div className="skeleton-tabs">
+          <div className="skeleton-tab"></div>
+          <div className="skeleton-tab"></div>
+        </div>
+
+        {/* Skeleton Filters */}
+        <div className="skeleton-filters">
+          <div className="skeleton-filter"></div>
+          <div className="skeleton-filter"></div>
+          <div className="skeleton-filter"></div>
+          <div className="skeleton-filter"></div>
+        </div>
+
+        <div className="row">
+          <div className="col-lg-8">
+            <div className="row">
+              <div className="col-md-6">
+                <div className="skeleton-deck-container">
+                  <div className="skeleton-deck-title"></div>
+                  <div className="skeleton-seats-grid">
+                    <div className="skeleton-seats-column">
+                      {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+                        <div key={i} className="skeleton-seat-row">
+                          <div className="skeleton-seat sleeper"></div>
+                          <div className="skeleton-price"></div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="skeleton-seats-column">
+                      {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+                        <div key={i} className="skeleton-seat-row">
+                          <div className="skeleton-seat sleeper"></div>
+                          <div className="skeleton-price"></div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="skeleton-seats-column">
+                      {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+                        <div key={i} className="skeleton-seat-row">
+                          <div className="skeleton-seat sleeper"></div>
+                          <div className="skeleton-price"></div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="col-md-6">
+                <div className="skeleton-deck-container">
+                  <div className="skeleton-deck-title"></div>
+                  <div className="skeleton-seats-grid">
+                    <div className="skeleton-seats-column">
+                      {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+                        <div key={i} className="skeleton-seat-row">
+                          <div className="skeleton-seat sleeper"></div>
+                          <div className="skeleton-price"></div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="skeleton-seats-column">
+                      {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+                        <div key={i} className="skeleton-seat-row">
+                          <div className="skeleton-seat sleeper"></div>
+                          <div className="skeleton-price"></div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="skeleton-seats-column">
+                      {[0, 1, 2, 3, 4, 5, 6].map((i) => (
+                        <div key={i} className="skeleton-seat-row">
+                          <div className="skeleton-seat sleeper"></div>
+                          <div className="skeleton-price"></div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <p className="mt-3 text-muted">Loading seat layout...</p>
+          <div className="col-lg-4">
+            <div className="skeleton-instructions">
+              <div className="skeleton-instructions-title"></div>
+              <div className="skeleton-instruction-row"></div>
+              <div className="skeleton-instruction-row"></div>
+              <div className="skeleton-instruction-row"></div>
+              <div className="skeleton-instruction-row"></div>
+              <div className="skeleton-instruction-row"></div>
+              <div className="skeleton-instruction-row"></div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -545,9 +871,9 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
 
         /* Male seats - both seater and sleeper */
         .maleSleeper, .maleSeater {
-          background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
-          border: 2px solid #28a745;
-          color: #155724;
+          background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+          border: 2px solid #1976d2;
+          color: #0d47a1;
         }
 
         /* Female seats - both seater and sleeper */
@@ -578,13 +904,13 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
         /* Available seats - both seater and sleeper */
         .availableSleeper, .availableSeater {
           background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-          border: 2px solid #007bff;
-          color: #0056b3;
+          border: 2px solid #28a745;
+          color: #155724;
         }
 
         .availableSleeper:hover, .availableSeater:hover {
           transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+          box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
         }
 
         .selected {
@@ -666,6 +992,15 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
           font-size: 11px;
         }
 
+        .tooltip-status {
+          color: #ffffff;
+          font-size: 10px;
+          font-weight: 500;
+          margin: 2px 0;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
         .seat-tooltip::after {
           content: "";
           position: absolute;
@@ -739,6 +1074,8 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
           background: #cd2c22;
           border-radius: 2px;
         }
+
+
 
         .seat-instructions {
           background: white;
@@ -831,8 +1168,46 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
 
         .available-seat {
           background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-          border: 2px solid #007bff;
-          color: #007bff;
+          border: 2px solid #28a745;
+          color: #155724;
+        }
+
+        /* Ensure available-seat has visible border in instruction table */
+        .seat-instructions .available-seat {
+          border: 2px solid #28a745 !important;
+        }
+
+        /* Add borders to all seat types in instruction table */
+        .seat-instructions .maleSleeper,
+        .seat-instructions .femaleSleeper,
+        .seat-instructions .bookedSleeper,
+        .seat-instructions .selected {
+          border: 2px solid;
+        }
+
+        /* Specific colors for instruction table seat types */
+        .seat-instructions .maleSleeper {
+          background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+          border-color: #1976d2;
+          color: #0d47a1;
+        }
+
+        .seat-instructions .femaleSleeper {
+          background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 100%);
+          border-color: #e91e63;
+          color: #c2185b;
+        }
+
+        .seat-instructions .bookedSleeper {
+          background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+          border-color: #6c757d;
+          color: #6c757d;
+        }
+
+        .seat-instructions .selected {
+          background: linear-gradient(135deg, #cd2c22 0%, #b30000 100%);
+          border-color: #cd2c22;
+          color: white;
         }
 
         .seat-type-icon {
@@ -1206,38 +1581,48 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
 
           <div className="row">
             <div className="col-lg-8">
-              <div className="row">
-                <div className="col-md-6">
-                  <div className="deck-container">
-                    <h4 className="deck-title">
-                      <FaBus className="text-primary" />
-                      Lower Deck
-                    </h4>
-                    <div className="d-flex gap-5">
-                      <div>{renderRow(lowerDeck, [2, 5, 8, 11, 14, 17,20])}</div>
-                      <div className="d-flex gap-3">
-                        {renderRow(lowerDeck, [1, 4, 7, 10, 13, 16,19])}
-                        {renderRow(lowerDeck, [0, 3, 6, 9, 12, 15,18])}
+              {upperDeck.length === 0 && lowerDeck.length === 0 ? (
+                <div className="deck-container">
+                  <h4 className="deck-title">
+                    <FaBus className="text-primary" />
+                    No Seats Available
+                  </h4>
+                  <p className="text-muted">No seat layout data is currently available.</p>
+                </div>
+              ) : (
+                <div className="row">
+                  <div className="col-md-6">
+                    <div className="deck-container">
+                      <h4 className="deck-title">
+                        <FaBus className="text-primary" />
+                        Lower Deck
+                      </h4>
+                      <div className="d-flex gap-5">
+                        <div>{renderRow(lowerDeck, [2, 5, 8, 11, 14, 17,20])}</div>
+                        <div className="d-flex gap-3">
+                          {renderRow(lowerDeck, [1, 4, 7, 10, 13, 16,19])}
+                          {renderRow(lowerDeck, [0, 3, 6, 9, 12, 15,18])}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="deck-container">
+                      <h4 className="deck-title">
+                        <FaBus className="text-primary" />
+                        Upper Deck
+                      </h4>
+                      <div className="d-flex gap-5">
+                        <div>{renderRow(upperDeck, [2, 5, 8, 11, 14, 17,20])}</div>
+                        <div className="d-flex gap-3">
+                          {renderRow(upperDeck, [1, 4, 7, 10, 13, 16,19])}
+                          {renderRow(upperDeck, [0, 3, 6, 9, 12, 15,18])}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="col-md-6">
-                  <div className="deck-container">
-                    <h4 className="deck-title">
-                      <FaBus className="text-primary" />
-                      Upper Deck
-                    </h4>
-                    <div className="d-flex gap-5">
-                      <div>{renderRow(upperDeck, [2, 5, 8, 11, 14, 17,20])}</div>
-                      <div className="d-flex gap-3">
-                        {renderRow(upperDeck, [1, 4, 7, 10, 13, 16,19])}
-                        {renderRow(upperDeck, [0, 3, 6, 9, 12, 15,18])}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
             <div className="col-lg-4">
               <div className="seat-instructions">

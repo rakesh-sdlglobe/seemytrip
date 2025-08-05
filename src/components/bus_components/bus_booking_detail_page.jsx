@@ -63,7 +63,27 @@ export const BusBookingPage = ({ isModal = false }) => {
       console.log('Seat layout data:', seatLayoutData);
       if (seatLayoutData.seats) {
         console.log('Available seats:', seatLayoutData.seats);
+        console.log('Seat count:', seatLayoutData.seats.length);
+        
+        // Validate seat data structure
+        seatLayoutData.seats.forEach((seat, index) => {
+          console.log(`Seat ${index}:`, {
+            label: seat.label,
+            seatIndex: seat.seatIndex,
+            rowNo: seat.rowNo,
+            columnNo: seat.columnNo,
+            price: seat.price,
+            seatType: seat.seatType,
+            hasOriginalSeatInfo: !!seat.originalSeatInfo,
+            hasPrice: !!seat.Price
+          });
+        });
       }
+      
+      // Also check original seat layout data
+      const originalSeatLayout = JSON.parse(localStorage.getItem("originalSeatLayoutData") || "{}");
+      console.log('Original seat layout data:', originalSeatLayout);
+      
     } catch (error) {
       console.error('Error parsing seat layout data:', error);
     }
@@ -77,8 +97,6 @@ export const BusBookingPage = ({ isModal = false }) => {
         lastName: "",
         age: "",
         gender: "",
-        idType: "",
-        idNumber: "",
       };
     });
     console.log('Initializing traveler details:', initialDetails);
@@ -101,8 +119,6 @@ export const BusBookingPage = ({ isModal = false }) => {
         lastName: travelerDetails[seatLabel]?.lastName || "",
         age: travelerDetails[seatLabel]?.age || "",
         gender: travelerDetails[seatLabel]?.gender || "",
-        idType: travelerDetails[seatLabel]?.idType || "",
-        idNumber: travelerDetails[seatLabel]?.idNumber || "",
       };
     });
     setTravelerDetails(newTravelerDetails);
@@ -122,87 +138,7 @@ export const BusBookingPage = ({ isModal = false }) => {
     state: "",
   });
 
-  // Add this object for validation and placeholder logic
-  const idValidationPatterns = {
-    "pan-card": {
-      regex: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/,
-      maxLength: 10,
-      placeholder: "ABCDE1234F",
-      description: "10 characters, e.g. ABCDE1234F",
-      filter: v => v.replace(/[^A-Z0-9]/gi, "").toUpperCase(),
-    },
-    "voter-id": {
-      regex: /^[A-Z]{3}[0-9]{7}$/,
-      maxLength: 10,
-      placeholder: "ABC1234567",
-      description: "10 characters, e.g. ABC1234567",
-      filter: v => v.replace(/[^A-Z0-9]/gi, "").toUpperCase(),
-    },
-    "passport": {
-      regex: /^[A-PR-WYa-pr-wy][0-9]{7}$/,
-      maxLength: 8,
-      placeholder: "A1234567",
-      description: "8 characters, e.g. A1234567",
-      filter: v => v.replace(/[^A-Z0-9]/gi, "").toUpperCase(),
-    },
-    "aadhar-card": {
-      regex: /^\d{4}\s?\d{4}\s?\d{4}$/,
-      maxLength: 14, // 12 digits + 2 spaces
-      placeholder: "1234 5678 9012",
-      description: "12 digits with optional spaces, e.g. 1234 5678 9012",
-      filter: v => {
-        // Remove all non-digits and non-spaces, then format with spaces
-        const cleaned = v.replace(/[^0-9\s]/g, "");
-        const digits = cleaned.replace(/\s/g, "");
-        if (digits.length <= 4) return digits;
-        if (digits.length <= 8) return `${digits.slice(0, 4)} ${digits.slice(4)}`;
-        return `${digits.slice(0, 4)} ${digits.slice(4, 8)} ${digits.slice(8, 12)}`;
-      },
-    },
-  };
 
-  // Add the validateId function
-  const validateId = (id) => {
-    const aadharRegex = /^\d{4}\s?\d{4}\s?\d{4}$/;
-    const passportRegex = /^[A-PR-WYa-pr-wy][0-9]{7}$/;
-    const voterIdRegex = /^[A-Z]{3}[0-9]{7}$/;
-    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]$/;
-
-    if (aadharRegex.test(id)) return "Aadhaar";
-    if (passportRegex.test(id)) return "Passport";
-    if (voterIdRegex.test(id)) return "Voter ID";
-    if (panRegex.test(id)) return "PAN";
-    return "Invalid ID format";
-  };
-
-  // Add this function to handle input and enforce pattern
-  const handleIdNumberChange = (seatLabel, e) => {
-    const { value } = e.target;
-    const { idType } = travelerDetails[seatLabel];
-    if (!idType) return;
-    const pattern = idValidationPatterns[idType];
-    let filtered = pattern.filter(value);
-    if (filtered.length > pattern.maxLength) {
-      filtered = filtered.slice(0, pattern.maxLength);
-    }
-    setTravelerDetails(prev => ({
-      ...prev,
-      [seatLabel]: {
-        ...prev[seatLabel],
-        idNumber: filtered,
-      }
-    }));
-    
-    // Clear error for this field
-    setErrors((prev) => {
-      const newErrors = { ...prev, [`travelerDetails.${seatLabel}.idNumber`]: undefined };
-      // If all errors are cleared, reset hasSubmitted
-      if (Object.keys(newErrors).every(key => newErrors[key] === undefined)) {
-        setHasSubmitted(false);
-      }
-      return newErrors;
-    });
-  };
 
   // Format time helper
   const formatTime = (timeString) => {
@@ -380,20 +316,6 @@ export const BusBookingPage = ({ isModal = false }) => {
               .min(1, "Age must be at least 1")
               .max(120, "Age must be less than 120"),
             gender: Yup.string().required("Gender is required"),
-            idType: Yup.string().optional(),
-            idNumber: Yup.string()
-              .optional()
-              .test("idNumber-format", "Invalid ID Number format", function (value) {
-                const { idType } = this.parent;
-                if (!idType || !value) return true; // Allow empty values
-                const pattern = idValidationPatterns[idType];
-                return pattern && pattern.regex.test(value);
-              })
-              .test("idNumber-validation", "Invalid ID format", function (value) {
-                if (!value) return true; // Allow empty values
-                const validationResult = validateId(value);
-                return validationResult !== "Invalid ID format";
-              }),
           });
           return acc;
         }, {})
@@ -473,7 +395,6 @@ export const BusBookingPage = ({ isModal = false }) => {
         [seatLabel]: {
           ...prev[seatLabel],
           [field]: value,
-          ...(field === "idType" ? { idNumber: "" } : {}),
         }
       };
       console.log('New travelerDetails state:', newState);
@@ -532,8 +453,13 @@ export const BusBookingPage = ({ isModal = false }) => {
     const originalSeatLayout = JSON.parse(localStorage.getItem("originalSeatLayoutData") || "{}");
     const seatLayout = JSON.parse(localStorage.getItem("seatLayoutData") || "{}");
     
+    console.log("=== FORMAT BLOCK REQUEST DEBUG ===");
+    console.log("Selected seats:", selectedSeats);
     console.log("Original seat layout data:", originalSeatLayout);
-    console.log("Simplified seat layout data:", seatLayout);
+    console.log("Enhanced seat layout data:", seatLayout);
+    console.log("Bus data:", busData);
+    console.log("Auth data:", { TokenId, EndUserIp });
+    console.log("Search params:", searchParams);
     
     const passengers = selectedSeats.map((seatLabel, index) => {
       const isLeadPassenger = index === 0;
@@ -569,28 +495,29 @@ export const BusBookingPage = ({ isModal = false }) => {
         }
       }
       
-      // Fallback to simplified seat data if original not found
+      // Fallback to enhanced seat data if original not found
       const seatData = seatLayout.seats?.find(s => s.label === seatLabel);
+      console.log(`Seat data for ${seatLabel}:`, seatData);
       
       console.log(`Seat ${seatLabel} - Original data:`, originalSeatData);
       console.log(`Seat ${seatLabel} - Simplified data:`, seatData);
       
       const seatStructure = {
-        ColumnNo: originalSeatData?.ColumnNo || seatData?.columnNo || "001",
-        Height: originalSeatData?.Height || seatData?.height || 1,
-        IsLadiesSeat: originalSeatData?.IsLadiesSeat || seatData?.isLadiesSeat || false,
-        IsMalesSeat: originalSeatData?.IsMalesSeat || seatData?.isMalesSeat || false,
-        IsUpper: originalSeatData?.IsUpper || seatData?.isUpper || false,
-        RowNo: originalSeatData?.RowNo || seatData?.rowNo || "001",
-        SeatIndex: originalSeatData?.SeatIndex || seatData?.seatIndex || seatLabel,
+        ColumnNo: originalSeatData?.ColumnNo || seatData?.columnNo || seatData?.seatInfo?.ColumnNo || "001",
+        Height: originalSeatData?.Height || seatData?.height || seatData?.seatInfo?.Height || 1,
+        IsLadiesSeat: originalSeatData?.IsLadiesSeat || seatData?.isLadiesSeat || seatData?.seatInfo?.IsLadiesSeat || false,
+        IsMalesSeat: originalSeatData?.IsMalesSeat || seatData?.isMalesSeat || seatData?.seatInfo?.IsMalesSeat || false,
+        IsUpper: originalSeatData?.IsUpper || seatData?.isUpper || seatData?.seatInfo?.IsUpper || false,
+        RowNo: originalSeatData?.RowNo || seatData?.rowNo || seatData?.seatInfo?.RowNo || "001",
+        SeatIndex: originalSeatData?.SeatIndex || seatData?.seatIndex || seatData?.seatInfo?.SeatIndex || seatLabel,
         SeatName: seatLabel,
         SeatStatus: true,
-        SeatType: originalSeatData?.SeatType || seatData?.seatType || 1,
-        Width: originalSeatData?.Width || seatData?.width || 1,
-        // Add SeatFare and PublishedPrice directly on the seat object
-        SeatFare: originalSeatData?.SeatFare || seatData?.price || busData.BusPrice?.PublishedPriceRoundedOff || 0,
-        PublishedPrice: originalSeatData?.PublishedPrice || seatData?.price || busData.BusPrice?.PublishedPriceRoundedOff || 0,
-        Price: originalSeatData?.Price || {
+        SeatType: originalSeatData?.SeatType || seatData?.seatType || seatData?.seatInfo?.SeatType || 1,
+        Width: originalSeatData?.Width || seatData?.width || seatData?.seatInfo?.Width || 1,
+        // Use enhanced price data from seatData.seatInfo if available
+        SeatFare: originalSeatData?.SeatFare || seatData?.SeatFare || seatData?.seatInfo?.SeatFare || seatData?.price || busData.BusPrice?.PublishedPriceRoundedOff || 0,
+        PublishedPrice: originalSeatData?.PublishedPrice || seatData?.PublishedPrice || seatData?.seatInfo?.PublishedPrice || seatData?.price || busData.BusPrice?.PublishedPriceRoundedOff || 0,
+        Price: originalSeatData?.Price || seatData?.seatInfo?.Price || {
           CurrencyCode: "INR",
           BasePrice: seatData?.price || busData.BusPrice?.PublishedPriceRoundedOff || 0,
           Tax: 0.0,
@@ -627,16 +554,15 @@ export const BusBookingPage = ({ isModal = false }) => {
         Age: parseInt(formData.travelerDetails[seatLabel].age),
         Email: formData.contactDetails.email,
         FirstName: formData.travelerDetails[seatLabel].firstName,
-        Gender: formData.travelerDetails[seatLabel].gender === "Male" ? 1 : 2,
-        IdNumber: formData.travelerDetails[seatLabel].idNumber || null,
-        IdType: formData.travelerDetails[seatLabel].idType || null,
+        Gender: formData.travelerDetails[seatLabel].gender === "male" ? 1 : 2,
+
         LastName: formData.travelerDetails[seatLabel].lastName,
         Phoneno: formData.contactDetails.mobile,
         Seat: seatStructure
       };
     });
 
-    return {
+    const blockRequest = {
       EndUserIp: EndUserIp,
       ResultIndex: busData.ResultIndex || searchParams.ResultIndex,
       TraceId: searchList?.BusSearchResult?.TraceId,
@@ -645,6 +571,13 @@ export const BusBookingPage = ({ isModal = false }) => {
       DroppingPointId: droppingPointId,
       Passenger: passengers
     };
+    
+    console.log("=== FINAL BLOCK REQUEST ===");
+    console.log("Block request:", blockRequest);
+    console.log("Passenger count:", passengers.length);
+    console.log("=== END BLOCK REQUEST DEBUG ===");
+    
+    return blockRequest;
   };
 
   // Function to scroll to first error
@@ -737,6 +670,10 @@ export const BusBookingPage = ({ isModal = false }) => {
         console.log("Block successful:", result);
         // Store block response for payment page
         localStorage.setItem("blockResponse", JSON.stringify(result));
+        
+        // Store block timestamp for validation
+        localStorage.setItem("blockTimestamp", Date.now().toString());
+        console.log("Block timestamp stored:", Date.now());
         
         // Navigate immediately to payment page without any loading states
         setLoading(false); // Stop local loading first
@@ -1136,66 +1073,7 @@ export const BusBookingPage = ({ isModal = false }) => {
                               </div>
                             </div>
                             
-                            <div className="row">
-                              <div className="col-md-12 mb-2">
-                                <small className="text-muted">
-                                  <i className="fas fa-info-circle me-1"></i>
-                                  ID details are optional but recommended for faster check-in
-                                </small>
-                              </div>
-                              <div className="col-md-6">
-                                <div className="mb-3">
-                                  <label className="form-label">ID Type (Optional)</label>
-                                  <select
-                                    className={`form-select ${hasSubmitted && errors[`travelerDetails.${seatLabel}.idType`] ? 'is-invalid' : ''}`}
-                                    value={travelerDetails[seatLabel]?.idType || ""}
-                                    onChange={e => handleTravelerChange(seatLabel, "idType", e.target.value)}
-                                  >
-                                    <option value="">Select ID Type</option>
-                                    <option value="pan-card">PAN Card</option>
-                                    <option value="voter-id">Voter ID Card</option>
-                                    <option value="passport">Passport</option>
-                                    <option value="aadhar-card">Aadhar Card</option>
-                                  </select>
-                                  {hasSubmitted && errors[`travelerDetails.${seatLabel}.idType`] && (
-                                    <div className="text-danger">{errors[`travelerDetails.${seatLabel}.idType`]}</div>
-                                  )}
-                                </div>
-                              </div>
-                              <div className="col-md-6">
-                                <div className="mb-3">
-                                  <label className="form-label">
-                                    ID Number (Optional)
-                                    {travelerDetails[seatLabel]?.idType &&
-                                      idValidationPatterns[travelerDetails[seatLabel].idType] && (
-                                        <span className="text-muted ms-2" style={{ fontSize: "0.8em" }}>
-                                          ({idValidationPatterns[travelerDetails[seatLabel].idType].description})
-                                        </span>
-                                      )}
-                                  </label>
-                                  <input
-                                    type="text"
-                                    className={`form-control ${hasSubmitted && errors[`travelerDetails.${seatLabel}.idNumber`] ? 'is-invalid' : ''}`}
-                                    value={travelerDetails[seatLabel]?.idNumber || ""}
-                                    onChange={(e) => handleIdNumberChange(seatLabel, e)}
-                                    placeholder={
-                                      travelerDetails[seatLabel]?.idType
-                                        ? idValidationPatterns[travelerDetails[seatLabel].idType].placeholder
-                                        : "Enter ID number (optional)"
-                                    }
-                                    maxLength={
-                                      travelerDetails[seatLabel]?.idType
-                                        ? idValidationPatterns[travelerDetails[seatLabel].idType].maxLength
-                                        : undefined
-                                    }
-                                    disabled={false}
-                                  />
-                                  {hasSubmitted && errors[`travelerDetails.${seatLabel}.idNumber`] && (
-                                    <div className="text-danger">{errors[`travelerDetails.${seatLabel}.idNumber`]}</div>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
+
                           </div>
                         </div>
                       </div>

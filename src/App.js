@@ -117,6 +117,8 @@ import CancellationAndRefundPolicy from "./components/footer/CancellationAndRefu
 import BusSeatLayoutPage from "./components/bus_components/BusSeatLayoutPage.jsx";
 import { BusBookingPage } from "./components/bus_components/bus_booking_detail_page.jsx";
 import BoardingPointsPage from "./components/bus_components/BoardingPointsPage.jsx";
+import Bus_Comfirmation_Page from "./components/bus_components/Bus_Comfirmation_Page.jsx";
+
 
 function App() {
   const dispatch = useDispatch();
@@ -249,6 +251,7 @@ function App() {
           <Route path="/bus-seat-layout" element={<BusSeatLayoutPage />} />
           <Route path="/boarding-points" element={<BoardingPointsPage />} />
           <Route path="/busBookingpayment" element={<BusBookingPayment />} />
+          <Route path="/bus-confirmation" element={<Bus_Comfirmation_Page/>} />
 
           {/* Cruise Routes */}
           <Route path="/home-cruise" element={<HomeCruise />} />

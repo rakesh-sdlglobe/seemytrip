@@ -18,6 +18,8 @@ const defaultFilters = {
   rating35: false,
   departureTimes: [],
   arrivalTimes: [],
+  pickupPoints: [],
+  droppingPoints: [],
   priceSort: '', // <-- add this
 };
 
@@ -78,6 +80,7 @@ const BusList = () => {
                                 minPrice={minPrice}
                                 maxPrice={maxPrice}
                                 loading={loading}
+                                busResults={busResults}
                             />
 
                             {/* All List */}
