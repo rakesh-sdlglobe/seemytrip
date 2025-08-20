@@ -1,9 +1,16 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Header02 from "../header02";
-import { fetchHotelBookedDetail, fetchHotelsImages } from "../../store/Actions/hotelActions";
-import { selectHotelBookedDetailsData, selectHotelsImages } from "../../store/Selectors/hotelSelectors";
+import {
+  fetchHotelBookedDetail,
+  fetchHotelsImages,
+} from "../../store/Actions/hotelActions";
+import {
+  selectHotelBookedDetailsData,
+  selectHotelsImages,
+  selectIsGetBookingDetails,
+} from "../../store/Selectors/hotelSelectors";
 import Lottie from "lottie-react";
 import successAnimation from "../../assets/animations/success.json";
 import { motion } from "framer-motion";
@@ -17,23 +24,29 @@ const HotelConfirmation = () => {
   const bookedDetails = useSelector(selectHotelBookedDetailsData);
   const hotelImages = useSelector(selectHotelsImages);
   const [booking, setBooking] = useState(null);
-  const { ReservationId, totalPrice: locationTotalPrice, travelers: locationTravelers } = location.state || {};
-  const reservationId = ReservationId || "61211";
+  const {
+    ReservationId,
+    totalPrice: locationTotalPrice,
+    travelers: locationTravelers,
+  } = location.state || {};
+  // const reservationId = ReservationId;
   const [width, height] = useWindowSize();
   const [travelers, setTravelers] = useState([]);
   const [hotelImageUrl, setHotelImageUrl] = useState(null);
   const [totalPrice, setTotalPrice] = useState(0);
   const [hotelData, setHotelData] = useState(null);
+  const calledOnce = useRef(false);
 
   useEffect(() => {
-    if (reservationId) {
+    if (ReservationId && !calledOnce.current) {
       const BookedDetailsRequest = {
-        ReservationId: reservationId,
+        ReservationId,
         Credential: null,
       };
       dispatch(fetchHotelBookedDetail(BookedDetailsRequest));
+      calledOnce.current = true; // prevent second call
     }
-  }, [reservationId, dispatch]);
+  }, [ReservationId, dispatch]);
 
   useEffect(() => {
     if (bookedDetails?.Bookings?.length > 0) {
@@ -43,9 +56,11 @@ const HotelConfirmation = () => {
 
   useEffect(() => {
     // Get travelers from multiple sources
-    const storedTravelers = localStorage.getItem("hotelTravelersForConfirmation");
+    const storedTravelers = localStorage.getItem(
+      "hotelTravelersForConfirmation"
+    );
     const confirmationData = localStorage.getItem("hotelConfirmationData");
-    
+
     if (locationTravelers && locationTravelers.length > 0) {
       setTravelers(locationTravelers);
     } else if (storedTravelers) {
@@ -72,7 +87,8 @@ const HotelConfirmation = () => {
 
   useEffect(() => {
     // Get hotel image from multiple sources
-    const fallbackImage = hotelData?.image || booking?.Booking?.HotelImage || null;
+    const fallbackImage =
+      hotelData?.image || booking?.Booking?.HotelImage || null;
     if (hotelImages?.Gallery && hotelImages.Gallery.length > 0) {
       setHotelImageUrl(hotelImages.Gallery[0].ImageUrl);
     } else if (fallbackImage) {
@@ -86,7 +102,7 @@ const HotelConfirmation = () => {
     // Get total price from multiple sources
     const storedTotalPrice = localStorage.getItem("hotelTotalPrice");
     const confirmationData = localStorage.getItem("hotelConfirmationData");
-    
+
     if (locationTotalPrice) {
       setTotalPrice(locationTotalPrice);
     } else if (storedTotalPrice) {
@@ -134,7 +150,9 @@ const HotelConfirmation = () => {
             <h1 className="display-4 fw-bold text-danger mb-3">
               Booking Confirmation
             </h1>
-            <p className="text-muted fs-5">Your hotel reservation has been successfully confirmed</p>
+            <p className="text-muted fs-5">
+              Your hotel reservation has been successfully confirmed
+            </p>
           </div>
 
           {/* Main Container */}
@@ -143,14 +161,17 @@ const HotelConfirmation = () => {
             <div className="card-header bg-danger text-white py-3">
               <div className="w-100 d-flex justify-content-between align-items-start flex-wrap mb-3">
                 <div className="text-end">
-                  <h2 className="h5 fw-bold mb-0">{bookedDetails?.ReservationName || "Hotel Booking"}</h2>
+                  <h2 className="h5 fw-bold mb-0">
+                    {bookedDetails?.ReservationName || "Hotel Booking"}
+                  </h2>
                 </div>
                 <div>
-                  <p className="mb-1 small text-white">
+                  {/* <p className="mb-1 small text-white">
                     <strong>Reservation ID:</strong> {reservationId}
-                  </p>
+                  </p> */}
                   <p className="mb-0 small text-white">
-                    <strong>Booking Ref:</strong> {bookedDetails?.ReservationReference || reservationId}
+                    <strong>Booking Ref:</strong>{" "}
+                    {bookedDetails?.ReservationReference}
                   </p>
                 </div>
               </div>
@@ -167,32 +188,53 @@ const HotelConfirmation = () => {
                   {/* Hotel Image - 40% width */}
                   <div className="col-lg-5 mb-3">
                     <div className="card h-100 border-0 shadow-sm">
-                      <div className="bg-gradient-to-br from-danger to-danger-subtle rounded-top h-100 d-flex align-items-center justify-content-center" style={{minHeight: '200px'}}>
+                      <div
+                        className="bg-gradient-to-br from-danger to-danger-subtle rounded-top h-100 d-flex align-items-center justify-content-center"
+                        style={{ minHeight: "200px" }}
+                      >
                         {hotelImageUrl ? (
                           <img
                             src={hotelImageUrl}
-                            alt={hotelData?.hotelName || booking?.Booking?.PartnerName || "Hotel"}
+                            alt={
+                              hotelData?.hotelName ||
+                              booking?.Booking?.PartnerName ||
+                              "Hotel"
+                            }
                             className="img-fluid rounded"
-                            style={{ maxHeight: 200, objectFit: "cover", width: "100%" }}
+                            style={{
+                              maxHeight: 200,
+                              objectFit: "cover",
+                              width: "100%",
+                            }}
                           />
                         ) : (
                           <div className="text-center text-white">
                             <i className="fas fa-hotel fa-3x mb-3"></i>
-                            <p className="h5 fw-bold">{hotelData?.hotelName || booking?.Booking?.PartnerName || "Hotel Name"}</p>
+                            <p className="h5 fw-bold">
+                              {hotelData?.hotelName ||
+                                booking?.Booking?.PartnerName ||
+                                "Hotel Name"}
+                            </p>
                           </div>
                         )}
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Hotel Content - 60% width */}
                   <div className="col-lg-7">
                     <div className="row g-2">
                       <div className="col-md-6">
                         <div className="card border-0 shadow-sm h-100">
                           <div className="card-body py-2">
-                            <h6 className="text-muted mb-1 small">Hotel Name</h6>
-                            <p className="fw-bold mb-0 small">{hotelData?.hotelName || booking?.Booking?.PartnerName || "Hotel Name"}</p>
+                            <h6 className="text-muted mb-1 small">
+                              Hotel Name
+                            </h6>
+                            <p className="fw-bold mb-0 small">
+                              {hotelData?.hotelName ||
+                                booking?.Booking?.PartnerName ||
+                                "Hotel Name"}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -200,7 +242,11 @@ const HotelConfirmation = () => {
                         <div className="card border-0 shadow-sm h-100">
                           <div className="card-body py-2">
                             <h6 className="text-muted mb-1 small">Check-in</h6>
-                            <p className="fw-bold mb-0 small">{hotelData?.checkInDate || booking?.Booking?.CheckIn || "Not specified"}</p>
+                            <p className="fw-bold mb-0 small">
+                              {hotelData?.checkInDate ||
+                                booking?.Booking?.CheckIn ||
+                                "Not specified"}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -208,7 +254,11 @@ const HotelConfirmation = () => {
                         <div className="card border-0 shadow-sm h-100">
                           <div className="card-body py-2">
                             <h6 className="text-muted mb-1 small">Check-out</h6>
-                            <p className="fw-bold mb-0 small">{hotelData?.checkOutDate || booking?.Booking?.CheckOut || "Not specified"}</p>
+                            <p className="fw-bold mb-0 small">
+                              {hotelData?.checkOutDate ||
+                                booking?.Booking?.CheckOut ||
+                                "Not specified"}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -216,7 +266,11 @@ const HotelConfirmation = () => {
                         <div className="card border-0 shadow-sm h-100">
                           <div className="card-body py-2">
                             <h6 className="text-muted mb-1 small">Rooms</h6>
-                            <p className="fw-bold mb-0 small">{hotelData?.rooms || booking?.Booking?.RoomCount || "1"}</p>
+                            <p className="fw-bold mb-0 small">
+                              {hotelData?.rooms ||
+                                booking?.Booking?.RoomCount ||
+                                "1"}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -224,7 +278,11 @@ const HotelConfirmation = () => {
                         <div className="card border-0 shadow-sm h-100">
                           <div className="card-body py-2">
                             <h6 className="text-muted mb-1 small">Guests</h6>
-                            <p className="fw-bold mb-0 small">{hotelData?.adults || booking?.Booking?.GuestCount || "2"}</p>
+                            <p className="fw-bold mb-0 small">
+                              {hotelData?.adults ||
+                                booking?.Booking?.GuestCount ||
+                                "2"}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -232,7 +290,9 @@ const HotelConfirmation = () => {
                         <div className="card border-0 shadow-sm h-100">
                           <div className="card-body py-2">
                             <h6 className="text-muted mb-1 small">Status</h6>
-                            <span className="badge bg-success small">✅ Confirmed</span>
+                            <span className="badge bg-success small">
+                              ✅ Confirmed
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -249,17 +309,24 @@ const HotelConfirmation = () => {
                 </h3>
                 <div className="d-flex flex-column">
                   {travelers.length === 0 ? (
-                    <div className="alert alert-warning">No travelers found for this booking.</div>
+                    <div className="alert alert-warning">
+                      No travelers found for this booking.
+                    </div>
                   ) : (
                     travelers.map((traveler, index) => (
                       <div key={traveler.id || index} className="mb-2">
                         <div className="border rounded p-2 h-100">
                           <div className="fw-bold text-dark mb-1">
-                            Traveler {index + 1} {traveler.PaxType === "Child" ? "(Child)" : "(Adult)"}
+                            Traveler {index + 1}{" "}
+                            {traveler.PaxType === "Child"
+                              ? "(Child)"
+                              : "(Adult)"}
                           </div>
                           <div>
                             <small className="text-muted d-block">Name</small>
-                            <span className="fw-bold">{traveler.Forename} {traveler.Surname}</span>
+                            <span className="fw-bold">
+                              {traveler.Forename} {traveler.Surname}
+                            </span>
                           </div>
                           <div>
                             <small className="text-muted d-block">Email</small>
@@ -289,8 +356,12 @@ const HotelConfirmation = () => {
                 <div className="card border-0 shadow-sm">
                   <div className="card-body">
                     <div className="d-flex justify-content-between align-items-center py-3 bg-light rounded px-3">
-                      <span className="h5 fw-bold text-dark mb-0">Total Price:</span>
-                      <span className="h4 fw-bold text-danger mb-0">₹{totalPrice ? totalPrice.toLocaleString() : "N/A"}</span>
+                      <span className="h5 fw-bold text-dark mb-0">
+                        Total Price:
+                      </span>
+                      <span className="h4 fw-bold text-danger mb-0">
+                        ₹{totalPrice ? totalPrice.toLocaleString() : "N/A"}
+                      </span>
                     </div>
                   </div>
                 </div>

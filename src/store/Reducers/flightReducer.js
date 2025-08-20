@@ -43,7 +43,12 @@ export const flightReducer = (state = initialState, action) => {
       return {
         ...state,
         flightResultListLoading: false,
-        flightResultList: action.payload,
+        flightResultList:{ 
+          ...action.payload,
+          FlightResults:[
+            ...(state.flightResultList.FlightResults || []),
+            ...(action.payload.FlightResults || []),
+          ]},
       };
     case FETCH_FLIGHT_RESULTS_FAILURE:
       return {

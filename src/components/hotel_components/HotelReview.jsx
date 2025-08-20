@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Header02 from "../header02";
 import TripSecure from "./TripSecure";
@@ -224,17 +224,20 @@ const HotelReview = () => {
         status: bookedDetails.StatusCode,
         ReservationReference: bookedDetails.ReservationReference,
         totalPrice: totalPrice,
-        travelers: travellerDetails
+        travelers: travellerDetails,
       };
-      
-      localStorage.setItem("hotelConfirmationData", JSON.stringify(confirmationData));
+
+      localStorage.setItem(
+        "hotelConfirmationData",
+        JSON.stringify(confirmationData)
+      );
       navigate("/hotel-confirmation", {
         state: {
           ReservationId: bookedDetails.ReservationId,
           status: bookedDetails.StatusCode,
           ReservationReference: bookedDetails.ReservationReference,
           totalPrice: totalPrice,
-          travelers: travellerDetails
+          travelers: travellerDetails,
         },
       });
     }
@@ -330,21 +333,26 @@ const HotelReview = () => {
         ReservationAmount: total,
         ReservationClientReference: null,
         ReservationRemarks: null,
-        MemberId: localStorage.getItem("userloginemail") || LeadTraveller?.PaxEmail, // pass user email id
-        TempMemberId:localStorage.getItem("userloginemail") || LeadTraveller?.PaxEmail, // pass user email id
+        MemberId:
+          localStorage.getItem("userloginemail") || LeadTraveller?.PaxEmail, // pass user email id
+        TempMemberId:
+          localStorage.getItem("userloginemail") || LeadTraveller?.PaxEmail, // pass user email id
         BookingDetails: BookingDetails,
       };
       return PreBookRequest;
     },
     [travellerDetails, pricedetails, prebookResponse]
   );
+  const calledOnce = useRef(false);
   const handlePayment = async (total) => {
-    let PreBookRequest = makeBookingRequest(total);
-    dispatch(fetchHotelPrebook(PreBookRequest));
-    setTotalPrice(total);
-    
-    // Store total price for confirmation page
-    localStorage.setItem("hotelTotalPrice", total.toString());
+    if (!calledOnce.current) {
+      let PreBookRequest = makeBookingRequest(total);
+      dispatch(fetchHotelPrebook(PreBookRequest));
+      setTotalPrice(total);
+      // Store total price for confirmation page
+      localStorage.setItem("hotelTotalPrice", total.toString());
+      calledOnce.current = true;
+    }
   };
 
   // Function to validate prices

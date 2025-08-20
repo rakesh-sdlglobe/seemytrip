@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import FooterDark from "../footer-dark"; // Ensure this path is correct
 import Header02 from "../header02"; // Ensure this path is correct
 import FlightSearch from "./flight_search"; // Ensure this path is correct
@@ -9,7 +9,12 @@ import FlightSearchResult from "./flight_search_result";
 import { useDispatch, useSelector } from "react-redux";
 
 import { fetchFlightsResultsList } from "../../store/Actions/flightActions";
-import { selectflightResultList } from "../../store/Selectors/flightSelectors";
+import {
+  selectflightResultList,
+  selectTotalFlight,
+  selectTotalPages,
+  selectSessionId,
+} from "../../store/Selectors/flightSelectors";
 
 const DEFULAT_PAGE_SIZE = 10;
 
@@ -18,6 +23,13 @@ const FlightList = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const searchResults = useSelector(selectflightResultList);
+  const [pageNo, setPageNo] = useState(1);
+  const [MaxPrice, setMaxPrice] = useState(99999999);
+  const [MinPrice, setMinPrice] = useState(0);
+  const TotalFlight = useSelector(selectTotalFlight);
+  const TotalPages = useSelector(selectTotalPages);
+  const SessionId = useSelector(selectSessionId);
+  const [paginationLoading, setPaginationLoading] = useState(false);
   //const [searchResults, setSearchResults] = useState([]);
   const [filters, setFilters] = useState({
     ac: false,
@@ -32,16 +44,21 @@ const FlightList = () => {
     // Add other flight filters as needed
   });
 
+  const calledOnce = useRef(false);
+
   useEffect(() => {
-    // Log location state and set search results
-    const { flightsearchrequest } = location.state || {};
-    flightsearchrequest.ServiceTypeCode = "F";
-    flightsearchrequest.GroupResult = true;
-    flightsearchrequest.PageNo = 1;
-    flightsearchrequest.PageSize = DEFULAT_PAGE_SIZE;
-    flightsearchrequest.SessionID = "";
-    dispatch(fetchFlightsResultsList(flightsearchrequest));
-    console.log("Received flightsearchrequest:", flightsearchrequest);
+    if (!calledOnce.current) {
+      // Log location state and set search results
+      const { flightsearchrequest } = location.state || {};
+      flightsearchrequest.ServiceTypeCode = "F";
+      //flightsearchrequest.GroupResult = true;
+      flightsearchrequest.PageNo = 1;
+      flightsearchrequest.PageSize = DEFULAT_PAGE_SIZE;
+      flightsearchrequest.SessionID = "";
+      dispatch(fetchFlightsResultsList(flightsearchrequest));
+      console.log("Received flightsearchrequest:", flightsearchrequest);
+      calledOnce.current = true;
+    }
   }, [location.state, dispatch]);
 
   const handleSearchResults = (data) => {
@@ -71,7 +88,34 @@ const FlightList = () => {
       // Reset other filters as needed
     });
   };
-
+  // Handle Show More button click
+  const handleShowMore = useCallback(() => {
+    var Filter = {
+      MinPrice,
+      MaxPrice,
+    };
+    if (pageNo <= TotalPages) {
+      const nextPage = pageNo + 1;
+      setPageNo(nextPage);
+      setPaginationLoading(true);
+      // Log location state and set search results
+      const { flightsearchrequest } = location.state || {};
+      flightsearchrequest.ServiceTypeCode = "F";
+      flightsearchrequest.PageNo = nextPage;
+      flightsearchrequest.PageSize = DEFULAT_PAGE_SIZE;
+      flightsearchrequest.SessionID = SessionId;
+      flightsearchrequest.Filter = Filter;
+      dispatch(fetchFlightsResultsList(flightsearchrequest));
+    }
+  }, [
+    location.state,
+    pageNo,
+    TotalPages,
+    SessionId,
+    MinPrice,
+    MaxPrice,
+    dispatch,
+  ]);
   // const filteredFlights = searchResults.filter((flight) => {
   //   let isMatch = true;
 
@@ -134,7 +178,10 @@ const FlightList = () => {
 
   //   return isMatch;
   // });
-
+  // Reset pagination loading when hotelsList changes
+  useEffect(() => {
+    setPaginationLoading(false);
+  }, [searchResults]);
   console.log("Flights list:", searchResults); // Debug log
 
   return (
@@ -174,7 +221,7 @@ const FlightList = () => {
             <div className="row justify-content-between gy-4 gx-xl-4 gx-lg-3 gx-md-3 gx-4">
               {/* Sidebar Filter Options */}
               <FlightFilter
-                filters={filters}
+                filters={searchResults}
                 onFilterChange={handleFilterChange}
                 handleClearAll={handleClearAll}
               />
@@ -188,6 +235,19 @@ const FlightList = () => {
                       flightData={searchResults}
                       filters={filters}
                     />
+
+                    {TotalPages > 1 &&
+                      pageNo < TotalPages && (
+                        <div style={{ textAlign: "center", margin: "2rem 0" }}>
+                          <button
+                            className="btn btn-primary"
+                            onClick={handleShowMore}
+                            disabled={paginationLoading}
+                          >
+                            {paginationLoading ? "Loading..." : "Show More"}
+                          </button>
+                        </div>
+                      )}
                   </>
                 )}
               </div>

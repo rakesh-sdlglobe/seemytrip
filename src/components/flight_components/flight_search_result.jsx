@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { indigo } from "../../assets/images";
+import { addMilliseconds, format, parse } from "date-fns";
 import AccordionApp from "./AccrodionApp";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -184,72 +185,115 @@ const FlightSearchResult = ({ flightData, filters }) => {
       </div>
 
       {/* Flight List */}
-      {filteredFlightData.length > 0 ? (
-        filteredFlightData.map((flight) => (
-          <div key={flight.flightId} className="col-xl-12 col-lg-12 col-md-12">
+      {flightData && flightData?.FlightResults?.length > 0 ? (
+        flightData?.FlightResults.map((flight, fixd) => (
+          <div
+            key={flightData?.CurrentPage + "_FRI_" + fixd}
+            className="col-xl-12 col-lg-12 col-md-12"
+          >
             <div className="flights-list-item">
               <div className="d-flex align-items-center justify-content-between">
-                {/* Airline Info */}
-                <div className="airline-section">
-                  <img
-                    className="img-fluid"
-                    src={indigo}
-                    width={35}
-                    alt="Airline Logo"
-                  />
-                  <div>
-                    <div className="text-dark fw-medium">
-                      {" "}
-                      Indigo{flight.airline}
-                    </div>
-                    <div className="text-sm text-muted">
-                      1234{flight.classType}
-                    </div>
-                  </div>
-                </div>
+                {flight.Segments &&
+                  flight.Segments.map((seg, sIdx) => (
+                    <>
+                      <div className="flights-list-item d-block">
+                        {/* Airline Info */}
+                        <div className="airline-section">
+                          <img
+                            className="img-fluid"
+                            src={indigo}
+                            width={35}
+                            alt="Airline Logo"
+                          />
+                          <div>
+                            <div className="text-dark fw-medium">
+                              {" "}
+                              {seg.AirlineName}
+                            </div>
+                            <div className="text-sm text-muted">
+                              {seg.Segments[0]?.Airline?.AirlineCode +
+                                " " +
+                                seg.Segments[0]?.Airline?.FlightNumber +
+                                " " +
+                                seg.Segments[0]?.Airline?.FareClass}
+                            </div>
+                          </div>
+                        </div>
 
-                {/* Flight Info */}
-                <div className="flight-info-section">
-                  {/* Departure */}
-                  <div className="time-airport-group">
-                    <div className="text-dark fw-bold">
-                      {flight.departureTime}
-                    </div>
-                    <div className="text-muted text-sm">
-                      {flight.fromAirportShort || flight.fromAirport}
-                    </div>
-                  </div>
+                        {/* Flight Info */}
+                        <div className="flight-info-section">
+                          {/* Departure */}
+                          <div className="time-airport-group">
+                            <div className="text-dark fw-bold">
+                              {format(
+                                new Date(seg.Segments[0]?.Origin?.DepTime),
+                                "HH:mm"
+                              )}
+                            </div>
+                            <div className="text-muted text-sm">
+                              {seg.Segments[0]?.Origin?.Airport?.AirportCode}
+                            </div>
+                          </div>
 
-                  {/* Duration & Stops */}
-                  <div className="flight-duration-section">
-                    <div className="text-dark small">{flight.duration}</div>
-                    <div className="flightLine"></div>
-                    <div className="text-muted small">
-                      {flight.stopovers === 0
-                        ? "Direct"
-                        : flight.stopovers
-                        ? `${flight.stopovers} Stop${
-                            flight.stopovers > 1 ? "s" : ""
-                          }`
-                        : "Direct"}
-                    </div>
-                  </div>
+                          {/* Duration & Stops */}
+                          <div className="flight-duration-section">
+                            <div className="text-dark small">
+                              {seg.TotalDuraionTime}
+                            </div>
+                            <div className="flightLine"></div>
+                            <div className="text-muted small">
+                              {seg.Stops === 0
+                                ? "Direct"
+                                : seg.Stops
+                                ? `${seg.Stops} Stop${seg.Stops > 1 ? "s" : ""}`
+                                : "Direct"}
+                            </div>
+                          </div>
 
-                  {/* Arrival */}
-                  <div className="time-airport-group">
-                    <div className="text-dark fw-bold">
-                      {flight.arrivalTime}
-                    </div>
-                    <div className="text-muted text-sm">
-                      {flight.toAirportShort || flight.toAirport}
-                    </div>
-                  </div>
-                </div>
+                          {/* Arrival */}
+                          <div className="time-airport-group">
+                            <div className="text-dark fw-bold">
+                              {format(
+                                new Date(
+                                  seg.Segments[
+                                    seg.Segments.length - 1
+                                  ]?.Destination?.ArrTime
+                                ),
+                                "HH:mm"
+                              )}
+                              {seg.NextDay && seg.NextDay !== "" && (
+                                <div className="small text-danger">
+                                  {seg.NextDay}
+                                </div>
+                              )}
+                            </div>
+                            <div className="text-muted text-sm">
+                              {
+                                seg.Segments[seg.Segments.length - 1]
+                                  ?.Destination?.Airport?.AirportCode
+                              }
+                            </div>
+                            <div className="text-dark">
+                              {seg.Segments[0]?.NoOfSeatAvailable &&
+                                seg.Segments[0]?.NoOfSeatAvailable !== "" &&
+                                seg.Segments[0]?.NoOfSeatAvailable < 15 && (
+                                  <div className="small text-danger">
+                                    {seg.Segments[0]?.NoOfSeatAvailable}
+                                    {" Seat available"}
+                                  </div>
+                                )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  ))}
 
                 {/* Price & Action */}
                 <div className="price-section">
                   <div className="text-dark fs-5 fw-bold">
-                    {flight.economyPrice}
+                    {"INR "}
+                    {flight.OfferedFare.toLocaleString()}
                   </div>
                   <button
                     className="btn btn-primary select-flight-btn"
