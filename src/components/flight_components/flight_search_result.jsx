@@ -34,7 +34,8 @@ const FlightSearchResult = ({ flightData, filters }) => {
     navigate("/flight-Bookingpage", { state: { flightData: flight } });
   };
 
-  return (
+  return (<>
+  {flightData && flightData?.FlightResults &&
     <div className="row align-items-center g-4 mt-2">
       <style>
         {`
@@ -319,8 +320,8 @@ const FlightSearchResult = ({ flightData, filters }) => {
           </div>
         </div>
       )}
-    </div>
-  );
+    </div>}
+  </>);
 };
 
 export default FlightSearchResult;

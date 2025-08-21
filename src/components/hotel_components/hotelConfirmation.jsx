@@ -9,10 +9,7 @@ import {
 import {
   selectHotelBookedDetailsData,
   selectHotelsImages,
-  selectIsGetBookingDetails,
 } from "../../store/Selectors/hotelSelectors";
-import Lottie from "lottie-react";
-import successAnimation from "../../assets/animations/success.json";
 import { motion } from "framer-motion";
 import Confetti from "react-confetti";
 import { useWindowSize } from "@react-hook/window-size";
@@ -36,6 +33,7 @@ const HotelConfirmation = () => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [hotelData, setHotelData] = useState(null);
   const calledOnce = useRef(false);
+  const [expandedTravelers, setExpandedTravelers] = useState({});
 
   useEffect(() => {
     if (ReservationId && !calledOnce.current) {
@@ -119,7 +117,9 @@ const HotelConfirmation = () => {
     }
   }, [locationTotalPrice, booking, hotelData]);
 
-  if (!bookedDetails || !booking) {
+  // Relax loading: show confirmation UI when we have minimal state/local data,
+  // while bookedDetails continues to load in the background
+  if (!bookedDetails && !booking && !ReservationId) {
     return (
       <div className="gray-simple min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -301,7 +301,7 @@ const HotelConfirmation = () => {
                 </div>
               </section>
 
-              {/* Traveler Details Section - Column Format */}
+              {/* Traveler Details Section - Row Format */}
               <section className="mb-4">
                 <h3 className="h4 fw-bold text-dark mb-3">
                   <i className="fas fa-users text-danger me-2"></i>
@@ -316,30 +316,60 @@ const HotelConfirmation = () => {
                     travelers.map((traveler, index) => (
                       <div key={traveler.id || index} className="mb-2">
                         <div className="border rounded p-2 h-100">
-                          <div className="fw-bold text-dark mb-1">
-                            Traveler {index + 1}{" "}
-                            {traveler.PaxType === "Child"
-                              ? "(Child)"
-                              : "(Adult)"}
+                          <div className="d-flex justify-content-between align-items-center">
+                            <div className="fw-bold text-dark">
+                              Traveler {index + 1}{" "}
+                              {(traveler.PaxType === "Child" || traveler.PaxType === "C")
+                                ? "(Child)"
+                                : "(Adult)"}
+                            </div>
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center"
+                              onClick={() =>
+                                setExpandedTravelers((prev) => ({
+                                  ...prev,
+                                  [index]: !prev[index],
+                                }))
+                              }
+                              aria-expanded={!!expandedTravelers[index]}
+                              aria-label="Toggle traveler details"
+                              style={{ width: 30, height: 30, padding: 0 }}
+                            >
+                              <i
+                                className="fas fa-chevron-down"
+                                style={{
+                                  transition: "transform 0.2s ease",
+                                  transform: expandedTravelers[index]
+                                    ? "rotate(180deg)"
+                                    : "rotate(0deg)",
+                                }}
+                              ></i>
+                            </button>
                           </div>
-                          <div>
-                            <small className="text-muted d-block">Name</small>
-                            <span className="fw-bold">
-                              {traveler.Forename} {traveler.Surname}
-                            </span>
-                          </div>
-                          <div>
-                            <small className="text-muted d-block">Email</small>
-                            <span>{traveler.PaxEmail}</span>
-                          </div>
-                          <div>
-                            <small className="text-muted d-block">Mobile</small>
-                            <span>{traveler.PaxMobile}</span>
-                          </div>
-                          <div>
-                            <small className="text-muted d-block">Room</small>
-                            <span>Room {traveler.RoomID}</span>
-                          </div>
+                          {expandedTravelers[index] && (
+                            <div
+                              className="small d-flex mt-2"
+                              style={{
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              }}
+                            >
+                              <span className="me-3">
+                                <span className="text-muted">Name:</span> <strong>{traveler.Forename} {traveler.Surname}</strong>
+                              </span>
+                              <span className="me-3">
+                                <span className="text-muted">Email:</span> <strong>{traveler.PaxEmail || "-"}</strong>
+                              </span>
+                              <span className="me-3">
+                                <span className="text-muted">Mobile:</span> <strong>{traveler.PaxMobile || "-"}</strong>
+                              </span>
+                              <span>
+                                <span className="text-muted">Room:</span> <strong>Room {traveler.RoomID}</strong>
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))

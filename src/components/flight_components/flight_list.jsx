@@ -26,67 +26,199 @@ const FlightList = () => {
   const [pageNo, setPageNo] = useState(1);
   const [MaxPrice, setMaxPrice] = useState(99999999);
   const [MinPrice, setMinPrice] = useState(0);
-  const TotalFlight = useSelector(selectTotalFlight);
+  const [selectPrice, setSelectPrice] = useState("");
+  const [selectDepTime, setSelectDepTime] = useState("");
+  const [selectArrTime, setSelectArrTime] = useState("");
+  const [selectRtnDepTime, setSelectRtnDepTime] = useState("");
+  const [selectRtnArrTime, setSelectRtnArrTime] = useState("");
+  const [selectStops, setSelectStops] = useState("");
+  const [selectAirline, setSelectAirline] = useState("");
   const TotalPages = useSelector(selectTotalPages);
   const SessionId = useSelector(selectSessionId);
   const [paginationLoading, setPaginationLoading] = useState(false);
-  //const [searchResults, setSearchResults] = useState([]);
-  const [filters, setFilters] = useState({
-    ac: false,
-    departureEarlyMorning: false,
-    departureMorning: false,
-    departureMidDay: false,
-    departureNight: false,
-    arrivalEarlyMorning: false,
-    arrivalMorning: false,
-    arrivalMidDay: false,
-    arrivalNight: false,
-    // Add other flight filters as needed
-  });
-
+  const [filterLoading, setfilterLoading] = useState(false);
+  const { flightsearchrequest } = location.state || {};
   const calledOnce = useRef(false);
 
   useEffect(() => {
     if (!calledOnce.current) {
       // Log location state and set search results
-      const { flightsearchrequest } = location.state || {};
       flightsearchrequest.ServiceTypeCode = "F";
       //flightsearchrequest.GroupResult = true;
       flightsearchrequest.PageNo = 1;
       flightsearchrequest.PageSize = DEFULAT_PAGE_SIZE;
-      flightsearchrequest.SessionID = "";
+      flightsearchrequest.SessionID = null;
+      flightsearchrequest.isPagination = false;
       dispatch(fetchFlightsResultsList(flightsearchrequest));
-      console.log("Received flightsearchrequest:", flightsearchrequest);
+      console.log("Received main flightsearchrequest:", flightsearchrequest);
       calledOnce.current = true;
     }
-  }, [location.state, dispatch]);
+  }, [flightsearchrequest, dispatch]);
 
-  const handleSearchResults = (data) => {
-    console.log("Search results:", data); // Check if flight results are coming
-    navigate("/flight-list", { state: { flightsearchrequest: data } });
-  };
+  useEffect(() => {
+    if (!filterLoading) return;
+    var Filter = {
+      MinPrice,
+      MaxPrice,
+      DepartureTime: selectDepTime !== ""  ? selectDepTime : null,
+      ArrivalTime: selectArrTime !== "" ? selectArrTime : null,
+      ReturnDepartureTime: selectRtnDepTime !== "" ? selectRtnDepTime : null,
+      ReturnArrivalTime: selectRtnArrTime !== "" ? selectRtnArrTime : null,
+      Stop: selectStops !== "" ? selectStops : null,
+      Airline: selectAirline !== ""  ? selectAirline : null,
+    };
+    // Log location state and set search results
+    flightsearchrequest.ServiceTypeCode = "F";
+    flightsearchrequest.PageNo = 1;
+    flightsearchrequest.PageSize = DEFULAT_PAGE_SIZE;
+    flightsearchrequest.SessionID = null;
+    flightsearchrequest.Filter = Filter;
+    flightsearchrequest.isPagination = false;
+    dispatch(fetchFlightsResultsList(flightsearchrequest));
+  }, [
+    flightsearchrequest,
+    pageNo,
+    MinPrice,
+    MaxPrice,
+    selectArrTime,
+    selectDepTime,
+    selectRtnDepTime,
+    selectRtnArrTime,
+    selectAirline,
+    selectStops,
+    filterLoading,
+    dispatch,
+  ]);
 
-  const handleFilterChange = (e) => {
-    const { id, checked } = e.target;
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      [id]: checked,
-    }));
-  };
+  const handleSearchResults = useCallback(
+    (data) => {
+      navigate("/flight-list", { state: { flightsearchrequest: data } });
+    },
+    [navigate]
+  );
+
+  const onPriceFilterChange = useCallback((e) => {
+    const { checked, value } = e.target;
+    if (checked === true) {
+      setMinPrice(value.split("|")[0]);
+      setMaxPrice(value.split("|")[1]);
+      setSelectPrice(value);
+    } else {
+      setMinPrice(0);
+      setMaxPrice(999999999);
+      setSelectPrice("");
+    }
+    setfilterLoading(true);
+  }, []);
+
+  const onDepTimeFilterChange = useCallback((e) => {
+    const { checked, value } = e.target;
+    if (checked === true) {
+      setSelectDepTime((prevValue) =>
+        prevValue !== "" ? prevValue + "|" + value : value
+      );
+    } else {
+      setSelectDepTime((prevValue) =>
+        prevValue.includes("|")
+          ? prevValue.replace("|" + value, "")
+          : prevValue.replace(value, "")
+      );
+    }
+    setfilterLoading(true);
+  }, []);
+
+  const onArrTimeFilterChange = useCallback((e) => {
+    const { checked, value } = e.target;
+    if (checked === true) {
+      setSelectArrTime((prevValue) =>
+        prevValue !== "" ? prevValue + "|" + value : value
+      );
+    } else {
+      setSelectArrTime((prevValue) =>
+        prevValue.includes("|")
+          ? prevValue.replace("|" + value, "")
+          : prevValue.replace(value, "")
+      );
+    }
+    setfilterLoading(true);
+  }, []);
+
+  const onRtnDepTimeFilterChange = useCallback((e) => {
+    const { checked, value } = e.target;
+    if (checked === true) {
+      setSelectRtnDepTime((prevValue) =>
+        prevValue !== "" ? prevValue + "|" + value : value
+      );
+    } else {
+      setSelectRtnDepTime((prevValue) =>
+        prevValue.includes("|")
+          ? prevValue.replace("|" + value, "")
+          : prevValue.replace(value, "")
+      );
+    }
+    setfilterLoading(true);
+  }, []);
+
+  const onRtnArrTimeFilterChange = useCallback((e) => {
+    const { checked, value } = e.target;
+    if (checked === true) {
+      setSelectRtnArrTime((prevValue) =>
+        prevValue !== "" ? prevValue + "|" + value : value
+      );
+    } else {
+      setSelectRtnArrTime((prevValue) =>
+        prevValue.includes("|")
+          ? prevValue.replace("|" + value, "")
+          : prevValue.replace(value, "")
+      );
+    }
+    setfilterLoading(true);
+  }, []);
+
+  const onAirlineFilterChange = useCallback((e) => {
+    const { checked, value } = e.target;
+    if (checked === true) {
+      setSelectAirline((prevValue) =>
+        prevValue !== "" ? prevValue + "|" + value : value
+      );
+    } else {
+      setSelectAirline((prevValue) =>
+        prevValue.includes("|")
+          ? prevValue.replace("|" + value, "")
+          : prevValue.replace(value, "")
+      );
+    }
+    setfilterLoading(true);
+  }, []);
+
+  const onStopsFilterChange = useCallback((e) => {
+    const { checked, value } = e.target;
+    if (checked === true) {
+      setSelectStops((prevValue) =>
+        prevValue !== "" ? prevValue + "|" + value : value
+      );
+    } else {
+      setSelectStops((prevValue) =>
+        prevValue.includes("|")
+          ? prevValue.replace("|" + value, "")
+          : prevValue.replace(value, "")
+      );
+    }
+    setfilterLoading(true);
+  }, []);
 
   const handleClearAll = () => {
-    setFilters({
-      ac: false,
-      departureEarlyMorning: false,
-      departureMorning: false,
-      departureMidDay: false,
-      departureNight: false,
-      arrivalEarlyMorning: false,
-      arrivalMorning: false,
-      arrivalMidDay: false,
-      arrivalNight: false,
-      // Reset other filters as needed
-    });
+    setMinPrice(0);
+    setMaxPrice(999999999);
+    setSelectPrice("");
+    flightsearchrequest.ServiceTypeCode = "F";
+    //flightsearchrequest.GroupResult = true;
+    flightsearchrequest.PageNo = 1;
+    flightsearchrequest.PageSize = DEFULAT_PAGE_SIZE;
+    flightsearchrequest.SessionID = "";
+    flightsearchrequest.isPagination = false;
+    flightsearchrequest.Filter = null;
+    dispatch(fetchFlightsResultsList(flightsearchrequest));
   };
   // Handle Show More button click
   const handleShowMore = useCallback(() => {
@@ -99,16 +231,16 @@ const FlightList = () => {
       setPageNo(nextPage);
       setPaginationLoading(true);
       // Log location state and set search results
-      const { flightsearchrequest } = location.state || {};
       flightsearchrequest.ServiceTypeCode = "F";
       flightsearchrequest.PageNo = nextPage;
       flightsearchrequest.PageSize = DEFULAT_PAGE_SIZE;
       flightsearchrequest.SessionID = SessionId;
       flightsearchrequest.Filter = Filter;
+      flightsearchrequest.isPagination = true;
       dispatch(fetchFlightsResultsList(flightsearchrequest));
     }
   }, [
-    location.state,
+    flightsearchrequest,
     pageNo,
     TotalPages,
     SessionId,
@@ -222,7 +354,20 @@ const FlightList = () => {
               {/* Sidebar Filter Options */}
               <FlightFilter
                 filters={searchResults}
-                onFilterChange={handleFilterChange}
+                onPriceFilterChange={onPriceFilterChange}
+                selectPrice={selectPrice}
+                onDepTimeFilterChange={onDepTimeFilterChange}
+                selectDepTime={selectDepTime}
+                onArrTimeFilterChange={onArrTimeFilterChange}
+                selectArrTime={selectArrTime}
+                onRtnDepTimeFilterChange={onRtnDepTimeFilterChange}
+                selectRtnDepTime={selectRtnDepTime}
+                onRtnArrTimeFilterChange={onRtnArrTimeFilterChange}
+                selectRtnArrTime={selectRtnArrTime}
+                selectAirline={selectAirline}
+                onAirlineFilterChange={onAirlineFilterChange}
+                selectStops={selectStops}
+                onStopsFilterChange={onStopsFilterChange}
                 handleClearAll={handleClearAll}
               />
 
@@ -233,21 +378,20 @@ const FlightList = () => {
                   <>
                     <FlightSearchResult
                       flightData={searchResults}
-                      filters={filters}
+                      
                     />
 
-                    {TotalPages > 1 &&
-                      pageNo < TotalPages && (
-                        <div style={{ textAlign: "center", margin: "2rem 0" }}>
-                          <button
-                            className="btn btn-primary"
-                            onClick={handleShowMore}
-                            disabled={paginationLoading}
-                          >
-                            {paginationLoading ? "Loading..." : "Show More"}
-                          </button>
-                        </div>
-                      )}
+                    {TotalPages > 1 && pageNo < TotalPages && (
+                      <div style={{ textAlign: "center", margin: "2rem 0" }}>
+                        <button
+                          className="btn btn-primary"
+                          onClick={handleShowMore}
+                          disabled={paginationLoading}
+                        >
+                          {paginationLoading ? "Loading..." : "Show More"}
+                        </button>
+                      </div>
+                    )}
                   </>
                 )}
               </div>
