@@ -62,8 +62,8 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { HotelSearchbar } from "./HotelSearchbar";
 import HotelDetailsSkeleton from "./HotelDetailsSkeleton";
-import { Button as BsButton } from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
+// import { Button as BsButton } from "react-bootstrap";
+// import "bootstrap/dist/css/bootstrap.min.css";
 
 const amenityIconMap = {
   "Free WiFi": FaWifi,
