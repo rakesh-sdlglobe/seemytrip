@@ -33,6 +33,8 @@ import CruiseBookingPage from "./components/cruise_components/Cruise_booking_pag
 import CruiseList from "./components/cruise_components/Cruise_list_page.jsx";
 import DeleteAccount from "./components/delete-account.jsx";
 import Destination01 from "./components/destination-01";
+
+
 import Destination02 from "./components/destination-02";
 import Destination03 from "./components/destination-03";
 import DestinationDetail from "./components/destination-detail";
@@ -237,6 +239,7 @@ function App() {
           {/* Car & Cab Routes */}
           <Route path="/home-car" element={<HomeCar />} />
           <Route path="/car-list-01" element={<CarList01 />} />
+          
           <Route path="/car-list-02" element={<CarList02 />} />
           <Route path="/car-list-03" element={<CarList03 />} />
           <Route path="/car-detail" element={<CarDetails />} />

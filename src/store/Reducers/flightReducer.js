@@ -5,6 +5,7 @@ import {
   FETCH_FLIGHT_RESULTS_REQUEST,
   FETCH_FLIGHT_RESULTS_SUCCESS,
   FETCH_FLIGHT_RESULTS_FAILURE,
+  FETCH_FLIGHT_LIST_PAGINATION_SUCCESS
 } from "../Actions/flightActions";
 
 const initialState = {
@@ -43,7 +44,18 @@ export const flightReducer = (state = initialState, action) => {
       return {
         ...state,
         flightResultListLoading: false,
-        flightResultList: action.payload,
+        flightResultList:action.payload,
+      };
+      case FETCH_FLIGHT_LIST_PAGINATION_SUCCESS:
+      return {
+        ...state,
+        flightResultListLoading: false,
+        flightResultList:{ 
+          ...action.payload,
+          FlightResults:[
+            ...(state.flightResultList.FlightResults || []),
+            ...(action.payload.FlightResults || []),
+          ]},
       };
     case FETCH_FLIGHT_RESULTS_FAILURE:
       return {

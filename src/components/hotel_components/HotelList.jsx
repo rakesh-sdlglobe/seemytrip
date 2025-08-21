@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { MdLocationOn } from 'react-icons/md';
 import { FaMapLocationDot } from "react-icons/fa6";
 import { FaTimes } from "react-icons/fa";
 import { DialogContent } from '../ui/dialog';
@@ -335,7 +336,9 @@ const HotelList = ({ hotelsList: hotels }) => {
                               className="text-primary d-flex align-items-center"
                               onClick={(e) => handleShowMap(hotel, e)}
                             >
-                              <FaMapLocationDot style={{ verticalAlign: 'middle', marginRight: 4, marginTop: -2 }} />
+                              {/* <FaMapLocationDot style={{ verticalAlign: 'middle', marginRight: 4, marginTop: -2 }} />
+                               */}
+                              <MdLocationOn style={{ verticalAlign: 'middle', marginRight: 4, marginTop: -2 }} />
                               <span>{hotel.HotelAddress?.HotelLocation}</span>
                             </Link>
                           </p>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Header02 from "../header02";
 import TripSecure from "./TripSecure";
@@ -17,7 +17,6 @@ import {
   selectHotelPrebookDetails,
   selectHotelBookedDetails,
 } from "../../store/Selectors/hotelSelectors";
-import { use } from "react";
 export const RAZORPAY_KEY = process.env.REACT_APP_RAZORPAY_KEY_ID;
 
 // Function to get booking data from localStorage or default values
@@ -224,17 +223,20 @@ const HotelReview = () => {
         status: bookedDetails.StatusCode,
         ReservationReference: bookedDetails.ReservationReference,
         totalPrice: totalPrice,
-        travelers: travellerDetails
+        travelers: travellerDetails,
       };
-      
-      localStorage.setItem("hotelConfirmationData", JSON.stringify(confirmationData));
+
+      localStorage.setItem(
+        "hotelConfirmationData",
+        JSON.stringify(confirmationData)
+      );
       navigate("/hotel-confirmation", {
         state: {
           ReservationId: bookedDetails.ReservationId,
           status: bookedDetails.StatusCode,
           ReservationReference: bookedDetails.ReservationReference,
           totalPrice: totalPrice,
-          travelers: travellerDetails
+          travelers: travellerDetails,
         },
       });
     }
@@ -330,21 +332,26 @@ const HotelReview = () => {
         ReservationAmount: total,
         ReservationClientReference: null,
         ReservationRemarks: null,
-        MemberId: localStorage.getItem("userloginemail") || LeadTraveller?.PaxEmail, // pass user email id
-        TempMemberId:localStorage.getItem("userloginemail") || LeadTraveller?.PaxEmail, // pass user email id
+        MemberId:
+          localStorage.getItem("userloginemail") || LeadTraveller?.PaxEmail, // pass user email id
+        TempMemberId:
+          localStorage.getItem("userloginemail") || LeadTraveller?.PaxEmail, // pass user email id
         BookingDetails: BookingDetails,
       };
       return PreBookRequest;
     },
     [travellerDetails, pricedetails, prebookResponse]
   );
+  const calledOnce = useRef(false);
   const handlePayment = async (total) => {
-    let PreBookRequest = makeBookingRequest(total);
-    dispatch(fetchHotelPrebook(PreBookRequest));
-    setTotalPrice(total);
-    
-    // Store total price for confirmation page
-    localStorage.setItem("hotelTotalPrice", total.toString());
+    if (!calledOnce.current) {
+      let PreBookRequest = makeBookingRequest(total);
+      dispatch(fetchHotelPrebook(PreBookRequest));
+      setTotalPrice(total);
+      // Store total price for confirmation page
+      localStorage.setItem("hotelTotalPrice", total.toString());
+      calledOnce.current = true;
+    }
   };
 
   // Function to validate prices
@@ -455,6 +462,26 @@ const HotelReview = () => {
         handler: function (response) {
           console.log("Payment response:", response);
           BookingComplete(amount);
+          try {
+            const travelers = JSON.parse(
+              localStorage.getItem("hotelTravelers") || "[]"
+            );
+            const confirmationData = {
+              ReservationId: prebookResponse?.ReservationId || null,
+              status: "S0001",
+              ReservationReference:
+                prebookResponse?.BookingsStatus?.[0]?.BookingId || null,
+              totalPrice: totalPrice,
+              travelers,
+            };
+            localStorage.setItem(
+              "hotelConfirmationData",
+              JSON.stringify(confirmationData)
+            );
+            navigate("/hotel-confirmation", { state: confirmationData });
+          } catch (err) {
+            navigate("/hotel-confirmation");
+          }
         },
         theme: {
           color: "#3399cc",
@@ -481,7 +508,7 @@ const HotelReview = () => {
       });
       paymentObject.open();
     }
-  }, [prebookResponse, totalPrice, BookingComplete]);
+  }, [prebookResponse, totalPrice, BookingComplete, navigate]);
 
   if (!hotel || !room || !pkg) {
     return <div>No booking data found.</div>;
@@ -553,7 +580,9 @@ const HotelReview = () => {
         style={{
           marginBottom: 20,
           borderBottom: "1px solid #ddd",
-          padding: "10px 0px 10px 120px",
+          padding: "20px 0",
+          textAlign: "center",
+          fontSize: 26,
         }}
       >
         Review your Booking
@@ -565,8 +594,8 @@ const HotelReview = () => {
           padding: 24,
           background: "#fff",
           boxShadow: "0 2px 8px #eee",
-          maxWidth: 800,
-          width: "85vw",
+          maxWidth: 1100,
+          width: "95vw",
           margin: "0 auto",
         }}
       >
@@ -574,7 +603,7 @@ const HotelReview = () => {
           style={{
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "flex-start",
+            alignItems: "center",
           }}
         >
           <div style={{ flex: 1 }}>
@@ -819,8 +848,8 @@ const HotelReview = () => {
           padding: 24,
           background: "#fff",
           boxShadow: "0 2px 8px #eee",
-          maxWidth: 800,
-          width: "85vw",
+          maxWidth: 1100,
+          width: "95vw",
           margin: "32px auto 0 auto",
         }}
       >
