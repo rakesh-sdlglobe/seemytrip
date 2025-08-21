@@ -35,10 +35,6 @@ import DeleteAccount from "./components/delete-account.jsx";
 import Destination01 from "./components/destination-01";
 
 
-
-
-
-
 import Destination02 from "./components/destination-02";
 import Destination03 from "./components/destination-03";
 import DestinationDetail from "./components/destination-detail";
