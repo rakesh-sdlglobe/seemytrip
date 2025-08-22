@@ -378,7 +378,7 @@ const FlightList = () => {
                   <>
                     <FlightSearchResult
                       flightData={searchResults}
-                      
+                      flightsearchrequest={flightsearchrequest}
                     />
 
                     {TotalPages > 1 && pageNo < TotalPages && (

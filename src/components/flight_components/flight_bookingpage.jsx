@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Edit2 } from 'lucide-react';
 import Header02 from '../header02';
 import FooterDark from '../footer-dark';
@@ -10,11 +10,21 @@ import { Indigo } from '../../assets/images';
 export const FlightBookingpage01 = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const  {
+    flight,
+    fRequest
+  } = location.state || {};
   
   useEffect(() => {
     console.log('Location State:', location.state);
   }, [location.state]);
 
+  const handleSearchResults = useCallback(
+    () => {
+      navigate("/flight-list", { state: { flightsearchrequest: fRequest } });
+    },
+    [navigate,fRequest]
+  );
   const flightData = location.state?.flightData || {
     airline: 'Indigo Airlines',
     flightNumber: 'AI-203',
@@ -350,10 +360,10 @@ export const FlightBookingpage01 = () => {
       <div className="card p-4">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h4 className="mb-0">Booking Summary</h4>
-          <Link to="/flight-list" className="btn btn-outline-primary btn-sm">
+          <span onClick={handleSearchResults} className="btn btn-outline-primary btn-sm">
             <Edit2 size={16} className="me-2" />
             Edit
-          </Link>
+          </span>
         </div>
 
         {/* Flight Details Card */}
