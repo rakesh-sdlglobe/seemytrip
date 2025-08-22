@@ -1,44 +1,163 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { indigo } from "../../assets/images";
 import { addMilliseconds, format, parse } from "date-fns";
 import AccordionApp from "./AccrodionApp";
 import "react-toastify/dist/ReactToastify.css";
+import AuthPopup from "../../components/auth/AuthPopup";
+import {
+  selectGoogleUser,
+  selectGoogleUserName,
+} from "../../store/Selectors/authSelectors";
+import {
+  selectEmailUser,
+  selectEmailUserName,
+} from "../../store/Selectors/emailSelector";
+import { selectPhoneNumber } from "../../store/Selectors/mobileSelector";
+import { getEncryptedItem } from "../../utils/encryption";
 
-const FlightSearchResult = ({ flightData, filters }) => {
+const FlightSearchResult = ({ flightData, flightsearchrequest }) => {
   const navigate = useNavigate();
-  const [filteredFlightData, setFilteredFlightData] = useState([]);
+  const emailUserName = useSelector(selectEmailUserName) || "Traveller";
+  const googleUserName = useSelector(selectGoogleUserName);
+  const emailuser = useSelector(selectEmailUser);
+  const googleUser = useSelector(selectGoogleUser);
+  const phoneNumber = useSelector(selectPhoneNumber);
+  const [showAuthPopup, setShowAuthPopup] = useState(false);
+  // Local state to track authentication status
+  const [localAuthState, setLocalAuthState] = useState({
+    isLoggedIn: false,
+    user: null,
+  });
+  // selected Flight data
+  const [selectedFlight, setSelectedFlight] = useState({
+    flight: null,
+    fRequest: flightsearchrequest,
+  });
+  const isLoggedIn =
+    Boolean(googleUser || phoneNumber || emailuser) ||
+    localAuthState.isLoggedIn;
+  // Check localStorage for authentication data on component mount and when Redux state changes
+  useEffect(() => {
+    const checkLocalAuth = () => {
+      try {
+        const token = localStorage.getItem("authToken");
+        const user1 = getEncryptedItem("user1");
 
-  // useEffect(() => {
-  //     if (!flightData || flightData.length === 0) {
-  //         // Clear the filteredFlightData if flightData is empty
-  //         setFilteredFlightData([]);
-  //     } else {
-  //         // Apply filters to flightData
-  //         const filteredData = flightData.filter(flight => {
-  //             return (
-  //                 (!filters.direct || flight.direct) &&
-  //                 (!filters.stopovers || flight.stopovers <= filters.stopovers)
-  //             );
-  //         });
+        if (token && user1) {
+          console.log("Header02: Found auth data in localStorage:", {
+            token: !!token,
+            user1,
+          });
+          setLocalAuthState({
+            isLoggedIn: true,
+            user1,
+          });
+        } else {
+          console.log("Header02: No auth data found in localStorage");
+          setLocalAuthState({
+            isLoggedIn: false,
+            user1: null,
+          });
+        }
+      } catch (error) {
+        console.error("Error parsing stored user data:", error);
+        setLocalAuthState({
+          isLoggedIn: false,
+          user1: null,
+        });
+      }
+    };
 
-  //         // Update state with filtered data
-  //         setFilteredFlightData(filteredData);
-  //         sessionStorage.setItem('filteredFlightData', JSON.stringify(filteredData));
-  //     }
-  // }, [flightData, filters]);
-  if (!filteredFlightData) {
+    checkLocalAuth();
+    // Listen for storage changes (when localStorage is updated from other parts of the app)
+    const handleStorageChange = (e) => {
+      if (e.key === "authToken" || e.key === "user1") {
+        console.log("Header02: Storage changed:", e.key);
+        checkLocalAuth();
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, [googleUser, emailuser, phoneNumber]); // Re-run when Redux auth state changes
+
+  // Listen for custom auth state change events
+  useEffect(() => {
+    const handleAuthStateChange = (e) => {
+      if (e.detail) {
+        setLocalAuthState({
+          isLoggedIn: e.detail.isLoggedIn,
+          user: e.detail.user,
+        });
+      }
+    };
+
+    window.addEventListener("authStateChanged", handleAuthStateChange);
+    return () => {
+      window.removeEventListener("authStateChanged", handleAuthStateChange);
+    };
+  }, []);
+
+  const handleAuthSuccess = useCallback(() => {
+    console.log("Header02: Authentication successful, updating state...");
+    setShowAuthPopup(false);
+
+    setTimeout(() => {
+      const token = localStorage.getItem("authToken");
+      const user = getEncryptedItem("user1");
+      if (token && user) {
+        console.log("Header02: Setting auth state after success:", user);
+        setLocalAuthState({
+          isLoggedIn: true,
+          user,
+        });
+        localStorage.setItem("userloginemail", user.emailuser);
+
+        navigate("/flight-Bookingpage", {
+          state: {
+   selectedFlight
+  },
+        });
+
+        window.dispatchEvent(
+          new CustomEvent("authStateChanged", {
+            detail: { isLoggedIn: true, user },
+          })
+        );
+      }
+    }, 100);
+  }, [navigate, selectedFlight]);
+
+  if (!flightData) {
     return <p>No data available</p>;
   }
   const handleBooking = (flight) => {
-    navigate("/flight-Bookingpage", { state: { flightData: flight } });
+    if (!isLoggedIn) {
+      // Show login popup if not logged in
+      setSelectedFlight({
+    flight: flight,
+    fRequest: flightsearchrequest,
+  });
+      setShowAuthPopup(true);
+      return;
+    }
+    navigate("/flight-Bookingpage", { state: {
+    flight: flight,
+    fRequest: flightsearchrequest,
+  } });
   };
 
-  return (<>
-  {flightData && flightData?.FlightResults &&
-    <div className="row align-items-center g-4 mt-2">
-      <style>
-        {`
+  return (
+    <>
+      {flightData && flightData?.FlightResults && (
+        <div className="row align-items-center g-4 mt-2">
+          <style>
+            {`
                 .no-flight-found-wrapper {
                     display: flex;
                     flex-direction: column;
@@ -154,174 +273,187 @@ const FlightSearchResult = ({ flightData, filters }) => {
         border:transparent;
                 }
             `}
-      </style>
-      {/* Offer Coupon Box */}
-      <div className="col-xl-12 col-lg-12 col-md-12">
-        <div className="d-md-flex bg-success rounded-2 align-items-center justify-content-between px-3 py-3">
-          <div className="d-md-flex align-items-center justify-content-start">
-            <div className="flx-icon-first mb-md-0 mb-3">
-              <div className="square--60 circle bg-white">
-                <i className="fa-solid fa-gift fs-3 text-success" />
-              </div>
-            </div>
-            <div className="flx-caps-first ps-2">
-              <h6 className="fs-5 fw-medium text-light mb-0">
-                Start Exploring The World
-              </h6>
-              <p className="text-light mb-0">
-                Book Flights Effortlessly and Earn $50+ for each booking with
-                SeeMyTrip.com
-              </p>
-            </div>
-          </div>
-          <div className="flx-last text-md-end mt-md-0 mt-4">
-            <button
-              type="button"
-              className="btn btn-black getstarted bg-white border fw-medium full-width  px-xl-4"
-            >
-              Get Started
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Flight List */}
-      {flightData && flightData?.FlightResults?.length > 0 ? (
-        flightData?.FlightResults.map((flight, fixd) => (
-          <div
-            key={flightData?.CurrentPage + "_FRI_" + fixd}
-            className="col-xl-12 col-lg-12 col-md-12"
-          >
-            <div className="flights-list-item">
-              <div className="d-flex align-items-center justify-content-between">
-                {flight.Segments &&
-                  flight.Segments.map((seg, sIdx) => (
-                    <>
-                      <div className="flights-list-item d-block">
-                        {/* Airline Info */}
-                        <div className="airline-section">
-                          <img
-                            className="img-fluid"
-                            src={indigo}
-                            width={35}
-                            alt="Airline Logo"
-                          />
-                          <div>
-                            <div className="text-dark fw-medium">
-                              {" "}
-                              {seg.AirlineName}
-                            </div>
-                            <div className="text-sm text-muted">
-                              {seg.Segments[0]?.Airline?.AirlineCode +
-                                " " +
-                                seg.Segments[0]?.Airline?.FlightNumber +
-                                " " +
-                                seg.Segments[0]?.Airline?.FareClass}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Flight Info */}
-                        <div className="flight-info-section">
-                          {/* Departure */}
-                          <div className="time-airport-group">
-                            <div className="text-dark fw-bold">
-                              {format(
-                                new Date(seg.Segments[0]?.Origin?.DepTime),
-                                "HH:mm"
-                              )}
-                            </div>
-                            <div className="text-muted text-sm">
-                              {seg.Segments[0]?.Origin?.Airport?.AirportCode}
-                            </div>
-                          </div>
-
-                          {/* Duration & Stops */}
-                          <div className="flight-duration-section">
-                            <div className="text-dark small">
-                              {seg.TotalDuraionTime}
-                            </div>
-                            <div className="flightLine"></div>
-                            <div className="text-muted small">
-                              {seg.Stops === 0
-                                ? "Direct"
-                                : seg.Stops
-                                ? `${seg.Stops} Stop${seg.Stops > 1 ? "s" : ""}`
-                                : "Direct"}
-                            </div>
-                          </div>
-
-                          {/* Arrival */}
-                          <div className="time-airport-group">
-                            <div className="text-dark fw-bold">
-                              {format(
-                                new Date(
-                                  seg.Segments[
-                                    seg.Segments.length - 1
-                                  ]?.Destination?.ArrTime
-                                ),
-                                "HH:mm"
-                              )}
-                              {seg.NextDay && seg.NextDay !== "" && (
-                                <div className="small text-danger">
-                                  {seg.NextDay}
-                                </div>
-                              )}
-                            </div>
-                            <div className="text-muted text-sm">
-                              {
-                                seg.Segments[seg.Segments.length - 1]
-                                  ?.Destination?.Airport?.AirportCode
-                              }
-                            </div>
-                            <div className="text-dark">
-                              {seg.Segments[0]?.NoOfSeatAvailable &&
-                                seg.Segments[0]?.NoOfSeatAvailable !== "" &&
-                                seg.Segments[0]?.NoOfSeatAvailable < 15 && (
-                                  <div className="small text-danger">
-                                    {seg.Segments[0]?.NoOfSeatAvailable}
-                                    {" Seat available"}
-                                  </div>
-                                )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  ))}
-
-                {/* Price & Action */}
-                <div className="price-section">
-                  <div className="text-dark fs-5 fw-bold">
-                    {"INR "}
-                    {flight.OfferedFare.toLocaleString()}
+          </style>
+          {/* Offer Coupon Box */}
+          <div className="col-xl-12 col-lg-12 col-md-12">
+            <div className="d-md-flex bg-success rounded-2 align-items-center justify-content-between px-3 py-3">
+              <div className="d-md-flex align-items-center justify-content-start">
+                <div className="flx-icon-first mb-md-0 mb-3">
+                  <div className="square--60 circle bg-white">
+                    <i className="fa-solid fa-gift fs-3 text-success" />
                   </div>
-                  <button
-                    className="btn btn-primary select-flight-btn"
-                    onClick={() => handleBooking(flight)}
-                  >
-                    Select Flight
-                  </button>
+                </div>
+                <div className="flx-caps-first ps-2">
+                  <h6 className="fs-5 fw-medium text-light mb-0">
+                    Start Exploring The World
+                  </h6>
+                  <p className="text-light mb-0">
+                    Book Flights Effortlessly and Earn $50+ for each booking
+                    with SeeMyTrip.com
+                  </p>
                 </div>
               </div>
-              <AccordionApp flight={flight} />
+              <div className="flx-last text-md-end mt-md-0 mt-4">
+                <button
+                  type="button"
+                  className="btn btn-black getstarted bg-white border fw-medium full-width  px-xl-4"
+                >
+                  Get Started
+                </button>
+              </div>
             </div>
-            <div className="text-end"></div>
           </div>
-        ))
-      ) : (
-        <div className="col-12 text-center mt-5">
-          <div className="no-flight-found-wrapper">
-            <i className="fas fa-plane fa-5x text-muted mb-3"></i>
-            <h3 className="text-muted">No Flights Found</h3>
-            <p className="text-muted">
-              Please adjust your search filters or try again later.
-            </p>
-          </div>
+
+          {/* Flight List */}
+          {flightData && flightData?.FlightResults?.length > 0 ? (
+            flightData?.FlightResults.map((flight, fixd) => (
+              <div
+                key={flightData?.CurrentPage + "_FRI_" + fixd}
+                className="col-xl-12 col-lg-12 col-md-12"
+              >
+                <div className="flights-list-item">
+                  <div className="d-flex align-items-center justify-content-between">
+                    {flight.Segments &&
+                      flight.Segments.map((seg, sIdx) => (
+                        <>
+                          <div className="flights-list-item d-block">
+                            {/* Airline Info */}
+                            <div className="airline-section">
+                              <img
+                                className="img-fluid"
+                                src={indigo}
+                                width={35}
+                                alt="Airline Logo"
+                              />
+                              <div>
+                                <div className="text-dark fw-medium">
+                                  {" "}
+                                  {seg.AirlineName}
+                                </div>
+                                <div className="text-sm text-muted">
+                                  {seg.Segments[0]?.Airline?.AirlineCode +
+                                    " " +
+                                    seg.Segments[0]?.Airline?.FlightNumber +
+                                    " " +
+                                    seg.Segments[0]?.Airline?.FareClass}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Flight Info */}
+                            <div className="flight-info-section">
+                              {/* Departure */}
+                              <div className="time-airport-group">
+                                <div className="text-dark fw-bold">
+                                  {format(
+                                    new Date(seg.Segments[0]?.Origin?.DepTime),
+                                    "HH:mm"
+                                  )}
+                                </div>
+                                <div className="text-muted text-sm">
+                                  {
+                                    seg.Segments[0]?.Origin?.Airport
+                                      ?.AirportCode
+                                  }
+                                </div>
+                              </div>
+
+                              {/* Duration & Stops */}
+                              <div className="flight-duration-section">
+                                <div className="text-dark small">
+                                  {seg.TotalDuraionTime}
+                                </div>
+                                <div className="flightLine"></div>
+                                <div className="text-muted small">
+                                  {seg.Stops === 0
+                                    ? "Direct"
+                                    : seg.Stops
+                                    ? `${seg.Stops} Stop${
+                                        seg.Stops > 1 ? "s" : ""
+                                      }`
+                                    : "Direct"}
+                                </div>
+                              </div>
+
+                              {/* Arrival */}
+                              <div className="time-airport-group">
+                                <div className="text-dark fw-bold">
+                                  {format(
+                                    new Date(
+                                      seg.Segments[
+                                        seg.Segments.length - 1
+                                      ]?.Destination?.ArrTime
+                                    ),
+                                    "HH:mm"
+                                  )}
+                                  {seg.NextDay && seg.NextDay !== "" && (
+                                    <div className="small text-danger">
+                                      {seg.NextDay}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="text-muted text-sm">
+                                  {
+                                    seg.Segments[seg.Segments.length - 1]
+                                      ?.Destination?.Airport?.AirportCode
+                                  }
+                                </div>
+                                <div className="text-dark">
+                                  {seg.Segments[0]?.NoOfSeatAvailable &&
+                                    seg.Segments[0]?.NoOfSeatAvailable !== "" &&
+                                    seg.Segments[0]?.NoOfSeatAvailable < 15 && (
+                                      <div className="small text-danger">
+                                        {seg.Segments[0]?.NoOfSeatAvailable}
+                                        {" Seat available"}
+                                      </div>
+                                    )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      ))}
+
+                    {/* Price & Action */}
+                    <div className="price-section">
+                      <div className="text-dark fs-5 fw-bold">
+                        {"INR "}
+                        {flight.OfferedFare.toLocaleString()}
+                      </div>
+                      <button
+                        className="btn btn-primary select-flight-btn"
+                        onClick={() => handleBooking(flight)}
+                      >
+                        Select Flight
+                      </button>
+                    </div>
+                  </div>
+                  <AccordionApp flight={flight} />
+                </div>
+                <div className="text-end"></div>
+              </div>
+            ))
+          ) : (
+            <div className="col-12 text-center mt-5">
+              <div className="no-flight-found-wrapper">
+                <i className="fas fa-plane fa-5x text-muted mb-3"></i>
+                <h3 className="text-muted">No Flights Found</h3>
+                <p className="text-muted">
+                  Please adjust your search filters or try again later.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       )}
-    </div>}
-  </>);
+
+       <AuthPopup
+              isOpen={showAuthPopup}
+              onClose={() => setShowAuthPopup(false)}
+              onAuthSuccess={handleAuthSuccess}
+            />
+    </>
+  );
 };
 
 export default FlightSearchResult;
