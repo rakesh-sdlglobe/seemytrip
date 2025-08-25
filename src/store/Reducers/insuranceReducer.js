@@ -11,18 +11,15 @@ import {
 
 const initialState = {
   // Authentication state
-  isAuthenticating: false,
+  authLoading: false,
   authError: null,
   authData: null,
   
   // Search state
-  isSearching: false,
+  searchLoading: false,
   searchError: null,
   searchResults: [],
   
-  // General state
-  loading: false,
-  error: null
 };
 
 const insuranceReducer = (state = initialState, action) => {
@@ -31,14 +28,14 @@ const insuranceReducer = (state = initialState, action) => {
     case INSURANCE_AUTH_REQUEST:
       return {
         ...state,
-        isAuthenticating: true,
+        authLoading: true,
         authError: null,
       };
 
     case INSURANCE_AUTH_SUCCESS:
       return {
         ...state,
-        isAuthenticating: false,
+        authLoading: false,
         authData: action.payload,
         authError: null,
       };
@@ -46,7 +43,7 @@ const insuranceReducer = (state = initialState, action) => {
     case INSURANCE_AUTH_FAILURE:
       return {
         ...state,
-        isAuthenticating: false,
+        authLoading: false,
         authError: action.payload,
       };
 
@@ -54,14 +51,14 @@ const insuranceReducer = (state = initialState, action) => {
     case INSURANCE_SEARCH_REQUEST:
       return {
         ...state,
-        isSearching: true,
+        searchLoading: true,
         searchError: null,
       };
 
     case INSURANCE_SEARCH_SUCCESS:
       return {
         ...state,
-        isSearching: false,
+        searchLoading: false,
         searchResults: action.payload,
         searchError: null,
       };
@@ -69,7 +66,7 @@ const insuranceReducer = (state = initialState, action) => {
     case INSURANCE_SEARCH_FAILURE:
       return {
         ...state,
-        isSearching: false,
+        searchLoading: false,
         searchError: action.payload,  
       };
 
@@ -78,8 +75,7 @@ const insuranceReducer = (state = initialState, action) => {
       return {
         ...state,   
         authError: null,
-        searchError: null,
-        error: null
+        searchError: null
       };
 
     case CLEAR_INSURANCE_DATA:
