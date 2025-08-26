@@ -302,17 +302,47 @@ export const HotelSearchbar = ({
     if (savedSearchParams) {
       try {
         const params = JSON.parse(savedSearchParams);
-        setSelectedCity(params?.selectedCity || null);
-        setStartDate(params?.checkInDate ? new Date(params.checkInDate) : null);
-        setEndDate(params?.checkOutDate ? new Date(params.checkOutDate) : null);
-        setRoomsData(
-          params?.roomsData || [
+        
+        // Check if dates are still valid (not in the past)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time to start of day for accurate comparison
+        
+        const checkInDate = params?.checkInDate ? new Date(params.checkInDate) : null;
+        const checkOutDate = params?.checkOutDate ? new Date(params.checkOutDate) : null;
+        
+        // Check if dates are valid (not in the past)
+        const isCheckInValid = checkInDate && checkInDate >= today;
+        const isCheckOutValid = checkOutDate && checkOutDate >= today;
+        
+        if (isCheckInValid && isCheckOutValid) {
+          // Dates are valid, use the localStorage data
+          setSelectedCity(params?.selectedCity || null);
+          setStartDate(checkInDate);
+          setEndDate(checkOutDate);
+          setRoomsData(
+            params?.roomsData || [
+              { RoomNo: 1, Adults: 1, Children: 0, Paxs: null },
+            ]
+          );
+        } else {
+          // Dates are invalid (in the past), clear localStorage and reset form
+          localStorage.removeItem("hotelSearchParams");
+          setSelectedCity(null);
+          setStartDate(null);
+          setEndDate(null);
+          setRoomsData([
             { RoomNo: 1, Adults: 1, Children: 0, Paxs: null },
-          ]
-        );
+          ]);
+        }
       } catch (e) {
-        // If JSON is invalid, clear the localStorage key
+        // If JSON is invalid, clear the localStorage key and reset form
         localStorage.removeItem("hotelSearchParams");
+        setSelectedCity(null);
+        setStartDate(null);
+        setEndDate(null);
+        setRoomsData([
+          { RoomNo: 1, Adults: 1, Children: 0, Paxs: null },
+        ]);
       }
     }
   }, [location]);
