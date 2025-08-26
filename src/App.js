@@ -56,9 +56,9 @@ import MedicalTrourism from "./components/Home-Medicaltourism.jsx";
 import HomeRental from "./components/home-rental";
 import HomeStay from "./components/home-stay";
 import HomeBus from "./components/homebus.jsx";
-import HomeInsurance from "./components/insurance/home-insurance.jsx";
-import InsuranceDetail from "./components/insurance-detail.jsx";
-import InsurancePayment from "./components/insurance-payment.jsx";
+// import HomeInsurance from "./components/insurance/home-insurance.jsx";
+// import InsuranceDetail from "./components/insurance-detail.jsx";
+// import InsurancePayment from "./components/insurance-payment.jsx";
 import HotelDetail02 from "./components/hotel-detail-2";
 import HotelList03 from "./components/hotel-list-03.jsx";
 import { HotelBookingPage } from "./components/hotel_components/BookingPage.jsx";
@@ -257,9 +257,9 @@ function App() {
           <Route path="/bus-confirmation" element={<Bus_Comfirmation_Page/>} />
 
           {/* Insurance Routes */}
-          <Route path="/home-insurance" element={<HomeInsurance />} />
+          {/* <Route path="/home-insurance" element={<HomeInsurance />} />
           <Route path="/insurance-detail" element={<InsuranceDetail />} />
-          <Route path="/insurance-payment" element={<InsurancePayment />} />
+          <Route path="/insurance-payment" element={<InsurancePayment />} /> */}
 
           {/* Cruise Routes */}
           <Route path="/home-cruise" element={<HomeCruise />} />
