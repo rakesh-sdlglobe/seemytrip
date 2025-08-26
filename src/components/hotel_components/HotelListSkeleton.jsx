@@ -15,7 +15,7 @@ const SkeletonCard = () => (
   </div>
 );
 
-const HotelListSkeleton = ({ count = 6 }) => (
+const HotelListSkeleton = ({ count = 3 }) => (
   <div className="skeleton-list">
     {Array.from({ length: count }).map((_, i) => (
       <SkeletonCard key={i} />
