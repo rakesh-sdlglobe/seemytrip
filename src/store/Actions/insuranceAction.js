@@ -9,6 +9,10 @@ export const INSURANCE_SEARCH_REQUEST = 'INSURANCE_SEARCH_REQUEST';
 export const INSURANCE_SEARCH_SUCCESS = 'INSURANCE_SEARCH_SUCCESS';
 export const INSURANCE_SEARCH_FAILURE = 'INSURANCE_SEARCH_FAILURE';
 
+export const INSURANCE_BOOK_REQUEST = 'INSURANCE_BOOK_REQUEST';
+export const INSURANCE_BOOK_SUCCESS = 'INSURANCE_BOOK_SUCCESS';
+export const INSURANCE_BOOK_FAILURE = 'INSURANCE_BOOK_FAILURE';
+
 export const CLEAR_INSURANCE_ERROR = 'CLEAR_INSURANCE_ERROR';
 export const CLEAR_INSURANCE_DATA = 'CLEAR_INSURANCE_DATA';
 
@@ -41,6 +45,20 @@ export const insuranceSearchSuccess = (data) => ({
 
 export const insuranceSearchFailure = (error) => ({
   type: INSURANCE_SEARCH_FAILURE,
+  payload: error
+});
+
+export const insuranceBookRequest = () => ({
+  type: INSURANCE_BOOK_REQUEST
+});
+
+export const insuranceBookSuccess = (data) => ({
+  type: INSURANCE_BOOK_SUCCESS,
+  payload: data
+});
+
+export const insuranceBookFailure = (error) => ({
+  type: INSURANCE_BOOK_FAILURE,
   payload: error
 });
 
@@ -108,6 +126,43 @@ export const getInsuranceList = (searchData) => async (dispatch, getState) => {
     throw new Error(errorMessage);
   }
 };
+
+
+// Book Insurance
+export const bookInsurance = (bookingData) => async (dispatch, getState) => {
+  try {
+    dispatch(insuranceBookRequest());
+    
+    // Get token from state if available
+    const { insurance } = getState();
+    const tokenData = insurance.authData;
+    
+    if (!tokenData || !tokenData.TokenId) {
+      // If no token, authenticate first
+      await dispatch(authenticateInsuranceAPI());
+      const updatedState = getState();
+      bookingData.TokenId = updatedState.insurance.authData.TokenId;
+      bookingData.EndUserIp = updatedState.insurance.authData.EndUserIp;
+    } else {
+      bookingData.TokenId = tokenData.TokenId;
+      bookingData.EndUserIp = tokenData.EndUserIp;
+    }
+    
+    const response = await axios.post(`${API_URL}/insurance/GetInsuranceBook`, bookingData);
+    
+    if (response.data) {
+      dispatch(insuranceBookSuccess(response.data));
+      return response.data;
+    } else {
+      throw new Error('Invalid response from insurance booking API');
+    }
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || error.message || 'Insurance booking failed';
+    dispatch(insuranceBookFailure(errorMessage));
+    throw new Error(errorMessage);
+  }
+};
+
 
 // Clear insurance data and errors
 export const resetInsuranceState = () => (dispatch) => {
