@@ -8,6 +8,15 @@ import {
   INSURANCE_BOOK_REQUEST,
   INSURANCE_BOOK_SUCCESS,
   INSURANCE_BOOK_FAILURE,
+  INSURANCE_POLICY_REQUEST,
+  INSURANCE_POLICY_SUCCESS,
+  INSURANCE_POLICY_FAILURE,
+  INSURANCE_BOOKING_DETAILS_REQUEST,
+  INSURANCE_BOOKING_DETAILS_SUCCESS,
+  INSURANCE_BOOKING_DETAILS_FAILURE,
+  INSURANCE_CANCEL_REQUEST,
+  INSURANCE_CANCEL_SUCCESS,
+  INSURANCE_CANCEL_FAILURE,
   CLEAR_INSURANCE_ERROR,
   CLEAR_INSURANCE_DATA
 } from '../Actions/insuranceAction';
@@ -15,19 +24,37 @@ import {
 const initialState = {
   // Authentication state
   authLoading: false,
-  authError: null,
   authData: null,
+  authError: null,
   
   // Search state
   searchLoading: false,
+  searchData: null,
   searchError: null,
-  searchResults: [],
-
-    // Booking state
-    bookLoading: false,
-    bookData: null,
-    bookError: null,
   
+  // Booking state
+  bookLoading: false,
+  bookData: null,
+  bookError: null,
+  
+  // Policy state
+  policyLoading: false,
+  policyData: null,
+  policyError: null,
+  
+  // Booking details state
+  bookingDetailsLoading: false,
+  bookingDetailsData: null,
+  bookingDetailsError: null,
+  
+  // Cancel state
+  cancelLoading: false,
+  cancelData: null,
+  cancelError: null,
+  
+  // General state
+  isAuthenticated: false,
+  lastAction: null
 };
 
 const insuranceReducer = (state = initialState, action) => {
@@ -38,47 +65,55 @@ const insuranceReducer = (state = initialState, action) => {
         ...state,
         authLoading: true,
         authError: null,
+        lastAction: 'AUTH_REQUEST'
       };
-
+      
     case INSURANCE_AUTH_SUCCESS:
       return {
         ...state,
         authLoading: false,
         authData: action.payload,
         authError: null,
+        isAuthenticated: true,
+        lastAction: 'AUTH_SUCCESS'
       };
-
+      
     case INSURANCE_AUTH_FAILURE:
       return {
         ...state,
         authLoading: false,
         authError: action.payload,
+        isAuthenticated: false,
+        lastAction: 'AUTH_FAILURE'
       };
-
+      
     // Search cases
     case INSURANCE_SEARCH_REQUEST:
       return {
         ...state,
         searchLoading: true,
         searchError: null,
+        lastAction: 'SEARCH_REQUEST'
       };
-
+      
     case INSURANCE_SEARCH_SUCCESS:
       return {
         ...state,
         searchLoading: false,
-        searchResults: action.payload,
+        searchData: action.payload,
         searchError: null,
+        lastAction: 'SEARCH_SUCCESS'
       };
-
+      
     case INSURANCE_SEARCH_FAILURE:
       return {
         ...state,
         searchLoading: false,
-        searchError: action.payload,  
+        searchError: action.payload,
+        lastAction: 'SEARCH_FAILURE'
       };
-
-       // Booking cases
+      
+    // Booking cases
     case INSURANCE_BOOK_REQUEST:
       return {
         ...state,
@@ -103,23 +138,107 @@ const insuranceReducer = (state = initialState, action) => {
         bookError: action.payload,
         lastAction: 'BOOK_FAILURE'
       };
-
-
-    // Utility cases
+      
+    // Policy cases
+    case INSURANCE_POLICY_REQUEST:
+      return {
+        ...state,
+        policyLoading: true,
+        policyError: null,
+        lastAction: 'POLICY_REQUEST'
+      };
+      
+    case INSURANCE_POLICY_SUCCESS:
+      return {
+        ...state,
+        policyLoading: false,
+        policyData: action.payload,
+        policyError: null,
+        lastAction: 'POLICY_SUCCESS'
+      };
+      
+    case INSURANCE_POLICY_FAILURE:
+      return {
+        ...state,
+        policyLoading: false,
+        policyError: action.payload,
+        lastAction: 'POLICY_FAILURE'
+      };
+      
+    // Booking details cases
+    case INSURANCE_BOOKING_DETAILS_REQUEST:
+      return {
+        ...state,
+        bookingDetailsLoading: true,
+        bookingDetailsError: null,
+        lastAction: 'BOOKING_DETAILS_REQUEST'
+      };
+      
+    case INSURANCE_BOOKING_DETAILS_SUCCESS:
+      return {
+        ...state,
+        bookingDetailsLoading: false,
+        bookingDetailsData: action.payload,
+        bookingDetailsError: null,
+        lastAction: 'BOOKING_DETAILS_SUCCESS'
+      };
+      
+    case INSURANCE_BOOKING_DETAILS_FAILURE:
+      return {
+        ...state,
+        bookingDetailsLoading: false,
+        bookingDetailsError: action.payload,
+        lastAction: 'BOOKING_DETAILS_FAILURE'
+      };
+      
+    // Cancel cases
+    case INSURANCE_CANCEL_REQUEST:
+      return {
+        ...state,
+        cancelLoading: true,
+        cancelError: null,
+        lastAction: 'CANCEL_REQUEST'
+      };
+      
+    case INSURANCE_CANCEL_SUCCESS:
+      return {
+        ...state,
+        cancelLoading: false,
+        cancelData: action.payload,
+        cancelError: null,
+        lastAction: 'CANCEL_SUCCESS'
+      };
+      
+    case INSURANCE_CANCEL_FAILURE:
+      return {
+        ...state,
+        cancelLoading: false,
+        cancelError: action.payload,
+        lastAction: 'CANCEL_FAILURE'
+      };
+      
+    // Clear cases
     case CLEAR_INSURANCE_ERROR:
       return {
-        ...state,   
+        ...state,
         authError: null,
-        searchError: null
+        searchError: null,
+        bookError: null,
+        policyError: null,
+        bookingDetailsError: null,
+        cancelError: null
       };
-
+      
     case CLEAR_INSURANCE_DATA:
       return {
         ...state,
-        searchResults: [],
-        authData: null
+        searchData: null,
+        bookData: null,
+        policyData: null,
+        bookingDetailsData: null,
+        cancelData: null
       };
-
+      
     default:
       return state;
   }
