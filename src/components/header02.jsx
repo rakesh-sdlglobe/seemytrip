@@ -166,7 +166,7 @@ const Header02 = () => {
     { to: "/home-hotel", icon: "fa-solid fa-hotel", text: "Hotels" },
     { to: "/home-car", icon: "fa-solid fa-car", text: "Cabs" },
     { to: "/home-cruise", icon: "fa-solid fa-ship", text: "Cruises" },
-
+    { to: "/home-insurance", icon: "fa-solid fa-shield-halved", text: "Insurance" },
     { to: "/packages", icon: "fa-solid fa-suitcase-rolling", text: "Packages" },
   ];
 

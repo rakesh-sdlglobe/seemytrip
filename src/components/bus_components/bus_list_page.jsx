@@ -9,18 +9,18 @@ import { useSelector } from 'react-redux';
 import { selectBusSearchList, selectBusSearchLoading } from '../../store/Selectors/busSelectors';
 
 const defaultFilters = {
-  busTypes: [],
-  wifi: false,
-  charging: false,
-  snacks: false,
-  rating45: false,
-  rating4: false,
-  rating35: false,
-  departureTimes: [],
-  arrivalTimes: [],
-  pickupPoints: [],
-  droppingPoints: [],
-  priceSort: '', // <-- add this
+    busTypes: [],
+    wifi: false,
+    charging: false,
+    snacks: false,
+    rating45: false,
+    rating4: false,
+    rating35: false,
+    departureTimes: [],
+    arrivalTimes: [],
+    pickupPoints: [],
+    droppingPoints: [],
+    priceSort: '', // <-- add this
 };
 
 const BusList = () => {
@@ -69,8 +69,8 @@ const BusList = () => {
                 </div>
                 {/*  Hero Banner End  */}
                 {/*  Searches List Start  */}
-                <section className="gray-simple">
-                    <div className="container">
+                <section className="gray-simple" >
+                    <div className="container-xl" >
                         <div className="row justify-content-between gy-4 gx-xl-4 gx-lg-3 gx-md-3 gx-4">
                             {/* Sidebar */}
                             <BusFilterPage

@@ -9,7 +9,8 @@ const BoardingPointsPage = ({
   selectedDropping,
   onBoardingChange,
   onDroppingChange,
-  showContactInfo = true
+  showContactInfo = true,
+  hideHeadings = false
 }) => { 
   const navigate = useNavigate();
   
@@ -295,10 +296,12 @@ const BoardingPointsPage = ({
       {/* Boarding Points Section */}
       {processedBoardingPoints.length > 0 && (
         <div>
-          <h5 className="section-title">
-            <FaMapMarkerAlt className="text-primary" />
-            Boarding Points
-          </h5>
+          {!hideHeadings && (
+            <h5 className="section-title">
+              <FaMapMarkerAlt className="text-primary" />
+              Boarding Points
+            </h5>
+          )}
 
           {/* Boarding Points Search */}
           <div className="search-container">
@@ -370,10 +373,12 @@ const BoardingPointsPage = ({
       {/* Dropping Points Section */}
       {processedDroppingPoints.length > 0 && (
         <div>
-          <h5 className="section-title">
-            <FaMapMarkerAlt className="text-primary" />
-            Dropping Points
-          </h5>
+          {!hideHeadings && (
+            <h5 className="section-title">
+              <FaMapMarkerAlt className="text-primary" />
+              Dropping Points
+            </h5>
+          )}
 
           {/* Dropping Points Search */}
           <div className="search-container">

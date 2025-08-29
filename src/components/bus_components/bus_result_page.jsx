@@ -130,7 +130,7 @@ const BusResultPage = ({ filters }) => {
   const seatLayoutLoading = useSelector(selectBusSeatLayoutLoading);
   const busResults = searchList?.BusSearchResult?.BusResults || [];
   const [openSeatIndex, setOpenSeatIndex] = useState(null);
-  
+
   // Add pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -197,9 +197,9 @@ const BusResultPage = ({ filters }) => {
   // Add a function to clean up bus type
   const cleanBusType = (busType) => {
     if (!busType) return "";
-    
+
     let result = [];
-    
+
     // Check for A/C or Non A/C - look for explicit "Non A/C" first
     if (busType.toLowerCase().includes('non a/c') || busType.toLowerCase().includes('non ac')) {
       result.push('Non A/C');
@@ -208,7 +208,7 @@ const BusResultPage = ({ filters }) => {
     } else {
       result.push('Non A/C');
     }
-    
+
     // Check for Sleeper types - handle both Sleeper and Semi Sleeper
     if (busType.toLowerCase().includes('sleeper')) {
       if (busType.toLowerCase().includes('sleeper/semi sleeper') || busType.toLowerCase().includes('sleeper semi sleeper')) {
@@ -216,11 +216,11 @@ const BusResultPage = ({ filters }) => {
       }
       else if (busType.toLowerCase().includes('semi sleeper') || busType.toLowerCase().includes('semi-sleeper')) {
         result.push('Semi Sleeper');
-      }  else {
+      } else {
         result.push('Sleeper');
       }
     }
-    
+
     // Check for Seater types - handle both Seater and Pushback
     if (busType.toLowerCase().includes('seater')) {
       if (busType.toLowerCase().includes('seater/pushback') || busType.toLowerCase().includes('seater pushback')) {
@@ -232,36 +232,36 @@ const BusResultPage = ({ filters }) => {
         result.push('Seater');
       }
     }
-    
+
     return result.join(' ');
   };
 
-  // Get boarding and dropping points from current bus data
-  const getBoardingPoints = (bus) => {
-    if (!bus || !bus.BoardingPointsDetails || bus.BoardingPointsDetails.length === 0) {
-      return [];
-    }
-    
-    return bus.BoardingPointsDetails.map(point => ({
-      location: point.CityPointName,
-      time: point.CityPointTime,
-      phone: '7303093510',
-      address: point.CityPointLocation || ''
-    }));
-  };
+  // // Get boarding and dropping points from current bus data
+  // const getBoardingPoints = (bus) => {
+  //   if (!bus || !bus.BoardingPointsDetails || bus.BoardingPointsDetails.length === 0) {
+  //     return [];
+  //   }
 
-  const getDroppingPoints = (bus) => {
-    if (!bus || !bus.DroppingPointsDetails || bus.DroppingPointsDetails.length === 0) {
-      return [];
-    }
-    
-    return bus.DroppingPointsDetails.map(point => ({
-      location: point.CityPointName,
-      time: point.CityPointTime,
-      address: point.CityPointLocation || '',
-      note: point.CityPointLocation || ''
-    }));
-  };
+  //   return bus.BoardingPointsDetails.map(point => ({
+  //     location: point.CityPointName,
+  //     time: point.CityPointTime,
+  //     phone: '7303093510',
+  //     address: point.CityPointLocation || ''
+  //   }));
+  // };
+
+  // const getDroppingPoints = (bus) => {
+  //   if (!bus || !bus.DroppingPointsDetails || bus.DroppingPointsDetails.length === 0) {
+  //     return [];
+  //   }
+
+  //   return bus.DroppingPointsDetails.map(point => ({
+  //     location: point.CityPointName,
+  //     time: point.CityPointTime,
+  //     address: point.CityPointLocation || '',
+  //     note: point.CityPointLocation || ''
+  //   }));
+  // };
 
   const getHour = (dateTimeStr) => {
     if (!dateTimeStr) return null;
@@ -287,9 +287,9 @@ const BusResultPage = ({ filters }) => {
   // Check if bus has matching pickup points
   const hasMatchingPickupPoints = (bus) => {
     if (!filters.pickupPoints || filters.pickupPoints.length === 0) return true;
-    
+
     const busPickupPoints = bus.BoardingPointsDetails?.map(point => point.CityPointName) || [];
-    return filters.pickupPoints.some(selectedPoint => 
+    return filters.pickupPoints.some(selectedPoint =>
       busPickupPoints.includes(selectedPoint)
     );
   };
@@ -297,9 +297,9 @@ const BusResultPage = ({ filters }) => {
   // Check if bus has matching dropping points
   const hasMatchingDroppingPoints = (bus) => {
     if (!filters.droppingPoints || filters.droppingPoints.length === 0) return true;
-    
+
     const busDroppingPoints = bus.DroppingPointsDetails?.map(point => point.CityPointName) || [];
-    return filters.droppingPoints.some(selectedPoint => 
+    return filters.droppingPoints.some(selectedPoint =>
       busDroppingPoints.includes(selectedPoint)
     );
   };
@@ -308,39 +308,39 @@ const BusResultPage = ({ filters }) => {
     // Bus type filtering - improved logic for combinations
     if (filters.busTypes.length > 0) {
       const busType = bus.BusType ? bus.BusType.toLowerCase() : '';
-      
+
       // Check if bus matches ALL selected filter types (AND logic, not OR)
       const hasMatchingType = filters.busTypes.every(filterType => {
         const filterTypeLower = filterType.toLowerCase();
-        
+
         // Handle AC/Non-AC filtering more precisely
         if (filterTypeLower === 'ac') {
           // Only match if bus type contains A/C but NOT "Non A/C"
-          return (busType.includes('a/c') || busType.includes('ac')) && 
-                 !busType.includes('non a/c') && 
-                 !busType.includes('nonac');
+          return (busType.includes('a/c') || busType.includes('ac')) &&
+            !busType.includes('non a/c') &&
+            !busType.includes('nonac');
         }
-        
+
         if (filterTypeLower === 'nonac') {
           // Only match if bus type contains "Non A/C" or doesn't contain A/C at all
-          return busType.includes('non a/c') || 
-                 busType.includes('nonac') || 
-                 (!busType.includes('a/c') && !busType.includes('ac'));
+          return busType.includes('non a/c') ||
+            busType.includes('nonac') ||
+            (!busType.includes('a/c') && !busType.includes('ac'));
         }
-        
+
         // Handle other filter types
         if (filterTypeLower === 'sleeper') {
           return busType.includes('sleeper') && !busType.includes('semi sleeper');
         }
-        
+
         if (filterTypeLower === 'semisleeper') {
           return busType.includes('semi sleeper') || busType.includes('semi-sleeper');
         }
-        
+
         // Default matching for other types
         return busType.includes(filterTypeLower.replace(/[\s\-]/g, ''));
       });
-      
+
       if (!hasMatchingType) {
         return false;
       }
@@ -420,8 +420,24 @@ const BusResultPage = ({ filters }) => {
   // Get paginated results
   const paginatedResults = sortedResults.slice(0, currentPage * ITEMS_PER_PAGE);
 
+  // Filter by travel name (case-insensitive)
+  const [travelNameFilter, setTravelNameFilter] = useState("");
+  const filteredPaginatedResults = paginatedResults.filter(bus =>
+    bus.TravelName?.toLowerCase().includes(travelNameFilter.toLowerCase())
+  );
+
   return (
-    <div className="col-xl-9 col-lg-5 col-md-0 mt-lg-0">
+    <div className="col-xl-9 col-lg-8 col-md-12 ">
+      {/* Travel Name Filter Search Bar */}
+      <div className="mb-1">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Search by Travel Name..."
+          value={travelNameFilter}
+          onChange={e => setTravelNameFilter(e.target.value)}
+        />
+      </div>
       {/* <div className="row align-items-center justify-content-between">
         <div className="col-xl-4 col-lg-4 col-md-4">
           <h5 className="fw-bold fs-6 mb-lg-0 mb-3">
@@ -445,57 +461,37 @@ const BusResultPage = ({ filters }) => {
           </>
         ) : (
           <>
-            {paginatedResults.map((bus, index) => {
+            {filteredPaginatedResults.map((bus, index) => {
               const dep = formatDateTime(bus.DepartureTime);
               const arr = formatDateTime(bus.ArrivalTime);
               const duration = getDuration(bus.DepartureTime, bus.ArrivalTime);
-              const isLastElement = index === paginatedResults.length - 1;
+              const isLastElement = index === filteredPaginatedResults.length - 1;
 
               return (
                 <div
                   ref={isLastElement ? lastBusElementRef : null}
-                  className="border rounded p-3 mb-3 bg-white"
+                  className="border rounded p-3 mb-3 bg-white "
                   style={{ borderColor: "#007bff" }}
                   key={`${bus.TravelName}-${index}`}
                 >
                   <div className="d-flex justify-content-between align-items-start flex-wrap position-relative">
-                    {/* Left */}
-                    <div className="flex-grow-1">
-                      <h5 className="fw-bold mb-1">{bus.TravelName}</h5>
-                      <p className="text-muted mb-2">{cleanBusType(bus.BusType)}</p>
-
-                      <div className="d-flex align-items-center mb-2">
-                        <span
-                          className="bg-primary text-white px-2 py-1 rounded me-2"
-                          style={{ fontSize: "0.8rem" }}
-                        >
-                          ★ 4.2
-                        </span>
-                        <span
-                          className="text-muted"
-                          style={{ fontSize: "0.9rem" }}
-                        >
-                          103 Reviews
-                        </span>
+                    {/* top */}
+                    <div className="flex" style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      width: "100%",
+                    }}>
+                      <div>
+                        <h5 className="fw-bold mb-1">{bus.TravelName}</h5>
+                        <p className="text-muted mb-2">{cleanBusType(bus.BusType)}</p>
                       </div>
-                      <button className="btn btn-outline-secondary btn-sm px-3 py-1">
-                        On Time
-                      </button>
-
-                      
+                      <div className="fw-bold fs-4 mb-3">
+                        ₹{bus.BusPrice?.PublishedPriceRoundedOff || "-"}
+                      </div>
                     </div>
 
                     {/* Middle (Positioned absolutely in center - Horizontal layout) */}
-                    <div
-                      className="position-absolute d-flex align-items-center justify-content-center"
-                      style={{
-                        left: "50%",
-                        top: "50%",
-                        transform: "translate(-50%, -50%)",
-                        minWidth: 200,
-                        pointerEvents: "none"
-                      }}
-                    >
+                    <div className="middle-section">
                       <div className="text-center me-4">
                         <div className="fw-bold">{dep.time}</div>
                         <div className="text-muted small">{dep.date}</div>
@@ -509,28 +505,48 @@ const BusResultPage = ({ filters }) => {
                       </div>
                     </div>
 
-                    {/* Right */}
-                    <div className="text-end flex-grow-1">
-                      <div className="fw-bold fs-4 mb-3">
-                        ₹{bus.BusPrice?.PublishedPriceRoundedOff || "-"}
+                    {/* bottom */}
+                    <div className="d-flex justify-content-between w-100">
+                      <div>
+                        <div className="d-flex align-items-center mb-2">
+                          <span
+                            className="bg-primary text-white px-2 py-1 rounded me-2"
+                            style={{ fontSize: "0.8rem" }}
+                          >
+                            ★ 4.2
+                          </span>
+                          <span
+                            className="text-muted"
+                            style={{ fontSize: "0.9rem" }}
+                          >
+                            103 Reviews
+                          </span>
+                        </div>
+                        <button className="btn btn-outline-secondary btn-sm px-3 py-1">
+                          On Time
+                        </button>
                       </div>
-                      <div className="text-muted mb-2">
-                        {bus.AvailableSeats} Seats Left
+
+
+                      <div>
+                        <div className="text-muted mb-2">
+                          {bus.AvailableSeats} Seats Left
+                        </div>
+                        <button
+                          className="btn btn-danger hover-btn-color-white"
+                          onClick={() => handleSeatToggle(bus, index)}
+                          disabled={seatLayoutLoading && openSeatIndex === index}
+                        >
+                          {seatLayoutLoading && openSeatIndex === index ? (
+                            <>
+                              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                              Loading Seats...
+                            </>
+                          ) : (
+                            openSeatIndex === index ? "Hide Seats" : "Show Seats"
+                          )}
+                        </button>
                       </div>
-                      <button
-                        className="btn btn-secondary"
-                        onClick={() => handleSeatToggle(bus, index)}
-                        disabled={seatLayoutLoading && openSeatIndex === index}
-                      >
-                        {seatLayoutLoading && openSeatIndex === index ? (
-                          <>
-                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                            Loading Seats...
-                          </>
-                        ) : (
-                          openSeatIndex === index ? "Hide Seats" : "Show Seats"
-                        )}
-                      </button>
                     </div>
                   </div>
 
@@ -543,16 +559,16 @@ const BusResultPage = ({ filters }) => {
                 </div>
               );
             })}
-            
+
             {/* Loading more indicator */}
             {isLoadingMore && (
               <div className="col-xl-12">
                 <ResultSkeleton />
               </div>
             )}
-            
-       
-            
+
+
+
           </>
         )}
       </div>
@@ -566,7 +582,27 @@ const BusResultPage = ({ filters }) => {
           0% { background-color: #eee; }
           100% { background-color: #e0e0e0; }
         }
-      `}</style>
+
+        .middle-section{
+           display: flex;
+           justify-Content: center;
+           align-Items: center;
+           width: 100%;
+           position: absolute;
+           top: 50%;
+           bottom: 50%;
+        }
+
+        /* When screen is between 600px and 1200px → absolute */
+      @media (max-width: 560px) {
+      .middle-section {
+        position: static;
+        margin-bottom:10px;
+        }
+        }
+      `}
+
+      </style>
     </div>
   );
 };
