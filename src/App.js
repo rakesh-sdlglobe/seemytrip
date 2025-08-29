@@ -270,6 +270,9 @@ function App() {
             element={<CruiseBookingPayment />}
           />
 
+
+          {/* Medical Tourism Routes */}
+
           {/* Tourism Routes */}
           <Route path="/home-businesstourism" element={<BusinessTrourism />} />
           <Route path="/btbookingpage" element={<BtBookingPage />} />
