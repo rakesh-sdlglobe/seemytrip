@@ -1697,30 +1697,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
         </>
       )}
 
-      {selectedSeats.length > 0 && activeTab === "seat" && (
-        <div
-          style={{
-            position: "fixed",
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 9999,
-            color: "white",
-            padding: "16px 0",
-            background:"#fb6666",
-            textAlign: "center",
-            boxShadow: "0 -2px 10px rgba(0,0,0,0.15)",
-          }}
-        >
-          <button
-            className="btn btn-light"
-            style={{ fontWeight: 600, fontSize: 18 }}
-            onClick={() => setActiveTab("boarding")}
-          >
-            Select Boarding & Dropping Point
-          </button>
-        </div>
-      )}
+
 
       {activeTab === "boarding" && (
         <div

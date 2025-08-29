@@ -9,6 +9,9 @@ export const FETCH_FLIGHT_RESULTS_SUCCESS = "FETCH_FLIGHT_RESULTS_SUCCESS";
 export const FETCH_FLIGHT_LIST_PAGINATION_SUCCESS =
   "FETCH_FLIGHT_LIST_PAGINATION_SUCCESS";
 export const FETCH_FLIGHT_RESULTS_FAILURE = "FETCH_FLIGHT_RESULTS_FAILURE";
+export const FETCH_FLIGHT_PRICEVALIDATE_REQUEST = "FETCH_FLIGHT_PRICEVALIDATE_REQUEST";
+export const FETCH_FLIGHT_PRICEVALIDATE_SUCCESS = "FETCH_FLIGHT_PRICEVALIDATE_SUCCESS";
+export const FETCH_FLIGHT_PRICEVALIDATE_FAILURE = "FETCH_FLIGHT_PRICEVALIDATE_FAILURE";
 
 export const fetchFlightsAirportRequest = () => ({
   type: FETCH_FLIGHT_AIRPORTS_REQUEST,
@@ -85,6 +88,47 @@ export const fetchFlightsResultsList = (searchrequest) => {
     } catch (err) {
       dispatch(
         fetchFlightsResultsFailure(err.message || "Something went wrong")
+      );
+      throw err;
+    }
+  };
+};
+
+export const fetchFlightPriceValidateRequest = () => ({
+  type: FETCH_FLIGHT_PRICEVALIDATE_REQUEST,
+});
+
+export const fetchFlightPriceValidateSuccess = (data) => ({
+  type: FETCH_FLIGHT_PRICEVALIDATE_SUCCESS,
+   payload: data,
+});
+
+export const fetchFlightPriceValidateFailure = (error) => ({
+    type: FETCH_FLIGHT_PRICEVALIDATE_FAILURE,
+   payload: error,
+});
+
+export const fetchFlightsPriceValidate = (searchrequest) => {
+  return async (dispatch) => {
+    dispatch(fetchFlightPriceValidateRequest());
+    try {
+      const payload = searchrequest;
+
+      console.log("Final Payload to API:", payload);
+
+      const response = await axios.post(
+        `http://localhost:3002/api/flights/getFlightPriceValidate`,
+        payload
+      );
+      console.log("Data from fetchFlightsPriceValidate API:", response.data);
+      
+      dispatch(fetchFlightPriceValidateSuccess(response.data));
+      
+
+      return response.data;
+    } catch (err) {
+      dispatch(
+        fetchFlightPriceValidateFailure(err.message || "Something went wrong")
       );
       throw err;
     }
