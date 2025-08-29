@@ -33,8 +33,6 @@ import CruiseBookingPage from "./components/cruise_components/Cruise_booking_pag
 import CruiseList from "./components/cruise_components/Cruise_list_page.jsx";
 import DeleteAccount from "./components/delete-account.jsx";
 import Destination01 from "./components/destination-01";
-
-
 import Destination02 from "./components/destination-02";
 import Destination03 from "./components/destination-03";
 import DestinationDetail from "./components/destination-detail";
@@ -58,6 +56,9 @@ import MedicalTrourism from "./components/Home-Medicaltourism.jsx";
 import HomeRental from "./components/home-rental";
 import HomeStay from "./components/home-stay";
 import HomeBus from "./components/homebus.jsx";
+// import HomeInsurance from "./components/insurance/home-insurance.jsx";
+// import InsuranceDetail from "./components/insurance-detail.jsx";
+// import InsurancePayment from "./components/insurance-payment.jsx";
 import HotelDetail02 from "./components/hotel-detail-2";
 import HotelList03 from "./components/hotel-list-03.jsx";
 import { HotelBookingPage } from "./components/hotel_components/BookingPage.jsx";
@@ -239,7 +240,6 @@ function App() {
           {/* Car & Cab Routes */}
           <Route path="/home-car" element={<HomeCar />} />
           <Route path="/car-list-01" element={<CarList01 />} />
-          
           <Route path="/car-list-02" element={<CarList02 />} />
           <Route path="/car-list-03" element={<CarList03 />} />
           <Route path="/car-detail" element={<CarDetails />} />
@@ -255,6 +255,11 @@ function App() {
           <Route path="/boarding-points" element={<BoardingPointsPage />} />
           <Route path="/busBookingpayment" element={<BusBookingPayment />} />
           <Route path="/bus-confirmation" element={<Bus_Comfirmation_Page/>} />
+
+          {/* Insurance Routes */}
+          {/* <Route path="/home-insurance" element={<HomeInsurance />} />
+          <Route path="/insurance-detail" element={<InsuranceDetail />} />
+          <Route path="/insurance-payment" element={<InsurancePayment />} /> */}
 
           {/* Cruise Routes */}
           <Route path="/home-cruise" element={<HomeCruise />} />
