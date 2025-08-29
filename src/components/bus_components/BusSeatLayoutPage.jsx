@@ -17,6 +17,7 @@ import {
   selectBusSearchLayoutList,
   selectBusSeatLayoutLoading,
   selectBusBoardingPoints,
+  selectBusBookingDetails,
 } from "../../store/Selectors/busSelectors";
 import { useNavigate } from "react-router-dom";
 
@@ -29,8 +30,10 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
   const searchList = useSelector(selectBusSearchList);
   const seatLayoutData = useSelector(selectBusSearchLayoutList);
   const loading = useSelector(selectBusSeatLayoutLoading);
+  const busBookingDetails = useSelector(selectBusBookingDetails);
   const navigate = useNavigate();
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const [bookingDetails, setBookingDetails] = useState(null);
   const [selectedBoarding, setSelectedBoarding] = useState("");
   const [selectedDropping, setSelectedDropping] = useState("");
   const [activeTab, setActiveTab] = useState("seat");
@@ -39,6 +42,15 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const [boardingSubTab, setBoardingSubTab] = useState("boarding");
+  const [isNarrow, setIsNarrow] = useState(window.innerWidth < 1200);
+
+  // Handle screen resize for 1200px breakpoint
+  useEffect(() => {
+    const handleResize = () => setIsNarrow(window.innerWidth < 1200);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Save boarding point to localStorage when it changes
   useEffect(() => {
@@ -64,7 +76,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
     // Clear old boarding and dropping points from localStorage
     localStorage.removeItem("selectedBoardingPoint");
     localStorage.removeItem("selectedDroppingPoint");
-    
+
     const searchParams = getSearchParams();
     const { TokenId, EndUserIp } = searchParams;
 
@@ -87,17 +99,75 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
     }
   }, [dispatch, searchList]);
 
+  // Fetch booking details from Redux store and localStorage
+  useEffect(() => {
+    console.log("=== FETCHING BOOKING DETAILS ===");
+    console.log("1. Redux busBookingDetails:", busBookingDetails);
+
+    // Only set booking details from Redux or localStorage (for initial load),
+    // but do NOT persist any gender info to localStorage
+    const busBookingData = localStorage.getItem("busBookingData");
+    if (busBookingData) {
+      try {
+        const parsedData = JSON.parse(busBookingData);
+        let passengerData = null;
+        if (parsedData.blockData?.Passenger) {
+          passengerData = parsedData.blockData.Passenger;
+        } else if (parsedData.bookingResult?.BookResult?.Passenger) {
+          passengerData = parsedData.bookingResult.BookResult.Passenger;
+        } else if (parsedData.GetBookingDetailResult?.Itinerary?.Passenger) {
+          passengerData = parsedData.GetBookingDetailResult.Itinerary.Passenger;
+        }
+        if (passengerData) {
+          setBookingDetails({ Passenger: passengerData });
+        }
+      } catch (error) {
+        // ignore
+      }
+    }
+    if (busBookingDetails?.GetBookingDetailResult?.Itinerary?.Passenger) {
+      const passengerData = busBookingDetails.GetBookingDetailResult.Itinerary.Passenger;
+      setBookingDetails({ Passenger: passengerData });
+    }
+  }, [busBookingDetails]);
+
+  // Listen for localStorage changes
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === "busBookingData") {
+        console.log("9. localStorage busBookingData changed:", e.newValue);
+        if (e.newValue) {
+          try {
+            const parsedData = JSON.parse(e.newValue);
+            if (parsedData.GetBookingDetailResult?.Itinerary?.Passenger) {
+              const passengerData = parsedData.GetBookingDetailResult.Itinerary.Passenger;
+              console.log("10. Updated booking details from localStorage:", passengerData);
+              setBookingDetails({ Passenger: passengerData });
+            }
+          } catch (error) {
+            console.error("Error parsing updated localStorage data:", error);
+          }
+        }
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
   // Determine seat status from API seat object
   const getSeatStatusFromAPI = (seat) => {
     // Determine if it's a seater or sleeper based on SeatType
     const isSeater = seat.SeatType === 1 || seat.SeatType === "1" || seat.SeatType === "Seater";
     const seatType = isSeater ? "Seater" : "Sleeper";
-    
+
     // Check multiple possible booking status indicators
-    const isBooked = 
-      seat.IsBooked === true || 
-      seat.Status === "Booked" || 
-      seat.SeatStatus === false || 
+    const isBooked =
+      seat.IsBooked === true ||
+      seat.Status === "Booked" ||
+      seat.SeatStatus === false ||
       seat.IsAvailable === false ||
       seat.BookingStatus === "Booked" ||
       seat.SeatStatus === "Booked" ||
@@ -114,20 +184,20 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
       seat.Status === "Reserved" ||
       seat.Status === "Blocked" ||
       seat.Status === "Unavailable";
-    
+
     if (isBooked) {
       return `booked${seatType}`;
     }
-    
+
     // Check for gender-specific seats
     if (seat.Gender === "Female" || seat.IsLadiesSeat === true) {
       return `female${seatType}`;
     }
-    
+
     if (seat.Gender === "Male" || seat.IsMalesSeat === true) {
       return `male${seatType}`;
     }
-    
+
     // Default to available
     return `available${seatType}`;
   };
@@ -342,22 +412,22 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
 
   const toggleSelect = (seat) => {
     if (seat.status.toLowerCase().includes("booked")) return;
-    
+
     const newSelectedSeats = selectedSeats.includes(seat.label)
       ? selectedSeats.filter((s) => s !== seat.label)
       : [...selectedSeats, seat.label];
-    
+
     setSelectedSeats(newSelectedSeats);
-    
+
     // Store selected seats in localStorage
     localStorage.setItem("selectedSeats", JSON.stringify(newSelectedSeats));
-    
+
     // Store original seat layout data for block request
     if (seatLayoutData && seatLayoutData.GetBusSeatLayOutResult) {
       const originalSeatLayout = seatLayoutData.GetBusSeatLayOutResult.SeatLayoutDetails;
       localStorage.setItem("originalSeatLayoutData", JSON.stringify(originalSeatLayout));
     }
-    
+
     // Also store simplified seat data for compatibility
     const simplifiedSeatLayoutData = {
       seats: allSeats.map(s => ({
@@ -382,11 +452,10 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
     const base = "seat";
     const isHighlighted = priceFilter !== "All" && seat.price === priceFilter;
     const seatTypeClass = seat.seatType === "Seater" ? "seater" : "sleeper";
-    
+
     if (selectedSeats.includes(seat.label))
-      return `${base} selected ${seat.status} ${seatTypeClass} ${
-        isHighlighted ? "highlight" : ""
-      }`;
+      return `${base} selected ${seat.status} ${seatTypeClass} ${isHighlighted ? "highlight" : ""
+        }`;
     return `${base} ${seat.status} ${seatTypeClass} ${isHighlighted ? "highlight" : ""}`;
   };
 
@@ -406,8 +475,8 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
           typeof seat.price === "number"
             ? seat.price
             : typeof seat.price === "string"
-            ? parseFloat(seat.price) || 0
-            : 0;
+              ? parseFloat(seat.price) || 0
+              : 0;
 
         // Determine deck prefix (U for Upper, L for Lower)
         const deckPrefix = upperDeck.includes(seat) ? "U" : "L";
@@ -423,7 +492,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
               return <FaFemale className="seat-icon" />;
             return <FaChair className="seat-icon" />;
           }
-          
+
           // For sleeper seats, show user icon
           if (seat.status === "maleSleeper" || seat.status === "maleSeater")
             return <FaMale className="seat-icon" />;
@@ -431,6 +500,22 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
             return <FaFemale className="seat-icon" />;
           return <FaUser className="seat-icon" />;
         };
+
+        // Check if seat is booked and find passenger gender
+        let bookedGender = null;
+        if (seat.status.includes('booked') && bookingDetails?.Passenger) {
+          const passenger = bookingDetails.Passenger.find(p => p.Seat?.SeatName === seat.label);
+          if (passenger) {
+            const gender = passenger.Gender;
+            if (gender === 1 || gender === "1" || gender === "MALE" || gender === "Male") {
+              bookedGender = "Male";
+            } else if (gender === 2 || gender === "2" || gender === "FEMALE" || gender === "Female") {
+              bookedGender = "Female";
+            } else {
+              bookedGender = "Other";
+            }
+          }
+        }
 
         return (
           <div key={seat.id} className="seat-wrapper-item">
@@ -445,15 +530,19 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
               {getSeatIcon()}
               {hoveredSeat === seat.label && (
                 <div className="seat-tooltip">
-                                              <div className="tooltip-content">
-                              <div className="tooltip-seat">{seatNumber}</div>
-                              <div className="tooltip-status">
-                                {seat.status.includes('booked') ? 'Sold' :
-                                 seat.status.includes('female') ? 'Female Only' :
-                                 seat.status.includes('male') ? 'Male Only' :
-                                 'Available'}
-                              </div>
-                            </div>
+                  <div className="tooltip-content">
+                    <div className="tooltip-seat">{seatNumber}</div>
+                    <div className="tooltip-status">
+                      {seat.status.includes('booked') ? (
+                        <>
+                          <div>Sold</div>
+                          {bookedGender && <div>Booked ({bookedGender})</div>}
+                        </>
+                      ) : seat.status.includes('female') ? 'Female Only' :
+                        seat.status.includes('male') ? 'Male Only' :
+                          'Available'}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -614,7 +703,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
             background: white;
             align-items: center;
             border-radius: 12px;
-            padding: 20px;
+            padding: 10px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
           }
@@ -802,6 +891,33 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
           font-weight: 600;
           color: #cd2c22;
           background: rgba(205, 44, 34, 0.1);
+        }
+
+        /* Sub-tabs for Boarding/Dropping under 1200px */
+        .boarding-subtabs {
+          display: flex;
+          gap: 12px;
+          justify-content: space-around;
+          margin-bottom: 16px;
+          border-bottom: 2px solid #e9ecef;
+          padding-bottom: 8px;
+          width: 100%;
+        }
+
+        .boarding-subtabs .subtab {
+          padding: 8px 16px;
+          border-bottom: 3px solid transparent;
+          color: #6c757d;
+          border-radius: 6px 6px 0 0;
+          cursor: pointer;
+          user-select: none;
+        }
+
+        .boarding-subtabs .subtab.active {
+          color: #cd2c22;
+          background: rgba(205, 44, 34, 0.08);
+          border-bottom-color: #cd2c22;
+          font-weight: 600;
         }
 
         .tabs div.disabled {
@@ -1052,9 +1168,8 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
           background: white;
           align-items: center;
           border-radius: 12px;
-          padding: 20px;
+          padding: 10px;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          margin-bottom: 20px;
         }
 
         .deck-title {
@@ -1080,7 +1195,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
         .seat-instructions {
           background: white;
           border-radius: 12px;
-          padding: 20px;
+          padding: 10px;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
@@ -1509,10 +1624,6 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
             font-size: 11px;
           }
 
-          .deck-container {
-            padding: 15px;
-          }
-
           .filters .btn {
             font-size: 12px;
             padding: 6px 12px;
@@ -1535,6 +1646,20 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
             font-size: 12px;
           }
         }
+
+        /* New 1200px responsive rules */
+        @media (max-width: 1200px) {
+          .boarding-dropping-row {
+            flex-direction: column;
+          }
+
+          .tabs {
+            justify-content: center;
+          }
+
+          .deck-title { font-size: 16px; }
+          .filters .btn { font-size: 13px; }
+        }
       `}</style>
 
       <div className="tabs">
@@ -1546,9 +1671,8 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
           Select Seat
         </div>
         <div
-          className={`${activeTab === "boarding" ? "active" : ""} ${
-            selectedSeats.length === 0 ? "disabled" : ""
-          }`}
+          className={`${activeTab === "boarding" ? "active" : ""} ${selectedSeats.length === 0 ? "disabled" : ""
+            }`}
           onClick={() => {
             if (selectedSeats.length > 0) {
               setActiveTab("boarding");
@@ -1559,7 +1683,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
           }}
         >
           <FaMapMarkerAlt className="me-2" />
-          Boarding Point
+          Select Pickup & Drop Points
         </div>
       </div>
 
@@ -1569,9 +1693,8 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
             {prices.map((p) => (
               <button
                 key={p}
-                className={`btn ${
-                  priceFilter === p ? "btn-danger" : "btn-outline-secondary"
-                }`}
+                className={`btn ${priceFilter === p ? "btn-danger" : "btn-outline-secondary"
+                  }`}
                 onClick={() => setPriceFilter(p)}
               >
                 {p === "All" ? "All Prices" : `₹${p}`}
@@ -1580,7 +1703,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
           </div>
 
           <div className="row">
-            <div className="col-lg-8">
+            <div className=" col-xl-7 col-lg-12 col-md-8 col-sm-12 mb-3 col-12 " >
               {upperDeck.length === 0 && lowerDeck.length === 0 ? (
                 <div className="deck-container">
                   <h4 className="deck-title">
@@ -1590,33 +1713,33 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
                   <p className="text-muted">No seat layout data is currently available.</p>
                 </div>
               ) : (
-                <div className="row">
-                  <div className="col-md-6">
+                <div className="d-flex gap-2" style={{ scrollbarWidth: "thin", overflow: "auto", scrollbarWidth: "12px" }}>
+                  <div className="col-xl-6 col-md-6 col-lg-6 col-sm-6">
                     <div className="deck-container">
                       <h4 className="deck-title">
                         <FaBus className="text-primary" />
                         Lower Deck
                       </h4>
-                      <div className="d-flex gap-5">
-                        <div>{renderRow(lowerDeck, [2, 5, 8, 11, 14, 17,20])}</div>
-                        <div className="d-flex gap-3">
-                          {renderRow(lowerDeck, [1, 4, 7, 10, 13, 16,19])}
-                          {renderRow(lowerDeck, [0, 3, 6, 9, 12, 15,18])}
+                      <div className="d-flex gap-5 gap-lg-4 gap-xl-4 gap-md-4">
+                        <div>{renderRow(lowerDeck, [2, 5, 8, 11, 14, 17, 20])}</div>
+                        <div className="d-flex gap-3 gap-xl-2 gap-lg-3 gap-md-1  ">
+                          {renderRow(lowerDeck, [1, 4, 7, 10, 13, 16, 19])}
+                          {renderRow(lowerDeck, [0, 3, 6, 9, 12, 15, 18])}
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className="col-md-6">
+                  <div className=" col-xl-6 col-md-6 col-lg-6 col-sm-6">
                     <div className="deck-container">
                       <h4 className="deck-title">
                         <FaBus className="text-primary" />
                         Upper Deck
                       </h4>
-                      <div className="d-flex gap-5">
-                        <div>{renderRow(upperDeck, [2, 5, 8, 11, 14, 17,20])}</div>
-                        <div className="d-flex gap-3">
-                          {renderRow(upperDeck, [1, 4, 7, 10, 13, 16,19])}
-                          {renderRow(upperDeck, [0, 3, 6, 9, 12, 15,18])}
+                      <div className="d-flex gap-5 gap-lg-5 gap-xl-4 gap-md-4 ">
+                        <div>{renderRow(upperDeck, [2, 5, 8, 11, 14, 17, 20])}</div>
+                        <div className="d-flex gap-3 gap-lg-3 gap-xl-2 gap-md-2 ">
+                          {renderRow(upperDeck, [1, 4, 7, 10, 13, 16, 19])}
+                          {renderRow(upperDeck, [0, 3, 6, 9, 12, 15, 18])}
                         </div>
                       </div>
                     </div>
@@ -1624,7 +1747,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
                 </div>
               )}
             </div>
-            <div className="col-lg-4">
+            <div className=" col-xl-5 col-lg-12 col-md-4">
               <div className="seat-instructions">
                 <h4>
                   <FaUser className="text-primary" />
@@ -1697,36 +1820,97 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
         </>
       )}
 
-
-
-      {activeTab === "boarding" && (
+      {selectedSeats.length > 0 && activeTab === "seat" && (
         <div
-          className="boarding-dropping-row"
-          style={{ display: "flex", gap: 24 }}
+          style={{
+            position: "fixed",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 9999,
+            color: "white",
+            padding: "16px 0",
+            background:"#fb6666",
+            textAlign: "center",
+            boxShadow: "0 -2px 10px rgba(0,0,0,0.15)",
+          }}
         >
-          <div style={{ flex: 1 }}>
-            <BoardingPointsPage
-              boardingPoints={boardingPoints}
-              selectedBoarding={selectedBoarding}
-              onBoardingChange={setSelectedBoarding}
-              showContactInfo={true}
-            />
-          </div>
-          <div style={{ flex: 1 }}>
-            <BoardingPointsPage
-              droppingPoints={droppingPoints}
-              selectedDropping={selectedDropping}
-              onDroppingChange={setSelectedDropping}
-              showContactInfo={false}
-            />
-          </div>
+          <button
+            className="btn btn-light"
+            style={{ fontWeight: 600, fontSize: 18 }}
+            onClick={() => setActiveTab("boarding")}
+          >
+            Select Boarding & Dropping Point
+          </button>
         </div>
       )}
 
       {activeTab === "boarding" && (
+        <>
+          {isNarrow ? (
+            <>
+              <div className="boarding-subtabs">
+                <div
+                  className={`subtab ${boardingSubTab === "boarding" ? "active" : ""}`}
+                  onClick={() => setBoardingSubTab("boarding")}
+                >
+                  Boarding Points
+                </div>
+                <div
+                  className={`subtab ${boardingSubTab === "dropping" ? "active" : ""}`}
+                  onClick={() => setBoardingSubTab("dropping")}
+                >
+                  Dropping Points
+                </div>
+              </div>
+              {boardingSubTab === "boarding" ? (
+                <BoardingPointsPage
+                  boardingPoints={boardingPoints}
+                  selectedBoarding={selectedBoarding}
+                  onBoardingChange={setSelectedBoarding}
+                  showContactInfo={true}
+                  hideHeadings={true}
+                />
+              ) : (
+                <BoardingPointsPage
+                  droppingPoints={droppingPoints}
+                  selectedDropping={selectedDropping}
+                  onDroppingChange={setSelectedDropping}
+                  showContactInfo={false}
+                  hideHeadings={true}
+                />
+              )}
+            </>
+          ) : (
+            <div
+              className="boarding-dropping-row"
+              style={{ display: "flex", gap: 24 }}
+            >
+              <div style={{ flex: 1 }}>
+                <BoardingPointsPage
+                  boardingPoints={boardingPoints}
+                  selectedBoarding={selectedBoarding}
+                  onBoardingChange={setSelectedBoarding}
+                  showContactInfo={true}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <BoardingPointsPage
+                  droppingPoints={droppingPoints}
+                  selectedDropping={selectedDropping}
+                  onDroppingChange={setSelectedDropping}
+                  showContactInfo={false}
+                />
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {activeTab === "boarding" && (
         <div className="d-flex justify-content-end mt-3">
-          <button 
-            className="btn btn-danger" 
+          <button
+            className="btn btn-danger"
             onClick={() => {
               // Check if seats are selected
               if (selectedSeats.length === 0) {
@@ -1734,21 +1918,21 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
                 setShowAlert(true);
                 return;
               }
-              
+
               // Check if both boarding and dropping points are selected
               if (!selectedBoarding || !selectedDropping) {
                 setAlertMessage("Please select both boarding and dropping points before proceeding.");
                 setShowAlert(true);
                 return;
               }
-              
+
               // Additional validation to ensure points are actually selected
               if (selectedBoarding.trim() === "" || selectedDropping.trim() === "") {
                 setAlertMessage("Please select both boarding and dropping points before proceeding.");
                 setShowAlert(true);
                 return;
               }
-              
+
               // Only open modal if both boarding and dropping points are selected
               if (selectedBoarding.trim() && selectedDropping.trim()) {
                 // Store current bus data in localStorage
@@ -1779,7 +1963,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
             <div className="alert-header">
               <FaExclamationTriangle className="alert-icon" />
               <span className="alert-title">Please Complete</span>
-              <button 
+              <button
                 className="alert-close-btn"
                 onClick={() => setShowAlert(false)}
               >
@@ -1790,7 +1974,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
               {alertMessage}
             </div>
             <div className="alert-footer">
-              <button 
+              <button
                 className="alert-ok-btn"
                 onClick={() => setShowAlert(false)}
               >
@@ -1800,7 +1984,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
           </div>
         </div>
       )}
-    
+
     </div>
   );
 };

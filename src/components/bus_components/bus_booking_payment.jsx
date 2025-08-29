@@ -15,7 +15,8 @@ import {
   fetchBusBooking, 
   fetchBusBookingDetails,
   createBusBooking,
-  updateBusBookingStatus
+  updateBusBookingStatus,
+  fetchBusSeatLayout
 } from '../../store/Actions/busActions';
 
 const BusBookingPayment = () => {
@@ -454,6 +455,26 @@ const BusBookingPayment = () => {
           localStorage.setItem("bookingTimestamp", Date.now().toString());
           localStorage.setItem("databaseBookingId", bookingId.toString());
           
+          // Fetch latest seat layout after successful booking
+          try {
+            const searchParams = JSON.parse(localStorage.getItem("busSearchparams") || "{}");
+            const { TokenId, EndUserIp } = searchParams;
+            const currentBus = JSON.parse(localStorage.getItem("selectedBusData") || "{}");
+            
+            if (TokenId && EndUserIp && currentBus.ResultIndex && searchParams.TraceId) {
+              console.log("Fetching latest seat layout after booking...");
+              await dispatch(fetchBusSeatLayout(
+                TokenId,
+                EndUserIp,
+                currentBus.ResultIndex,
+                searchParams.TraceId
+              ));
+              console.log("Latest seat layout fetched successfully");
+            }
+          } catch (error) {
+            console.error("Error fetching latest seat layout:", error);
+          }
+          
           // Navigate to confirmation page
           navigate('/bus-confirmation', { 
             state: { bookingData },
@@ -882,45 +903,7 @@ const BusBookingPayment = () => {
                         )}
                       </button>
                       
-                      {/* Test Database Storage Button - For Debugging */}
-                      <div className="mt-3">
-                        <button 
-                          className="btn btn-outline-info btn-sm"
-                          onClick={async () => {
-                            console.log("=== TESTING DATABASE STORAGE ===");
-                            try {
-                              const testBookingData = {
-                                user_id: 1,
-                                busData: { test: "bus data" },
-                                blockData: { test: "block data" },
-                                contactDetails: { test: "contact data" },
-                                addressDetails: { test: "address data" },
-                                travelerDetails: { test: "traveler data" },
-                                fareDetails: { total: 100 },
-                                token_id: "test_token"
-                              };
-                              
-                              console.log("Testing with data:", testBookingData);
-                              const result = await dispatch(createBusBooking(testBookingData));
-                              console.log("Test result:", result);
-                              
-                              if (result && result.success) {
-                                toast.success('Test booking saved to database!');
-                                console.log("✅ Test booking successful, ID:", result.booking_id);
-                              } else {
-                                toast.error('Test booking failed');
-                                console.error("❌ Test booking failed:", result);
-                              }
-                            } catch (error) {
-                              console.error("❌ Test booking error:", error);
-                              toast.error('Test booking error: ' + error.message);
-                            }
-                          }}
-                        >
-                          <i className="fas fa-database me-1"></i>
-                          Test Database Storage
-                        </button>
-                      </div>
+
                       
                       <div className="text-center mt-3">
                         <i className="fas fa-info-circle me-1"></i>

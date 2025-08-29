@@ -15,12 +15,12 @@ export const selectIsInsuranceSearching = (state) => state.insurance.isSearching
 export const selectInsuranceSearchError = (state) => state.insurance.searchError;
 
 // Booking selectors
-export const selectInsuranceBook = (state) => selectInsuranceState(state);
-export const selectInsuranceBookLoading = (state) => selectInsuranceBook(state).bookLoading;
-export const selectInsuranceBookData = (state) => selectInsuranceBook(state).bookData;
-export const selectInsuranceBookError = (state) => selectInsuranceBook(state).bookError;
-export const selectInsuranceBookingId = (state) => selectInsuranceBookData(state)?.Response?.BookingId;
-export const selectInsuranceBookingStatus = (state) => selectInsuranceBookData(state)?.Response?.Status;
+export const selectInsuranceBook = (state) => state.insurance;
+export const selectInsuranceBookLoading = (state) => state.insurance.bookLoading;
+export const selectInsuranceBookData = (state) => state.insurance.bookData;
+export const selectInsuranceBookError = (state) => state.insurance.bookError;
+export const selectInsuranceBookingId = (state) => state.insurance.bookData?.Response?.BookingId;
+export const selectInsuranceBookingStatus = (state) => state.insurance.bookData?.Response?.Status;
 
 // General state selectors
 export const selectInsuranceLoading = (state) => state.insurance.loading;

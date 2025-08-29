@@ -88,18 +88,67 @@ export const BusBookingPage = ({ isModal = false }) => {
       console.error('Error parsing seat layout data:', error);
     }
     
-    // Initialize traveler details for each seat
+    // Initialize traveler details for each seat with automatic gender selection
     const initialDetails = {};
     seatsFromStorage.forEach((seatLabel) => {
+      // Get seat data to check for gender restrictions
+      let autoGender = "";
+      try {
+        const seatLayoutData = JSON.parse(localStorage.getItem("seatLayoutData") || "{}");
+        const seatData = seatLayoutData.seats?.find(s => s.label === seatLabel);
+        
+        if (seatData) {
+          // Check if seat is ladies-only
+          if (seatData.isLadiesSeat === true || seatData.originalSeatInfo?.IsLadiesSeat === true) {
+            autoGender = "female";
+            console.log(`Seat ${seatLabel} is ladies-only, auto-selecting female`);
+          }
+          // Check if seat is males-only
+          else if (seatData.isMalesSeat === true || seatData.originalSeatInfo?.IsMalesSeat === true) {
+            autoGender = "male";
+            console.log(`Seat ${seatLabel} is males-only, auto-selecting male`);
+          }
+        }
+        
+        // Also check original seat layout data
+        const originalSeatLayout = JSON.parse(localStorage.getItem("originalSeatLayoutData") || "{}");
+        if (originalSeatLayout.SeatLayout && originalSeatLayout.SeatLayout.SeatDetails) {
+          for (let rowIndex = 0; rowIndex < originalSeatLayout.SeatLayout.SeatDetails.length; rowIndex++) {
+            const row = originalSeatLayout.SeatLayout.SeatDetails[rowIndex];
+            if (Array.isArray(row)) {
+              for (let colIndex = 0; colIndex < row.length; colIndex++) {
+                const seat = row[colIndex];
+                if (seat) {
+                  const seatName = seat.SeatNumber || seat.SeatName || `${rowIndex + 1}${String.fromCharCode(65 + colIndex)}`;
+                  if (seatName === seatLabel) {
+                    if (seat.IsLadiesSeat === true) {
+                      autoGender = "female";
+                      console.log(`Seat ${seatLabel} is ladies-only (from original data), auto-selecting female`);
+                    } else if (seat.IsMalesSeat === true) {
+                      autoGender = "male";
+                      console.log(`Seat ${seatLabel} is males-only (from original data), auto-selecting male`);
+                    }
+                    break;
+                  }
+                }
+              }
+            }
+            if (autoGender) break;
+          }
+        }
+      } catch (error) {
+        console.error('Error checking seat gender restrictions:', error);
+      }
+      
       initialDetails[seatLabel] = {
         title: "",
         firstName: "",
         lastName: "",
         age: "",
-        gender: "",
+        gender: autoGender, // Set gender based on seat restrictions
       };
     });
-    console.log('Initializing traveler details:', initialDetails);
+    console.log('Initializing traveler details with auto gender selection:', initialDetails);
     setTravelerDetails(initialDetails);
     
     // Set all seats as expanded by default
@@ -112,13 +161,62 @@ export const BusBookingPage = ({ isModal = false }) => {
   useEffect(() => {
     const newTravelerDetails = {};
     selectedSeats.forEach((seatLabel) => {
-      // Preserve existing data if available
+      // Get seat data to check for gender restrictions
+      let autoGender = "";
+      try {
+        const seatLayoutData = JSON.parse(localStorage.getItem("seatLayoutData") || "{}");
+        const seatData = seatLayoutData.seats?.find(s => s.label === seatLabel);
+        
+        if (seatData) {
+          // Check if seat is ladies-only
+          if (seatData.isLadiesSeat === true || seatData.originalSeatInfo?.IsLadiesSeat === true) {
+            autoGender = "female";
+            console.log(`Seat ${seatLabel} is ladies-only, auto-selecting female`);
+          }
+          // Check if seat is males-only
+          else if (seatData.isMalesSeat === true || seatData.originalSeatInfo?.IsMalesSeat === true) {
+            autoGender = "male";
+            console.log(`Seat ${seatLabel} is males-only, auto-selecting male`);
+          }
+        }
+        
+        // Also check original seat layout data
+        const originalSeatLayout = JSON.parse(localStorage.getItem("originalSeatLayoutData") || "{}");
+        if (originalSeatLayout.SeatLayout && originalSeatLayout.SeatLayout.SeatDetails) {
+          for (let rowIndex = 0; rowIndex < originalSeatLayout.SeatLayout.SeatDetails.length; rowIndex++) {
+            const row = originalSeatLayout.SeatLayout.SeatDetails[rowIndex];
+            if (Array.isArray(row)) {
+              for (let colIndex = 0; colIndex < row.length; colIndex++) {
+                const seat = row[colIndex];
+                if (seat) {
+                  const seatName = seat.SeatNumber || seat.SeatName || `${rowIndex + 1}${String.fromCharCode(65 + colIndex)}`;
+                  if (seatName === seatLabel) {
+                    if (seat.IsLadiesSeat === true) {
+                      autoGender = "female";
+                      console.log(`Seat ${seatLabel} is ladies-only (from original data), auto-selecting female`);
+                    } else if (seat.IsMalesSeat === true) {
+                      autoGender = "male";
+                      console.log(`Seat ${seatLabel} is males-only (from original data), auto-selecting male`);
+                    }
+                    break;
+                  }
+                }
+              }
+            }
+            if (autoGender) break;
+          }
+        }
+      } catch (error) {
+        console.error('Error checking seat gender restrictions:', error);
+      }
+      
+      // Preserve existing data if available, but override gender if seat has restrictions
       newTravelerDetails[seatLabel] = {
         title: travelerDetails[seatLabel]?.title || "",
         firstName: travelerDetails[seatLabel]?.firstName || "",
         lastName: travelerDetails[seatLabel]?.lastName || "",
         age: travelerDetails[seatLabel]?.age || "",
-        gender: travelerDetails[seatLabel]?.gender || "",
+        gender: autoGender || travelerDetails[seatLabel]?.gender || "", // Use auto gender if available, otherwise preserve existing
       };
     });
     setTravelerDetails(newTravelerDetails);
@@ -251,6 +349,59 @@ export const BusBookingPage = ({ isModal = false }) => {
     } catch (error) {
       console.error('Error calculating duration:', error, { departure, arrival });
       return "";
+    }
+  };
+
+  // Helper function to check seat gender restrictions
+  const getSeatGenderRestriction = (seatLabel) => {
+    try {
+      const seatLayoutData = JSON.parse(localStorage.getItem("seatLayoutData") || "{}");
+      const seatData = seatLayoutData.seats?.find(s => s.label === seatLabel);
+      
+      if (seatData) {
+        // Check if seat is ladies-only
+        if (seatData.isLadiesSeat === true || seatData.originalSeatInfo?.IsLadiesSeat === true) {
+          console.log(`Seat ${seatLabel} has female restriction from seatLayoutData`);
+          return "female";
+        }
+        // Check if seat is males-only
+        if (seatData.isMalesSeat === true || seatData.originalSeatInfo?.IsMalesSeat === true) {
+          console.log(`Seat ${seatLabel} has male restriction from seatLayoutData`);
+          return "male";
+        }
+      }
+      
+      // Also check original seat layout data
+      const originalSeatLayout = JSON.parse(localStorage.getItem("originalSeatLayoutData") || "{}");
+      if (originalSeatLayout.SeatLayout && originalSeatLayout.SeatLayout.SeatDetails) {
+        for (let rowIndex = 0; rowIndex < originalSeatLayout.SeatLayout.SeatDetails.length; rowIndex++) {
+          const row = originalSeatLayout.SeatLayout.SeatDetails[rowIndex];
+          if (Array.isArray(row)) {
+            for (let colIndex = 0; colIndex < row.length; colIndex++) {
+              const seat = row[colIndex];
+              if (seat) {
+                const seatName = seat.SeatNumber || seat.SeatName || `${rowIndex + 1}${String.fromCharCode(65 + colIndex)}`;
+                if (seatName === seatLabel) {
+                  if (seat.IsLadiesSeat === true) {
+                    console.log(`Seat ${seatLabel} has female restriction from originalSeatLayoutData`);
+                    return "female";
+                  } else if (seat.IsMalesSeat === true) {
+                    console.log(`Seat ${seatLabel} has male restriction from originalSeatLayoutData`);
+                    return "male";
+                  }
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+      
+      console.log(`Seat ${seatLabel} has no gender restriction`);
+      return null; // No gender restriction
+    } catch (error) {
+      console.error('Error checking seat gender restrictions:', error);
+      return null;
     }
   };
 
@@ -968,6 +1119,15 @@ export const BusBookingPage = ({ isModal = false }) => {
                               <h6 className="mb-0">
                                 <i className="fas fa-chair me-2"></i>
                                 Seat {formatSeatNumber(seatLabel)} - Traveler {index + 1}
+                                {(() => {
+                                  const genderRestriction = getSeatGenderRestriction(seatLabel);
+                                  if (genderRestriction === "female") {
+                                    return <span className="badge bg-pink ms-2"><i className="fas fa-female me-1"></i>Female Only</span>;
+                                  } else if (genderRestriction === "male") {
+                                    return <span className="badge bg-blue ms-2"><i className="fas fa-male me-1"></i>Male Only</span>;
+                                  }
+                                  return null;
+                                })()}
                               </h6>
                               {travelerDetails[seatLabel]?.firstName && (
                                 <small className="text-muted">
@@ -1056,19 +1216,37 @@ export const BusBookingPage = ({ isModal = false }) => {
                               <div className="col-md-2">
                                 <div className="mb-3">
                                   <label className="form-label">Gender *</label>
-                                  <select
-                                    className={`form-select ${hasSubmitted && errors[`travelerDetails.${seatLabel}.gender`] ? 'is-invalid' : ''}`}
-                                    value={travelerDetails[seatLabel]?.gender || ""}
-                                    onChange={e => handleTravelerChange(seatLabel, "gender", e.target.value)}
-                                  >
-                                    <option value="">Select Gender</option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                    <option value="other">Other</option>
-                                  </select>
-                                  {hasSubmitted && errors[`travelerDetails.${seatLabel}.gender`] && (
-                                    <div className="text-danger">{errors[`travelerDetails.${seatLabel}.gender`]}</div>
-                                  )}
+                                  {(() => {
+                                    const genderRestriction = getSeatGenderRestriction(seatLabel);
+                                    const isDisabled = genderRestriction !== null;
+                                    const restrictionText = genderRestriction === "female" ? "Female Only" : 
+                                                          genderRestriction === "male" ? "Male Only" : "";
+                                    
+                                    return (
+                                      <>
+                                        <select
+                                          className={`form-select ${hasSubmitted && errors[`travelerDetails.${seatLabel}.gender`] ? 'is-invalid' : ''} ${isDisabled ? 'disabled' : ''}`}
+                                          value={travelerDetails[seatLabel]?.gender || ""}
+                                          onChange={e => handleTravelerChange(seatLabel, "gender", e.target.value)}
+                                          disabled={isDisabled}
+                                        >
+                                          <option value="">Select Gender</option>
+                                          <option value="male">Male</option>
+                                          <option value="female">Female</option>
+                                          <option value="other">Other</option>
+                                        </select>
+                                        {isDisabled && (
+                                          <small className="text-info d-block mt-1">
+                                            <i className="fas fa-info-circle me-1"></i>
+                                            {restrictionText} seat
+                                          </small>
+                                        )}
+                                        {hasSubmitted && errors[`travelerDetails.${seatLabel}.gender`] && (
+                                          <div className="text-danger">{errors[`travelerDetails.${seatLabel}.gender`]}</div>
+                                        )}
+                                      </>
+                                    );
+                                  })()}
                                 </div>
                               </div>
                             </div>
@@ -1987,6 +2165,56 @@ export const BusBookingPage = ({ isModal = false }) => {
           .btn-primary {
             padding: 12px 24px;
           }
+        }
+        
+        /* Disabled form select styles */
+        .form-select.disabled {
+          background-color: #f8f9fa !important;
+          border-color: #dee2e6 !important;
+          color: #6c757d !important;
+          cursor: not-allowed !important;
+          opacity: 0.7;
+        }
+        
+        .form-select.disabled:focus {
+          border-color: #dee2e6 !important;
+          box-shadow: none !important;
+          -webkit-box-shadow: none !important;
+          -moz-box-shadow: none !important;
+        }
+        
+        .form-select.disabled option {
+          color: #6c757d;
+        }
+        
+        /* Info text styling */
+        .text-info {
+          color: #17a2b8 !important;
+        }
+        
+        .text-info i {
+          font-size: 0.875rem;
+        }
+        
+        /* Gender restriction badges */
+        .badge.bg-pink {
+          background-color: #e91e63 !important;
+          color: white;
+          font-size: 0.75rem;
+          font-weight: 600;
+          padding: 4px 8px;
+        }
+        
+        .badge.bg-blue {
+          background-color: #1976d2 !important;
+          color: white;
+          font-size: 0.75rem;
+          font-weight: 600;
+          padding: 4px 8px;
+        }
+        
+        .badge i {
+          font-size: 0.7rem;
         }
       `}</style>
     </>

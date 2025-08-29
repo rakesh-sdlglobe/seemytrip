@@ -44,6 +44,13 @@ export const Features = () => {
     </li>
     <li className="nav-item nav-item1 ">
       <Link
+        className={`nav-link`} to="/home-insurance"
+      >
+        <i className="fa-solid fa-shield-halved me-2" />Insurance
+      </Link>
+    </li>
+    <li className="nav-item nav-item1 ">
+      <Link
         className={`nav-link`} to="/travelinsurance"
       >
         <i className="fa-solid fa-shield-alt me-2" />Travel Insurance

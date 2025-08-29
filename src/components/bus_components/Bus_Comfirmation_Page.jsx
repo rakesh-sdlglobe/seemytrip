@@ -7,6 +7,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { fetchBusBookingDetails } from '../../store/Actions/busActions';
 import { selectBusBookingDetails, selectBusBookingDetailsLoading } from '../../store/Selectors/busSelectors';
+import logo from '../../assets/images/train-4 (1).png'
 
 const Bus_Comfirmation_Page = () => {
   const location = useLocation();
@@ -265,8 +266,8 @@ const Bus_Comfirmation_Page = () => {
                   <div className="banner-top">
                     <div className="banner-left">
                       <div className="logo-container">
-                        <i className="fas fa-bus logo-icon"></i>
-                        <span className="logo-text">SeeMyTrip</span>
+                        {/* <i className="fas fa-bus logo-icon"></i> */}
+                        <span className="logo-text"><img src={logo} alt="" width={200} height={60} /></span>
                       </div>
                     </div>
                     <div className="banner-center">
