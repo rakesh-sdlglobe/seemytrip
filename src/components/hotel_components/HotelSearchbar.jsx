@@ -99,7 +99,7 @@ const CustomModalBody = React.memo(
           <div className="fw-medium mb-2">Room {idx + 1}</div>
           <div className="d-flex gap-3 align-items-center">
             <div>
-              <label className="me-2">Adults</label>
+              <label className="me-2 fw-bold">Adults</label>
               <select
                 className="form-select d-inline-block w-auto"
                 value={room.Adults}
@@ -117,7 +117,7 @@ const CustomModalBody = React.memo(
               </select>
             </div>
             <div>
-              <label className="me-2">Children</label>
+              <label className="me-2 fw-bold">Children</label>
               <select
                 className="form-select d-inline-block w-auto"
                 value={room.Children}
@@ -181,7 +181,7 @@ const CustomModalBody = React.memo(
                     marginBottom: 8,
                   }}
                 >
-                  <label className="me-2">Age</label>
+                  <label className="me-2 fw-bold">Age</label>
                   <select
                     className="form-select d-inline-block w-auto"
                     value={
@@ -773,24 +773,30 @@ export const HotelSearchbar = ({
                           <span style={{ fontWeight: "bold" }}>
                             {roomsData.reduce((sum, r) => sum + r.Adults, 0)}
                           </span>{" "}
-                          Adult
-                          {roomsData.reduce((sum, r) => sum + r.Adults, 0) !== 1
-                            ? "s"
-                            : ""}
+                          <span style={{ fontWeight: "bold" }}>
+                            Adult
+                            {roomsData.reduce((sum, r) => sum + r.Adults, 0) !== 1
+                              ? "s"
+                              : ""}
+                          </span>
                           ,{" "}
                           <span style={{ fontWeight: "bold" }}>
                             {roomsData.reduce((sum, r) => sum + r.Children, 0)}
                           </span>{" "}
-                          Child
-                          {roomsData.reduce((sum, r) => sum + r.Children, 0) !==
-                          1
-                            ? "ren"
-                            : ""}
+                          <span style={{ fontWeight: "bold" }}>
+                            Child
+                            {roomsData.reduce((sum, r) => sum + r.Children, 0) !==
+                            1
+                              ? "ren"
+                              : ""}
+                          </span>
                           ,{" "}
                           <span style={{ fontWeight: "bold" }}>
                             {roomsData.length}
                           </span>{" "}
-                          Room{roomsData.length !== 1 ? "s" : ""}
+                          <span style={{ fontWeight: "bold" }}>
+                            Room{roomsData.length !== 1 ? "s" : ""}
+                          </span>
                         </button>
                       </div>
                     </div>
