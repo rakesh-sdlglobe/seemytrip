@@ -5,14 +5,19 @@ import {
   FETCH_FLIGHT_RESULTS_REQUEST,
   FETCH_FLIGHT_RESULTS_SUCCESS,
   FETCH_FLIGHT_RESULTS_FAILURE,
-  FETCH_FLIGHT_LIST_PAGINATION_SUCCESS
+  FETCH_FLIGHT_LIST_PAGINATION_SUCCESS,
+  FETCH_FLIGHT_PRICEVALIDATE_REQUEST,
+  FETCH_FLIGHT_PRICEVALIDATE_SUCCESS,
+  FETCH_FLIGHT_PRICEVALIDATE_FAILURE
 } from "../Actions/flightActions";
 
 const initialState = {
   airportsListLoading: false,
   flightResultListLoading: false,
+  priceValidateLoading: false,
   airportsList: [],
   flightResultList: [],
+  PriceValidate:null,
   error: null,
 };
 
@@ -61,6 +66,23 @@ export const flightReducer = (state = initialState, action) => {
       return {
         ...state,
         flightResultListLoading: false,
+        error: action.payload,
+      };
+       case FETCH_FLIGHT_PRICEVALIDATE_REQUEST:
+      return {
+        ...state,
+        priceValidateLoading: true,
+      };
+    case FETCH_FLIGHT_PRICEVALIDATE_SUCCESS:
+      return {
+        ...state,
+        priceValidateLoading: false,
+        PriceValidate: action.payload,
+      };
+    case FETCH_FLIGHT_PRICEVALIDATE_FAILURE:
+      return {
+        ...state,
+        priceValidateLoading: false,
         error: action.payload,
       };
     default:

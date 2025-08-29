@@ -5,6 +5,9 @@ import {
   INSURANCE_SEARCH_REQUEST,
   INSURANCE_SEARCH_SUCCESS,
   INSURANCE_SEARCH_FAILURE,
+  INSURANCE_BOOK_REQUEST,
+  INSURANCE_BOOK_SUCCESS,
+  INSURANCE_BOOK_FAILURE,
   CLEAR_INSURANCE_ERROR,
   CLEAR_INSURANCE_DATA
 } from '../Actions/insuranceAction';
@@ -19,6 +22,11 @@ const initialState = {
   searchLoading: false,
   searchError: null,
   searchResults: [],
+
+    // Booking state
+    bookLoading: false,
+    bookData: null,
+    bookError: null,
   
 };
 
@@ -69,6 +77,33 @@ const insuranceReducer = (state = initialState, action) => {
         searchLoading: false,
         searchError: action.payload,  
       };
+
+       // Booking cases
+    case INSURANCE_BOOK_REQUEST:
+      return {
+        ...state,
+        bookLoading: true,
+        bookError: null,
+        lastAction: 'BOOK_REQUEST'
+      };
+      
+    case INSURANCE_BOOK_SUCCESS:
+      return {
+        ...state,
+        bookLoading: false,
+        bookData: action.payload,
+        bookError: null,
+        lastAction: 'BOOK_SUCCESS'
+      };
+      
+    case INSURANCE_BOOK_FAILURE:
+      return {
+        ...state,
+        bookLoading: false,
+        bookError: action.payload,
+        lastAction: 'BOOK_FAILURE'
+      };
+
 
     // Utility cases
     case CLEAR_INSURANCE_ERROR:

@@ -1830,7 +1830,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
             zIndex: 9999,
             color: "white",
             padding: "16px 0",
-            background: "#fb6666",
+            background:"#fb6666",
             textAlign: "center",
             boxShadow: "0 -2px 10px rgba(0,0,0,0.15)",
           }}
