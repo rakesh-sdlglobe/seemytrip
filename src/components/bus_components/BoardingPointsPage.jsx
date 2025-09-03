@@ -27,7 +27,6 @@ const BoardingPointsPage = ({
       
       // Check if the date is valid
       if (isNaN(dateObj.getTime())) {
-        console.log("Invalid date string, using current date");
         const currentDate = new Date();
         const day = currentDate.getDate();
         const month = currentDate.toLocaleString('en-US', { month: 'short' });
@@ -62,10 +61,8 @@ const BoardingPointsPage = ({
         date: `${day} ${month}`
       };
       
-      console.log("formatTimeWithDate result:", result);
       return result;
     } catch (error) {
-      console.error("Error parsing date:", error);
       return { time: "-", date: "-" };
     }
   };
@@ -331,7 +328,6 @@ const BoardingPointsPage = ({
                   value={point.location}
                   checked={selectedBoarding === point.location}
                   onChange={(e) => {
-                    console.log("Boarding point selected:", e.target.value);
                     onBoardingChange(e.target.value);
                   }}
                   className="d-none"
@@ -408,7 +404,6 @@ const BoardingPointsPage = ({
                   value={point.location}
                   checked={selectedDropping === point.location}
                   onChange={(e) => {
-                    console.log("Dropping point selected:", e.target.value);
                     onDroppingChange(e.target.value);
                   }}
                   className="d-none"

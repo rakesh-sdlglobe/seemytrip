@@ -54,6 +54,10 @@ import HomeFlight from "./components/home-flight";
 import HomeHotel from "./components/home-hotel";
 import InsuranceHome from './components/insurance_home';
 import InsuranceList from './components/insurance_components/InsuranceList';
+import InsuranceGeneratePolicy from './components/insurance_components/Insurance_Generate_Policy';
+import InsuranceBookingDetails from './components/insurance_components/Insurance_BookingDetails';
+import InsuranceSearchPage from './components/insurance_components/insurance_search_page';
+
 import MedicalTrourism from "./components/Home-Medicaltourism.jsx";
 import HomeRental from "./components/home-rental";
 import HomeStay from "./components/home-stay";
@@ -123,6 +127,7 @@ import BusSeatLayoutPage from "./components/bus_components/BusSeatLayoutPage.jsx
 import { BusBookingPage } from "./components/bus_components/bus_booking_detail_page.jsx";
 import BoardingPointsPage from "./components/bus_components/BoardingPointsPage.jsx";
 import Bus_Comfirmation_Page from "./components/bus_components/Bus_Comfirmation_Page.jsx";
+import InsuranceBookingPage from './components/insurance_components/Insurance_Booking_Page';
 
 
 function App() {
@@ -260,7 +265,12 @@ function App() {
 
           {/* Insurance Routes */}
           <Route path="/home-insurance" element={<InsuranceHome />} />
+          <Route path="/insurance-search" element={<InsuranceSearchPage />} />
           <Route path="/insurance-list" element={<InsuranceList />} />
+          <Route path="/insurance-booking-page" element={<InsuranceBookingPage />} />
+          <Route path="/insurance-generate-policy" element={<InsuranceGeneratePolicy />} />
+          <Route path="/insurance-booking-details" element={<InsuranceBookingDetails />} />
+
           {/* <Route path="/insurance-detail" element={<InsuranceDetail />} />
           <Route path="/insurance-payment" element={<InsurancePayment />} /> */}
 

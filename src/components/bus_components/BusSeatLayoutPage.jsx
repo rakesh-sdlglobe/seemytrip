@@ -11,6 +11,7 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { fetchBusSeatLayout } from "../../store/Actions/busActions";
+import { getEncryptedItem, setEncryptedItem } from "../../utils/encryption";
 import {
   selectBusAuthData,
   selectBusSearchList,
@@ -23,6 +24,7 @@ import { useNavigate } from "react-router-dom";
 
 import BoardingPointsPage from "./BoardingPointsPage";
 import BusBookingModal from "./BusBookingModal";
+import AuthPopup from "../auth/AuthPopup";
 
 const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
   const dispatch = useDispatch();
@@ -44,6 +46,8 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
   const [alertMessage, setAlertMessage] = useState("");
   const [boardingSubTab, setBoardingSubTab] = useState("boarding");
   const [isNarrow, setIsNarrow] = useState(window.innerWidth < 1200);
+  const [showAuthPopup, setShowAuthPopup] = useState(false);
+  const [pendingBooking, setPendingBooking] = useState(false);
 
   // Handle screen resize for 1200px breakpoint
   useEffect(() => {
@@ -52,23 +56,49 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Function to proceed with booking
+  const proceedWithBooking = () => {
+    // Store current bus data in localStorage
+    setEncryptedItem("selectedBusData", currentBus);
+    setShowBookingModal(true);
+  };
+
+  // Handle authentication popup close
+  const handleAuthClose = () => {
+    setShowAuthPopup(false);
+    
+    // Check if user is now authenticated after popup closes
+    if (pendingBooking) {
+      const token = localStorage.getItem('authToken');
+      const user1 = localStorage.getItem('user1');
+      
+      if (token && user1) {
+        console.log('User authenticated after popup, proceeding with bus booking');
+        proceedWithBooking();
+      } else {
+        console.log('User still not authenticated, clearing pending booking');
+      }
+      setPendingBooking(false);
+    }
+  };
+
   // Save boarding point to localStorage when it changes
   useEffect(() => {
     if (selectedBoarding) {
-      localStorage.setItem("selectedBoardingPoint", selectedBoarding);
+      setEncryptedItem("selectedBoardingPoint", selectedBoarding);
     }
   }, [selectedBoarding]);
 
   // Save dropping point to localStorage when it changes
   useEffect(() => {
     if (selectedDropping) {
-      localStorage.setItem("selectedDroppingPoint", selectedDropping);
+      setEncryptedItem("selectedDroppingPoint", selectedDropping);
     }
   }, [selectedDropping]);
 
   // Get search parameters from localStorage
   const getSearchParams = () => {
-    return JSON.parse(localStorage.getItem("busSearchparams") || "{}");
+    return getEncryptedItem("busSearchparams") || {};
   };
 
   // Clear old localStorage data and fetch seat layout data when component mounts
@@ -101,15 +131,10 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
 
   // Fetch booking details from Redux store and localStorage
   useEffect(() => {
-    console.log("=== FETCHING BOOKING DETAILS ===");
-    console.log("1. Redux busBookingDetails:", busBookingDetails);
-
     // Only set booking details from Redux or localStorage (for initial load),
     // but do NOT persist any gender info to localStorage
-    const busBookingData = localStorage.getItem("busBookingData");
-    if (busBookingData) {
-      try {
-        const parsedData = JSON.parse(busBookingData);
+    const parsedData = getEncryptedItem("busBookingData");
+    if (parsedData) {
         let passengerData = null;
         if (parsedData.blockData?.Passenger) {
           passengerData = parsedData.blockData.Passenger;
@@ -121,9 +146,6 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
         if (passengerData) {
           setBookingDetails({ Passenger: passengerData });
         }
-      } catch (error) {
-        // ignore
-      }
     }
     if (busBookingDetails?.GetBookingDetailResult?.Itinerary?.Passenger) {
       const passengerData = busBookingDetails.GetBookingDetailResult.Itinerary.Passenger;
@@ -135,13 +157,11 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
   useEffect(() => {
     const handleStorageChange = (e) => {
       if (e.key === "busBookingData") {
-        console.log("9. localStorage busBookingData changed:", e.newValue);
         if (e.newValue) {
           try {
             const parsedData = JSON.parse(e.newValue);
             if (parsedData.GetBookingDetailResult?.Itinerary?.Passenger) {
               const passengerData = parsedData.GetBookingDetailResult.Itinerary.Passenger;
-              console.log("10. Updated booking details from localStorage:", passengerData);
               setBookingDetails({ Passenger: passengerData });
             }
           } catch (error) {
@@ -420,12 +440,12 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
     setSelectedSeats(newSelectedSeats);
 
     // Store selected seats in localStorage
-    localStorage.setItem("selectedSeats", JSON.stringify(newSelectedSeats));
+    setEncryptedItem("selectedSeats", newSelectedSeats);
 
     // Store original seat layout data for block request
     if (seatLayoutData && seatLayoutData.GetBusSeatLayOutResult) {
       const originalSeatLayout = seatLayoutData.GetBusSeatLayOutResult.SeatLayoutDetails;
-      localStorage.setItem("originalSeatLayoutData", JSON.stringify(originalSeatLayout));
+      setEncryptedItem("originalSeatLayoutData", originalSeatLayout);
     }
 
     // Also store simplified seat data for compatibility
@@ -445,7 +465,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
         originalSeatInfo: s.seatInfo // Store original seat info
       }))
     };
-    localStorage.setItem("seatLayoutData", JSON.stringify(simplifiedSeatLayoutData));
+    setEncryptedItem("seatLayoutData", simplifiedSeatLayoutData);
   };
 
   const getSeatClass = (seat) => {
@@ -1933,11 +1953,28 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
                 return;
               }
 
-              // Only open modal if both boarding and dropping points are selected
+              // Check if user is authenticated
+              const token = localStorage.getItem('authToken');
+              const user1 = localStorage.getItem('user1');
+              
+              console.log('Bus booking authentication check:', { 
+                hasToken: !!token, 
+                hasUser1: !!user1,
+                busName: currentBus?.BusName || 'Unknown Bus'
+              });
+              
+              if (!token || !user1) {
+                // User is not authenticated, show authentication popup
+                console.log('User not authenticated, showing auth popup for bus booking');
+                setPendingBooking(true);
+                setShowAuthPopup(true);
+                return;
+              }
+              
+              console.log('User authenticated, proceeding with bus booking');
+              // Only open modal if both boarding and dropping points are selected and user is authenticated
               if (selectedBoarding.trim() && selectedDropping.trim()) {
-                // Store current bus data in localStorage
-                localStorage.setItem("selectedBusData", JSON.stringify(currentBus));
-                setShowBookingModal(true);
+                proceedWithBooking();
               }
             }}
             style={{ padding: "12px 30px", fontSize: "16px", fontWeight: "600" }}
@@ -1984,6 +2021,13 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
           </div>
         </div>
       )}
+
+      {/* Authentication Popup */}
+      <AuthPopup 
+        isOpen={showAuthPopup} 
+        onClose={handleAuthClose} 
+        mode="login" 
+      />
 
     </div>
   );

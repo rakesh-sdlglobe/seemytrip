@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { BusBookingPage } from './bus_booking_detail_page';
+import { setEncryptedItem } from '../../utils/encryption';
 
 const BusBookingModal = ({ 
   isOpen, 
@@ -12,10 +13,10 @@ const BusBookingModal = ({
   // Store data in localStorage when modal opens
   useEffect(() => {
     if (isOpen) {
-      localStorage.setItem("selectedBusData", JSON.stringify(currentBus));
-      localStorage.setItem("selectedSeats", JSON.stringify(selectedSeats));
-      localStorage.setItem("selectedBoardingPoint", selectedBoarding || "");
-      localStorage.setItem("selectedDroppingPoint", selectedDropping || "");
+      setEncryptedItem("selectedBusData", currentBus);
+      setEncryptedItem("selectedSeats", selectedSeats);
+      setEncryptedItem("selectedBoardingPoint", selectedBoarding || "");
+      setEncryptedItem("selectedDroppingPoint", selectedDropping || "");
     }
   }, [isOpen, currentBus, selectedSeats, selectedBoarding, selectedDropping]);
 

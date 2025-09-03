@@ -18,6 +18,7 @@ import {
   updateBusBookingStatus,
   fetchBusSeatLayout
 } from '../../store/Actions/busActions';
+import { getEncryptedItem, setEncryptedItem } from '../../utils/encryption';
 
 const BusBookingPayment = () => {
   const location = useLocation();
@@ -33,9 +34,9 @@ const BusBookingPayment = () => {
   }, []);
 
   // Get data from navigation state or localStorage
-  const blockResponse = location.state?.blockData || JSON.parse(localStorage.getItem("blockResponse") || "{}");
+  const blockResponse = location.state?.blockData || getEncryptedItem("blockResponse") || {};
   const blockData = blockResponse.BlockResult || blockResponse;
-  const busData = location.state?.busData || JSON.parse(localStorage.getItem("selectedBusData") || "{}");
+  const busData = location.state?.busData || getEncryptedItem("selectedBusData") || {};
   const formData = location.state?.formData || {};
 
   // Extract form data
@@ -63,40 +64,30 @@ const BusBookingPayment = () => {
 
     // Only log once when component mounts
     if (!hasLogged) {
-      console.log("Payment page - blockResponse:", blockResponse);
-      console.log("Payment page - blockData:", blockData);
-      console.log("Payment page - busData:", busData);
-      console.log("Payment page - formData:", formData);
       setHasLogged(true);
     }
-    
+
     // Check if we have any block data in any format
     const hasBlockData = blockData && Object.keys(blockData).length > 0;
     const hasBlockResponse = blockResponse && Object.keys(blockResponse).length > 0;
-    
+
     if (!hasBlockData && !hasBlockResponse) {
-      console.log("No block data available, checking localStorage...");
-      const storedBlockResponse = localStorage.getItem("blockResponse");
+      const storedBlockResponse = getEncryptedItem("blockResponse");
       if (storedBlockResponse) {
-        console.log("Found block data in localStorage, but not reloading page to prevent infinite loop");
         // Don't reload the page as it causes infinite loops
         // Instead, try to parse and use the stored data
         try {
-          const parsedData = JSON.parse(storedBlockResponse);
+          const parsedData = storedBlockResponse;
           if (parsedData && Object.keys(parsedData).length > 0) {
-            console.log("Using stored block data from localStorage");
             return; // Continue with the component
           }
         } catch (error) {
           console.error("Error parsing stored block data:", error);
         }
       }
-      
-      console.log("No block data found anywhere");
+
       toast.error("No booking data found. Please start over.");
       navigate('/bus-list');
-    } else {
-      console.log("Block data found, proceeding with payment page");
     }
   }, [isInitialized, hasLogged, blockData, blockResponse, busData, formData, navigate]); // Added proper dependencies
 
@@ -125,7 +116,7 @@ const BusBookingPayment = () => {
 
     // Check block expiry every 60 seconds (less aggressive)
     const blockCheckTimer = setInterval(() => {
-      const blockTimestamp = localStorage.getItem("blockTimestamp");
+      const blockTimestamp = getEncryptedItem("blockTimestamp");
       if (blockTimestamp) {
         const blockTime = parseInt(blockTimestamp);
         const currentTime = Date.now();
@@ -133,7 +124,6 @@ const BusBookingPayment = () => {
         const maxBlockTime = 6 * 60 * 1000; // 6 minutes in milliseconds
         
         if (timeDiff > maxBlockTime) {
-          console.log("Block expired, redirecting to bus list");
           toast.error('Seat block has expired. Please start over.');
           // Clear the expired data from localStorage
           localStorage.removeItem("blockResponse");
@@ -233,12 +223,9 @@ const BusBookingPayment = () => {
   
   // Validate block status before payment
   const validateBlockStatus = () => {
-    console.log("=== VALIDATING BLOCK STATUS ===");
-    const blockTimestamp = localStorage.getItem("blockTimestamp");
-    console.log("Block timestamp from localStorage:", blockTimestamp);
+    const blockTimestamp = getEncryptedItem("blockTimestamp");
     
     if (!blockTimestamp) {
-      console.log("No block timestamp found - redirecting to bus-list");
       toast.error('No valid seat block found. Please start over.');
       navigate('/bus-list');
       return false;
@@ -248,47 +235,31 @@ const BusBookingPayment = () => {
     const currentTime = Date.now();
     const timeDiff = currentTime - blockTime;
     const maxBlockTime = 6 * 60 * 1000; // 6 minutes in milliseconds
-    
-    console.log("Block time:", blockTime);
-    console.log("Current time:", currentTime);
-    console.log("Time difference (ms):", timeDiff);
-    console.log("Max block time (ms):", maxBlockTime);
-    console.log("Time remaining (ms):", maxBlockTime - timeDiff);
-    
+
     if (timeDiff > maxBlockTime) {
-      console.log("Block has expired - redirecting to bus-list");
       toast.error('Seat block has expired. Please start over.');
       navigate('/bus-list');
       return false;
     }
 
-    console.log("Block validation passed - proceeding with booking");
     return true;
   };
 
   // Helper: Prepare booking request (usually same as block request)
   const getBookingRequest = () => {
-    return JSON.parse(localStorage.getItem("blockRequestData") || "{}");
+    return getEncryptedItem("blockRequestData") || {};
   };
 
   // Helper: Prepare booking details request
   const getBookingDetailsRequest = (busId) => {
-    const authData = JSON.parse(localStorage.getItem("busAuthData") || "{}");
-    const searchList = JSON.parse(localStorage.getItem("busSearchList") || "{}");
-    const blockRequestData = JSON.parse(localStorage.getItem("blockRequestData") || "{}");
+    const authData = getEncryptedItem("busAuthData") || {};
+    const searchList = getEncryptedItem("busSearchList") || {};
+    const blockRequestData = getEncryptedItem("blockRequestData") || {};
     
     const TokenId = authData.TokenId || blockRequestData.TokenId;
     const EndUserIp = authData.EndUserIp || blockRequestData.EndUserIp;
     const TraceId = searchList?.BusSearchResult?.TraceId || blockRequestData.TraceId;
-    
-    console.log("=== BOOKING DETAILS REQUEST DATA ===");
-    console.log("TokenId:", TokenId);
-    console.log("EndUserIp:", EndUserIp);
-    console.log("TraceId:", TraceId);
-    console.log("BusId:", busId);
-    console.log("Auth Data:", authData);
-    console.log("Block Request Data:", blockRequestData);
-    
+
     const requestData = {
       EndUserIp,
       TraceId,
@@ -296,9 +267,7 @@ const BusBookingPayment = () => {
       BusId: busId,
       IsBaseCurrencyRequired: false
     };
-    
-    console.log("Final request data:", requestData);
-    
+
     return requestData;
   };
 
@@ -313,14 +282,14 @@ const BusBookingPayment = () => {
         addressDetails,
         travelerDetails,
         fareDetails,
-        token_id: JSON.parse(localStorage.getItem("busAuthData") || "{}").TokenId
+        token_id: (getEncryptedItem("busAuthData") || {}).TokenId
       };
 
       const result = await dispatch(createBusBooking(bookingData));
       
       if (result && result.success) {
         toast.success('Booking saved to database successfully!');
-        localStorage.setItem('currentBookingId', result.booking_id);
+        setEncryptedItem('currentBookingId', result.booking_id);
         return result.booking_id;
       } else {
         toast.error('Failed to save booking to database');
@@ -336,7 +305,7 @@ const BusBookingPayment = () => {
   // Update booking status using Redux
   const updateBookingStatus = async (bookResult) => {
     try {
-      const bookingId = localStorage.getItem('currentBookingId');
+      const bookingId = getEncryptedItem('currentBookingId');
       if (!bookingId) return;
 
       const statusData = {
@@ -347,9 +316,9 @@ const BusBookingPayment = () => {
       };
 
       const result = await dispatch(updateBusBookingStatus(bookingId, statusData));
-      
+
       if (result && result.success) {
-        console.log('Booking status updated successfully');
+        // Booking status updated successfully
       } else {
         console.error('Failed to update booking status');
       }
@@ -360,82 +329,30 @@ const BusBookingPayment = () => {
 
   // Main handler for payment
   const handleProceedToPay = async () => {
-    console.log("=== SEAT CONFIRMATION DATA ===");
-    console.log("Block Data:", blockData);
-    console.log("Bus Data:", busData);
-    console.log("Form Data:", formData);
-    console.log("Fare Details:", fareDetails);
-    
-    // Log passenger and seat details
-    console.log("=== PASSENGER & SEAT DETAILS ===");
-    if (blockData.Passenger && Array.isArray(blockData.Passenger)) {
-      blockData.Passenger.forEach((passenger, index) => {
-        console.log(`Passenger ${index + 1}:`, {
-          Name: `${passenger.FirstName} ${passenger.LastName}`,
-          Age: passenger.Age,
-          Gender: passenger.Gender,
-          Phone: passenger.Phoneno,
-          Email: passenger.Email,
-          Seat: passenger.Seat
-        });
-      });
-    }
-    
-    // Log traveler details from form
-    console.log("=== TRAVELER DETAILS FROM FORM ===");
-    if (formData.travelerDetails) {
-      Object.keys(formData.travelerDetails).forEach(seatLabel => {
-        const details = formData.travelerDetails[seatLabel];
-        console.log(`Seat ${seatLabel}:`, details);
-      });
-    }
-    
-    console.log("=== END SEAT CONFIRMATION DATA ===");
-    
-    // Debug localStorage contents
-    console.log("=== LOCALSTORAGE DEBUG ===");
-    console.log("blockTimestamp:", localStorage.getItem("blockTimestamp"));
-    console.log("blockRequestData:", localStorage.getItem("blockRequestData"));
-    console.log("blockResponse:", localStorage.getItem("blockResponse"));
-    console.log("selectedBusData:", localStorage.getItem("selectedBusData"));
-    
-    console.log("About to validate block status...");
-    
     // Validate block status first
     if (!validateBlockStatus()) {
-      console.log("Block status validation failed - returning early");
       return;
     }
-    
-    console.log("Block status validation passed - proceeding with booking");
-    
+
     try {
       // 1. Book the bus
       const bookingRequest = getBookingRequest();
-      console.log("Booking request:", bookingRequest);
-      
       const bookingResult = await dispatch(fetchBusBooking(bookingRequest));
-      console.log("Booking result:", bookingResult);
-      
+
       // 2. If booking is successful, get booking details
       if (bookingResult && bookingResult.BookResult && bookingResult.BookResult.ResponseStatus === 1) {
-        console.log("=== SAVING TO DATABASE ===");
-        
         // Save to database using Redux
         const bookingId = await saveBookingToDatabase();
-        
+
         if (bookingId) {
-          console.log("Booking saved to database with ID:", bookingId);
-          
           // Update booking status using Redux
           await updateBookingStatus(bookingResult.BookResult);
-          console.log("Booking status updated successfully");
-          
+
           // 3. Get booking details
           const busId = bookingResult.BookResult.BusId;
           const bookingDetailsRequest = getBookingDetailsRequest(busId);
           await dispatch(fetchBusBookingDetails(bookingDetailsRequest));
-          
+
           // Store booking data for confirmation page
           const bookingData = {
             blockData,
@@ -444,46 +361,43 @@ const BusBookingPayment = () => {
             fareDetails,
             bookingResult,
             bookingId, // Include the database booking ID
-            selectedBoardingPoint: localStorage.getItem("selectedBoardingPoint") || "",
-            selectedDroppingPoint: localStorage.getItem("selectedDroppingPoint") || "",
-            fromCity: localStorage.getItem("busSearchparams") ? JSON.parse(localStorage.getItem("busSearchparams")).fromCityName : "",
-            toCity: localStorage.getItem("busSearchparams") ? JSON.parse(localStorage.getItem("busSearchparams")).toCityName : ""
+            selectedBoardingPoint: getEncryptedItem("selectedBoardingPoint") || "",
+            selectedDroppingPoint: getEncryptedItem("selectedDroppingPoint") || "",
+            fromCity: (getEncryptedItem("busSearchparams") || {}).fromCityName || "",
+            toCity: (getEncryptedItem("busSearchparams") || {}).toCityName || ""
           };
           
           // Store booking result in localStorage for seat layout refresh detection
-          localStorage.setItem("bookingResult", JSON.stringify(bookingResult));
-          localStorage.setItem("bookingTimestamp", Date.now().toString());
-          localStorage.setItem("databaseBookingId", bookingId.toString());
-          
+          setEncryptedItem("bookingResult", bookingResult);
+          setEncryptedItem("bookingTimestamp", Date.now().toString());
+          setEncryptedItem("databaseBookingId", bookingId.toString());
+
           // Fetch latest seat layout after successful booking
           try {
-            const searchParams = JSON.parse(localStorage.getItem("busSearchparams") || "{}");
+            const searchParams = getEncryptedItem("busSearchparams") || {};
             const { TokenId, EndUserIp } = searchParams;
-            const currentBus = JSON.parse(localStorage.getItem("selectedBusData") || "{}");
-            
+            const currentBus = getEncryptedItem("selectedBusData") || {};
+
             if (TokenId && EndUserIp && currentBus.ResultIndex && searchParams.TraceId) {
-              console.log("Fetching latest seat layout after booking...");
               await dispatch(fetchBusSeatLayout(
                 TokenId,
                 EndUserIp,
                 currentBus.ResultIndex,
                 searchParams.TraceId
               ));
-              console.log("Latest seat layout fetched successfully");
             }
           } catch (error) {
             console.error("Error fetching latest seat layout:", error);
           }
-          
+
           // Navigate to confirmation page
           navigate('/bus-confirmation', { 
             state: { bookingData },
             replace: true 
           });
-          
+
           toast.success('Payment successful! Your booking has been confirmed and saved to database.');
         } else {
-          console.error("Failed to save booking to database");
           toast.error('Booking failed - could not save to database');
         }
       } else {

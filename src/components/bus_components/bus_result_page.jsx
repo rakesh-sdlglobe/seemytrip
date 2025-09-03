@@ -5,6 +5,7 @@ import {
   fetchBusSeatLayout,
   fetchBusBoardingPoints,
 } from "../../store/Actions/busActions";
+import { getEncryptedItem } from "../../utils/encryption";
 import {
   selectBusSearchList,
   selectBusSearchLayoutList,
@@ -137,12 +138,8 @@ const BusResultPage = ({ filters }) => {
   const observerRef = useRef();
   const ITEMS_PER_PAGE = 5;
 
-  // Add state for boarding/dropping points
-  // const [selectedBoardingPoint, setSelectedBoardingPoint] = useState('');
-  // const [selectedDroppingPoint, setSelectedDroppingPoint] = useState('');
-
   const getSearchParams = useCallback(() => {
-    return JSON.parse(localStorage.getItem("busSearchparams") || "{}");
+    return getEncryptedItem("busSearchparams") || {};
   }, []);
 
   useEffect(() => {
@@ -167,10 +164,6 @@ const BusResultPage = ({ filters }) => {
     } else {
       setOpenSeatIndex(index);
       const { TokenId, EndUserIp } = getSearchParams();
-
-      console.log("Fetching seat layout and boarding points for bus:", bus);
-      console.log("Using TokenId:", TokenId, "EndUserIp:", EndUserIp);
-      console.log("TraceId:", searchList?.BusSearchResult?.TraceId);
 
       // Fetch seat layout data
       dispatch(
@@ -235,33 +228,6 @@ const BusResultPage = ({ filters }) => {
 
     return result.join(' ');
   };
-
-  // // Get boarding and dropping points from current bus data
-  // const getBoardingPoints = (bus) => {
-  //   if (!bus || !bus.BoardingPointsDetails || bus.BoardingPointsDetails.length === 0) {
-  //     return [];
-  //   }
-
-  //   return bus.BoardingPointsDetails.map(point => ({
-  //     location: point.CityPointName,
-  //     time: point.CityPointTime,
-  //     phone: '7303093510',
-  //     address: point.CityPointLocation || ''
-  //   }));
-  // };
-
-  // const getDroppingPoints = (bus) => {
-  //   if (!bus || !bus.DroppingPointsDetails || bus.DroppingPointsDetails.length === 0) {
-  //     return [];
-  //   }
-
-  //   return bus.DroppingPointsDetails.map(point => ({
-  //     location: point.CityPointName,
-  //     time: point.CityPointTime,
-  //     address: point.CityPointLocation || '',
-  //     note: point.CityPointLocation || ''
-  //   }));
-  // };
 
   const getHour = (dateTimeStr) => {
     if (!dateTimeStr) return null;
@@ -438,13 +404,6 @@ const BusResultPage = ({ filters }) => {
           onChange={e => setTravelNameFilter(e.target.value)}
         />
       </div>
-      {/* <div className="row align-items-center justify-content-between">
-        <div className="col-xl-4 col-lg-4 col-md-4">
-          <h5 className="fw-bold fs-6 mb-lg-0 mb-3">
-            Showing {loading ? "..." : paginatedResults.length} of {sortedResults.length} Search Results
-          </h5>
-        </div>
-      </div> */}
 
       <div className="row align-items-center g-2 mt-2">
         {loading ? (
@@ -566,9 +525,6 @@ const BusResultPage = ({ filters }) => {
                 <ResultSkeleton />
               </div>
             )}
-
-
-
           </>
         )}
       </div>

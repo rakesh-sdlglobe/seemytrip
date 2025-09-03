@@ -1,22 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Header02 from '../header02';
 import Footer from '../footer';
+import AuthPopup from '../auth/AuthPopup';
 import { 
   selectIsInsuranceSearching, 
   selectInsuranceSearchError,
-  selectInsurancePlans,
+  selectInsuranceSearchResults,
   selectInsurancePlanCount 
 } from '../../store/Selectors/insuranceSelectors';
+import { getInsuranceList } from '../../store/Actions/insuranceAction';
+import { getEncryptedItem } from '../../utils/encryption';
 import { FaTimes, FaShieldAlt } from 'react-icons/fa';
 
 const InsuranceList = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const dispatch = useDispatch();
   const loading = useSelector(selectIsInsuranceSearching);
   const error = useSelector(selectInsuranceSearchError);
-  const plans = useSelector(selectInsurancePlans);
+  const plans = useSelector(selectInsuranceSearchResults);
   const planCount = useSelector(selectInsurancePlanCount);
+  
+
   
   // State for selected plans and pagination
   const [selectedPlans, setSelectedPlans] = useState([]);
@@ -24,20 +31,54 @@ const InsuranceList = () => {
   const [searchCriteria, setSearchCriteria] = useState({});
   const [showCoverDetailsModal, setShowCoverDetailsModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
+  const [showAuthPopup, setShowAuthPopup] = useState(false);
+  const [pendingPlan, setPendingPlan] = useState(null);
   const plansPerPage = 6;
 
-  // Load search criteria from localStorage
+  // Load search criteria from navigation state or localStorage
   useEffect(() => {
-    const stored = localStorage.getItem('insuranceSearchParams');
-    if (stored) {
-      try {
-        const params = JSON.parse(stored);
+    const state = location.state;
+    
+    if (state && state.searchParams) {
+      setSearchCriteria(state.searchParams);
+      
+      // Fetch insurance data if we have search criteria
+      if (state.searchParams && Object.keys(state.searchParams).length > 0) {
+        fetchInsuranceData(state.searchParams);
+      }
+    } else {
+      // Fallback to localStorage for form data
+      const params = getEncryptedItem('insuranceSearchParams');
+      if (params) {
         setSearchCriteria(params);
-      } catch (e) {
-        console.error('Error parsing stored search params:', e);
+        
+        // Fetch insurance data if we have search criteria
+        if (params && Object.keys(params).length > 0) {
+          fetchInsuranceData(params);
+        }
       }
     }
-  }, []);
+  }, [location.state]);
+
+  // Function to fetch insurance data
+  const fetchInsuranceData = async (searchParams) => {
+    try {
+      // Prepare the search data based on the API structure
+      const searchData = {
+        PlanType: searchParams.planType || 1,
+        PlanCoverage: searchParams.planCoverage || 4,
+        TravelStartDate: searchParams.departDate || new Date().toISOString().split('T')[0],
+        TravelEndDate: searchParams.returnDate || new Date().toISOString().split('T')[0],
+        NoOfPax: searchParams.passengerCount || 1,
+        PaxAge: searchParams.passengerAges || [25],
+        PlanCategory: searchParams.planCategory || 1
+      };
+      
+      await dispatch(getInsuranceList(searchData));
+    } catch (error) {
+      console.error('Error fetching insurance data:', error);
+    }
+  };
 
   // Handle escape key to close modal
   useEffect(() => {
@@ -58,8 +99,6 @@ const InsuranceList = () => {
     };
   }, [showCoverDetailsModal]);
 
-
-
   // Handle plan selection
   const handlePlanSelection = (planId) => {
     setSelectedPlans(prev => 
@@ -67,6 +106,52 @@ const InsuranceList = () => {
         ? prev.filter(id => id !== planId)
         : [...prev, planId]
     );
+  };
+
+  // Handle plan booking
+  const handlePlanBooking = (plan) => {
+    // Check if user is authenticated
+    const token = localStorage.getItem('authToken');
+    const user1 = localStorage.getItem('user1');
+    
+    if (!token || !user1) {
+      // User is not authenticated, show authentication popup
+      setPendingPlan(plan);
+      setShowAuthPopup(true);
+      return;
+    }
+    
+    proceedWithBooking(plan);
+  };
+
+  // Function to proceed with booking
+  const proceedWithBooking = (plan) => {
+    // Navigate to booking details page with all necessary data
+    navigate('/insurance-booking-page', { 
+      state: { 
+        planId: plan.ResultIndex,
+        plan: plan,
+        searchParams: searchCriteria,
+        authData: location.state?.authData,
+        traceId: location.state?.traceId
+      } 
+    });
+  };
+
+  // Handle authentication popup close
+  const handleAuthClose = () => {
+    setShowAuthPopup(false);
+    
+    // Check if user is now authenticated after popup closes
+    if (pendingPlan) {
+      const token = localStorage.getItem('authToken');
+      const user1 = localStorage.getItem('user1');
+      
+      if (token && user1) {
+        proceedWithBooking(pendingPlan);
+      }
+      setPendingPlan(null);
+    }
   };
 
   // Handle cover details click
@@ -95,10 +180,10 @@ const InsuranceList = () => {
   };
 
   // Pagination
-  const totalPages = Math.ceil(plans.length / plansPerPage);
+  const totalPages = Math.ceil((plans?.length || 0) / plansPerPage);
   const startIndex = (currentPage - 1) * plansPerPage;
   const endIndex = startIndex + plansPerPage;
-  const currentPlans = plans.slice(startIndex, endIndex);
+  const currentPlans = plans ? plans.slice(startIndex, endIndex) : [];
 
   if (loading) {
     return (
@@ -133,9 +218,12 @@ const InsuranceList = () => {
                 <p>{error}</p>
                 <hr />
                 <p className="mb-0">
-                  <Link to="/home-insurance" className="btn btn-outline-danger">
+                  <button 
+                    className="btn btn-outline-danger"
+                    onClick={() => fetchInsuranceData(searchCriteria)}
+                  >
                     Try Again
-                  </Link>
+                  </button>
                 </p>
               </div>
             </div>
@@ -296,19 +384,23 @@ const InsuranceList = () => {
                       <div className="text-center me-4">
                         <div className="fw-bold">Start Date</div>
                         <div className="text-muted small">
-                          {searchCriteria.departDate && new Date(searchCriteria.departDate).toLocaleDateString('en-GB', { 
+                          {plan.PolicyStartDate && new Date(plan.PolicyStartDate).toLocaleDateString('en-GB', { 
                             day: '2-digit', 
                             month: 'short' 
                           })}
                         </div>
                       </div>
                       <div className="text-center mx-3">
-                        <div className="text-muted fw-semibold">{searchCriteria.duration || 1} Day(s)</div>
+                        <div className="text-muted fw-semibold">
+                          {plan.PolicyStartDate && plan.PolicyEndDate ? 
+                            Math.ceil((new Date(plan.PolicyEndDate) - new Date(plan.PolicyStartDate)) / (1000 * 60 * 60 * 24)) : 
+                            searchCriteria.duration || 1} Day(s)
+                          </div>
                       </div>
                       <div className="text-center ms-4">
                         <div className="fw-bold">End Date</div>
                         <div className="text-muted small">
-                          {searchCriteria.returnDate && new Date(searchCriteria.returnDate).toLocaleDateString('en-GB', { 
+                          {plan.PolicyEndDate && new Date(plan.PolicyEndDate).toLocaleDateString('en-GB', { 
                             day: '2-digit', 
                             month: 'short' 
                           })}
@@ -342,7 +434,7 @@ const InsuranceList = () => {
                               Email
                             </label>
                           </div>
-                          <button className="btn btn-danger hover-btn-color-white">
+                          <button className="btn btn-danger hover-btn-color-white" onClick={() => handlePlanBooking(plan)}>
                             Choose This
                           </button>
                         </div>
@@ -460,13 +552,13 @@ const InsuranceList = () => {
               </button>
             </div>
 
-                         {/* Modal Body */}
-             <div className="modal-body" style={{ padding: '24px' }}>
-               {/* Coverage Details Table */}
-               <div className="coverage-details-section">
-                 <h5 className="fw-bold text-dark mb-3">Coverage Details</h5>
-                 
-                 <div className="table-responsive">
+            {/* Modal Body */}
+            <div className="modal-body" style={{ padding: '24px' }}>
+              {/* Coverage Details Table */}
+              <div className="coverage-details-section">
+                <h5 className="fw-bold text-dark mb-3">Coverage Details</h5>
+                
+                <div className="table-responsive">
                   <table className="table table-hover" style={{
                     border: '1px solid #dee2e6',
                     borderRadius: '8px',
@@ -505,53 +597,53 @@ const InsuranceList = () => {
                         </th>
                       </tr>
                     </thead>
-                                                              <tbody>
-                        {selectedPlan.CoverageDetails && Array.isArray(selectedPlan.CoverageDetails) && selectedPlan.CoverageDetails.length > 0 ? (
-                          selectedPlan.CoverageDetails.map((coverage, index) => (
-                            <tr key={index} style={{ borderBottom: '1px solid #f1f3f4' }}>
-                              <td style={{
-                                padding: '16px',
-                                fontWeight: '500',
-                                color: '#212529',
-                                fontSize: '14px',
-                                verticalAlign: 'middle'
-                              }}>
-                                {coverage.Coverage}
-                              </td>
-                              <td style={{
-                                padding: '16px',
-                                textAlign: 'center',
-                                fontWeight: '600',
-                                color: '#28a745',
-                                fontSize: '14px',
-                                verticalAlign: 'middle'
-                              }}>
-                                {coverage.SumCurrency} {coverage.SumInsured}
-                              </td>
-                              <td style={{
-                                padding: '16px',
-                                textAlign: 'center',
-                                color: '#6c757d',
-                                fontSize: '14px',
-                                verticalAlign: 'middle'
-                              }}>
-                                {coverage.Excess || '-'}
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan="3" style={{
-                              padding: '24px',
+                    <tbody>
+                      {selectedPlan.CoverageDetails && Array.isArray(selectedPlan.CoverageDetails) && selectedPlan.CoverageDetails.length > 0 ? (
+                        selectedPlan.CoverageDetails.map((coverage, index) => (
+                          <tr key={index} style={{ borderBottom: '1px solid #f1f3f4' }}>
+                            <td style={{
+                              padding: '16px',
+                              fontWeight: '500',
+                              color: '#212529',
+                              fontSize: '14px',
+                              verticalAlign: 'middle'
+                            }}>
+                              {coverage.Coverage}
+                            </td>
+                            <td style={{
+                              padding: '16px',
+                              textAlign: 'center',
+                              fontWeight: '600',
+                              color: '#28a745',
+                              fontSize: '14px',
+                              verticalAlign: 'middle'
+                            }}>
+                              {coverage.SumCurrency} {coverage.SumInsured}
+                            </td>
+                            <td style={{
+                              padding: '16px',
                               textAlign: 'center',
                               color: '#6c757d',
-                              fontSize: '14px'
+                              fontSize: '14px',
+                              verticalAlign: 'middle'
                             }}>
-                              No coverage details available for this plan.
+                              {coverage.Excess || '-'}
                             </td>
                           </tr>
-                        )}
-                      </tbody>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="3" style={{
+                            padding: '24px',
+                            textAlign: 'center',
+                            color: '#6c757d',
+                            fontSize: '14px'
+                          }}>
+                            No coverage details available for this plan.
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
                   </table>
                 </div>
               </div>
@@ -690,6 +782,13 @@ const InsuranceList = () => {
           }
         }
       `}</style>
+      
+      {/* Authentication Popup */}
+      <AuthPopup 
+        isOpen={showAuthPopup} 
+        onClose={handleAuthClose} 
+        mode="login" 
+      />
       
       <Footer />
     </>

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { selectBusAuthData,selectBusSearchList } from "../Selectors/busSelectors";
+import { setEncryptedItem, getEncryptedItem } from "../../utils/encryption";
 
 // Action types
 export const FETCH_BUS_CITY_LIST_REQUEST = "FETCH_BUS_CITY_LIST_REQUEST";
@@ -127,7 +128,7 @@ export const fetchBusSearch = (searchParams) => async (dispatch) => {
 
     if (response.data) {
       // Store the search response in localStorage for booking
-      localStorage.setItem('busSearchResponse', JSON.stringify(response.data));
+      setEncryptedItem('busSearchResponse', response.data);
       dispatch(fetchBusSearchSuccess(response.data));
     } else {
       dispatch(fetchBusSearchFailure("No bus search results found"));
@@ -182,7 +183,7 @@ export const fetchBusSeatLayout =
         }
 
         // Re-search to get new TraceId
-        const searchParams = JSON.parse(localStorage.getItem('busSearchparams') || '{}');
+        const searchParams = getEncryptedItem('busSearchparams') || {};
         await dispatch(fetchBusSearch({
           ...searchParams,
           TokenId: authData.TokenId,
@@ -355,7 +356,7 @@ export const fetchBusBooking = (bookingData) => async (dispatch, getState) => {
           }
 
           // Re-search to get new TraceId
-          const searchParams = JSON.parse(localStorage.getItem('busSearchparams') || '{}');
+          const searchParams = getEncryptedItem('busSearchparams') || {};
           await dispatch(fetchBusSearch({
             ...searchParams,
             TokenId: authData.TokenId,
@@ -525,7 +526,7 @@ export const fetchBusBookingDetails = (bookingDetailsData) => async (dispatch) =
       dispatch(createBusBookingRequest());
 
       // Get the search response from localStorage
-      const searchResponse = JSON.parse(localStorage.getItem('busSearchResponse') || '{}');
+      const searchResponse = getEncryptedItem('busSearchResponse') || {};
       
       // Add the search response to the booking data
       const bookingDataWithSearch = {
