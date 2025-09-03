@@ -8,6 +8,7 @@ import {
   fetchBusSearch,
   fetchBusCityListIfNeeded,
 } from "../../store/Actions/busActions";
+import { setEncryptedItem, getEncryptedItem } from "../../utils/encryption";
 import {
   selectBusSearchLoading,
   selectBusError,
@@ -41,10 +42,8 @@ const BusSearch = () => {
 
   // Prefill from localStorage on all pages
   useEffect(() => {
-    const stored = localStorage.getItem('busSearchparams');
-    if (stored) {
-      try {
-        const params = JSON.parse(stored);
+    const params = getEncryptedItem('busSearchparams');
+    if (params) {
         if (params.fromCityId && params.fromCityName) {
           setFromCity({ value: params.fromCityId, label: params.fromCityName });
         }
@@ -54,9 +53,6 @@ const BusSearch = () => {
         if (params.date && /^\d{4}-\d{2}-\d{2}$/.test(params.date)) {
           setStartDate(new Date(params.date + 'T00:00:00'));
         }
-      } catch (e) {
-        // ignore parse errors
-      }
     }
   }, []);
 
@@ -160,7 +156,7 @@ const BusSearch = () => {
       TokenId: authData.TokenId,
       EndUserIp: authData.EndUserIp,
     };
-    localStorage.setItem('busSearchparams', JSON.stringify(searchParams));
+    setEncryptedItem('busSearchparams', searchParams);
     dispatch(fetchBusSearch({
       DateOfJourney: searchParams.date,
       OriginId: searchParams.fromCityId,

@@ -7,6 +7,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { fetchBusBookingDetails } from '../../store/Actions/busActions';
 import { selectBusBookingDetails, selectBusBookingDetailsLoading } from '../../store/Selectors/busSelectors';
+import { getEncryptedItem } from '../../utils/encryption';
 import logo from '../../assets/images/train-4 (1).png'
 
 const Bus_Comfirmation_Page = () => {
@@ -21,16 +22,10 @@ const Bus_Comfirmation_Page = () => {
   const bookingDetailsLoading = useSelector(selectBusBookingDetailsLoading);
 
   useEffect(() => {
-    console.log("Bus_Comfirmation_Page: Component mounted");
-    console.log("Location state:", location.state);
-    
     // Get booking data from location state or localStorage
-    const data = location.state?.bookingData || JSON.parse(localStorage.getItem("busBookingData") || "{}");
-    
-    console.log("Booking data retrieved:", data);
-    
+    const data = location.state?.bookingData || getEncryptedItem("busBookingData") || {};
+
     if (data && Object.keys(data).length > 0) {
-      console.log("Setting booking data:", data);
       setBookingData(data);
       
       // Fetch booking details from API if we have booking information
@@ -40,20 +35,14 @@ const Bus_Comfirmation_Page = () => {
         
         if (busId) {
           // Get parameters from localStorage like in payment page
-          const authData = JSON.parse(localStorage.getItem("busAuthData") || "{}");
-          const searchList = JSON.parse(localStorage.getItem("busSearchList") || "{}");
-          const blockRequestData = JSON.parse(localStorage.getItem("blockRequestData") || "{}");
-          
+          const authData = getEncryptedItem("busAuthData") || {};
+          const searchList = getEncryptedItem("busSearchList") || {};
+          const blockRequestData = getEncryptedItem("blockRequestData") || {};
+
           const TokenId = authData.TokenId || blockRequestData.TokenId;
           const EndUserIp = authData.EndUserIp || blockRequestData.EndUserIp;
           const TraceId = searchList?.BusSearchResult?.TraceId || blockRequestData.TraceId;
-          
-          console.log("=== CONFIRMATION PAGE BOOKING DETAILS REQUEST ===");
-          console.log("TokenId:", TokenId);
-          console.log("EndUserIp:", EndUserIp);
-          console.log("TraceId:", TraceId);
-          console.log("BusId:", busId);
-          
+
           const bookingDetailsData = {
             EndUserIp,
             TraceId,
@@ -61,24 +50,18 @@ const Bus_Comfirmation_Page = () => {
             BusId: busId,
             IsBaseCurrencyRequired: false
           };
-          
-          console.log("Fetching booking details for:", bookingDetailsData);
+
           dispatch(fetchBusBookingDetails(bookingDetailsData));
-        } else {
-          console.log("No BusId found, skipping booking details API call");
         }
       }
     } else {
-      console.log("No booking data found, redirecting to bus-list");
       toast.error("No booking data found. Please start over.");
       navigate('/bus-list');
       return;
     }
-    
+
     setLoading(false);
   }, [location.state, navigate, dispatch]);
-
-
 
   // Format date
   const formatDate = (dateString) => {
@@ -460,13 +443,11 @@ const Bus_Comfirmation_Page = () => {
                                 <div className="text-muted small mb-2">
                                   {passenger.Age}Yrs, {
                                     (() => {
-                                      console.log(`Passenger ${passenger.FirstName} gender value:`, passenger.Gender, 'Type:', typeof passenger.Gender);
                                       if (passenger.Gender === 1 || passenger.Gender === '1' || passenger.Gender === 'MALE' || passenger.Gender === 'male') {
                                         return 'MALE';
                                       } else if (passenger.Gender === 2 || passenger.Gender === '2' || passenger.Gender === 'FEMALE' || passenger.Gender === 'female') {
                                         return 'FEMALE';
                                       } else {
-                                        console.log(`Unknown gender value for ${passenger.FirstName}:`, passenger.Gender);
                                         return 'OTHER';
                                       }
                                     })()

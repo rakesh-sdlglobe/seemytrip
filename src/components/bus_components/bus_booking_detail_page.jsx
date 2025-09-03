@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { selectBusBoardingPoints, selectBusAuthData, selectBusSearchList } from "../../store/Selectors/busSelectors";
 import { fetchBusBlock } from "../../store/Actions/busActions";
+import { getEncryptedItem, setEncryptedItem } from "../../utils/encryption";
 import Header02 from "../header02";
 import FooterDark from "../footer-dark";
 import { bus } from "../../assets/images";
@@ -19,15 +20,7 @@ export const BusBookingPage = ({ isModal = false }) => {
   // Bus data from navigation state or localStorage
   const busData =
     location.state?.busData ||
-    JSON.parse(localStorage.getItem("selectedBusData") || "{}");
-    
-  // Debug log for bus data
-  console.log('Bus data:', busData);
-  console.log('Departure time:', busData.DepartureTime);
-  console.log('Arrival time:', busData.ArrivalTime);
-  console.log('Bus data keys:', busData ? Object.keys(busData) : 'No bus data');
-  console.log('Duration field:', busData.Duration);
-  console.log('Full bus data structure:', JSON.stringify(busData, null, 2));
+    getEncryptedItem("selectedBusData") || {};
 
   // Check if bus data is available
   const isBusDataAvailable = busData && Object.keys(busData).length > 0;
@@ -35,10 +28,10 @@ export const BusBookingPage = ({ isModal = false }) => {
   // State for form data
   const [selectedSeat, setSelectedSeat] = useState("DU3");
   const [selectedBoardingPoint, setSelectedBoardingPoint] = useState(
-    localStorage.getItem("selectedBoardingPoint") || ""
+    getEncryptedItem("selectedBoardingPoint") || ""
   );
   const [selectedDroppingPoint, setSelectedDroppingPoint] = useState(
-    localStorage.getItem("selectedDroppingPoint") || ""
+    getEncryptedItem("selectedDroppingPoint") || ""
   );
   const [showGSTDetails, setShowGSTDetails] = useState(false);
   
@@ -53,36 +46,13 @@ export const BusBookingPage = ({ isModal = false }) => {
 
   // Load selected seats from localStorage on component mount
   useEffect(() => {
-    const seatsFromStorage = JSON.parse(localStorage.getItem("selectedSeats") || "[]");
-    console.log('Loading selected seats from localStorage:', seatsFromStorage);
+    const seatsFromStorage = getEncryptedItem("selectedSeats") || [];
     setSelectedSeats(seatsFromStorage);
     
-    // Debug: Check seat layout data
+    // Check seat layout data
     try {
-      const seatLayoutData = JSON.parse(localStorage.getItem("seatLayoutData") || "{}");
-      console.log('Seat layout data:', seatLayoutData);
-      if (seatLayoutData.seats) {
-        console.log('Available seats:', seatLayoutData.seats);
-        console.log('Seat count:', seatLayoutData.seats.length);
-        
-        // Validate seat data structure
-        seatLayoutData.seats.forEach((seat, index) => {
-          console.log(`Seat ${index}:`, {
-            label: seat.label,
-            seatIndex: seat.seatIndex,
-            rowNo: seat.rowNo,
-            columnNo: seat.columnNo,
-            price: seat.price,
-            seatType: seat.seatType,
-            hasOriginalSeatInfo: !!seat.originalSeatInfo,
-            hasPrice: !!seat.Price
-          });
-        });
-      }
-      
-      // Also check original seat layout data
-      const originalSeatLayout = JSON.parse(localStorage.getItem("originalSeatLayoutData") || "{}");
-      console.log('Original seat layout data:', originalSeatLayout);
+      const seatLayoutData = getEncryptedItem("seatLayoutData") || {};
+      const originalSeatLayout = getEncryptedItem("originalSeatLayoutData") || {};
       
     } catch (error) {
       console.error('Error parsing seat layout data:', error);
@@ -94,24 +64,24 @@ export const BusBookingPage = ({ isModal = false }) => {
       // Get seat data to check for gender restrictions
       let autoGender = "";
       try {
-        const seatLayoutData = JSON.parse(localStorage.getItem("seatLayoutData") || "{}");
+        const seatLayoutData = getEncryptedItem("seatLayoutData") || {};
         const seatData = seatLayoutData.seats?.find(s => s.label === seatLabel);
         
         if (seatData) {
           // Check if seat is ladies-only
           if (seatData.isLadiesSeat === true || seatData.originalSeatInfo?.IsLadiesSeat === true) {
             autoGender = "female";
-            console.log(`Seat ${seatLabel} is ladies-only, auto-selecting female`);
+
           }
           // Check if seat is males-only
           else if (seatData.isMalesSeat === true || seatData.originalSeatInfo?.IsMalesSeat === true) {
             autoGender = "male";
-            console.log(`Seat ${seatLabel} is males-only, auto-selecting male`);
+
           }
         }
         
         // Also check original seat layout data
-        const originalSeatLayout = JSON.parse(localStorage.getItem("originalSeatLayoutData") || "{}");
+        const originalSeatLayout = getEncryptedItem("originalSeatLayoutData") || {};
         if (originalSeatLayout.SeatLayout && originalSeatLayout.SeatLayout.SeatDetails) {
           for (let rowIndex = 0; rowIndex < originalSeatLayout.SeatLayout.SeatDetails.length; rowIndex++) {
             const row = originalSeatLayout.SeatLayout.SeatDetails[rowIndex];
@@ -123,10 +93,10 @@ export const BusBookingPage = ({ isModal = false }) => {
                   if (seatName === seatLabel) {
                     if (seat.IsLadiesSeat === true) {
                       autoGender = "female";
-                      console.log(`Seat ${seatLabel} is ladies-only (from original data), auto-selecting female`);
+
                     } else if (seat.IsMalesSeat === true) {
                       autoGender = "male";
-                      console.log(`Seat ${seatLabel} is males-only (from original data), auto-selecting male`);
+
                     }
                     break;
                   }
@@ -148,7 +118,7 @@ export const BusBookingPage = ({ isModal = false }) => {
         gender: autoGender, // Set gender based on seat restrictions
       };
     });
-    console.log('Initializing traveler details with auto gender selection:', initialDetails);
+
     setTravelerDetails(initialDetails);
     
     // Set all seats as expanded by default
@@ -164,24 +134,24 @@ export const BusBookingPage = ({ isModal = false }) => {
       // Get seat data to check for gender restrictions
       let autoGender = "";
       try {
-        const seatLayoutData = JSON.parse(localStorage.getItem("seatLayoutData") || "{}");
+        const seatLayoutData = getEncryptedItem("seatLayoutData") || {};
         const seatData = seatLayoutData.seats?.find(s => s.label === seatLabel);
         
         if (seatData) {
           // Check if seat is ladies-only
           if (seatData.isLadiesSeat === true || seatData.originalSeatInfo?.IsLadiesSeat === true) {
             autoGender = "female";
-            console.log(`Seat ${seatLabel} is ladies-only, auto-selecting female`);
+
           }
           // Check if seat is males-only
           else if (seatData.isMalesSeat === true || seatData.originalSeatInfo?.IsMalesSeat === true) {
             autoGender = "male";
-            console.log(`Seat ${seatLabel} is males-only, auto-selecting male`);
+
           }
         }
         
         // Also check original seat layout data
-        const originalSeatLayout = JSON.parse(localStorage.getItem("originalSeatLayoutData") || "{}");
+        const originalSeatLayout = getEncryptedItem("originalSeatLayoutData") || {};
         if (originalSeatLayout.SeatLayout && originalSeatLayout.SeatLayout.SeatDetails) {
           for (let rowIndex = 0; rowIndex < originalSeatLayout.SeatLayout.SeatDetails.length; rowIndex++) {
             const row = originalSeatLayout.SeatLayout.SeatDetails[rowIndex];
@@ -193,10 +163,10 @@ export const BusBookingPage = ({ isModal = false }) => {
                   if (seatName === seatLabel) {
                     if (seat.IsLadiesSeat === true) {
                       autoGender = "female";
-                      console.log(`Seat ${seatLabel} is ladies-only (from original data), auto-selecting female`);
+
                     } else if (seat.IsMalesSeat === true) {
                       autoGender = "male";
-                      console.log(`Seat ${seatLabel} is males-only (from original data), auto-selecting male`);
+
                     }
                     break;
                   }
@@ -291,7 +261,6 @@ export const BusBookingPage = ({ isModal = false }) => {
       }
       
       if (isNaN(date.getTime())) {
-        console.log('Invalid date format:', dateString);
         return "";
       }
       
@@ -310,13 +279,10 @@ export const BusBookingPage = ({ isModal = false }) => {
   // Calculate duration - using the same approach as bus result page
   const getDuration = (departure, arrival) => {
     if (!departure || !arrival) {
-      console.log('Missing departure or arrival time:', { departure, arrival });
       return "";
     }
     
     try {
-      console.log('Calculating duration for:', { departure, arrival });
-      
       let startDate, endDate;
       
       // Handle full datetime format like "2025-08-04T06:00:00"
@@ -334,7 +300,6 @@ export const BusBookingPage = ({ isModal = false }) => {
       
       // Check if dates are valid
       if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-        console.log('Invalid time format:', { departure, arrival, startDate, endDate });
         return "";
       }
       
@@ -344,7 +309,6 @@ export const BusBookingPage = ({ isModal = false }) => {
       const hours = Math.floor(diff / 3600);
       const minutes = Math.floor((diff % 3600) / 60);
       
-      console.log('Duration calculated:', `${hours}h ${minutes}m`);
       return `${hours}h ${minutes}m`;
     } catch (error) {
       console.error('Error calculating duration:', error, { departure, arrival });
@@ -355,24 +319,22 @@ export const BusBookingPage = ({ isModal = false }) => {
   // Helper function to check seat gender restrictions
   const getSeatGenderRestriction = (seatLabel) => {
     try {
-      const seatLayoutData = JSON.parse(localStorage.getItem("seatLayoutData") || "{}");
+      const seatLayoutData = getEncryptedItem("seatLayoutData") || {};
       const seatData = seatLayoutData.seats?.find(s => s.label === seatLabel);
       
       if (seatData) {
         // Check if seat is ladies-only
         if (seatData.isLadiesSeat === true || seatData.originalSeatInfo?.IsLadiesSeat === true) {
-          console.log(`Seat ${seatLabel} has female restriction from seatLayoutData`);
           return "female";
         }
         // Check if seat is males-only
         if (seatData.isMalesSeat === true || seatData.originalSeatInfo?.IsMalesSeat === true) {
-          console.log(`Seat ${seatLabel} has male restriction from seatLayoutData`);
           return "male";
         }
       }
       
       // Also check original seat layout data
-      const originalSeatLayout = JSON.parse(localStorage.getItem("originalSeatLayoutData") || "{}");
+      const originalSeatLayout = getEncryptedItem("originalSeatLayoutData") || {};
       if (originalSeatLayout.SeatLayout && originalSeatLayout.SeatLayout.SeatDetails) {
         for (let rowIndex = 0; rowIndex < originalSeatLayout.SeatLayout.SeatDetails.length; rowIndex++) {
           const row = originalSeatLayout.SeatLayout.SeatDetails[rowIndex];
@@ -383,10 +345,8 @@ export const BusBookingPage = ({ isModal = false }) => {
                 const seatName = seat.SeatNumber || seat.SeatName || `${rowIndex + 1}${String.fromCharCode(65 + colIndex)}`;
                 if (seatName === seatLabel) {
                   if (seat.IsLadiesSeat === true) {
-                    console.log(`Seat ${seatLabel} has female restriction from originalSeatLayoutData`);
                     return "female";
                   } else if (seat.IsMalesSeat === true) {
-                    console.log(`Seat ${seatLabel} has male restriction from originalSeatLayoutData`);
                     return "male";
                   }
                   break;
@@ -397,7 +357,6 @@ export const BusBookingPage = ({ isModal = false }) => {
         }
       }
       
-      console.log(`Seat ${seatLabel} has no gender restriction`);
       return null; // No gender restriction
     } catch (error) {
       console.error('Error checking seat gender restrictions:', error);
@@ -416,7 +375,7 @@ export const BusBookingPage = ({ isModal = false }) => {
     
     // Get seat layout data from localStorage to determine deck
     try {
-      const seatLayoutData = JSON.parse(localStorage.getItem("seatLayoutData") || "{}");
+      const seatLayoutData = getEncryptedItem("seatLayoutData") || {};
       const seatData = seatLayoutData.seats?.find(s => s.label === seatLabel);
       
       if (seatData) {
@@ -537,9 +496,6 @@ export const BusBookingPage = ({ isModal = false }) => {
 
   // Handlers for form fields
   const handleTravelerChange = (seatLabel, field, value) => {
-    console.log('handleTravelerChange called:', { seatLabel, field, value });
-    console.log('Current travelerDetails:', travelerDetails);
-    
     setTravelerDetails(prev => {
       const newState = {
         ...prev,
@@ -548,7 +504,6 @@ export const BusBookingPage = ({ isModal = false }) => {
           [field]: value,
         }
       };
-      console.log('New travelerDetails state:', newState);
       return newState;
     });
     
@@ -597,30 +552,19 @@ export const BusBookingPage = ({ isModal = false }) => {
   // Helper function to format block request data
   const formatBlockRequest = (formData, selectedSeats, boardingPointId, droppingPointId) => {
     const { TokenId, EndUserIp } = authData;
-    const searchParams = JSON.parse(localStorage.getItem("busSearchparams") || "{}");
-    const busData = location.state?.busData || JSON.parse(localStorage.getItem("selectedBusData") || "{}");
+    const searchParams = getEncryptedItem("busSearchparams") || {};
+    const busData = location.state?.busData || getEncryptedItem("selectedBusData") || {};
     
     // Get original seat layout data from localStorage
-    const originalSeatLayout = JSON.parse(localStorage.getItem("originalSeatLayoutData") || "{}");
-    const seatLayout = JSON.parse(localStorage.getItem("seatLayoutData") || "{}");
-    
-    console.log("=== FORMAT BLOCK REQUEST DEBUG ===");
-    console.log("Selected seats:", selectedSeats);
-    console.log("Original seat layout data:", originalSeatLayout);
-    console.log("Enhanced seat layout data:", seatLayout);
-    console.log("Bus data:", busData);
-    console.log("Auth data:", { TokenId, EndUserIp });
-    console.log("Search params:", searchParams);
-    
+    const originalSeatLayout = getEncryptedItem("originalSeatLayoutData") || {};
+    const seatLayout = getEncryptedItem("seatLayoutData") || {};
+
     const passengers = selectedSeats.map((seatLabel, index) => {
       const isLeadPassenger = index === 0;
       
       // Try to find the original seat data from the API response
       let originalSeatData = null;
       if (originalSeatLayout.SeatLayout && originalSeatLayout.SeatLayout.SeatDetails) {
-        console.log(`Looking for seat: ${seatLabel}`);
-        console.log("Available seats in original data:");
-        
         // Search through the original seat layout to find the matching seat
         for (let rowIndex = 0; rowIndex < originalSeatLayout.SeatLayout.SeatDetails.length; rowIndex++) {
           const row = originalSeatLayout.SeatLayout.SeatDetails[rowIndex];
@@ -629,10 +573,9 @@ export const BusBookingPage = ({ isModal = false }) => {
               const seat = row[colIndex];
               if (seat) {
                 const seatName = seat.SeatNumber || seat.SeatName || `${rowIndex + 1}${String.fromCharCode(65 + colIndex)}`;
-                console.log(`  Seat at [${rowIndex}][${colIndex}]: ${seatName} (${seat.SeatName || seat.SeatNumber})`);
+
                 if (seatName === seatLabel) {
                   originalSeatData = seat;
-                  console.log(`Found matching seat:`, seat);
                   break;
                 }
               }
@@ -642,17 +585,13 @@ export const BusBookingPage = ({ isModal = false }) => {
         }
         
         if (!originalSeatData) {
-          console.log(`Could not find original seat data for: ${seatLabel}`);
+          // Original seat data not found
         }
       }
       
       // Fallback to enhanced seat data if original not found
       const seatData = seatLayout.seats?.find(s => s.label === seatLabel);
-      console.log(`Seat data for ${seatLabel}:`, seatData);
-      
-      console.log(`Seat ${seatLabel} - Original data:`, originalSeatData);
-      console.log(`Seat ${seatLabel} - Simplified data:`, seatData);
-      
+
       const seatStructure = {
         ColumnNo: originalSeatData?.ColumnNo || seatData?.columnNo || seatData?.seatInfo?.ColumnNo || "001",
         Height: originalSeatData?.Height || seatData?.height || seatData?.seatInfo?.Height || 1,
@@ -694,9 +633,7 @@ export const BusBookingPage = ({ isModal = false }) => {
           }
         }
       };
-      
-      console.log(`Final seat structure for ${seatLabel}:`, seatStructure);
-      
+
       return {
         LeadPassenger: isLeadPassenger,
         PassengerId: index,
@@ -722,12 +659,7 @@ export const BusBookingPage = ({ isModal = false }) => {
       DroppingPointId: droppingPointId,
       Passenger: passengers
     };
-    
-    console.log("=== FINAL BLOCK REQUEST ===");
-    console.log("Block request:", blockRequest);
-    console.log("Passenger count:", passengers.length);
-    console.log("=== END BLOCK REQUEST DEBUG ===");
-    
+
     return blockRequest;
   };
 
@@ -776,23 +708,12 @@ export const BusBookingPage = ({ isModal = false }) => {
       }
 
       // Get boarding and dropping point IDs from boarding points data
-      console.log("Selected boarding point:", selectedBoardingPoint);
-      console.log("Selected dropping point:", selectedDroppingPoint);
-      console.log("Bus data boarding points:", busData.BoardingPointsDetails);
-      console.log("Bus data dropping points:", busData.DroppingPointsDetails);
-      
       const boardingPointId = selectedBoardingPoint ? 
         busData.BoardingPointsDetails?.find(p => p.CityPointName === selectedBoardingPoint)?.CityPointIndex : null;
       const droppingPointId = selectedDroppingPoint ? 
         busData.DroppingPointsDetails?.find(p => p.CityPointName === selectedDroppingPoint)?.CityPointIndex : null;
 
-      console.log("Found boarding point ID:", boardingPointId);
-      console.log("Found dropping point ID:", droppingPointId);
-
       if (!boardingPointId || !droppingPointId) {
-        console.log("Missing boarding or dropping point ID");
-        console.log("Boarding point ID:", boardingPointId);
-        console.log("Dropping point ID:", droppingPointId);
         alert("Please select both boarding and dropping points.");
         setLoading(false);
         return;
@@ -806,26 +727,21 @@ export const BusBookingPage = ({ isModal = false }) => {
         droppingPointId
       );
 
-      console.log("Block request data:", blockRequestData);
+
 
       // Store the block request data in localStorage for booking API
-      localStorage.setItem("blockRequestData", JSON.stringify(blockRequestData));
-      console.log("Block request data stored in localStorage for booking API");
+      setEncryptedItem("blockRequestData", blockRequestData);
 
       // Call the block API
       const result = await dispatch(fetchBusBlock(blockRequestData));
-      
-      console.log("Block result:", result);
-      
+
       if (result && result.BlockResult) {
-        console.log("Block successful:", result);
         // Store block response for payment page
-        localStorage.setItem("blockResponse", JSON.stringify(result));
+        setEncryptedItem("blockResponse", result);
         
         // Store block timestamp for validation
-        localStorage.setItem("blockTimestamp", Date.now().toString());
-        console.log("Block timestamp stored:", Date.now());
-        
+        setEncryptedItem("blockTimestamp", Date.now().toString());
+
         // Navigate immediately to payment page without any loading states
         setLoading(false); // Stop local loading first
         
@@ -837,11 +753,11 @@ export const BusBookingPage = ({ isModal = false }) => {
         };
         
               // Store state data in localStorage as backup
-      localStorage.setItem("paymentPageState", JSON.stringify(stateData));
+      setEncryptedItem("paymentPageState", stateData);
       
       // Store bus search list for booking details API
       if (searchList) {
-        localStorage.setItem("busSearchList", JSON.stringify(searchList));
+        setEncryptedItem("busSearchList", searchList);
       }
         
         // Navigate immediately using React Router with replace
@@ -861,11 +777,7 @@ export const BusBookingPage = ({ isModal = false }) => {
           formErrors[error.path] = error.message;
         });
         setErrors(formErrors);
-        
-        console.log("=== VALIDATION ERRORS ===");
-        console.log("Errors:", formErrors);
-        console.log("Raw validation error:", err);
-        
+
         // Scroll to first error after setting errors
         scrollToFirstError();
       }
@@ -914,7 +826,7 @@ export const BusBookingPage = ({ isModal = false }) => {
                   className="text-decoration-none"
                   onClick={(e) => {
                     e.preventDefault();
-                    console.log('Navigating to bus-list page...');
+
                     // Force a page reload to ensure we get fresh data
                     window.location.href = '/bus-list';
                   }}
@@ -1037,7 +949,7 @@ export const BusBookingPage = ({ isModal = false }) => {
                         <div className="price-info">
                           <div className="total-price">
                             ₹{selectedSeats.reduce((acc, label) => {
-                              const seatLayoutData = JSON.parse(localStorage.getItem("seatLayoutData") || "{}");
+                              const seatLayoutData = getEncryptedItem("seatLayoutData") || {};
                               const seatData = seatLayoutData.seats?.find(s => s.label === label);
                               return acc + (seatData?.price || busData.BusPrice?.PublishedPriceRoundedOff || 0);
                             }, 0)}
@@ -1096,9 +1008,6 @@ export const BusBookingPage = ({ isModal = false }) => {
                     </h5>
                   </div>
                   <div className="card-body">
-                    {console.log('Rendering traveler forms for seats:', selectedSeats)}
-                    {console.log('Current travelerDetails:', travelerDetails)}
-                    
                     {selectedSeats.map((seatLabel, index) => (
                       <div key={seatLabel} className="traveler-dropdown mb-3">
                         {/* Traveler Dropdown Header */}
@@ -1171,7 +1080,6 @@ export const BusBookingPage = ({ isModal = false }) => {
                                     className={`form-control ${hasSubmitted && errors[`travelerDetails.${seatLabel}.firstName`] ? 'is-invalid' : ''}`}
                                     value={travelerDetails[seatLabel]?.firstName || ""}
                                     onChange={e => {
-                                      console.log('Input change for', seatLabel, 'firstName:', e.target.value);
                                       handleTravelerChange(seatLabel, "firstName", e.target.value);
                                     }}
                                     placeholder="Enter first name"
