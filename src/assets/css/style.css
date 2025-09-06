@@ -651,13 +651,13 @@ h6 {
 .btn-danger:hover {
   background: var(--bs-danger-bg-bg-dark) !important;
   border-color: var(--bs-danger-bg-dark) !important;
-  color: var(--bs-white) !important;
+  color: var(--bs-primary) !important;
 }
 .btn-danger:focus {
   background: var(--bs-danger-bg-dark) !important;
   border-color: var(--bs-danger-bg-dark) !important;
-  color: var(--bs-white) !important;
 }
+
 .btn-danger:active {
   background: var(--bs-danger-bg-dark) !important;
   border-color: var(--bs-danger-bg-dark) !important;
@@ -1259,6 +1259,7 @@ textarea.form-control {
 
 .form-control:focus {
   box-shadow: none;
+  border: 1px solid var(--bs-danger);
 }
 
 .form-control::-moz-placeholder {

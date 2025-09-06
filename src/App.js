@@ -56,7 +56,9 @@ import InsuranceHome from './components/insurance_home';
 import InsuranceList from './components/insurance_components/InsuranceList';
 import InsuranceGeneratePolicy from './components/insurance_components/Insurance_Generate_Policy';
 import InsuranceBookingDetails from './components/insurance_components/Insurance_BookingDetails';
+import InsurancePaymentPage from './components/insurance_components/Insurance_Payment_Page';
 import InsuranceSearchPage from './components/insurance_components/insurance_search_page';
+import InsuranceCancelPage from './components/insurance_components/Insurance_Cancel_Page';
 
 import MedicalTrourism from "./components/Home-Medicaltourism.jsx";
 import HomeRental from "./components/home-rental";
@@ -268,8 +270,11 @@ function App() {
           <Route path="/insurance-search" element={<InsuranceSearchPage />} />
           <Route path="/insurance-list" element={<InsuranceList />} />
           <Route path="/insurance-booking-page" element={<InsuranceBookingPage />} />
+          <Route path="/insurance-booking" element={<InsuranceBookingPage />} />
+          <Route path="/insurance-payment" element={<InsurancePaymentPage />} />
           <Route path="/insurance-generate-policy" element={<InsuranceGeneratePolicy />} />
           <Route path="/insurance-booking-details" element={<InsuranceBookingDetails />} />
+          <Route path="/insurance-cancel" element={<InsuranceCancelPage />} />
 
           {/* <Route path="/insurance-detail" element={<InsuranceDetail />} />
           <Route path="/insurance-payment" element={<InsurancePayment />} /> */}

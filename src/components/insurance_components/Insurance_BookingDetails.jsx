@@ -4,8 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header02 from '../header02';
 import Footer from '../footer';
-import { getInsuranceBookingDetails } from '../../store/Actions/insuranceAction';
+import { getInsuranceBookingDetails, bookInsurance, getInsurancePolicy } from '../../store/Actions/insuranceAction';
 import { getEncryptedItem } from '../../utils/encryption';
+import { loadRazorpayScript } from '../../utils/loadRazorpay';
 import { 
   FaShieldAlt, 
   FaCheckCircle, 
@@ -36,8 +37,11 @@ import {
   FaInfoCircle,
   FaCopy,
   FaShare,
-  FaBookmark
+  FaBookmark,
+  FaBan
 } from 'react-icons/fa';
+
+export const RAZORPAY_KEY = process.env.REACT_APP_RAZORPAY_KEY_ID;
 
 /**
  * Insurance Booking Details Component
@@ -63,8 +67,7 @@ const Insurance_BookingDetails = () => {
   const { 
     bookingDetailsLoading, 
     bookingDetailsData, 
-    bookingDetailsError,
-    authData 
+    bookingDetailsError
   } = useSelector(state => state.insurance);
   
   // Local state management
@@ -73,6 +76,16 @@ const Insurance_BookingDetails = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [bookingId, setBookingId] = useState(null);
+  
+  // Review and payment state
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [searchCriteria, setSearchCriteria] = useState({});
+  const [passengerDetails, setPassengerDetails] = useState([]);
+  const [priceDetails, setPriceDetails] = useState({});
+  const [authData, setAuthData] = useState({});
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [isGeneratingPolicy, setIsGeneratingPolicy] = useState(false);
+  const [isReviewMode, setIsReviewMode] = useState(false);
 
   // Function to fetch booking details from API
   const fetchBookingDetails = async (bookingId) => {
@@ -127,6 +140,18 @@ const Insurance_BookingDetails = () => {
           return;
         }
         
+        // Check if this is review mode (coming from booking page)
+        if (location.state && location.state.selectedPlan) {
+          setIsReviewMode(true);
+          setSelectedPlan(location.state.selectedPlan);
+          setSearchCriteria(location.state.searchCriteria || {});
+          setPassengerDetails(location.state.passengerDetails || []);
+          setPriceDetails(location.state.priceDetails || {});
+          setAuthData(location.state.authData || {});
+          setIsLoading(false);
+          return;
+        }
+        
         // Get data from navigation state only
         if (location.state && location.state.policyResponse) {
           setPolicyData(location.state.policyResponse);
@@ -145,9 +170,173 @@ const Insurance_BookingDetails = () => {
     loadPolicyData();
   }, [location.state, dispatch]);
 
-  // Handle navigation back to policy generation
-  const handleBackToPolicy = () => {
-    navigate('/insurance-generate-policy');
+
+
+  // Load Razorpay SDK
+  const loadRazorpay = async () => {
+    const res = await loadRazorpayScript();
+    if (!res) {
+      alert("Razorpay SDK failed to load. Check your internet.");
+      return false;
+    }
+    return true;
+  };
+
+  // Handle booking and payment
+  const handleBookAndPay = async () => {
+    try {
+      if (!authData.TokenId) {
+        alert('Authentication required. Please search for insurance plans again.');
+        navigate('/home-insurance');
+        return;
+      }
+
+      // Prepare booking payload
+      const bookingPayload = {
+        TokenId: authData.TokenId,
+        EndUserIp: authData.EndUserIp || '127.0.0.1',
+        TraceId: location.state?.traceId || '',
+        ResultIndex: selectedPlan?.ResultIndex || 1,
+        Passenger: passengerDetails
+      };
+      
+      const result = await dispatch(bookInsurance(bookingPayload));
+      
+      if (result && result.Response) {
+        if (result.Response.ResponseStatus === 1) {
+          // Success - now initiate payment
+          await initiatePayment(result, authData);
+        } else if (result.Response.Error && result.Response.Error.ErrorCode !== 0) {
+          // Handle error response with detailed error info
+          const errorCode = result.Response.Error.ErrorCode;
+          const errorMessage = result.Response.Error.ErrorMessage;
+          alert(`Booking failed: ${errorMessage} (Code: ${errorCode})`);
+        } else {
+          // Unknown error
+          alert('Booking failed. Please try again.');
+        }
+      } else {
+        // No response or invalid response
+        alert('Booking failed. Please try again.');
+      }
+    } catch (error) {
+      alert('Booking failed. Please try again.');
+    }
+  };
+
+  // Initiate payment after successful booking
+  const initiatePayment = async (bookingResult, authData) => {
+    try {
+      setIsProcessingPayment(true);
+      
+      // Load Razorpay SDK
+      const razorpayLoaded = await loadRazorpay();
+      if (!razorpayLoaded) {
+        setIsProcessingPayment(false);
+        return;
+      }
+
+      // Calculate total amount from price details - use exact API price
+      const totalAmount = priceDetails.total || 0;
+      const amountInPaise = Math.round(totalAmount * 100); // Convert to paise
+
+      // Get passenger details for payment
+      const leadPassenger = passengerDetails.find(p => p.RelationShipToInsured === 'Self') || passengerDetails[0];
+      
+      if (!leadPassenger) {
+        alert('No passenger details found for payment');
+        setIsProcessingPayment(false);
+        return;
+      }
+
+      // Prepare Razorpay options
+      const options = {
+        key: RAZORPAY_KEY,
+        amount: amountInPaise,
+        currency: 'INR',
+        name: 'SeeMyTrip',
+        description: 'Insurance Policy Payment',
+        handler: async function (response) {
+          console.log('Payment response:', response);
+          try {
+            // Payment successful, now generate policy
+            await generatePolicyAfterPayment(response, bookingResult, authData);
+          } catch (error) {
+            console.error('Error generating policy after payment:', error);
+            alert('Payment successful but policy generation failed. Please contact support.');
+            setIsProcessingPayment(false);
+          }
+        },
+        theme: {
+          color: '#3399cc',
+        },
+        prefill: {
+          name: `${leadPassenger.Title} ${leadPassenger.FirstName} ${leadPassenger.LastName}`,
+          email: leadPassenger.EmailId || '',
+          contact: leadPassenger.PhoneNumber || '',
+        },
+      };
+
+      // Open Razorpay payment modal
+      const paymentObject = new window.Razorpay(options);
+      
+      // Handle payment failure
+      paymentObject.on('payment.failed', function (response) {
+        console.error('Payment failed:', response);
+        alert(`Payment failed! Reason: ${response.error.description || 'Unknown error'}`);
+        setIsProcessingPayment(false);
+      });
+
+      paymentObject.open();
+
+    } catch (error) {
+      console.error('Error initiating payment:', error);
+      alert('Failed to initiate payment. Please try again.');
+      setIsProcessingPayment(false);
+    }
+  };
+
+  // Generate policy after successful payment
+  const generatePolicyAfterPayment = async (paymentResponse, bookingResult, authData) => {
+    try {
+      setIsGeneratingPolicy(true);
+
+      // Prepare policy generation payload
+      const policyPayload = {
+        EndUserIp: authData.EndUserIp || "127.0.0.1",
+        TokenId: authData.TokenId || "",
+        BookingId: bookingResult.Response?.Itinerary?.BookingId || 0,
+      };
+
+      // Call the policy generation API
+      const policyResponse = await dispatch(getInsurancePolicy(policyPayload));
+
+      if (policyResponse && policyResponse.Response && policyResponse.Response.ResponseStatus === 1) {
+        // Success - policy generated, navigate to generate policy page
+        navigate('/insurance-generate-policy', { 
+          state: {
+            bookingResponse: bookingResult,
+            passengers: passengerDetails,
+            priceDetails: priceDetails,
+            policyResponse: policyResponse,
+            paymentResponse: paymentResponse
+          }
+        });
+      } else {
+        // Handle error response
+        const errorCode = policyResponse?.Response?.Error?.ErrorCode;
+        const errorMessage = policyResponse?.Response?.Error?.ErrorMessage || 'Policy generation failed';
+        alert(`Payment successful but policy generation failed: ${errorMessage}`);
+        setIsGeneratingPolicy(false);
+        setIsProcessingPayment(false);
+      }
+
+    } catch (error) {
+      console.error('Error generating policy:', error);
+      alert('Payment successful but policy generation failed. Please contact support.');
+      setIsGeneratingPolicy(false);
+      setIsProcessingPayment(false);
+    }
   };
 
   // Handle navigation to insurance home
@@ -161,6 +350,20 @@ const Insurance_BookingDetails = () => {
       fetchBookingDetails(bookingId);
     } else {
       setError('No BookingId available to refresh data');
+    }
+  };
+
+  // Handle cancel insurance - navigate to dedicated cancel page
+  const handleCancelInsurance = () => {
+    // Navigate to the dedicated cancel page with booking ID
+    const currentBookingId = bookingId || itinerary?.BookingId;
+    if (currentBookingId) {
+      navigate('/insurance-cancel', {
+        state: { bookingId: currentBookingId }
+      });
+    } else {
+      // If no booking ID available, still navigate to cancel page
+      navigate('/insurance-cancel');
     }
   };
 
@@ -272,12 +475,7 @@ const Insurance_BookingDetails = () => {
                         Refresh Details
                       </button>
                     )}
-                    <button 
-                      className="btn btn-outline-secondary"
-                      onClick={handleBackToPolicy}
-                    >
-                      Back to Policy Generation
-                    </button>
+
                     <button 
                       className="btn btn-primary"
                       onClick={handleGoHome}
@@ -296,7 +494,7 @@ const Insurance_BookingDetails = () => {
   }
 
   // Show main content
-  if (!policyData || !passengerData) {
+  if (!isReviewMode && (!policyData || !passengerData)) {
     return (
       <>
         <Header02 />
@@ -310,9 +508,236 @@ const Insurance_BookingDetails = () => {
                   <p className="text-muted mb-4">Please generate an insurance policy first to view the details.</p>
                   <button 
                     className="btn btn-primary"
-                    onClick={handleBackToPolicy}
+                    onClick={handleGoHome}
                   >
-                    Generate Policy
+                    Go to Insurance Home
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
+  // Render review mode content
+  if (isReviewMode) {
+    return (
+      <>
+        <Header02 />
+        
+        <div className="container-fluid py-4" style={{ backgroundColor: '#f8f9fa' }}>
+          <div className="container-xl">
+            {/* Review Header */}
+            <div className="row mb-4">
+              <div className="col-12">
+                <div className="card border-primary">
+                  <div className="card-body text-center py-4">
+                    <FaShieldAlt className="text-primary mb-3" size={48} />
+                    <h3 className="text-primary mb-2">Review Your Insurance Details</h3>
+                    <p className="text-muted mb-0">
+                      Please review your details and proceed with payment to complete your insurance booking.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="row g-4">
+              {/* Left Column - Review Details */}
+              <div className="col-lg-8">
+                {/* Insurance Plan Overview */}
+                <div className="card shadow-sm mb-4">
+                  <div className="card-body row align-items-center">
+                    <div className="col-md-6">
+                      <div className="d-flex align-items-center">
+                        <div className="me-3">
+                          <h4 className="mb-0 fw-bold text-primary">
+                            {(() => {
+                              const price = selectedPlan?.Price?.OfferedPriceRoundedOff || selectedPlan?.Price?.OfferedPrice || 0;
+                              const days = searchCriteria.days || 7;
+                              return `${price}K ${days} DAYS`;
+                            })()}
+                          </h4>
+                          <p className="mb-0 text-warning fw-bold">
+                            {searchCriteria.planCoverage === 4 ? 'India' : 
+                             searchCriteria.planCoverage === 1 ? 'US' :
+                             searchCriteria.planCoverage === 2 ? 'Non-US' :
+                             searchCriteria.planCoverage === 3 ? 'WorldWide' :
+                             searchCriteria.planCoverage === 5 ? 'Asia' :
+                             searchCriteria.planCoverage === 6 ? 'Canada' :
+                             searchCriteria.planCoverage === 7 ? 'Australia' :
+                             searchCriteria.planCoverage === 8 ? 'Schenegen Countries' : 'Coverage'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-6">
+                      <div className="text-end">
+                        <div className="mb-1">
+                          <span className="text-muted">Start Date : </span>
+                          <span className="fw-bold">
+                            {(() => {
+                              if (searchCriteria.departDate) {
+                                return new Date(searchCriteria.departDate).toLocaleDateString('en-GB', { 
+                                  day: '2-digit', 
+                                  month: 'short', 
+                                  year: 'numeric' 
+                                });
+                              }
+                              return 'N/A';
+                            })()}
+                          </span>
+                        </div>
+                        <div className="mb-1">
+                          <span className="text-muted">End Date : </span>
+                          <span className="fw-bold">
+                            {(() => {
+                              if (searchCriteria.returnDate) {
+                                return new Date(searchCriteria.returnDate).toLocaleDateString('en-GB', { 
+                                  day: '2-digit', 
+                                  month: 'short', 
+                                  year: 'numeric' 
+                                });
+                              }
+                              return 'N/A';
+                            })()}
+                          </span>
+                        </div>
+                        <div className="mb-2">
+                          <span className="text-muted">No. of Paxes: </span>
+                          <span className="fw-bold">{passengerDetails.length}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Passenger Details Review */}
+                <div className="card shadow-sm">
+                  <div className="card-header bg-white">
+                    <h5 className="mb-0">Passenger Details</h5>
+                  </div>
+                  <div className="card-body">
+                    {passengerDetails.map((passenger, index) => (
+                      <div key={index} className="border-bottom pb-3 mb-3">
+                        <div className="row">
+                          <div className="col-md-6">
+                            <h6 className="text-primary mb-2">Passenger {index + 1}</h6>
+                            <p className="mb-1">
+                              <strong>Name:</strong> {passenger.Title} {passenger.FirstName} {passenger.LastName}
+                            </p>
+                            <p className="mb-1">
+                              <strong>Gender:</strong> {passenger.Gender === '1' ? 'Male' : 'Female'}
+                            </p>
+                            <p className="mb-1">
+                              <strong>DOB:</strong> {passenger.DOBDay}/{passenger.DOBMonth}/{passenger.DOBYear}
+                            </p>
+                            <p className="mb-1">
+                              <strong>Phone:</strong> {passenger.PhoneNumber}
+                            </p>
+                            <p className="mb-1">
+                              <strong>Email:</strong> {passenger.EmailId}
+                            </p>
+                          </div>
+                          <div className="col-md-6">
+                            <h6 className="text-primary mb-2">Beneficiary</h6>
+                            <p className="mb-1">
+                              <strong>Name:</strong> {passenger.BeneficiaryTitle} {passenger.BeneficiaryFirstName} {passenger.BeneficiaryLastName}
+                            </p>
+                            <p className="mb-1">
+                              <strong>Relation:</strong> {passenger.RelationShipToInsured}
+                            </p>
+                            <p className="mb-1">
+                              <strong>Passport:</strong> {passenger.PassportNo}
+                            </p>
+                            <p className="mb-1">
+                              <strong>Address:</strong> {passenger.AddressLine1}, {passenger.CityCode}, {passenger.State} - {passenger.PinCode}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column - Price Details & Payment */}
+              <div className="col-lg-4">
+                <div className="card shadow-sm sticky-top" style={{ top: '100px' }}>
+                  <div className="card-header bg-primary">
+                    <h6 className="mb-0 text-light">Price Details</h6>
+                  </div>
+                  <div className="card-body">
+                    <div className="mb-3">
+                      <div className="d-flex justify-content-between mb-2">
+                        <span>Age Group 0.0 - 70 Yrs</span>
+                        <span>₹{priceDetails.basePrice}</span>
+                      </div>
+                      <div className="d-flex justify-content-between mb-2">
+                        <span className="text-muted">(0.0 to 70 Yrs X {passengerDetails.length})</span>
+                        <span>₹{priceDetails.total}</span>
+                      </div>
+                      <hr />
+                      <div className="d-flex justify-content-between">
+                        <span className="fw-bold fs-5">Total Price</span>
+                        <span className="fw-bold fs-5 text-primary">₹{priceDetails.total}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Payment Button */}
+                <div className="card shadow-sm mt-4">
+                  <div className="card-body text-center">
+                    <button
+                      className="btn btn-success btn-lg w-100"
+                      onClick={handleBookAndPay}
+                      disabled={isProcessingPayment || isGeneratingPolicy}
+                    >
+                      {isProcessingPayment ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          Processing Payment...
+                        </>
+                      ) : isGeneratingPolicy ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          Generating Policy...
+                        </>
+                      ) : (
+                        <>
+                          <FaCreditCard className="me-2" />
+                          Pay & Book Now
+                        </>
+                      )}
+                    </button>
+                    <p className="text-muted small mt-2 mb-0">
+                      Secure payment powered by Razorpay
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Navigation Buttons */}
+            <div className="row mt-4">
+              <div className="col-12">
+                <div className="d-flex justify-content-between">
+                  <button
+                    className="btn btn-outline-secondary"
+                    onClick={() => navigate('/insurance-booking')}
+                  >
+                    <FaArrowLeft className="me-2" />
+                    Back to Edit Details
+                  </button>
+                  <button
+                    className="btn btn-outline-primary"
+                    onClick={handleGoHome}
+                  >
+                    Cancel Booking
                   </button>
                 </div>
               </div>
@@ -332,19 +757,21 @@ const Insurance_BookingDetails = () => {
       <Header02 />
       
       <div className="container-fluid py-4" style={{ backgroundColor: '#f8f9fa' }}>
-        <div className="container">
-          {/* Success Header */}
-          <div className="row mb-4">
-            <div className="col-12">
-              <div className="card border-success">
-                <div className="card-body text-center p-4">
-                  <FaCheckCircle className="text-success mb-3" size={60} />
-                  <h2 className="text-success mb-2">Insurance Policy Generated Successfully!</h2>
-                  <p className="text-muted mb-0">Your travel insurance policy is now active and ready for use.</p>
+        <div className="container-xl">
+          {/* Success Header - Show only when coming from policy generation */}
+          {location.state?.showSuccessMessage && (
+            <div className="row mb-4">
+              <div className="col-12">
+                <div className="card border-success">
+                  <div className="card-body text-center p-4">
+                    <FaCheckCircle className="text-success mb-3" size={60} />
+                    <h2 className="text-success mb-2">🎉 Policy Generated Successfully!</h2>
+                    <p className="text-muted mb-0">Your travel insurance policy has been generated and is now active and ready for use.</p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Main Content */}
           <div className="row">
@@ -353,69 +780,115 @@ const Insurance_BookingDetails = () => {
               {/* Policy Summary Card */}
               <div className="card shadow-sm mb-4">
                 <div className="card-header bg-primary text-white">
-                  <h5 className="mb-0">
+                  <h5 className="mb-0 text-white">
                     <FaShieldAlt className="me-2" />
                     Policy Summary
                   </h5>
                 </div>
                 <div className="card-body">
-                  <div className="row">
+                  <div className="row g-3">
                     <div className="col-md-6">
-                      <div className="mb-3">
-                        <label className="form-label fw-bold text-muted">Policy Number</label>
+                      <div className="p-3 bg-light rounded">
+                        <label className="form-label fw-bold text-muted small">Policy Number</label>
                         <div className="d-flex align-items-center">
-                          <p className="mb-0 fw-bold me-2">
+                          <p className="mb-0 fw-bold me-2 text-primary">
                             {passengerData?.PolicyNo || 
                              bookingDetailsData?.Response?.Itinerary?.PaxInfo?.[0]?.PolicyNo || 
                              'N/A'}
                           </p>
                           <button 
-                            className="btn btn-sm btn-outline-secondary"
+                            className="btn btn-sm btn-outline-primary"
                             onClick={() => copyToClipboard(
                               passengerData?.PolicyNo || 
                               bookingDetailsData?.Response?.Itinerary?.PaxInfo?.[0]?.PolicyNo
                             )}
                             title="Copy Policy Number"
                           >
-                            <FaCopy size={14} />
+                            <FaCopy size={12} />
                           </button>
                         </div>
                       </div>
-                      <div className="mb-3">
-                        <label className="form-label fw-bold text-muted">Reference ID</label>
+                    </div>
+                    <div className="col-md-6">
+                      <div className="p-3 bg-light rounded">
+                        <label className="form-label fw-bold text-muted small">Booking ID</label>
                         <div className="d-flex align-items-center">
-                          <p className="mb-0 fw-bold me-2">{passengerData.ReferenceId || 'N/A'}</p>
+                          <p className="mb-0 fw-bold me-2 text-info">
+                            {itinerary?.BookingId || bookingId || 'N/A'}
+                          </p>
+                          <button 
+                            className="btn btn-sm btn-outline-info"
+                            onClick={() => copyToClipboard(itinerary?.BookingId || bookingId)}
+                            title="Copy Booking ID"
+                          >
+                            <FaCopy size={12} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-6">
+                      <div className="p-3 bg-light rounded">
+                        <label className="form-label fw-bold text-muted small">Insurance ID</label>
+                        <div className="d-flex align-items-center">
+                          <p className="mb-0 fw-bold me-2 text-warning">
+                            {passengerData?.InsuranceId || itinerary?.InsuranceId || 'N/A'}
+                          </p>
+                          <button 
+                            className="btn btn-sm btn-outline-warning"
+                            onClick={() => copyToClipboard(passengerData?.InsuranceId || itinerary?.InsuranceId)}
+                            title="Copy Insurance ID"
+                          >
+                            <FaCopy size={12} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-6">
+                      <div className="p-3 bg-light rounded">
+                        <label className="form-label fw-bold text-muted small">Reference ID</label>
+                        <div className="d-flex align-items-center">
+                          <p className="mb-0 fw-bold me-2 text-secondary">
+                            {passengerData.ReferenceId || 'N/A'}
+                          </p>
                           <button 
                             className="btn btn-sm btn-outline-secondary"
                             onClick={() => copyToClipboard(passengerData.ReferenceId)}
                             title="Copy Reference ID"
                           >
-                            <FaCopy size={14} />
+                            <FaCopy size={12} />
                           </button>
                         </div>
                       </div>
-                      <div className="mb-3">
-                        <label className="form-label fw-bold text-muted">Invoice Number</label>
-                        <p className="mb-0 fw-bold">{itinerary?.InvoiceNumber || 'N/A'}</p>
+                    </div>
+                    <div className="col-md-6">
+                      <div className="p-3 bg-light rounded">
+                        <label className="form-label fw-bold text-muted small">Plan Name</label>
+                        <p className="mb-0 fw-bold text-dark">{itinerary?.PlanName || 'N/A'}</p>
                       </div>
                     </div>
                     <div className="col-md-6">
-                      <div className="mb-3">
-                        <label className="form-label fw-bold text-muted">Plan Name</label>
-                        <p className="mb-0 fw-bold">{itinerary?.PlanName || 'N/A'}</p>
+                      <div className="p-3 bg-light rounded">
+                        <label className="form-label fw-bold text-muted small">Policy Status</label>
+                        <div className="mt-1">
+                          <span className={`badge ${statusInfo.class} fs-6 px-3 py-2`}>
+                            {statusInfo.text}
+                          </span>
+                        </div>
                       </div>
-                      <div className="mb-3">
-                        <label className="form-label fw-bold text-muted">Coverage Area</label>
+                    </div>
+                    <div className="col-md-6">
+                      <div className="p-3 bg-light rounded">
+                        <label className="form-label fw-bold text-muted small">Coverage Area</label>
                         <p className="mb-0">
                           <FaGlobe className="me-2 text-primary" />
                           {getCoverageText(itinerary?.PlanCoverage)}
                         </p>
                       </div>
-                      <div className="mb-3">
-                        <label className="form-label fw-bold text-muted">Policy Status</label>
-                        <span className={`badge ${statusInfo.class} fs-6`}>
-                          {statusInfo.text}
-                        </span>
+                    </div>
+                    <div className="col-md-6">
+                      <div className="p-3 bg-light rounded">
+                        <label className="form-label fw-bold text-muted small">Invoice Number</label>
+                        <p className="mb-0 fw-bold text-dark">{itinerary?.InvoiceNumber || 'N/A'}</p>
                       </div>
                     </div>
                   </div>
@@ -548,7 +1021,7 @@ const Insurance_BookingDetails = () => {
                     <p className="text-muted mb-4">
                       Download your insurance policy document for your records and travel requirements.
                     </p>
-                    <div className="d-flex gap-3 justify-content-center">
+                    <div className="d-flex flex-sm-column felx-md-row flex-lg-row gap-3 justify-content-center">
                       <button
                         className="btn btn-primary"
                         onClick={() => window.open(passengerData.DocumentURL, '_blank')}
@@ -579,9 +1052,9 @@ const Insurance_BookingDetails = () => {
             {/* Right Column - Price Details & Actions */}
             <div className="col-lg-4">
               {/* Price Summary */}
-              <div className="card shadow-sm mb-4 sticky-top" style={{ top: '100px' }}>
+              <div className="card shadow-sm mb-4" >
                 <div className="card-header bg-success text-white">
-                  <h6 className="mb-0">
+                  <h6 className="mb-0 text-white">
                     <FaCreditCard className="me-2" />
                     Price Summary
                   </h6>
@@ -667,6 +1140,13 @@ const Insurance_BookingDetails = () => {
                       <FaBookmark className="me-2" />
                       Save to Favorites
                     </button>
+                    <button
+                      className="btn btn-outline-danger"
+                      onClick={handleCancelInsurance}
+                    >
+                      <FaBan className="me-2" />
+                      Cancel Insurance
+                    </button>
                   </div>
                 </div>
               </div>
@@ -674,7 +1154,7 @@ const Insurance_BookingDetails = () => {
               {/* Important Information */}
               <div className="card shadow-sm">
                 <div className="card-header bg-info text-white">
-                  <h6 className="mb-0">
+                  <h6 className="mb-0 text-white">
                     <FaInfoCircle className="me-2" />
                     Important Information
                   </h6>
@@ -689,7 +1169,7 @@ const Insurance_BookingDetails = () => {
                   <div className="mb-3">
                     <h6 className="fw-bold">Age Limits</h6>
                     <p className="small text-muted mb-0">
-                      Min: {passengerData.MinAge || 0} years, Max: {passengerData.MaxAge || 0} years
+                      Min: {passengerData.MinAge || 1} years, Max: {passengerData.MaxAge || 0} years
                     </p>
                   </div>
                   <div className="mb-3">
@@ -724,14 +1204,7 @@ const Insurance_BookingDetails = () => {
                     Refresh Details
                   </button>
                 )}
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary btn-lg"
-                  onClick={handleBackToPolicy}
-                >
-                  <FaArrowLeft className="me-2" />
-                  Back to Policy Generation
-                </button>
+
                 <button
                   type="button"
                   className="btn btn-primary btn-lg"

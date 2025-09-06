@@ -4,6 +4,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Header02 from '../header02';
 import Footer from '../footer';
 import AuthPopup from '../auth/AuthPopup';
+import InsuranceListSkeleton from './InsuranceListSkeleton';
 import { 
   selectIsInsuranceSearching, 
   selectInsuranceSearchError,
@@ -35,6 +36,14 @@ const InsuranceList = () => {
   const [pendingPlan, setPendingPlan] = useState(null);
   const plansPerPage = 6;
 
+  // Price filter state
+  const [priceFilter, setPriceFilter] = useState({
+    minPrice: '',
+    maxPrice: '',
+    priceRange: 'all' // 'all', 'under-1000', '1000-5000', '5000-10000', 'over-10000'
+  });
+  const [filteredPlans, setFilteredPlans] = useState([]);
+
   // Load search criteria from navigation state or localStorage
   useEffect(() => {
     const state = location.state;
@@ -59,6 +68,75 @@ const InsuranceList = () => {
       }
     }
   }, [location.state]);
+
+  // Filter plans based on price criteria
+  useEffect(() => {
+    if (!plans || plans.length === 0) {
+      setFilteredPlans([]);
+      return;
+    }
+
+    let filtered = [...plans];
+
+    // Apply price range filter
+    if (priceFilter.priceRange !== 'all') {
+      filtered = filtered.filter(plan => {
+        const price = plan.Price?.OfferedPriceRoundedOff || plan.Price?.OfferedPrice || 0;
+        
+        switch (priceFilter.priceRange) {
+          case 'under-1000':
+            return price < 1000;
+          case '1000-5000':
+            return price >= 1000 && price <= 5000;
+          case '5000-10000':
+            return price > 5000 && price <= 10000;
+          case 'over-10000':
+            return price > 10000;
+          default:
+            return true;
+        }
+      });
+    }
+
+    // Apply custom min/max price filter
+    if (priceFilter.minPrice && priceFilter.minPrice.trim() !== '') {
+      const minPrice = parseFloat(priceFilter.minPrice);
+      if (!isNaN(minPrice) && minPrice > 0) {
+        filtered = filtered.filter(plan => {
+          const price = plan.Price?.OfferedPriceRoundedOff || plan.Price?.OfferedPrice || 0;
+          return price >= minPrice;
+        });
+      }
+    }
+
+    if (priceFilter.maxPrice && priceFilter.maxPrice.trim() !== '') {
+      const maxPrice = parseFloat(priceFilter.maxPrice);
+      if (!isNaN(maxPrice) && maxPrice > 0) {
+        filtered = filtered.filter(plan => {
+          const price = plan.Price?.OfferedPriceRoundedOff || plan.Price?.OfferedPrice || 0;
+          return price <= maxPrice;
+        });
+      }
+    }
+
+    // Ensure we don't accidentally filter out all results
+    if (filtered.length === 0 && plans.length > 0) {
+      // If we have plans but filtered results are empty, check if it's due to invalid filters
+      const hasValidMinFilter = priceFilter.minPrice && priceFilter.minPrice.trim() !== '' && !isNaN(parseFloat(priceFilter.minPrice)) && parseFloat(priceFilter.minPrice) > 0;
+      const hasValidMaxFilter = priceFilter.maxPrice && priceFilter.maxPrice.trim() !== '' && !isNaN(parseFloat(priceFilter.maxPrice)) && parseFloat(priceFilter.maxPrice) > 0;
+      
+      // If we have invalid filters or no custom filters, show all plans
+      if (!hasValidMinFilter && !hasValidMaxFilter && priceFilter.priceRange === 'all') {
+        setFilteredPlans([...plans]);
+      } else {
+        setFilteredPlans(filtered);
+      }
+    } else {
+      setFilteredPlans(filtered);
+    }
+    
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [plans, priceFilter]);
 
   // Function to fetch insurance data
   const fetchInsuranceData = async (searchParams) => {
@@ -169,6 +247,42 @@ const InsuranceList = () => {
     setSelectedPlan(null);
   };
 
+  // Handle price filter changes
+  const handlePriceRangeChange = (range) => {
+    setPriceFilter(prev => ({
+      ...prev,
+      priceRange: range,
+      minPrice: '',
+      maxPrice: ''
+    }));
+  };
+
+  const handleMinPriceChange = (e) => {
+    const value = e.target.value;
+    setPriceFilter(prev => ({
+      ...prev,
+      minPrice: value,
+      priceRange: value.trim() !== '' ? 'all' : prev.priceRange
+    }));
+  };
+
+  const handleMaxPriceChange = (e) => {
+    const value = e.target.value;
+    setPriceFilter(prev => ({
+      ...prev,
+      maxPrice: value,
+      priceRange: value.trim() !== '' ? 'all' : prev.priceRange
+    }));
+  };
+
+  const clearPriceFilters = () => {
+    setPriceFilter({
+      minPrice: '',
+      maxPrice: '',
+      priceRange: 'all'
+    });
+  };
+
   // Handle email selected quotes
   const handleEmailSelected = () => {
     if (selectedPlans.length === 0) {
@@ -180,30 +294,13 @@ const InsuranceList = () => {
   };
 
   // Pagination
-  const totalPages = Math.ceil((plans?.length || 0) / plansPerPage);
+  const totalPages = Math.ceil((filteredPlans?.length || 0) / plansPerPage);
   const startIndex = (currentPage - 1) * plansPerPage;
   const endIndex = startIndex + plansPerPage;
-  const currentPlans = plans ? plans.slice(startIndex, endIndex) : [];
+  const currentPlans = filteredPlans ? filteredPlans.slice(startIndex, endIndex) : [];
 
   if (loading) {
-    return (
-      <>
-        <Header02 />
-        <div className="container mt-5">
-          <div className="row">
-            <div className="col-12">
-              <div className="text-center">
-                <div className="spinner-border text-primary" role="status">
-                  <span className="visually-hidden">Loading...</span>
-                </div>
-                <p className="mt-2">Searching for insurance plans...</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <Footer />
-      </>
-    );
+    return <InsuranceListSkeleton />;
   }
 
   if (error) {
@@ -261,10 +358,11 @@ const InsuranceList = () => {
     );
   }
 
+
   return (
     <>
       <Header02 />
-      <div className="container mt-4">
+      <div className="container-xl mt-4">
         <div className="row">
           {/* Left Sidebar - Search Criteria */}
           <div className="col-md-3">
@@ -319,12 +417,18 @@ const InsuranceList = () => {
                 
                 <div className="d-flex align-items-center mb-3">
                   <i className="fas fa-chart-line me-2 text-primary" style={{width: '20px', textAlign: 'center'}}></i>
-                  <span className="text-muted">{searchCriteria.passengerAges?.join(', ') || '25'} Years</span>
+                  <span className="text-muted">{searchCriteria.passengerAges?.join(', ') || '25'} Years Old</span>
                 </div>
+                
                 
                 <button 
                   className="btn btn-danger w-100 mt-3"
-                  onClick={() => navigate('/home-insurance')}
+                  onClick={() => navigate('/home-insurance', { 
+                    state: { 
+                      searchParams: searchCriteria,
+                      modifyMode: true 
+                    } 
+                  })}
                 >
                   Modify Search
                 </button>
@@ -337,7 +441,12 @@ const InsuranceList = () => {
             {/* Header with Email Button */}
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h5 className="fw-bold fs-6 mb-0">
-                Showing {currentPlans.length} of {plans.length} Insurance Plans
+                Showing {currentPlans.length} of {filteredPlans.length} Insurance Plans
+                {filteredPlans.length !== plans.length && (
+                  <span className="text-muted ms-2">
+                    (filtered from {plans.length} total)
+                  </span>
+                )}
               </h5>
               <button 
                 className="btn btn-danger"
@@ -349,140 +458,278 @@ const InsuranceList = () => {
               </button>
             </div>
 
-            {/* Insurance Plans List */}
-            <div className="d-flex flex-column gap-3">
-              {currentPlans.map((plan, index) => (
-                <div key={plan.ResultIndex} className="border rounded p-3 mb-3 bg-white" style={{ borderColor: "#007bff" }}>
-                  <div className="d-flex justify-content-between align-items-start flex-wrap position-relative">
-                    {/* Top Section */}
-                    <div className="flex" style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      width: "100%",
-                    }}>
-                      <div>
-                        <h5 className="fw-bold mb-1">{plan.PlanName}</h5>
-                        <p className="text-muted mb-2">
-                          {searchCriteria.planType === 1 ? 'Single Trip' : 'Annual Multi Trip'} • 
-                          {searchCriteria.planCoverage === 1 ? 'US' :
-                           searchCriteria.planCoverage === 2 ? 'Non-US' :
-                           searchCriteria.planCoverage === 3 ? 'WorldWide' :
-                           searchCriteria.planCoverage === 4 ? 'India' :
-                           searchCriteria.planCoverage === 5 ? 'Asia' :
-                           searchCriteria.planCoverage === 6 ? 'Canada' :
-                           searchCriteria.planCoverage === 7 ? 'Australia' :
-                           searchCriteria.planCoverage === 8 ? 'Schenegen Countries' : 'Unknown'} Coverage
-                        </p>
-                      </div>
-                      <div className="fw-bold fs-4 mb-3">
-                        ₹{plan.Price?.OfferedPriceRoundedOff || plan.Price?.OfferedPrice || 'N/A'}
-                      </div>
-                    </div>
-
-                    {/* Middle Section - Duration and Dates */}
-                    <div className="middle-section">
-                      <div className="text-center me-4">
-                        <div className="fw-bold">Start Date</div>
-                        <div className="text-muted small">
-                          {plan.PolicyStartDate && new Date(plan.PolicyStartDate).toLocaleDateString('en-GB', { 
-                            day: '2-digit', 
-                            month: 'short' 
-                          })}
-                        </div>
-                      </div>
-                      <div className="text-center mx-3">
-                        <div className="text-muted fw-semibold">
-                          {plan.PolicyStartDate && plan.PolicyEndDate ? 
-                            Math.ceil((new Date(plan.PolicyEndDate) - new Date(plan.PolicyStartDate)) / (1000 * 60 * 60 * 24)) : 
-                            searchCriteria.duration || 1} Day(s)
-                          </div>
-                      </div>
-                      <div className="text-center ms-4">
-                        <div className="fw-bold">End Date</div>
-                        <div className="text-muted small">
-                          {plan.PolicyEndDate && new Date(plan.PolicyEndDate).toLocaleDateString('en-GB', { 
-                            day: '2-digit', 
-                            month: 'short' 
-                          })}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Bottom Section */}
-                    <div className="d-flex justify-content-between w-100">
-                      <div>
-                        <button className="btn btn-outline-secondary btn-sm px-3 py-1">
-                          Comprehensive Coverage
-                        </button>
-                      </div>
-
-                      <div>
-                        <div className="text-muted mb-2">
-                          {plan.Price?.OfferedPriceRoundedOff || plan.Price?.OfferedPrice ? 'Best Price' : 'Price on Request'}
-                        </div>
-                        <div className="d-flex gap-2">
-                          <div className="d-flex align-items-center gap-2">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id={`plan-${plan.ResultIndex}`}
-                              checked={selectedPlans.includes(plan.ResultIndex)}
-                              onChange={() => handlePlanSelection(plan.ResultIndex)}
-                              style={{width: '18px', height: '18px'}}
-                            />
-                            <label className="text-muted mb-0 fs-6" htmlFor={`plan-${plan.ResultIndex}`}>
-                              Email
-                            </label>
-                          </div>
-                          <button className="btn btn-danger hover-btn-color-white" onClick={() => handlePlanBooking(plan)}>
-                            Choose This
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Action Links */}
-                  <div className="d-flex justify-content-center gap-4 mt-3 pt-3 border-top">
-                    <a href="#" className="text-primary text-decoration-none fs-6" onClick={(e) => handleCoverDetails(plan, e)}>
-                      <i className="fas fa-shield-alt me-1"></i>Cover Details
-                    </a>
-                    <span className="text-muted">|</span>
-                    <a href="#" className="text-primary text-decoration-none fs-6">
-                      <i className="fas fa-calculator me-1"></i>Price Break Up
-                    </a>
-                    <span className="text-muted">|</span>
-                    <a href="#" className="text-primary text-decoration-none fs-6">
-                      <i className="fas fa-file-alt me-1"></i>Policy Document
-                    </a>
+            {/* Sticky Price Filter Bar */}
+            <div className="sticky-filter-bar bg-white border rounded p-3 mb-4 shadow-sm" style={{
+              position: 'sticky',
+              top: '20px',
+              zIndex: 1000
+            }}>
+              <div className="row align-items-center">
+                <div className="col-md-3">
+                  <h6 className="fw-bold text-dark mb-0">
+                    <i className="fas fa-filter me-2 text-primary"></i>
+                    Price Filter
+                  </h6>
+                </div>
+                
+                <div className="col-md-6">
+                  {/* Quick Price Ranges */}
+                  <div className="btn-group w-100" role="group">
+                    <button
+                      type="button"
+                      className={`btn btn-sm ${priceFilter.priceRange === 'all' ? 'btn-primary' : 'btn-outline-primary'}`}
+                      onClick={() => handlePriceRangeChange('all')}
+                    >
+                      All Prices
+                    </button>
+                    <button
+                      type="button"
+                      className={`btn btn-sm ${priceFilter.priceRange === 'under-1000' ? 'btn-primary' : 'btn-outline-primary'}`}
+                      onClick={() => handlePriceRangeChange('under-1000')}
+                    >
+                      Under ₹1K
+                    </button>
+                    <button
+                      type="button"
+                      className={`btn btn-sm ${priceFilter.priceRange === '1000-5000' ? 'btn-primary' : 'btn-outline-primary'}`}
+                      onClick={() => handlePriceRangeChange('1000-5000')}
+                    >
+                      ₹1K - ₹5K
+                    </button>
+                    <button
+                      type="button"
+                      className={`btn btn-sm ${priceFilter.priceRange === '5000-10000' ? 'btn-primary' : 'btn-outline-primary'}`}
+                      onClick={() => handlePriceRangeChange('5000-10000')}
+                    >
+                      ₹5K - ₹10K
+                    </button>
+                    <button
+                      type="button"
+                      className={`btn btn-sm ${priceFilter.priceRange === 'over-10000' ? 'btn-primary' : 'btn-outline-primary'}`}
+                      onClick={() => handlePriceRangeChange('over-10000')}
+                    >
+                      Over ₹10K
+                    </button>
                   </div>
                 </div>
-              ))}
+                
+                <div className="col-md-3">
+                  <div className="d-flex gap-2">
+                    {/* Custom Price Range */}
+                    <input
+                      type="number"
+                      className="form-control form-control-s h-8"
+                      placeholder="Min ₹"
+                      value={priceFilter.minPrice}
+                      onChange={handleMinPriceChange}
+                      min="0"
+                      step="100"
+                      style={{width: '80px'}}
+                    />
+                    <input
+                      type="number"
+                      className="form-control form-control-sm  h-8"
+                      placeholder="Max ₹"
+                      value={priceFilter.maxPrice}
+                      onChange={handleMaxPriceChange}
+                      min="0"
+                      step="100"
+                      style={{width: '80px'}}
+                    />
+                    
+                    {/* Clear Filters */}
+                    {(priceFilter.priceRange !== 'all' || priceFilter.minPrice || priceFilter.maxPrice) && (
+                      <button
+                        className="btn btn-outline-secondary btn-sm"
+                        onClick={clearPriceFilters}
+                        title="Clear Filters"
+                      >
+                        <i className="fas fa-times"></i>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
-                <span className="text-muted fs-6">
-                  {currentPage} of {totalPages}
-                </span>
-                <div className="d-flex gap-2">
+            {/* No Results Message for Price Filter */}
+            {filteredPlans.length === 0 && plans.length > 0 && (
+              <div className="text-center py-5">
+                <div className="alert alert-warning" role="alert">
+                  <h5 className="alert-heading">
+                    <i className="fas fa-filter me-2"></i>
+                    No Plans Match Your Price Filter
+                  </h5>
+                  <p className="mb-3">No insurance plans match your current price filter criteria. Please try adjusting your price range.</p>
                   <button 
-                    className="btn btn-outline-primary btn-sm"
-                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                    disabled={currentPage === 1}
+                    className="btn btn-outline-warning"
+                    onClick={clearPriceFilters}
                   >
-                    Previous
-                  </button>
-                  <button 
-                    className="btn btn-outline-primary btn-sm"
-                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                    disabled={currentPage === totalPages}
-                  >
-                    Next
+                    <i className="fas fa-times me-1"></i>
+                    Clear Price Filters
                   </button>
                 </div>
               </div>
+            )}
+
+            {/* Insurance Plans List */}
+            {filteredPlans.length > 0 && (
+              <>
+                <div className="d-flex flex-column gap-3">
+                  {currentPlans.map((plan, index) => (
+                    <div key={plan.ResultIndex} className="border rounded p-3 mb-3 bg-white" style={{ borderColor: "#007bff" }}>
+                      <div className="d-flex justify-content-between align-items-start flex-wrap position-relative">
+                        {/* Top Section */}
+                        <div className="d-flex justify-content-between flex-wrap w-100">
+                          <div>
+                            <h5 className="fw-bold mb-1">{plan.PlanName}</h5>
+                            <p className="text-muted mb-2">
+                              {searchCriteria.planType === 1 ? 'Single Trip' : 'Annual Multi Trip'} • 
+                              {searchCriteria.planCoverage === 1 ? 'US' :
+                               searchCriteria.planCoverage === 2 ? 'Non-US' :
+                               searchCriteria.planCoverage === 3 ? 'WorldWide' :
+                               searchCriteria.planCoverage === 4 ? 'India' :
+                               searchCriteria.planCoverage === 5 ? 'Asia' :
+                               searchCriteria.planCoverage === 6 ? 'Canada' :
+                               searchCriteria.planCoverage === 7 ? 'Australia' :
+                               searchCriteria.planCoverage === 8 ? 'Schenegen Countries' : 'Unknown'} Coverage
+                            </p>
+                          </div>
+
+                          <div className="d-flex gap-5 justify-content-between ">
+                          <div className=" flex flex-column fw-bold fs-4 fs-sm-6 ">
+                            ₹{plan.Price?.OfferedPriceRoundedOff || plan.Price?.OfferedPrice || 'N/A'}
+                            <div className="text-muted mb-2 fs-6">
+                              {plan.Price?.OfferedPriceRoundedOff || plan.Price?.OfferedPrice ? 'Best Price' : 'Price on Request'}
+                            </div>
+                          </div>
+                          <div className="d-flex gap-2">
+                              <div className="d-flex align-items-center gap-2">
+                                <input
+                                  className="form-check-input"
+                                  type="checkbox"
+                                  id={`plan-${plan.ResultIndex}`}
+                                  checked={selectedPlans.includes(plan.ResultIndex)}
+                                  onChange={() => handlePlanSelection(plan.ResultIndex)}
+                                  style={{width: '18px', height: '18px'}}
+                                />
+                                <label className="text-muted mb-0 fs-6" htmlFor={`plan-${plan.ResultIndex}`}>
+                                  Email
+                                </label>
+                              </div>
+                              <button className="btn btn-danger  hover-btn-color-danger" onClick={() => handlePlanBooking(plan)}>
+                                Choose This
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Middle Section - Duration and Dates */}
+                        {/* <div className="middle-section">
+                          <div className="text-center me-4">
+                            <div className="fw-bold">Start Date</div>
+                            <div className="text-muted small">
+                              {plan.PolicyStartDate && new Date(plan.PolicyStartDate).toLocaleDateString('en-GB', { 
+                                day: '2-digit', 
+                                month: 'short' 
+                              })}
+                            </div>
+                          </div>
+                          <div className="text-center mx-3">
+                            <div className="text-muted fw-semibold">
+                              {plan.PolicyStartDate && plan.PolicyEndDate ? 
+                                Math.ceil((new Date(plan.PolicyEndDate) - new Date(plan.PolicyStartDate)) / (1000 * 60 * 60 * 24)) : 
+                                searchCriteria.duration || 1} Day(s)
+                              </div>
+                          </div>
+                          <div className="text-center ms-4">
+                            <div className="fw-bold">End Date</div>
+                            <div className="text-muted small">
+                              {plan.PolicyEndDate && new Date(plan.PolicyEndDate).toLocaleDateString('en-GB', { 
+                                day: '2-digit', 
+                                month: 'short' 
+                              })}
+                            </div>
+                          </div>
+                        </div> */}
+
+                        {/* Bottom Section */}
+                        {/* <div className="d-flex justify-content-between w-100">
+                          <div>
+                            <button className="btn btn-outline-secondary btn-sm px-3 py-1">
+                              Comprehensive Coverage
+                            </button>
+                          </div>
+
+                          <div>
+                            <div className="text-muted mb-2">
+                              {plan.Price?.OfferedPriceRoundedOff || plan.Price?.OfferedPrice ? 'Best Price' : 'Price on Request'}
+                            </div>
+                            <div className="d-flex gap-2">
+                              <div className="d-flex align-items-center gap-2">
+                                <input
+                                  className="form-check-input"
+                                  type="checkbox"
+                                  id={`plan-${plan.ResultIndex}`}
+                                  checked={selectedPlans.includes(plan.ResultIndex)}
+                                  onChange={() => handlePlanSelection(plan.ResultIndex)}
+                                  style={{width: '18px', height: '18px'}}
+                                />
+                                <label className="text-muted mb-0 fs-6" htmlFor={`plan-${plan.ResultIndex}`}>
+                                  Email
+                                </label>
+                              </div>
+                              <button className="btn btn-danger hover-btn-color-white" onClick={() => handlePlanBooking(plan)}>
+                                Choose This
+                              </button>
+                            </div>
+                          </div>
+                        </div> */}
+                      </div>
+
+                      {/* Action Links */}
+                      <div className="d-flex justify-content-center gap-4 mt-3 pt-3 border-top">
+                        <a href="#" className="text-primary text-decoration-none fs-6" onClick={(e) => handleCoverDetails(plan, e)}>
+                          <i className="fas fa-shield-alt me-1"></i>Cover Details
+                        </a>
+                        <span className="text-muted">|</span>
+                        <a href="#" className="text-primary text-decoration-none fs-6">
+                          <i className="fas fa-calculator me-1"></i>Price Break Up
+                        </a>
+                        <span className="text-muted">|</span>
+                        <a href="#" className="text-primary text-decoration-none fs-6">
+                          <i className="fas fa-file-alt me-1"></i>Policy Document
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                    <span className="text-muted fs-6">
+                      {currentPage} of {totalPages}
+                    </span>
+                    <div className="d-flex gap-2">
+                      <button 
+                        className="btn btn-outline-primary btn-sm"
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                      >
+                        Previous
+                      </button>
+                      <button 
+                        className="btn btn-outline-primary btn-sm"
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        disabled={currentPage === totalPages}
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -779,6 +1026,68 @@ const InsuranceList = () => {
           .table th,
           .table td {
             padding: 8px !important;
+          }
+        }
+
+        /* Sticky Filter Bar Styles */
+        .sticky-filter-bar {
+          transition: all 0.3s ease;
+          backdrop-filter: blur(10px);
+          background-color: rgba(255, 255, 255, 0.95) !important;
+        }
+
+        .sticky-filter-bar .btn-group .btn {
+          font-size: 12px;
+          padding: 6px 8px;
+        }
+
+        /* Responsive Filter Bar */
+        @media (max-width: 768px) {
+          .sticky-filter-bar .row {
+            flex-direction: column;
+            gap: 10px;
+          }
+          
+          .sticky-filter-bar .col-md-3,
+          .sticky-filter-bar .col-md-6 {
+            width: 100%;
+            max-width: 100%;
+          }
+          
+          .sticky-filter-bar .btn-group {
+            flex-wrap: wrap;
+            gap: 5px;
+          }
+          
+          .sticky-filter-bar .btn-group .btn {
+            flex: 1;
+            min-width: 0;
+            font-size: 11px;
+            padding: 4px 6px;
+          }
+          
+          .sticky-filter-bar .d-flex.gap-2 {
+            justify-content: center;
+          }
+          
+          .sticky-filter-bar input[type="number"] {
+            width: 70px !important;
+          }
+        }
+
+        @media (max-width: 576px) {
+          .sticky-filter-bar {
+            padding: 15px !important;
+          }
+          
+          .sticky-filter-bar h6 {
+            font-size: 14px;
+            text-align: center;
+          }
+          
+          .sticky-filter-bar .btn-group .btn {
+            font-size: 10px;
+            padding: 3px 4px;
           }
         }
       `}</style>

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { FaCalendarAlt } from "react-icons/fa";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -18,6 +19,7 @@ import {
 const InsuranceSearch = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // State for form inputs - Updated to match API specification
   const [departDate, setDepartDate] = useState(new Date());
@@ -70,20 +72,68 @@ const InsuranceSearch = () => {
     label: (i + 1).toString()
   }));
 
-  // Prefill form data from localStorage for better UX
+  // Prefill form data from navigation state or localStorage for better UX
   useEffect(() => {
-    const params = getEncryptedItem('insuranceSearchParams');
+    const state = location.state;
+    let params = null;
+    
+    // First check if we have search params from navigation state (modify mode)
+    if (state && state.searchParams) {
+      params = state.searchParams;
+    } else {
+      // Fallback to localStorage
+      params = getEncryptedItem('insuranceSearchParams');
+    }
+    
     if (params) {
-      if (params.departDate) setDepartDate(new Date(params.departDate + 'T00:00:00'));
-      if (params.returnDate) setReturnDate(new Date(params.returnDate + 'T00:00:00'));
+      // Parse dates more safely
+      if (params.departDate) {
+        const departDate = new Date(params.departDate);
+        if (!isNaN(departDate.getTime())) {
+          setDepartDate(departDate);
+        }
+      }
+      if (params.returnDate) {
+        const returnDate = new Date(params.returnDate);
+        if (!isNaN(returnDate.getTime())) {
+          setReturnDate(returnDate);
+        }
+      }
       if (params.duration) setDuration(params.duration);
       if (params.passengerCount) setPassengerCount(params.passengerCount);
       if (params.passengerAges) setPassengerAges(params.passengerAges);
-      if (params.planCategory) setPlanCategory(params.planCategory);
-      if (params.planType) setPlanType(params.planType);
-      if (params.planCoverage) setPlanCoverage(params.planCoverage);
+      
+      // Handle plan category - convert from value to object if needed
+      if (params.planCategory) {
+        if (typeof params.planCategory === 'object') {
+          setPlanCategory(params.planCategory);
+        } else {
+          const category = planCategoryOptions.find(opt => opt.value === params.planCategory);
+          if (category) setPlanCategory(category);
+        }
+      }
+      
+      // Handle plan type - convert from value to object if needed
+      if (params.planType) {
+        if (typeof params.planType === 'object') {
+          setPlanType(params.planType);
+        } else {
+          const type = planTypeOptions.find(opt => opt.value === params.planType);
+          if (type) setPlanType(type);
+        }
+      }
+      
+      // Handle plan coverage - convert from value to object if needed
+      if (params.planCoverage) {
+        if (typeof params.planCoverage === 'object') {
+          setPlanCoverage(params.planCoverage);
+        } else {
+          const coverage = planCoverageOptions.find(opt => opt.value === params.planCoverage);
+          if (coverage) setPlanCoverage(coverage);
+        }
+      }
     }
-  }, []);
+  }, [location.state]);
 
   // Update passenger ages when passenger count changes
   useEffect(() => {
@@ -116,24 +166,78 @@ const InsuranceSearch = () => {
     setPlanType({ value: 1, label: "Single Trip" });
   }, []);
 
+  // Ensure return date is properly set for single trip on mount
+  useEffect(() => {
+    if (planType.value === 1 && returnDate <= departDate) {
+      // If return date is not set or is before/equal to depart date, set it to depart date + 1 day
+      const nextDay = new Date(departDate);
+      nextDay.setDate(departDate.getDate() + 1);
+      setReturnDate(nextDay);
+      setDuration(1);
+    }
+  }, [planType.value, departDate, returnDate]);
+
+  // Set default duration when plan type changes
+  useEffect(() => {
+    if (planType.value === 2 && duration === 1) {
+      // Set default duration to 365 days for Annual Multi Trip
+      setDuration(365);
+    }
+  }, [planType.value, duration]);
+
   const handleDepartDateChange = useCallback((date) => {
     setDepartDate(date);
-    // Ensure return date is not before depart date
-    if (returnDate < date) {
-      setReturnDate(date);
+    
+    if (planType.value === 1) {
+      // Single Trip: Ensure return date is not before depart date
+      if (returnDate <= date) {
+        // Only update return date if it's before or equal to depart date
+        const nextDay = new Date(date);
+        nextDay.setDate(date.getDate() + 1);
+        setReturnDate(nextDay);
+        setDuration(1); // Reset to 1 day
+      } else {
+        // Calculate duration based on current return date
+        const timeDiff = returnDate.getTime() - date.getTime();
+        const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+        setDuration(Math.max(1, daysDiff));
+      }
     }
-  }, [returnDate]);
+    // For Annual Multi Trip, no return date logic needed
+  }, [returnDate, planType.value]);
 
   const handleReturnDateChange = useCallback((date) => {
     setReturnDate(date);
-  }, []);
+    // Calculate duration when return date changes (only for Single Trip)
+    if (planType.value === 1) {
+      const timeDiff = date.getTime() - departDate.getTime();
+      const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+      setDuration(Math.max(1, daysDiff));
+    }
+  }, [departDate, planType.value]);
 
   const handleDurationChange = useCallback((e) => {
     const value = parseInt(e.target.value);
-    if (value >= 1) {
-      setDuration(value);
+    
+    if (planType.value === 1) {
+      // Single Trip: Update return date based on duration
+      if (value >= 1) {
+        setDuration(value);
+        const newReturnDate = new Date(departDate);
+        newReturnDate.setDate(departDate.getDate() + value - 1);
+        setReturnDate(newReturnDate);
+      }
+    } else if (planType.value === 2) {
+      // Annual Multi Trip: Just update duration, end date is calculated automatically
+      if (value >= 1 && value <= 365) {
+        setDuration(value);
+      } else if (value > 365) {
+        setDuration(365); // Cap at 365 days
+      } else if (value < 1) {
+        setDuration(1); // Minimum 1 day
+      }
     }
-  }, []);
+  }, [departDate, planType.value]);
 
   const handlePassengerCountChange = useCallback((selectedOption) => {
     setPassengerCount(selectedOption.value);
@@ -141,7 +245,8 @@ const InsuranceSearch = () => {
 
   const handlePassengerAgeChange = useCallback((index, value) => {
     const newAges = [...passengerAges];
-    newAges[index] = parseInt(value) || 0;
+    // Use parseFloat to handle decimal values (for Single Trip with 0.5 increments)
+    newAges[index] = parseFloat(value) || 0;
     setPassengerAges(newAges);
   }, [passengerAges]);
 
@@ -161,12 +266,24 @@ const InsuranceSearch = () => {
   const validateForm = () => {
     const errors = [];
 
-    if (!departDate || !returnDate || !duration || !passengerCount) {
+    // Basic required fields validation
+    if (!departDate || !duration || !passengerCount) {
       errors.push("Please fill in all required fields");
     }
 
-    if (departDate >= returnDate) {
-      errors.push("Return date must be after depart date");
+    // Plan type specific validation
+    if (planType.value === 1) {
+      // Single Trip validation
+      if (!returnDate) {
+        errors.push("Return date is required for Single Trip");
+      } else if (departDate >= returnDate) {
+        errors.push("Return date must be after depart date");
+      }
+    } else if (planType.value === 2) {
+      // Annual Multi Trip validation
+      if (duration > 365) {
+        errors.push("Policy duration cannot exceed 365 days for Annual Multi Trip");
+      }
     }
 
     if (passengerCount < 1 || passengerCount > 9) {
@@ -183,7 +300,8 @@ const InsuranceSearch = () => {
 
     for (let i = 0; i < passengerAges.length; i++) {
       if (passengerAges[i] < minAge || passengerAges[i] > maxAge) {
-        errors.push(`Passenger ${i + 1} age must be between ${minAge} and ${maxAge} years`);
+        const passengerType = planType.value === 1 ? "Traveler" : "Member";
+        errors.push(`${passengerType} ${i + 1} age must be between ${minAge} and ${maxAge} years`);
       }
     }
 
@@ -230,13 +348,14 @@ const InsuranceSearch = () => {
       const maxAge = 70;
       
       if (validAges.some(age => age < minAge || age > maxAge)) {
-        alert(`Passenger ages must be between ${minAge} and ${maxAge} years for ${planType.label}`);
+        const passengerType = planType.value === 1 ? "Traveler" : "Member";
+        alert(`${passengerType} ages must be between ${minAge} and ${maxAge} years for ${planType.label}`);
         return;
       }
 
+      // Create search params based on plan type
       const searchParams = {
         departDate: `${departDate.getFullYear()}-${String(departDate.getMonth() + 1).padStart(2, '0')}-${String(departDate.getDate()).padStart(2, '0')}`,
-        returnDate: `${returnDate.getFullYear()}-${String(returnDate.getMonth() + 1).padStart(2, '0')}-${String(returnDate.getDate()).padStart(2, '0')}`,
         duration,
         passengerCount,
         passengerAges: validAges,
@@ -244,6 +363,11 @@ const InsuranceSearch = () => {
         planType: planType.value,
         planCoverage: planCoverage.value,
       };
+
+      // Add return date only for Single Trip
+      if (planType.value === 1) {
+        searchParams.returnDate = `${returnDate.getFullYear()}-${String(returnDate.getMonth() + 1).padStart(2, '0')}-${String(returnDate.getDate()).padStart(2, '0')}`;
+      }
 
       // Store form data in localStorage for better UX
       setEncryptedItem('insuranceSearchParams', searchParams);
@@ -254,12 +378,21 @@ const InsuranceSearch = () => {
         PlanType: planType.value,
         PlanCoverage: planCoverage.value,
         TravelStartDate: `${departDate.getFullYear()}/${(departDate.getMonth() + 1).toString().padStart(2, '0')}/${departDate.getDate().toString().padStart(2, '0')}`,
-        TravelEndDate: `${returnDate.getFullYear()}/${(returnDate.getMonth() + 1).toString().padStart(2, '0')}/${returnDate.getDate().toString().padStart(2, '0')}`,
         NoOfPax: passengerCount,
         PaxAge: validAges,
         EndUserIp: authData?.EndUserIp || '127.0.0.1',
         TokenId: authData?.TokenId,
       };
+
+      // Add TravelEndDate only for Single Trip
+      if (planType.value === 1) {
+        apiParams.TravelEndDate = `${returnDate.getFullYear()}/${(returnDate.getMonth() + 1).toString().padStart(2, '0')}/${returnDate.getDate().toString().padStart(2, '0')}`;
+      } else if (planType.value === 2) {
+        // For Annual Multi Trip, calculate end date from start date + duration
+        const endDate = new Date(departDate);
+        endDate.setDate(departDate.getDate() + duration - 1);
+        apiParams.TravelEndDate = `${endDate.getFullYear()}/${(endDate.getMonth() + 1).toString().padStart(2, '0')}/${endDate.getDate().toString().padStart(2, '0')}`;
+      }
       
       // Validate API parameters
       if (!apiParams.TokenId) {
@@ -373,7 +506,6 @@ const InsuranceSearch = () => {
           }
 
           .form-control {
-            font-weight: bold;
             width: 100%;
             border: none;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -503,6 +635,56 @@ const InsuranceSearch = () => {
             text-align: center;
           }
 
+          /* Ensure number input controls are visible and working */
+          input[type="number"] {
+            -moz-appearance: textfield;
+          }
+
+          input[type="number"]::-webkit-outer-spin-button,
+          input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: inner-spin-button;
+            opacity: 0.4;
+            height: 40%;
+            position: absolute;
+            right: 1px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+          }
+
+          input[type="number"]::-webkit-inner-spin-button:hover {
+            opacity: 0.8;
+            background-color: rgba(0, 0, 0, 0.05);
+          }
+
+          /* Make the up arrow smaller and lighter */
+          input[type="number"]::-webkit-inner-spin-button:before {
+            content: '';
+            position: absolute;
+            top: 1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 3px solid transparent;
+            border-right: 3px solid transparent;
+            border-bottom: 4px solid #adb5bd;
+          }
+
+          /* Make the down arrow smaller and lighter */
+          input[type="number"]::-webkit-inner-spin-button:after {
+            content: '';
+            position: absolute;
+            bottom: 1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 3px solid transparent;
+            border-right: 3px solid transparent;
+            border-top: 4px solid #adb5bd;
+          }
+
           .info-text {
             font-size: 12px;
             color: #6c757d;
@@ -537,6 +719,7 @@ const InsuranceSearch = () => {
             margin-bottom: 20px;
             display: inline-block;
           }
+
         `}
       </style>
       
@@ -616,30 +799,42 @@ const InsuranceSearch = () => {
                      />
                    </div>
 
-                   <div className="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+                   <div className=" d-flex flex-column col-xl-3 col-lg-6 col-md-6 col-sm-12">
                      <label className="form-label fw-bold text-dark">Depart Date</label>
+                     <div className="d-flex flex-column position-relative" >
                      <DatePicker
                        selected={departDate}
                        onChange={handleDepartDateChange}
                        dateFormat="dd/MM/yyyy"
                        placeholderText="Select Date"
-                       className="form-control"
+                      className="form-control"
+                       style={{width: "100%"}}
                        ref={departDateRef}
                        minDate={new Date()}
-                     />
+                       />
+                         <FaCalendarAlt style={{position: 
+                          'absolute', right:"10",top:"50%", 
+                          transform: "translateY(-50%)" ,color: "gray"}}/>
+                       </div>
                    </div>
 
                    <div className="col-xl-3 col-lg-6 col-md-6 col-sm-12">
                      <label className="form-label fw-bold text-dark">Return Date</label>
+                     <div className="d-flex flex-column position-relative" >
                      <DatePicker
                        selected={returnDate}
                        onChange={handleReturnDateChange}
                        dateFormat="dd/MM/yyyy"
                        placeholderText="Select Date"
                        className="form-control"
+                       style={{width: "100%"}}
                        ref={returnDateRef}
                        minDate={departDate}
                      />
+                          <FaCalendarAlt style={{position: 
+                          'absolute', right:"10",top:"50%", 
+                          transform: "translateY(-50%)" ,color: "gray"}}/>
+                       </div>
                    </div>
                  </div>
                    </div>
@@ -677,8 +872,8 @@ const InsuranceSearch = () => {
                        </div>
 
                        <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                        <div className="d-flex  flex-column">
                          <label className="form-label fw-bold text-dark">Policy Start Date</label>
+                        <div className="d-flex  flex-column position-relative">
                          <DatePicker
                            selected={departDate}
                            onChange={handleDepartDateChange}
@@ -688,6 +883,9 @@ const InsuranceSearch = () => {
                            ref={departDateRef}
                            minDate={new Date()}
                          />
+                          <FaCalendarAlt style={{position: 
+                          'absolute', right:"10",top:"50%", 
+                          transform: "translateY(-50%)" ,color: "gray"}}/>
                        </div>
                        </div>
                      </div>
@@ -699,60 +897,7 @@ const InsuranceSearch = () => {
                {planType.value === 1 && (
                  <div className="row gy-3 gx-md-3 gx-sm-2 mt-3">
                    <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-                     <label className="form-label fw-bold text-dark">Duration (Days)</label>
-                     <input
-                       type="number"
-                       className="form-control text-center"
-                       value={duration}
-                       onChange={handleDurationChange}
-                       min="1"
-                       ref={durationRef}
-                     />
-                   </div>
-
-                   <div className="col-xl-3 col-lg-8 col-md-6 col-sm-12">
-                     <label className="form-label fw-bold text-dark">Number of Passengers</label>
-                     <Select
-                       options={passengerOptions}
-                       value={{ value: passengerCount, label: passengerCount.toString() }}
-                       onChange={handlePassengerCountChange}
-                       styles={customSelectStyles}
-                       placeholder="Select Passengers"
-                       ref={passengerCountRef}
-                     />
-                     <div className="info-text">
-                       Single Trip: Min age 6 months | Max age 70 years
-                     </div>
-                   </div>
-
-                   <div className="col-xl-6 col-lg-12 col-md-12 col-sm-12">
-                     <label className="form-label fw-bold text-dark">Passenger Ages</label>
-                     <div className="age-inputs">
-                       {Array.from({ length: passengerCount }, (_, index) => (
-                         <div key={index} className="age-input-group">
-                           <span className="fw-bold text-dark">Pax {index + 1}</span>
-                           <input
-                             type="number"
-                             className="form-control text-center"
-                             value={passengerAges[index] || ''}
-                             onChange={(e) => handlePassengerAgeChange(index, e.target.value)}
-                             min="0.5"
-                             max="70"
-                             step="0.5"
-                             placeholder="Age"
-                           />
-                         </div>
-                       ))}
-                     </div>
-                   </div>
-                 </div>
-               )}
-
-               {/* Annual Multi Trip - Second Row */}
-               {planType.value === 2 && (
-                 <div className="row gy-3 gx-md-3 gx-sm-2 mt-3">
-                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-                     <label className="form-label fw-bold text-dark">Policy Duration (Days)</label>
+                     <label className="form-label fw-bold text-dark">Trip Duration (Days)</label>
                      <input
                        type="number"
                        className="form-control text-center"
@@ -763,36 +908,114 @@ const InsuranceSearch = () => {
                        ref={durationRef}
                      />
                      <div className="info-text">
-                       Maximum 1 year (365 days)
+                       <strong>Auto-calculated</strong> from travel dates
+                     </div>
+                     <div className="info-text mt-1">
+                       <strong>Total Days:</strong> {duration} day{duration !== 1 ? 's' : ''}
                      </div>
                    </div>
 
                    <div className="col-xl-3 col-lg-8 col-md-6 col-sm-12">
-                     <label className="form-label fw-bold text-dark">Number of Passengers</label>
+                     <label className="form-label fw-bold text-dark">Travelers</label>
                      <Select
                        options={passengerOptions}
                        value={{ value: passengerCount, label: passengerCount.toString() }}
                        onChange={handlePassengerCountChange}
                        styles={customSelectStyles}
-                       placeholder="Select Passengers"
+                       placeholder="Select Travelers"
                        ref={passengerCountRef}
                      />
                      <div className="info-text">
-                       Annual Multi Trip: Min age 1 year | Max age 70 years
+                       <strong>Single Trip:</strong> Min age 6 months | Max age 70 years
                      </div>
                    </div>
 
                    <div className="col-xl-6 col-lg-12 col-md-12 col-sm-12">
-                     <label className="form-label fw-bold text-dark">Passenger Ages</label>
+                     <label className="form-label fw-bold text-dark">Traveler Ages</label>
                      <div className="age-inputs">
                        {Array.from({ length: passengerCount }, (_, index) => (
                          <div key={index} className="age-input-group">
-                           <span className="fw-bold text-dark">Pax {index + 1}</span>
+                           <span className="fw-bold text-dark">Traveler {index + 1}</span>
                            <input
                              type="number"
                              className="form-control text-center"
                              value={passengerAges[index] || ''}
                              onChange={(e) => handlePassengerAgeChange(index, e.target.value)}
+                             onInput={(e) => handlePassengerAgeChange(index, e.target.value)}
+                             onKeyUp={(e) => handlePassengerAgeChange(index, e.target.value)}
+                             min="0.5"
+                             max="70"
+                             step="0.5"
+                             placeholder="Age"
+                           />
+                         </div>
+                       ))}
+                     </div>
+                     <div className="info-text mt-2">
+                       <strong>Note:</strong> Ages can be in months (0.5 = 6 months) for infants
+                     </div>
+                   </div>
+                 </div>
+               )}
+
+               {/* Annual Multi Trip - Second Row */}
+               {planType.value === 2 && (
+                 <div className="row gy-3 gx-md-3 gx-sm-2 mt-3">
+                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+                     <label className="form-label fw-bold text-dark">Policy Term (Days)</label>
+                     <input
+                       type="number"
+                       className="form-control text-center"
+                       value={duration}
+                       onChange={handleDurationChange}
+                       min="1"
+                       max="365"
+                       ref={durationRef}
+                     />
+                     
+                     <div className="info-text mt-2">
+                       <strong>Annual Policy:</strong> Maximum 1 year (365 days)
+                     </div>
+                     <div className="info-text mt-1">
+                       <strong>Policy End Date:</strong> {(() => {
+                         const endDate = new Date(departDate);
+                         endDate.setDate(departDate.getDate() + duration - 1);
+                         return endDate.toLocaleDateString('en-GB');
+                       })()}
+                     </div>
+                   </div>
+
+                   <div className="col-xl-3 col-lg-8 col-md-6 col-sm-12">
+                     <label className="form-label fw-bold text-dark">Insured Members</label>
+                     <Select
+                       options={passengerOptions}
+                       value={{ value: passengerCount, label: passengerCount.toString() }}
+                       onChange={handlePassengerCountChange}
+                       styles={customSelectStyles}
+                       placeholder="Select Members"
+                       ref={passengerCountRef}
+                     />
+                     <div className="info-text">
+                       <strong>Annual Multi Trip:</strong> Min age 1 year | Max age 70 years
+                     </div>
+                     <div className="info-text mt-1">
+                       <strong>Coverage:</strong> Multiple trips within policy term
+                     </div>
+                   </div>
+
+                   <div className="col-xl-6 col-lg-12 col-md-12 col-sm-12">
+                     <label className="form-label fw-bold text-dark">Member Ages</label>
+                     <div className="age-inputs">
+                       {Array.from({ length: passengerCount }, (_, index) => (
+                         <div key={index} className="age-input-group">
+                           <span className="fw-bold text-dark">Member {index + 1}</span>
+                           <input
+                             type="number"
+                             className="form-control text-center"
+                             value={passengerAges[index] || ''}
+                             onChange={(e) => handlePassengerAgeChange(index, e.target.value)}
+                             onInput={(e) => handlePassengerAgeChange(index, e.target.value)}
+                             onKeyUp={(e) => handlePassengerAgeChange(index, e.target.value)}
                              min="1"
                              max="70"
                              step="1"
@@ -800,6 +1023,9 @@ const InsuranceSearch = () => {
                            />
                          </div>
                        ))}
+                     </div>
+                     <div className="info-text mt-2">
+                       <strong>Note:</strong> Ages must be in full years (minimum 1 year) for annual policies
                      </div>
                    </div>
                  </div>
