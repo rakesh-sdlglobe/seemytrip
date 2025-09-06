@@ -3,8 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header02 from '../header02';
 import Footer from '../footer';
-import { bookInsurance } from '../../store/Actions/insuranceAction';
-import { setEncryptedItem, getEncryptedItem } from '../../utils/encryption';
 import { 
   selectInsuranceBookLoading, 
   selectInsuranceBookError, 
@@ -12,6 +10,7 @@ import {
   selectInsuranceSearchResults,
   selectInsuranceSearchData
 } from '../../store/Selectors/insuranceSelectors';
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { 
   FaShieldAlt, 
   FaUser, 
@@ -23,6 +22,8 @@ import {
   FaIdCard, 
   FaArrowLeft, 
   FaArrowRight, 
+  FaArrowUp,
+  FaArrowDown,
   FaTrash, 
   FaPlus,
   FaCheckCircle,
@@ -33,6 +34,7 @@ import {
   FaExclamationTriangle,
   FaStar
 } from 'react-icons/fa';
+
 
 const Insurance_Booking_Page = () => {
   const dispatch = useDispatch();
@@ -50,40 +52,58 @@ const Insurance_Booking_Page = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [searchCriteria, setSearchCriteria] = useState({});
   const [passengerDetails, setPassengerDetails] = useState([{
-    Title: 'MS',
+    Title: '',
     FirstName: '',
     LastName: '',
-    BeneficiaryTitle: 'MR',
+    BeneficiaryTitle: '',
     BeneficiaryFirstName: '',
     BeneficiaryLastName: '',
-    RelationShipToInsured: 'Self',
-    RelationToBeneficiary: 'Spouse',
-    Gender: '2',
-    Sex: 2,
+    RelationShipToInsured: '',
+    RelationToBeneficiary: '',
+    Gender: '',
+    Sex: '',
     DOB: '',
     DOBDay: '',
     DOBMonth: '',
     DOBYear: '',
     PassportNo: '',
-    PassportCountry: 'IND',
+    PassportCountry: '',
     PhoneNumber: '',
     EmailId: '',
     AddressLine1: '',
     AddressLine2: '',
     CityCode: '',
-    CountryCode: 'IND',
+    CountryCode: '',
     State: '',
     MajorDestination: '',
     PinCode: ''
   }]);
   
   const [formErrors, setFormErrors] = useState({});
-  const [currentStep, setCurrentStep] = useState(1);
+  const [expandedPassengers, setExpandedPassengers] = useState({});
+  const [isNavigating, setIsNavigating] = useState(false);
 
   // Load data on component mount and when search results change
   useEffect(() => {
     loadBookingData();
+    // Clear any existing form errors on component mount
+    setFormErrors({});
   }, [searchResults]);
+
+  // Expand first passenger by default when passengers are loaded
+  useEffect(() => {
+    if (passengerDetails.length > 0) {
+      setExpandedPassengers({ 0: true });
+    }
+  }, [passengerDetails.length]);
+
+  const togglePassengerExpansion = (index) => {
+    setExpandedPassengers(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
+
 
 
 
@@ -118,28 +138,28 @@ const Insurance_Booking_Page = () => {
         
         for (let i = 0; i < passengerCount; i++) {
           initialPassengers.push({
-            Title: 'MS',
+            Title: '',
             FirstName: '',
             LastName: '',
-            BeneficiaryTitle: 'MR',
+            BeneficiaryTitle: '',
             BeneficiaryFirstName: '',
             BeneficiaryLastName: '',
-            RelationShipToInsured: 'Self',
-            RelationToBeneficiary: 'Spouse',
-            Gender: '1',
-            Sex: 2,
+            RelationShipToInsured: '',
+            RelationToBeneficiary: '',
+            Gender: '',
+            Sex: '',
             DOB: '',
             DOBDay: '',
             DOBMonth: '',
             DOBYear: '',
             PassportNo: '',
-            PassportCountry: 'IND',
+            PassportCountry: '',
             PhoneNumber: '',
             EmailId: '',
             AddressLine1: '',
             AddressLine2: '',
             CityCode: '',
-            CountryCode: 'IND',
+            CountryCode: '',
             State: '',
             MajorDestination: '',
             PinCode: ''
@@ -170,109 +190,337 @@ const Insurance_Booking_Page = () => {
         [`${field}_${passengerIndex}`]: ''
       }));
     }
+    
+    // Special handling for DOB fields - clear DOB error when any DOB field changes
+    if (field === 'DOBDay' || field === 'DOBMonth' || field === 'DOBYear') {
+      if (formErrors[`DOB_${passengerIndex}`]) {
+        setFormErrors(prev => ({
+          ...prev,
+          [`DOB_${passengerIndex}`]: ''
+        }));
+      }
+    }
+    
+    // Real-time validation for passport number
+    if (field === 'PassportNo') {
+      if (!value || !value.trim()) {
+        setFormErrors(prev => ({
+          ...prev,
+          [`PassportNo_${passengerIndex}`]: 'Passport number is required'
+        }));
+      } else {
+        const passportRegex = /^[A-Z]{1,2}[0-9]{6,9}$/;
+        if (!passportRegex.test(value.trim().toUpperCase())) {
+          setFormErrors(prev => ({
+            ...prev,
+            [`PassportNo_${passengerIndex}`]: 'Please enter a valid passport number'
+          }));
+        } else {
+          // Clear error if format is valid
+          setFormErrors(prev => ({
+            ...prev,
+            [`PassportNo_${passengerIndex}`]: ''
+          }));
+        }
+      }
+    }
+    
+    // Real-time validation for email
+    if (field === 'EmailId') {
+      if (value && value.trim()) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value.trim())) {
+          setFormErrors(prev => ({
+            ...prev,
+            [`EmailId_${passengerIndex}`]: 'Please enter a valid email address'
+          }));
+        } else {
+          setFormErrors(prev => ({
+            ...prev,
+            [`EmailId_${passengerIndex}`]: ''
+          }));
+        }
+      }
+    }
+    
+    // Real-time validation for phone number
+    if (field === 'PhoneNumber') {
+      if (value && value.trim()) {
+        const phoneRegex = /^[6-9]\d{9}$/;
+        if (!phoneRegex.test(value.trim())) {
+          setFormErrors(prev => ({
+            ...prev,
+            [`PhoneNumber_${passengerIndex}`]: 'Please enter a valid 10-digit mobile number'
+          }));
+        } else {
+          setFormErrors(prev => ({
+            ...prev,
+            [`PhoneNumber_${passengerIndex}`]: ''
+          }));
+        }
+      }
+    }
+    
+    // Real-time validation for PIN code
+    if (field === 'PinCode') {
+      if (value && value.toString().trim()) {
+        const pinRegex = /^[1-9][0-9]{5}$/;
+        if (!pinRegex.test(value.toString())) {
+          setFormErrors(prev => ({
+            ...prev,
+            [`PinCode_${passengerIndex}`]: 'Please enter a valid 6-digit PIN code'
+          }));
+        } else {
+          setFormErrors(prev => ({
+            ...prev,
+            [`PinCode_${passengerIndex}`]: ''
+          }));
+        }
+      }
+    }
   };
 
   const validateForm = () => {
     const errors = {};
     
     passengerDetails.forEach((passenger, index) => {
-      if (!passenger.FirstName.trim()) errors[`FirstName_${index}`] = 'First name is required';
-      if (!passenger.LastName.trim()) errors[`LastName_${index}`] = 'Last name is required';
-      if (!passenger.BeneficiaryFirstName.trim()) errors[`BeneficiaryFirstName_${index}`] = 'Beneficiary first name is required';
-      if (!passenger.BeneficiaryLastName.trim()) errors[`BeneficiaryLastName_${index}`] = 'Beneficiary last name is required';
-      
-      // Validate date of birth - check if all three fields are filled
-      if (!passenger.DOBDay || !passenger.DOBMonth || !passenger.DOBYear) {
-        errors[`DOB_${index}`] = 'Date of birth is required';
+      // Title validation
+      if (!passenger.Title || passenger.Title === '') {
+        errors[`Title_${index}`] = 'Title is required';
       }
       
-      if (!passenger.PhoneNumber.trim()) errors[`PhoneNumber_${index}`] = 'Phone number is required';
-      if (!passenger.EmailId.trim()) errors[`EmailId_${index}`] = 'Email is required';
-      if (!passenger.AddressLine1.trim()) errors[`AddressLine1_${index}`] = 'Address is required';
-      if (!passenger.CityCode.trim()) errors[`CityCode_${index}`] = 'City is required';
-      if (!passenger.State.trim()) errors[`State_${index}`] = 'State is required';
-      if (!passenger.MajorDestination.trim()) errors[`MajorDestination_${index}`] = 'Major destination is required';
-      if (!passenger.PinCode) errors[`PinCode_${index}`] = 'PIN code is required';
+      // Name validations
+      if (!passenger.FirstName.trim()) {
+        errors[`FirstName_${index}`] = 'First name is required';
+      } else if (passenger.FirstName.trim().length < 2) {
+        errors[`FirstName_${index}`] = 'First name must be at least 2 characters';
+      }
+      
+      if (!passenger.LastName.trim()) {
+        errors[`LastName_${index}`] = 'Last name is required';
+      } else if (passenger.LastName.trim().length < 2) {
+        errors[`LastName_${index}`] = 'Last name must be at least 2 characters';
+      }
+      
+      // Gender validation
+      if (!passenger.Gender || passenger.Gender === '') {
+        errors[`Gender_${index}`] = 'Gender is required';
+      }
+      
+      // Date of birth validation - check if all three fields are filled
+      if (!passenger.DOBDay || !passenger.DOBMonth || !passenger.DOBYear) {
+        errors[`DOB_${index}`] = 'Date of birth is required';
+      } else {
+        // Validate if the date is valid
+        const day = parseInt(passenger.DOBDay);
+        const month = parseInt(passenger.DOBMonth);
+        const year = parseInt(passenger.DOBYear);
+        const date = new Date(year, month - 1, day);
+        
+        if (date.getDate() !== day || date.getMonth() !== month - 1 || date.getFullYear() !== year) {
+          errors[`DOB_${index}`] = 'Please enter a valid date';
+        } else {
+          // Check if age is between 0 and 70
+          const today = new Date();
+          const age = today.getFullYear() - year;
+          if (age < 0 || age > 70) {
+            errors[`DOB_${index}`] = 'Age must be between 0 and 70 years';
+          }
+        }
+      }
+      
+      // Phone number validation
+      if (!passenger.PhoneNumber.trim()) {
+        errors[`PhoneNumber_${index}`] = 'Phone number is required';
+      } else {
+        const phoneRegex = /^[6-9]\d{9}$/;
+        if (!phoneRegex.test(passenger.PhoneNumber.trim())) {
+          errors[`PhoneNumber_${index}`] = 'Please enter a valid 10-digit mobile number';
+        }
+      }
+      
+      // Email validation
+      if (!passenger.EmailId.trim()) {
+        errors[`EmailId_${index}`] = 'Email is required';
+      } else {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(passenger.EmailId.trim())) {
+          errors[`EmailId_${index}`] = 'Please enter a valid email address';
+        }
+      }
+      
+      // Address validation
+      if (!passenger.AddressLine1.trim()) {
+        errors[`AddressLine1_${index}`] = 'Address is required';
+      } else if (passenger.AddressLine1.trim().length < 10) {
+        errors[`AddressLine1_${index}`] = 'Address must be at least 10 characters';
+      }
+      
+      // City validation
+      if (!passenger.CityCode.trim()) {
+        errors[`CityCode_${index}`] = 'City is required';
+      }
+      
+      // State validation
+      if (!passenger.State.trim()) {
+        errors[`State_${index}`] = 'State is required';
+      }
+      
+      // Major destination validation
+      if (!passenger.MajorDestination.trim()) {
+        errors[`MajorDestination_${index}`] = 'Major destination is required';
+      }
+      
+      // Country validation
+      if (!passenger.CountryCode || passenger.CountryCode === '') {
+        errors[`CountryCode_${index}`] = 'Country is required';
+      }
+      
+      // PIN code validation
+      if (!passenger.PinCode) {
+        errors[`PinCode_${index}`] = 'PIN code is required';
+      } else {
+        const pinRegex = /^[1-9][0-9]{5}$/;
+        if (!pinRegex.test(passenger.PinCode.toString())) {
+          errors[`PinCode_${index}`] = 'Please enter a valid 6-digit PIN code';
+        }
+      }
+      
+      // Beneficiary validations
+      if (!passenger.BeneficiaryTitle || passenger.BeneficiaryTitle === '') {
+        errors[`BeneficiaryTitle_${index}`] = 'Beneficiary title is required';
+      }
+      
+      if (!passenger.BeneficiaryFirstName.trim()) {
+        errors[`BeneficiaryFirstName_${index}`] = 'Beneficiary first name is required';
+      } else if (passenger.BeneficiaryFirstName.trim().length < 2) {
+        errors[`BeneficiaryFirstName_${index}`] = 'Beneficiary first name must be at least 2 characters';
+      }
+      
+      if (!passenger.BeneficiaryLastName.trim()) {
+        errors[`BeneficiaryLastName_${index}`] = 'Beneficiary last name is required';
+      } else if (passenger.BeneficiaryLastName.trim().length < 2) {
+        errors[`BeneficiaryLastName_${index}`] = 'Beneficiary last name must be at least 2 characters';
+      }
+      
+      // Relationship validation
+      if (!passenger.RelationShipToInsured || passenger.RelationShipToInsured === '') {
+        errors[`RelationShipToInsured_${index}`] = 'Relationship to insured is required';
+      }
+      
+      // Relation to beneficiary validation
+      if (!passenger.RelationToBeneficiary || passenger.RelationToBeneficiary === '') {
+        errors[`RelationToBeneficiary_${index}`] = 'Relation to beneficiary is required';
+      }
+      
+      // Passport validation (required)
+      if (!passenger.PassportNo.trim()) {
+        errors[`PassportNo_${index}`] = 'Passport number is required';
+      } else {
+        const passportRegex = /^[A-Z]{1,2}[0-9]{6,9}$/;
+        if (!passportRegex.test(passenger.PassportNo.trim().toUpperCase())) {
+          errors[`PassportNo_${index}`] = 'Please enter a valid passport number';
+        }
+      }
     });
     
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
-  const handleBooking = async () => {
+  const scrollToFirstError = () => {
+    const firstErrorField = Object.keys(formErrors)[0];
+    if (firstErrorField) {
+      const fieldName = firstErrorField.split('_')[0];
+      const passengerIndex = parseInt(firstErrorField.split('_')[1]);
+      
+      // Expand the passenger form that has the error
+      setExpandedPassengers(prev => ({
+        ...prev,
+        [passengerIndex]: true
+      }));
+      
+      // Wait a bit for the expansion animation, then scroll
+      setTimeout(() => {
+        let element = null;
+        
+        // Special handling for DOB field - scroll to the first DOB select (Day)
+        if (fieldName === 'DOB') {
+          element = document.querySelector(`select[data-field="DOBDay"][data-passenger="${passengerIndex}"]`);
+        } else {
+          // Try to find the input/select element
+          element = document.querySelector(`[name="${fieldName}_${passengerIndex}"], select[data-field="${fieldName}"][data-passenger="${passengerIndex}"], input[data-field="${fieldName}"][data-passenger="${passengerIndex}"]`);
+        }
+        
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.focus();
+        } else {
+          // Fallback: scroll to the passenger form
+          const passengerForm = document.querySelector(`[data-passenger-form="${passengerIndex}"]`);
+          if (passengerForm) {
+            passengerForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+      }, 300);
+    }
+  };
+
+
+  const handleContinue = () => {
     if (!validateForm()) {
+      // Scroll to first error after a short delay to allow state update
+      setTimeout(() => {
+        scrollToFirstError();
+      }, 100);
       return;
     }
 
-    try {
-      // Get authentication data from navigation state
-      const authData = location.state?.authData || {};
-      
-      if (!authData.TokenId) {
-        alert('Authentication required. Please search for insurance plans again.');
-        navigate('/home-insurance');
-        return;
-      }
+    // Set loading state and show spinner for 2 seconds
+    setIsNavigating(true);
 
-      // Prepare passengers array for booking
-      const passengersForBooking = passengerDetails.map(passenger => {
-        const beneficiaryName = `${passenger.BeneficiaryTitle} ${passenger.BeneficiaryFirstName} ${passenger.BeneficiaryLastName}`.trim();
-        
-        // Construct DOB from separate fields
-        const dob = passenger.DOBDay && passenger.DOBMonth && passenger.DOBYear 
-          ? `${passenger.DOBYear}-${passenger.DOBMonth.padStart(2, '0')}-${passenger.DOBDay.padStart(2, '0')}`
-          : passenger.DOB;
-        
-        return {
-          ...passenger,
-          DOB: dob,
-          BeneficiaryName: beneficiaryName
-        };
-      });
+    // Prepare passengers array for review
+    const passengersForReview = passengerDetails.map(passenger => {
+      const beneficiaryName = `${passenger.BeneficiaryTitle} ${passenger.BeneficiaryFirstName} ${passenger.BeneficiaryLastName}`.trim();
       
-      const bookingPayload = {
-        TokenId: authData.TokenId,
-        EndUserIp: authData.EndUserIp || '127.0.0.1',
-        TraceId: location.state?.traceId || '',
-        ResultIndex: selectedPlan?.ResultIndex || 1,
-        Passenger: passengersForBooking
+      // Construct DOB from separate fields
+      const dob = passenger.DOBDay && passenger.DOBMonth && passenger.DOBYear 
+        ? `${passenger.DOBYear}-${passenger.DOBMonth.padStart(2, '0')}-${passenger.DOBDay.padStart(2, '0')}`
+        : passenger.DOB;
+      
+      // Set default values for API only if not provided by user
+      const passengerForReview = {
+        ...passenger,
+        DOB: dob,
+        BeneficiaryName: beneficiaryName,
+        // Set defaults for API if user didn't select
+        PassportCountry: passenger.PassportCountry || 'IND',
+        CountryCode: passenger.CountryCode || 'IND',
+        // Convert Gender to Sex if needed
+        Sex: passenger.Sex || (passenger.Gender === '1' ? 1 : 2)
       };
       
-      const result = await dispatch(bookInsurance(bookingPayload));
-      
-      if (result && result.Response) {
-        if (result.Response.ResponseStatus === 1) {
-          // Success - navigate to generate policy page
-          
-          // Navigate to generate policy page with all data
-          navigate('/insurance-generate-policy', { 
-            state: { 
-              planId: selectedPlan?.ResultIndex,
-              passengers: passengerDetails,
-              priceDetails: calculateTotalPrice(),
-              bookingResponse: result,
-              searchParams: searchCriteria,
-              authData: authData,
-              traceId: location.state?.traceId
-            } 
-          });
-        } else if (result.Response.Error && result.Response.Error.ErrorCode !== 0) {
-          // Handle error response with detailed error info
-          const errorCode = result.Response.Error.ErrorCode;
-          const errorMessage = result.Response.Error.ErrorMessage;
-          alert(`Booking failed: ${errorMessage} (Code: ${errorCode})`);
-        } else {
-          // Unknown error
-          alert('Booking failed. Please try again.');
+      return passengerForReview;
+    });
+
+    // Calculate price details
+    const priceDetails = calculateTotalPrice();
+
+    // Wait 2 seconds before navigating
+    setTimeout(() => {
+      navigate('/insurance-payment', {
+        state: {
+          selectedPlan,
+          searchCriteria,
+          passengerDetails: passengersForReview,
+          priceDetails,
+          authData: location.state?.authData || {},
+          traceId: location.state?.traceId || ''
         }
-      } else {
-        // No response or invalid response
-        alert('Booking failed. Please try again.');
-      }
-    } catch (error) {
-      alert('Booking failed. Please try again.');
-    }
+      });
+    }, 1000);
   };
+
 
   const titleOptions = [
     { value: 'MR', label: 'Mr.' },
@@ -294,61 +542,86 @@ const Insurance_Booking_Page = () => {
     { value: 'Sibling', label: 'Sibling' }
   ];
 
-  // Calculate total price based on actual plan data from API
+  // Calculate total price based on actual plan data from API - show exact API price only
   const calculateTotalPrice = () => {
-    if (!selectedPlan) return { basePrice: 0, total: 0, commission: 0, tds: 0, grandTotal: 0 };
+    if (!selectedPlan) return { basePrice: 0, total: 0, grandTotal: 0 };
 
     // Get base price from plan - use OfferedPriceRoundedOff if available, otherwise OfferedPrice
     const basePrice = selectedPlan.Price?.OfferedPriceRoundedOff || selectedPlan.Price?.OfferedPrice || 0;
     const passengerCount = passengerDetails.length;
     const total = basePrice * passengerCount;
     
-    // Calculate commission and TDS based on actual business logic
-    const commission = total * 0.35; // 35% commission
-    const tds = total * 0.007; // 0.7% TDS
-    
+    // Return only the exact API price without any commission calculations
     return {
       basePrice,
       total,
-      commission,
-      tds,
-      grandTotal: total - commission + tds
+      grandTotal: total
     };
   };
 
-  const renderPassengerForm = (passenger, index) => (
-    <div key={index} className="card shadow-sm mb-4">
-      <div className="card-header bg-white">
-        <h6 className="mb-0">
-          Passenger {index + 1}
-          <small className="text-muted ms-2">
-            (passenger of age range 0.0 - 70)
-          </small>
-        </h6>
-      </div>
-      <div className="card-body">
+  const renderPassengerForm = (passenger, index) => {
+    const isExpanded = expandedPassengers[index];
+    const hasErrors = Object.keys(formErrors).some(key => key.endsWith(`_${index}`));
+    
+    return (
+      <div key={index} className="card shadow-sm mb-4" data-passenger-form={index}>
+        <div 
+          className="card-header bg-white d-flex justify-content-between align-items-center" 
+          style={{ cursor: 'pointer' }}
+          onClick={() => togglePassengerExpansion(index)}
+        >
+          <div className="d-flex align-items-center">
+            <h6 className="mb-0 me-3">
+              Passenger {index + 1}
+              <small className="text-muted ms-2">
+                (passenger of age range 0.0 - 70)
+              </small>
+            </h6>
+            {hasErrors && (
+              <span className="badge bg-danger">
+                <FaExclamationTriangle className="me-1" />
+                Errors
+              </span>
+            )}
+          </div>
+          <div className="d-flex align-items-center">
+            {isExpanded ? (
+              <IoIosArrowUp size={24} className="text-muted "/>
+            ) : (
+              <IoIosArrowDown size={24} className="text-muted"/>
+            )}
+          </div>
+        </div>
+        {isExpanded && (
+          <div className="card-body">
         <div className="row">
+
           {/* Left Column */}
-          <div className="col-md-6">
+          <div className="row col-md-12 m-auto p-0">
+
             {/* Insured Name */}
-            <div className="mb-3">
-              <label className="form-label fw-bold text-dark">Insured Name*</label>
-              <div className="row">
-                <div className="col-3">
+            <div className="mb-3 col-md-8 col-sm-12">
+              <label className="form-label  text-dark">Insured Name*</label>
+              <div className="row g-2">
+                <div className="col-sm-12 col-lg-3 col-md-3 ">
                   <select
                     className={`form-select ${formErrors[`Title_${index}`] ? 'is-invalid' : ''}`}
                     value={passenger.Title}
                     onChange={(e) => handleInputChange('Title', e.target.value, index)}
                     style={{ height: '38px' }}
+                    data-field="Title"
+                    data-passenger={index}
                   >
+                    <option value="">Select Title</option>
                     {titleOptions.map(option => (
                       <option key={option.value} value={option.value}>
                         {option.label}
                       </option>
                     ))}
                   </select>
+                  {formErrors[`Title_${index}`] && <div className="invalid-feedback">{formErrors[`Title_${index}`]}</div>}
                 </div>
-                <div className="col-4">
+                <div className="col-sm-6 col-lg-4 col-md-4">
                   <input
                     type="text"
                     className={`form-control ${formErrors[`FirstName_${index}`] ? 'is-invalid' : ''}`}
@@ -356,10 +629,12 @@ const Insurance_Booking_Page = () => {
                     onChange={(e) => handleInputChange('FirstName', e.target.value, index)}
                     placeholder="First Name"
                     style={{ height: '38px' }}
+                    data-field="FirstName"
+                    data-passenger={index}
                   />
-                  {formErrors[`FirstName_${index}`] && <div className="invalid-feedback">{formErrors[`FirstName_${index}`]}</div>}
+                  {formErrors[`FirstName_${index}`] && <div className="invalid-feedback d-block" style={{color: '#dc3545', fontSize: '0.875em', marginTop: '0.25rem'}}>{formErrors[`FirstName_${index}`]}</div>}
                 </div>
-                <div className="col-5">
+                <div className="col-sm-6 col-lg-5 col-md-5">
                   <input
                     type="text"
                     className={`form-control ${formErrors[`LastName_${index}`] ? 'is-invalid' : ''}`}
@@ -367,39 +642,49 @@ const Insurance_Booking_Page = () => {
                     onChange={(e) => handleInputChange('LastName', e.target.value, index)}
                     placeholder="Last Name"
                     style={{ height: '38px' }}
+                    data-field="LastName"
+                    data-passenger={index}
                   />
-                  {formErrors[`LastName_${index}`] && <div className="invalid-feedback">{formErrors[`LastName_${index}`]}</div>}
+                  {formErrors[`LastName_${index}`] && <div className="invalid-feedback d-block" style={{color: '#dc3545', fontSize: '0.875em', marginTop: '0.25rem'}}>{formErrors[`LastName_${index}`]}</div>}
                 </div>
               </div>
             </div>
 
-            {/* Relation To Insured */}
-            <div className="mb-3">
-              <label className="form-label fw-bold text-dark">Relation To Insured*</label>
+              {/* Insured Gender */}
+              <div className="mb-3 col-md-4 col-sm-6">
+              <label className="form-label text-dark">Insured Gender*</label>
               <select
-                className={`form-select ${formErrors[`RelationShipToInsured_${index}`] ? 'is-invalid' : ''}`}
-                value={passenger.RelationShipToInsured}
-                onChange={(e) => handleInputChange('RelationShipToInsured', e.target.value, index)}
+                className={`form-select ${formErrors[`Gender_${index}`] ? 'is-invalid' : ''}`}
+                value={passenger.Gender}
+                onChange={(e) => handleInputChange('Gender', e.target.value, index)}
                 style={{ height: '38px' }}
+                data-field="Gender"
+                data-passenger={index}
               >
-                {relationshipOptions.map(option => (
+                <option value="">Select Gender</option>
+                {genderOptions.map(option => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>
                 ))}
               </select>
+              {formErrors[`Gender_${index}`] && <div className="invalid-feedback d-block" style={{color: '#dc3545', fontSize: '0.875em', marginTop: '0.25rem'}}>{formErrors[`Gender_${index}`]}</div>}
             </div>
 
+
+
             {/* D.O.B */}
-            <div className="mb-3">
-              <label className="form-label fw-bold text-dark">D.O.B*</label>
+            <div className={`mb-3 col-md-8 col-sm-6 ${formErrors[`DOB_${index}`] ? 'has-error' : ''}`}>
+              <label className="form-label  text-dark">D.O.B*</label>
               <div className="row">
                 <div className="col-4">
                   <select
-                    className={`form-select ${formErrors[`DOBDay_${index}`] ? 'is-invalid' : ''}`}
+                    className={`form-select ${formErrors[`DOB_${index}`] ? 'is-invalid' : ''}`}
                     value={passenger.DOBDay || ''}
                     onChange={(e) => handleInputChange('DOBDay', e.target.value, index)}
                     style={{ height: '38px' }}
+                    data-field="DOBDay"
+                    data-passenger={index}
                   >
                     <option value="">Day</option>
                     {Array.from({ length: 31 }, (_, i) => (
@@ -409,10 +694,12 @@ const Insurance_Booking_Page = () => {
                 </div>
                 <div className="col-4">
                   <select
-                    className={`form-select ${formErrors[`DOBMonth_${index}`] ? 'is-invalid' : ''}`}
+                    className={`form-select ${formErrors[`DOB_${index}`] ? 'is-invalid' : ''}`}
                     value={passenger.DOBMonth || ''}
                     onChange={(e) => handleInputChange('DOBMonth', e.target.value, index)}
                     style={{ height: '38px' }}
+                    data-field="DOBMonth"
+                    data-passenger={index}
                   >
                     <option value="">Month</option>
                     <option value="1">Jan</option>
@@ -431,10 +718,12 @@ const Insurance_Booking_Page = () => {
                 </div>
                 <div className="col-4">
                   <select
-                    className={`form-select ${formErrors[`DOBYear_${index}`] ? 'is-invalid' : ''}`}
+                    className={`form-select ${formErrors[`DOB_${index}`] ? 'is-invalid' : ''}`}
                     value={passenger.DOBYear || ''}
                     onChange={(e) => handleInputChange('DOBYear', e.target.value, index)}
                     style={{ height: '38px' }}
+                    data-field="DOBYear"
+                    data-passenger={index}
                   >
                     <option value="">Year</option>
                     {Array.from({ length: 100 }, (_, i) => {
@@ -444,17 +733,40 @@ const Insurance_Booking_Page = () => {
                   </select>
                 </div>
               </div>
-              {formErrors[`DOB_${index}`] && <div className="invalid-feedback">{formErrors[`DOB_${index}`]}</div>}
+              {formErrors[`DOB_${index}`] && <div className="invalid-feedback d-block" style={{color: '#dc3545', fontSize: '0.875em', marginTop: '0.25rem'}}>{formErrors[`DOB_${index}`]}</div>}
+            </div>
+
+            {/* Relation To Insured */}
+            <div className="mb-3 col-md-4 col-sm-6">
+              <label className="form-label  text-dark">Relation To Insured*</label>
+              <select
+                className={`form-select ${formErrors[`RelationShipToInsured_${index}`] ? 'is-invalid' : ''}`}
+                value={passenger.RelationShipToInsured}
+                onChange={(e) => handleInputChange('RelationShipToInsured', e.target.value, index)}
+                style={{ height: '38px' }}
+                data-field="RelationShipToInsured"
+                data-passenger={index}
+              >
+                <option value="">Select Relationship</option>
+                {relationshipOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              {formErrors[`RelationShipToInsured_${index}`] && <div className="invalid-feedback d-block" style={{color: '#dc3545', fontSize: '0.875em', marginTop: '0.25rem'}}>{formErrors[`RelationShipToInsured_${index}`]}</div>}
             </div>
 
             {/* Major Destination */}
-            <div className="mb-3">
-              <label className="form-label fw-bold text-dark">Major Destination*</label>
+            <div className="mb-3 col-md-4 col-sm-6">
+              <label className="form-label  text-dark">Major Destination*</label>
               <select
                 className={`form-select ${formErrors[`MajorDestination_${index}`] ? 'is-invalid' : ''}`}
                 value={passenger.MajorDestination}
                 onChange={(e) => handleInputChange('MajorDestination', e.target.value, index)}
                 style={{ height: '38px' }}
+                data-field="MajorDestination"
+                data-passenger={index}
               >
                 <option value="">Select Destination</option>
                 <option value="India">India</option>
@@ -466,34 +778,74 @@ const Insurance_Booking_Page = () => {
                 <option value="Asia">Asia</option>
                 <option value="Worldwide">Worldwide</option>
               </select>
-              {formErrors[`MajorDestination_${index}`] && <div className="invalid-feedback">{formErrors[`MajorDestination_${index}`]}</div>}
+              {formErrors[`MajorDestination_${index}`] && <div className="invalid-feedback d-block" style={{color: '#dc3545', fontSize: '0.875em', marginTop: '0.25rem'}}>{formErrors[`MajorDestination_${index}`]}</div>}
             </div>
 
-            {/* Country */}
-            <div className="mb-3">
-              <label className="form-label fw-bold text-dark">Country*</label>
+
+            {/* Mobile */}
+            <div className="mb-3 col-md-4 col-sm-6">
+              <label className="form-label  text-dark">Mobile*</label>
+              <input
+                type="tel"
+                className={`form-control ${formErrors[`PhoneNumber_${index}`] ? 'is-invalid' : ''}`}
+                value={passenger.PhoneNumber}
+                onChange={(e) => handleInputChange('PhoneNumber', e.target.value, index)}
+                placeholder="Enter mobile number"
+                style={{ height: '38px' }}
+                data-field="PhoneNumber"
+                data-passenger={index}
+              />
+              {formErrors[`PhoneNumber_${index}`] && <div className="invalid-feedback d-block" style={{color: '#dc3545', fontSize: '0.875em', marginTop: '0.25rem'}}>{formErrors[`PhoneNumber_${index}`]}</div>}
+            </div>
+
+ 
+            {/* Passport No */}
+            <div className="mb-3 col-md-4 col-sm-6">
+              <label className="form-label  text-dark">Passport No*</label>
+              <input
+                type="text"
+                className={`form-control ${formErrors[`PassportNo_${index}`] ? 'is-invalid' : ''}`}
+                value={passenger.PassportNo}
+                onChange={(e) => handleInputChange('PassportNo', e.target.value, index)}
+                placeholder="Enter passport number"
+                style={{ height: '38px' }}
+                data-field="PassportNo"
+                data-passenger={index}
+              />
+              {formErrors[`PassportNo_${index}`] && <div className="invalid-feedback d-block" style={{color: '#dc3545', fontSize: '0.875em', marginTop: '0.25rem'}}>{formErrors[`PassportNo_${index}`]}</div>}
+            </div>
+
+                  {/* Country */}
+            <div className="mb-3 col-md-4 col-sm-6">
+              <label className="form-label  text-dark">Country*</label>
               <select
                 className={`form-select ${formErrors[`CountryCode_${index}`] ? 'is-invalid' : ''}`}
                 value={passenger.CountryCode}
                 onChange={(e) => handleInputChange('CountryCode', e.target.value, index)}
                 style={{ height: '38px' }}
+                data-field="CountryCode"
+                data-passenger={index}
               >
+                <option value="">Select Country</option>
                 <option value="IND">India</option>
                 <option value="USA">USA</option>
                 <option value="GBR">UK</option>
                 <option value="CAN">Canada</option>
                 <option value="AUS">Australia</option>
               </select>
+              {formErrors[`CountryCode_${index}`] && <div className="invalid-feedback d-block" style={{color: '#dc3545', fontSize: '0.875em', marginTop: '0.25rem'}}>{formErrors[`CountryCode_${index}`]}</div>}
             </div>
 
             {/* State */}
-            <div className="mb-3">
-              <label className="form-label fw-bold text-dark">State*</label>
+            <div className="mb-3 col-md-4 col-sm-6">
+              <label className="form-label  text-dark">State*</label>
               <select
                 className={`form-select ${formErrors[`State_${index}`] ? 'is-invalid' : ''}`}
                 value={passenger.State || ''}
                 onChange={(e) => handleInputChange('State', e.target.value, index)}
                 style={{ height: '38px' }}
+                data-field="State"
+                data-passenger={index}
               >
                 <option value="">Select State</option>
                 <option value="Andhra Pradesh">Andhra Pradesh</option>
@@ -507,17 +859,19 @@ const Insurance_Booking_Page = () => {
                 <option value="Punjab">Punjab</option>
                 <option value="Haryana">Haryana</option>
               </select>
-              {formErrors[`State_${index}`] && <div className="invalid-feedback">{formErrors[`State_${index}`]}</div>}
+              {formErrors[`State_${index}`] && <div className="invalid-feedback d-block" style={{color: '#dc3545', fontSize: '0.875em', marginTop: '0.25rem'}}>{formErrors[`State_${index}`]}</div>}
             </div>
 
             {/* City */}
-            <div className="mb-3">
-              <label className="form-label fw-bold text-dark">City*</label>
+            <div className="mb-3 col-md-4 col-sm-6">
+              <label className="form-label  text-dark">City*</label>
               <select
                 className={`form-select ${formErrors[`CityCode_${index}`] ? 'is-invalid' : ''}`}
                 value={passenger.CityCode}
                 onChange={(e) => handleInputChange('CityCode', e.target.value, index)}
                 style={{ height: '38px' }}
+                data-field="CityCode"
+                data-passenger={index}
               >
                 <option value="">Select City</option>
                 <option value="Mumbai">Mumbai</option>
@@ -531,103 +885,12 @@ const Insurance_Booking_Page = () => {
                 <option value="Jaipur">Jaipur</option>
                 <option value="Kochi">Kochi</option>
               </select>
-              {formErrors[`CityCode_${index}`] && <div className="invalid-feedback">{formErrors[`CityCode_${index}`]}</div>}
+              {formErrors[`CityCode_${index}`] && <div className="invalid-feedback d-block" style={{color: '#dc3545', fontSize: '0.875em', marginTop: '0.25rem'}}>{formErrors[`CityCode_${index}`]}</div>}
             </div>
 
-            {/* Mobile */}
-            <div className="mb-3">
-              <label className="form-label fw-bold text-dark">Mobile*</label>
-              <input
-                type="tel"
-                className={`form-control ${formErrors[`PhoneNumber_${index}`] ? 'is-invalid' : ''}`}
-                value={passenger.PhoneNumber}
-                onChange={(e) => handleInputChange('PhoneNumber', e.target.value, index)}
-                placeholder="Enter mobile number"
-                style={{ height: '38px' }}
-              />
-              {formErrors[`PhoneNumber_${index}`] && <div className="invalid-feedback">{formErrors[`PhoneNumber_${index}`]}</div>}
-            </div>
-          </div>
-
-          {/* Right Column */}
-          <div className="col-md-6">
-            {/* Beneficiary Name */}
-            <div className="mb-3">
-              <label className="form-label fw-bold text-dark">Beneficiary Name*</label>
-              <div className="row">
-                <div className="col-3">
-                  <select
-                    className={`form-select ${formErrors[`BeneficiaryTitle_${index}`] ? 'is-invalid' : ''}`}
-                    value={passenger.BeneficiaryTitle}
-                    onChange={(e) => handleInputChange('BeneficiaryTitle', e.target.value, index)}
-                    style={{ height: '38px' }}
-                  >
-                    {titleOptions.map(option => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="col-4">
-                  <input
-                    type="text"
-                    className={`form-control ${formErrors[`BeneficiaryFirstName_${index}`] ? 'is-invalid' : ''}`}
-                    value={passenger.BeneficiaryFirstName}
-                    onChange={(e) => handleInputChange('BeneficiaryFirstName', e.target.value, index)}
-                    placeholder="First Name"
-                    style={{ height: '38px' }}
-                  />
-                  {formErrors[`BeneficiaryFirstName_${index}`] && <div className="invalid-feedback">{formErrors[`BeneficiaryFirstName_${index}`]}</div>}
-                </div>
-                <div className="col-5">
-                  <input
-                    type="text"
-                    className={`form-control ${formErrors[`BeneficiaryLastName_${index}`] ? 'is-invalid' : ''}`}
-                    value={passenger.BeneficiaryLastName}
-                    onChange={(e) => handleInputChange('BeneficiaryLastName', e.target.value, index)}
-                    placeholder="Last Name"
-                    style={{ height: '38px' }}
-                  />
-                  {formErrors[`BeneficiaryLastName_${index}`] && <div className="invalid-feedback">{formErrors[`BeneficiaryLastName_${index}`]}</div>}
-                </div>
-              </div>
-            </div>
-
-            {/* Insured Gender */}
-            <div className="mb-3">
-              <label className="form-label fw-bold text-dark">Insured Gender*</label>
-              <select
-                className={`form-select ${formErrors[`Gender_${index}`] ? 'is-invalid' : ''}`}
-                value={passenger.Gender}
-                onChange={(e) => handleInputChange('Gender', e.target.value, index)}
-                style={{ height: '38px' }}
-              >
-                {genderOptions.map(option => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Passport No */}
-            <div className="mb-3">
-              <label className="form-label fw-bold text-dark">Passport No</label>
-              <input
-                type="text"
-                className={`form-control ${formErrors[`PassportNo_${index}`] ? 'is-invalid' : ''}`}
-                value={passenger.PassportNo}
-                onChange={(e) => handleInputChange('PassportNo', e.target.value, index)}
-                placeholder="Enter passport number"
-                style={{ height: '38px' }}
-              />
-              {formErrors[`PassportNo_${index}`] && <div className="invalid-feedback">{formErrors[`PassportNo_${index}`]}</div>}
-            </div>
-
-            {/* Address */}
-            <div className="mb-3">
-              <label className="form-label fw-bold text-dark">Address*</label>
+    {/* Address */}
+    <div className="mb-3 col-md-4 col-sm-6">
+              <label className="form-label  text-dark">Address*</label>
               <input
                 type="text"
                 className={`form-control ${formErrors[`AddressLine1_${index}`] ? 'is-invalid' : ''}`}
@@ -635,8 +898,10 @@ const Insurance_Booking_Page = () => {
                 onChange={(e) => handleInputChange('AddressLine1', e.target.value, index)}
                 placeholder="Address Line 1"
                 style={{ height: '38px' }}
+                data-field="AddressLine1"
+                data-passenger={index}
               />
-              {formErrors[`AddressLine1_${index}`] && <div className="invalid-feedback">{formErrors[`AddressLine1_${index}`]}</div>}
+              {formErrors[`AddressLine1_${index}`] && <div className="invalid-feedback d-block" style={{color: '#dc3545', fontSize: '0.875em', marginTop: '0.25rem'}}>{formErrors[`AddressLine1_${index}`]}</div>}
               <input
                 type="text"
                 className="form-control mt-2"
@@ -648,8 +913,8 @@ const Insurance_Booking_Page = () => {
             </div>
 
             {/* Pin Code */}
-            <div className="mb-3">
-              <label className="form-label fw-bold text-dark">Pin Code*</label>
+            <div className="mb-3 col-md-4 col-sm-6">
+              <label className="form-label  text-dark">Pin Code*</label>
               <input
                 type="text"
                 className={`form-control ${formErrors[`PinCode_${index}`] ? 'is-invalid' : ''}`}
@@ -657,12 +922,14 @@ const Insurance_Booking_Page = () => {
                 onChange={(e) => handleInputChange('PinCode', e.target.value, index)}
                 placeholder="Enter PIN code"
                 style={{ height: '38px' }}
+                data-field="PinCode"
+                data-passenger={index}
               />
-              {formErrors[`PinCode_${index}`] && <div className="invalid-feedback">{formErrors[`PinCode_${index}`]}</div>}
+              {formErrors[`PinCode_${index}`] && <div className="invalid-feedback d-block" style={{color: '#dc3545', fontSize: '0.875em', marginTop: '0.25rem'}}>{formErrors[`PinCode_${index}`]}</div>}
             </div>
 
             {/* Email */}
-            <div className="mb-3">
+            <div className="mb-3 col-md-4 col-sm-6">
               <label className="form-label fw-bold text-dark">Email*</label>
               <input
                 type="email"
@@ -671,14 +938,93 @@ const Insurance_Booking_Page = () => {
                 onChange={(e) => handleInputChange('EmailId', e.target.value, index)}
                 placeholder="Enter email address"
                 style={{ height: '38px' }}
+                data-field="EmailId"
+                data-passenger={index}
               />
-              {formErrors[`EmailId_${index}`] && <div className="invalid-feedback">{formErrors[`EmailId_${index}`]}</div>}
+              {formErrors[`EmailId_${index}`] && <div className="invalid-feedback d-block" style={{color: '#dc3545', fontSize: '0.875em', marginTop: '0.25rem'}}>{formErrors[`EmailId_${index}`]}</div>}
+            </div>
+
+        {/* Beneficiary Section - Single Column */}
+            <div className="mb-3 col-md-8">
+              <label className="form-label">Beneficiary Name*</label>
+              <div className="row g-2">
+                <div className="col-sm-12 col-lg-3 col-md-3 ">
+                  <select
+                    className={`form-select ${formErrors[`BeneficiaryTitle_${index}`] ? 'is-invalid' : ''}`}
+                    value={passenger.BeneficiaryTitle}
+                    onChange={(e) => handleInputChange('BeneficiaryTitle', e.target.value, index)}
+                    style={{ height: '38px' }}
+                    data-field="BeneficiaryTitle"
+                    data-passenger={index}
+                  >
+                    <option value="">Select Title</option>
+                    {titleOptions.map(option => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  {formErrors[`BeneficiaryTitle_${index}`] && <div className="invalid-feedback d-block" style={{color: '#dc3545', fontSize: '0.875em', marginTop: '0.25rem'}}>{formErrors[`BeneficiaryTitle_${index}`]}</div>}
+                </div>
+                <div className="col-sm-6 col-lg-4 col-md-4">
+                  <input
+                    type="text"
+                    className={`form-control ${formErrors[`BeneficiaryFirstName_${index}`] ? 'is-invalid' : ''}`}
+                    value={passenger.BeneficiaryFirstName}
+                    onChange={(e) => handleInputChange('BeneficiaryFirstName', e.target.value, index)}
+                    placeholder="First Name"
+                    style={{ height: '38px' }}
+                    data-field="BeneficiaryFirstName"
+                    data-passenger={index}
+                  />
+                  {formErrors[`BeneficiaryFirstName_${index}`] && <div className="invalid-feedback d-block" style={{color: '#dc3545', fontSize: '0.875em', marginTop: '0.25rem'}}>{formErrors[`BeneficiaryFirstName_${index}`]}</div>}
+                </div>
+                <div className="col-sm-6 col-lg-5 col-md-5">
+                  <input
+                    type="text"
+                    className={`form-control ${formErrors[`BeneficiaryLastName_${index}`] ? 'is-invalid' : ''}`}
+                    value={passenger.BeneficiaryLastName}
+                    onChange={(e) => handleInputChange('BeneficiaryLastName', e.target.value, index)}
+                    placeholder="Last Name"
+                    style={{ height: '38px' }}
+                    data-field="BeneficiaryLastName"
+                    data-passenger={index}
+                  />
+                  {formErrors[`BeneficiaryLastName_${index}`] && <div className="invalid-feedback d-block" style={{color: '#dc3545', fontSize: '0.875em', marginTop: '0.25rem'}}>{formErrors[`BeneficiaryLastName_${index}`]}</div>}
+                </div>
             </div>
           </div>
+
+          {/* Relation To Beneficiary */}
+          <div className="mb-3 col-md-4 col-sm-12">
+            <label className="form-label text-dark">Relation To Beneficiary*</label>
+            <select
+              className={`form-select ${formErrors[`RelationToBeneficiary_${index}`] ? 'is-invalid' : ''}`}
+              value={passenger.RelationToBeneficiary}
+              onChange={(e) => handleInputChange('RelationToBeneficiary', e.target.value, index)}
+              style={{ height: '38px' }}
+              data-field="RelationToBeneficiary"
+              data-passenger={index}
+            >
+              <option value="">Select Relationship</option>
+              {relationshipOptions.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            {formErrors[`RelationToBeneficiary_${index}`] && <div className="invalid-feedback d-block" style={{color: '#dc3545', fontSize: '0.875em', marginTop: '0.25rem'}}>{formErrors[`RelationToBeneficiary_${index}`]}</div>}
+          </div>
+
         </div>
       </div>
-    </div>
-  );
+
+     
+          </div>
+        )}
+      </div>
+    );
+  };
 
 
 
@@ -689,9 +1035,9 @@ const Insurance_Booking_Page = () => {
       <Header02 />
       
       <div className="container-fluid py-4" style={{ backgroundColor: '#f8f9fa' }}>
-        <div className="container">
+        <div className="container-xl">
           {/* 4-Step Navigation */}
-          <div className="row mb-4">
+          {/* <div className="row mb-4">
             <div className="col-12">
               <div className="d-flex justify-content-center align-items-center">
                 <div className="d-flex align-items-center">
@@ -723,12 +1069,12 @@ const Insurance_Booking_Page = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Main Content */}
-          <div className="row">
+          <div className="row g-4 ">
             {/* Left Column - Passenger Details */}
-            <div className="col-lg-8">
+            <div className="col-lg-8 order-2 order-lg-1">
               {/* Insurance Plan Overview */}
               <div className="card shadow-sm mb-4 ">
                 <div className="card-body row align-items-center ">
@@ -809,7 +1155,7 @@ const Insurance_Booking_Page = () => {
                   <h5 className="mb-0">Enter Passenger Details</h5>
                 </div>
                 <div className="card-body">
-                  <form onSubmit={(e) => { e.preventDefault(); handleBooking(); }}>
+                  <form onSubmit={(e) => { e.preventDefault(); handleContinue(); }}>
                     {/* Render passenger forms */}
                     {passengerDetails.map((passenger, index) => renderPassengerForm(passenger, index))}
 
@@ -849,19 +1195,25 @@ const Insurance_Booking_Page = () => {
                         Back
                       </button>
                       <button
-                        type="submit"
+                        type="button"
                         className="btn btn-primary"
-                        disabled={loading}
+                        onClick={handleContinue}
+                        disabled={loading || isNavigating}
                       >
                         {loading ? (
+                          <>
+                            <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            Validating...
+                          </>
+                        ) : isNavigating ? (
                           <>
                             <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                             Processing...
                           </>
                         ) : (
                           <>
+                            <FaArrowRight className="me-2" />
                             Continue
-                            <FaArrowRight className="ms-2" />
                           </>
                         )}
                       </button>
@@ -872,7 +1224,7 @@ const Insurance_Booking_Page = () => {
             </div>
 
             {/* Right Column - Price Details */}
-            <div className="col-lg-4">
+            <div className="col-lg-4 order-1 order-lg-2">
               <div className="card shadow-sm sticky-top" style={{ top: '100px' }}>
                 <div className="card-header bg-primary">
                   <h6 className="mb-0 text-light">Price Details</h6>
@@ -928,22 +1280,9 @@ const Insurance_Booking_Page = () => {
                       <span>₹{priceDetails.total}</span>
                     </div>
                     <hr />
-                    <div className="d-flex justify-content-between mb-2">
-                      <span className="fw-bold">Total</span>
-                      <span className="fw-bold">₹{priceDetails.total}</span>
-                    </div>
-                    <div className="d-flex justify-content-between mb-2">
-                      <span className="text-danger">Commission (-)</span>
-                      <span className="text-danger">₹{priceDetails.commission.toFixed(2)}</span>
-                    </div>
-                    <div className="d-flex justify-content-between mb-3">
-                      <span className="text-success">Tds (+)</span>
-                      <span className="text-success">₹{priceDetails.tds.toFixed(2)}</span>
-                    </div>
-                    <hr />
                     <div className="d-flex justify-content-between">
-                      <span className="fw-bold fs-5">Grand Total</span>
-                      <span className="fw-bold fs-5 text-primary">₹{priceDetails.grandTotal.toFixed(2)}</span>
+                      <span className="fw-bold fs-5">Total Price</span>
+                      <span className="fw-bold fs-5 text-primary">₹{priceDetails.grandTotal}</span>
                     </div>
                   </div>
                 </div>
@@ -952,8 +1291,32 @@ const Insurance_Booking_Page = () => {
           </div>
         </div>
       </div>
-
       <Footer />
+
+      <style jsx>{`
+        .form-label {
+          font-size: 14px;
+          font-weight: 600;
+          color: #495057;
+          margin-bottom: 8px;
+        }
+        
+        .card-header {
+          transition: background-color 0.2s ease;
+        }
+        
+        .card-header:hover {
+          background-color: #f8f9fa !important;
+        }
+        
+        .card-body {
+          transition: all 0.3s ease;
+        }
+        
+        .badge {
+          font-size: 0.75rem;
+        }
+      `}</style>
     </>
   );
 };
