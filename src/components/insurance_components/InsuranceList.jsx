@@ -190,7 +190,7 @@ const InsuranceList = () => {
   const handlePlanBooking = (plan) => {
     // Check if user is authenticated
     const token = localStorage.getItem('authToken');
-    const user1 = localStorage.getItem('user1');
+    const user1 = getEncryptedItem('user1');
     
     if (!token || !user1) {
       // User is not authenticated, show authentication popup
@@ -223,7 +223,7 @@ const InsuranceList = () => {
     // Check if user is now authenticated after popup closes
     if (pendingPlan) {
       const token = localStorage.getItem('authToken');
-      const user1 = localStorage.getItem('user1');
+      const user1 = getEncryptedItem('user1');
       
       if (token && user1) {
         proceedWithBooking(pendingPlan);

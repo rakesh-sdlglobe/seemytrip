@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API_URL } from './authActions';
+import { setEncryptedItem } from '../../utils/encryption';
 
 // Action types
 export const SET_OTP_SENT = 'SET_OTP_SENT';
@@ -33,7 +34,7 @@ export const verifyEmailOTP = (email, otp) => async (dispatch) => {
   try {
     dispatch(setOTPError('')); 
     const response = await axios.post(`${API_URL}/verify-otp`, { email, otp });
-    const { token, email: useremail, firstName } = response?.data;
+    const { token, email: useremail, firstName, user1 } = response?.data;
 
     // Store in localStorage
     localStorage.setItem('authToken', token);
@@ -41,6 +42,11 @@ export const verifyEmailOTP = (email, otp) => async (dispatch) => {
       email: useremail,
       firstName: firstName
     }));
+    
+    // Store user1 in encrypted storage if available
+    if (user1) {
+      setEncryptedItem('user1', user1);
+    }
 
     // Dispatch to Redux
     dispatch(setUsername(firstName)); 

@@ -70,7 +70,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
     // Check if user is now authenticated after popup closes
     if (pendingBooking) {
       const token = localStorage.getItem('authToken');
-      const user1 = localStorage.getItem('user1');
+      const user1 = getEncryptedItem('user1');
       
       if (token && user1) {
         console.log('User authenticated after popup, proceeding with bus booking');
@@ -1955,7 +1955,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
 
               // Check if user is authenticated
               const token = localStorage.getItem('authToken');
-              const user1 = localStorage.getItem('user1');
+              const user1 = getEncryptedItem('user1');
               
               console.log('Bus booking authentication check:', { 
                 hasToken: !!token, 
