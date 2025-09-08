@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header02 from '../header02';
 import Footer from '../footer';
-import { cancelInsuranceBooking } from '../../store/Actions/insuranceAction';
+import { cancelInsuranceBooking, cancelInsuranceBookingInDB, getInsuranceBookingDetailsFromDB } from '../../store/Actions/insuranceAction';
 import { 
   FaShieldAlt, 
   FaTimesCircle, 
@@ -44,7 +44,8 @@ const Insurance_Cancel_Page = () => {
     cancelLoading, 
     cancelData, 
     cancelError,
-    authData 
+    authData,
+    bookingDetails
   } = useSelector(state => state.insurance);
   
   // Local state
@@ -65,6 +66,21 @@ const Insurance_Cancel_Page = () => {
       }));
     }
   }, [location.state]);
+
+  // Fetch booking details when booking ID is available
+  useEffect(() => {
+    const fetchBookingDetails = async () => {
+      if (formData.BookingId && formData.BookingId.trim()) {
+        try {
+          await dispatch(getInsuranceBookingDetailsFromDB(formData.BookingId));
+        } catch (error) {
+          console.error("Failed to fetch booking details:", error);
+        }
+      }
+    };
+
+    fetchBookingDetails();
+  }, [formData.BookingId, dispatch]);
 
   // Handle form input changes
   const handleInputChange = (field, value) => {
@@ -122,7 +138,31 @@ const Insurance_Cancel_Page = () => {
       
       if (result && result.Response) {
         if (result.Response.ResponseStatus === 1) {
-          // Success - show cancellation response
+          // Success - update database and show cancellation response
+          try {
+            console.log("🔄 Updating database for cancelled booking:", formData.BookingId);
+            
+            // Extract cancellation details from API response
+            const cancelCharges = result.Response?.Itinerary?.CancelCharges || '0.00';
+            const refundAmount = result.Response?.Itinerary?.RefundAmount || '0.00';
+            
+            console.log("💰 Cancellation details:", {
+              cancelCharges,
+              refundAmount
+            });
+            
+            // Update database with cancellation details
+            await dispatch(cancelInsuranceBookingInDB(formData.BookingId, {
+              cancel_charges: cancelCharges,
+              refund_amount: refundAmount,
+              cancellation_reason: formData.Remarks
+            }));
+            console.log("✅ Database updated successfully for cancelled booking");
+          } catch (dbError) {
+            console.error("❌ Failed to update database:", dbError);
+            // Don't fail the cancellation if database update fails
+          }
+          
           setCancellationResponse(result);
           setShowSuccess(true);
         } else if (result.Response.Error && result.Response.Error.ErrorCode !== 0) {
@@ -188,6 +228,20 @@ const Insurance_Cancel_Page = () => {
   if (showSuccess && cancellationResponse) {
     const changeRequest = cancellationResponse.Response?.PassengerChangeRequest?.[0];
     const statusInfo = getCancellationStatus(changeRequest?.ChangeRequestStatus);
+    
+    // Debug logging for passenger name
+    console.log("🔍 Booking details for passenger name:", {
+      bookingDetails,
+      beneficiaryName: bookingDetails?.data?.booking?.BeneficiaryName,
+      passengerDetails: bookingDetails?.data?.booking?.passengerDetails
+    });
+    
+    console.log("🔍 Cancellation response for passenger name:", {
+      changeRequest,
+      passengerName: changeRequest?.['Passenger Name'],
+      passengerNameAlt: changeRequest?.PassengerName,
+      fullResponse: cancellationResponse
+    });
 
   return (
     <>
@@ -250,7 +304,28 @@ const Insurance_Cancel_Page = () => {
                         </div>
                         <div className="mb-3">
                           <label className="form-label fw-bold text-muted">Passenger Name</label>
-                          <p className="mb-0 fw-bold">{changeRequest?.['Passenger Name'] || 'N/A'}</p>
+                          <div className="d-flex align-items-center">
+                            <p className="mb-0 fw-bold me-2">
+                              {bookingDetails?.data?.booking?.BeneficiaryName || 
+                               (bookingDetails?.data?.booking?.passengerDetails && 
+                                bookingDetails.data.booking.passengerDetails.length > 0 ? 
+                                `${bookingDetails.data.booking.passengerDetails[0].Title || ''} ${bookingDetails.data.booking.passengerDetails[0].FirstName || ''} ${bookingDetails.data.booking.passengerDetails[0].LastName || ''}`.trim() : 
+                                changeRequest?.['Passenger Name'] || 
+                                changeRequest?.PassengerName ||
+                                'N/A')}
+                            </p>
+                            {(!bookingDetails?.data?.booking?.BeneficiaryName && 
+                              (!bookingDetails?.data?.booking?.passengerDetails || 
+                               bookingDetails.data.booking.passengerDetails.length === 0)) && (
+                              <button 
+                                className="btn btn-sm btn-outline-primary"
+                                onClick={() => dispatch(getInsuranceBookingDetailsFromDB(formData.BookingId))}
+                                title="Refresh booking details"
+                              >
+                                <FaUndo size={12} />
+                              </button>
+                            )}
+                          </div>
                         </div>
                       </div>
                       <div className="col-md-6">

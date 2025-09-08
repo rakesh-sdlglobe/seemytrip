@@ -402,11 +402,25 @@ const InsuranceList = () => {
                       day: '2-digit', 
                       month: 'short', 
                       year: 'numeric' 
-                    })} - {searchCriteria.returnDate && new Date(searchCriteria.returnDate).toLocaleDateString('en-GB', { 
-                      day: '2-digit', 
-                      month: 'short', 
-                      year: 'numeric' 
-                    })})
+                    })} - {(() => {
+                      // If returnDate exists, use it; otherwise calculate it from departDate and duration
+                      if (searchCriteria.returnDate) {
+                        return new Date(searchCriteria.returnDate).toLocaleDateString('en-GB', { 
+                          day: '2-digit', 
+                          month: 'short', 
+                          year: 'numeric' 
+                        });
+                      } else if (searchCriteria.departDate && searchCriteria.duration) {
+                        const endDate = new Date(searchCriteria.departDate);
+                        endDate.setDate(endDate.getDate() + (searchCriteria.duration - 1));
+                        return endDate.toLocaleDateString('en-GB', { 
+                          day: '2-digit', 
+                          month: 'short', 
+                          year: 'numeric' 
+                        });
+                      }
+                      return 'N/A';
+                    })()})
                   </span>
                 </div>
                 
