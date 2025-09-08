@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header02 from '../header02';
 import Footer from '../footer';
-import { bookInsurance, getInsurancePolicy } from '../../store/Actions/insuranceAction';
+import { bookInsurance, getInsurancePolicy, updateInsuranceBookingStatus } from '../../store/Actions/insuranceAction';
 import { loadRazorpayScript } from '../../utils/loadRazorpay';
 import { 
   FaCreditCard,
@@ -87,6 +87,9 @@ const Insurance_Payment_Page = () => {
         ResultIndex: selectedPlan?.ResultIndex || 1,
         Passenger: passengerDetails
       };
+      
+      console.log("💳 Payment Page: Preparing booking payload:", JSON.stringify(bookingPayload, null, 2));
+      console.log("💳 Payment Page: Passenger details:", JSON.stringify(passengerDetails, null, 2));
       
       const result = await dispatch(bookInsurance(bookingPayload));
       
@@ -201,8 +204,34 @@ const Insurance_Payment_Page = () => {
       const policyResponse = await dispatch(getInsurancePolicy(policyPayload));
 
       if (policyResponse && policyResponse.Response && policyResponse.Response.ResponseStatus === 1) {
-        // Success - policy generated, navigate to generate policy page
+        // Success - policy generated, now update booking status in database
         const bookingId = bookingResult.Response?.Itinerary?.BookingId;
+        const policyNumber = policyResponse.Response?.Itinerary?.PassengerInfo?.[0]?.PolicyNo || 
+                           policyResponse.Response?.Itinerary?.PolicyNo || 
+                           `POL${Date.now()}`;
+        
+        // Update booking status with payment and policy details
+        try {
+          const statusUpdateData = {
+            booking_status: 'Confirmed',
+            payment_status: 'Paid',
+            policy_number: policyNumber,
+            transaction_id: paymentResponse.razorpay_payment_id,
+            payment_method: 'Razorpay',
+            razorpay_payment_id: paymentResponse.razorpay_payment_id,
+            total_premium: priceDetails.total || 0,
+            base_premium: priceDetails.base || priceDetails.total || 0
+          };
+          
+          console.log("💳 Updating booking status with:", statusUpdateData);
+          await dispatch(updateInsuranceBookingStatus(bookingId, statusUpdateData));
+          console.log("✅ Booking status updated successfully");
+        } catch (updateError) {
+          console.error("❌ Failed to update booking status:", updateError);
+          // Don't fail the flow, just log the error
+        }
+        
+        // Navigate to generate policy page
         navigate('/insurance-generate-policy', { 
           state: {
             bookingResponse: bookingResult,
@@ -351,12 +380,25 @@ const Insurance_Payment_Page = () => {
                         <div className="mb-1">
                           <span className="text-muted">End Date: </span>
                           <span className="fw-bold">
-                            {searchCriteria.returnDate ? 
-                              new Date(searchCriteria.returnDate).toLocaleDateString('en-GB', { 
-                                day: '2-digit', 
-                                month: 'short', 
-                                year: 'numeric' 
-                              }) : 'N/A'}
+                            {(() => {
+                              // If returnDate exists, use it; otherwise calculate it from departDate and duration
+                              if (searchCriteria.returnDate) {
+                                return new Date(searchCriteria.returnDate).toLocaleDateString('en-GB', { 
+                                  day: '2-digit', 
+                                  month: 'short', 
+                                  year: 'numeric' 
+                                });
+                              } else if (searchCriteria.departDate && searchCriteria.duration) {
+                                const endDate = new Date(searchCriteria.departDate);
+                                endDate.setDate(endDate.getDate() + (searchCriteria.duration - 1));
+                                return endDate.toLocaleDateString('en-GB', { 
+                                  day: '2-digit', 
+                                  month: 'short', 
+                                  year: 'numeric' 
+                                });
+                              }
+                              return 'N/A';
+                            })()}
                           </span>
                         </div>
                         <div className="mb-2">
