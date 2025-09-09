@@ -125,8 +125,12 @@ const transferReducer = (state = initialState, action) => {
     case TRANSFER_DESTINATION_SEARCH_SUCCESS:
       console.log('✅ [TRANSFER REDUCER] Destination search success, data received:', {
         hasData: !!action.payload,
+        success: action.payload?.success,
+        hasDestinations: !!action.payload?.destinations,
+        destinationCount: action.payload?.destinations?.length || 0,
         dataKeys: action.payload ? Object.keys(action.payload) : 'No data'
       });
+      console.log('🏙️ [TRANSFER REDUCER] Transformed destinations:', action.payload?.destinations);
       return {
         ...state,
         destinationSearchLoading: false,

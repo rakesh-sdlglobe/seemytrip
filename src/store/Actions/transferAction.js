@@ -177,6 +177,7 @@ export const getTransferCountryList = (countryListData) => async (dispatch, getS
 export const getDestinationSearch = (destinationData) => async (dispatch, getState) => {
   try {
     console.log('🔍 [TRANSFER] Starting destination search with data:', destinationData);
+    console.log('🔍 [TRANSFER] Yes, calling the transfer API');
     dispatch(transferDestinationSearchRequest());
     
     // Get token from state if available
@@ -212,19 +213,29 @@ export const getDestinationSearch = (destinationData) => async (dispatch, getSta
     
     console.log('📡 [TRANSFER] Making API request to:', `${API_URL}/transfer/GetDestinationSearch`);
     console.log('📤 [TRANSFER] Request payload:', destinationData);
+    console.log('📤 [TRANSFER] req.body', destinationData);
     
     const response = await axios.post(`${API_URL}/transfer/GetDestinationSearch`, destinationData);
     
     console.log('📥 [TRANSFER] API response received:', {
       status: response.status,
       hasData: !!response.data,
+      success: response.data?.success,
+      hasDestinations: !!response.data?.destinations,
+      destinationCount: response.data?.destinations?.length || 0,
       dataKeys: response.data ? Object.keys(response.data) : 'No data'
     });
+    console.log('📥 [TRANSFER] apiResponse', response.data);
     
-    if (response.data) {
+    if (response.data && response.data.success) {
       console.log('✅ [TRANSFER] Destination search successful, dispatching success action');
+      console.log('🏙️ [TRANSFER] Transformed destinations received:', response.data.destinations);
       dispatch(transferDestinationSearchSuccess(response.data));
       return response.data;
+    } else if (response.data && !response.data.success) {
+      const errorMsg = response.data.message || 'Destination search failed';
+      console.error('❌ [TRANSFER] Backend returned error:', errorMsg);
+      throw new Error(errorMsg);
     } else {
       const errorMsg = 'Invalid response from transfer destination search API';
       console.error('❌ [TRANSFER] Invalid response:', errorMsg);
@@ -238,6 +249,7 @@ export const getDestinationSearch = (destinationData) => async (dispatch, getSta
       data: error.response?.data,
       originalError: error.message
     });
+    console.error('❌ [TRANSFER] Error details:', error.message);
     dispatch(transferDestinationSearchFailure(errorMessage));
     throw new Error(errorMessage);
   }

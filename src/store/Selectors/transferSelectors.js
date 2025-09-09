@@ -23,20 +23,15 @@ export const selectTransferDestinationSearch = (state) => selectTransferState(st
 export const selectTransferDestinationSearchLoading = (state) => selectTransferDestinationSearch(state).destinationSearchLoading;
 export const selectTransferDestinationSearchData = (state) => selectTransferDestinationSearch(state).destinationSearchData;
 export const selectTransferDestinationSearchError = (state) => selectTransferDestinationSearch(state).destinationSearchError;
-export const selectTransferDestinations = (state) => selectTransferDestinationSearchData(state)?.Response?.DestinationList || [];
+export const selectTransferDestinations = (state) => selectTransferDestinationSearchData(state)?.destinations || [];
 export const selectTransferDestinationCount = (state) => selectTransferDestinations(state).length;
 
 // Enhanced destination search selectors
-export const selectTransferDestinationSearchResponse = (state) => selectTransferDestinationSearchData(state)?.Response || null;
-export const selectTransferDestinationSearchStatus = (state) => selectTransferDestinationSearchData(state)?.Status || null;
-export const selectTransferDestinationSearchMessage = (state) => selectTransferDestinationSearchData(state)?.Message || null;
+export const selectTransferDestinationSearchResponse = (state) => selectTransferDestinationSearchData(state) || null;
+export const selectTransferDestinationSearchStatus = (state) => selectTransferDestinationSearchData(state)?.success || null;
+export const selectTransferDestinationSearchMessage = (state) => selectTransferDestinationSearchData(state)?.message || null;
 
 // Destination filtering and search selectors
-export const selectTransferDestinationsByType = (state, type) => {
-  const destinations = selectTransferDestinations(state);
-  return destinations.filter(destination => destination.Type === type);
-};
-
 export const selectTransferDestinationsByCountry = (state, countryCode) => {
   const destinations = selectTransferDestinations(state);
   return destinations.filter(destination => destination.CountryCode === countryCode);
@@ -45,29 +40,44 @@ export const selectTransferDestinationsByCountry = (state, countryCode) => {
 export const selectTransferDestinationOptions = (state) => {
   const destinations = selectTransferDestinations(state);
   return destinations.map(destination => ({
-    id: destination.DestinationId || destination.Id,
-    name: destination.DestinationName || destination.Name,
-    code: destination.DestinationCode || destination.Code,
-    type: destination.Type,
+    id: destination.CityId,
+    name: destination.CityNamewithCountry,
+    cityName: destination.CityNamewithCountry?.split(',')[0] || destination.CityNamewithCountry,
+    countryName: destination.CityNamewithCountry?.split(',')[1] || '',
     countryCode: destination.CountryCode,
-    countryName: destination.CountryName,
-    region: destination.Region,
-    city: destination.City,
-    state: destination.State
+    displayName: destination.CityNamewithCountry,
+    value: destination.CityId,
+    label: destination.CityNamewithCountry
   }));
 };
 
-export const selectTransferDestinationById = (state, destinationId) => {
+export const selectTransferDestinationById = (state, cityId) => {
+  const destinations = selectTransferDestinations(state);
+  return destinations.find(destination => destination.CityId === cityId);
+};
+
+export const selectTransferDestinationByCityName = (state, cityName) => {
   const destinations = selectTransferDestinations(state);
   return destinations.find(destination => 
-    (destination.DestinationId || destination.Id) === destinationId
+    destination.CityNamewithCountry?.toLowerCase().includes(cityName.toLowerCase())
   );
 };
 
-export const selectTransferDestinationByCode = (state, destinationCode) => {
+// New selectors for the transformed data structure
+export const selectTransferDestinationCities = (state) => {
   const destinations = selectTransferDestinations(state);
-  return destinations.find(destination => 
-    (destination.DestinationCode || destination.Code) === destinationCode
+  return destinations.map(destination => destination.CityNamewithCountry?.split(',')[0]).filter(Boolean);
+};
+
+export const selectTransferDestinationCountries = (state) => {
+  const destinations = selectTransferDestinations(state);
+  return [...new Set(destinations.map(destination => destination.CityNamewithCountry?.split(',')[1]).filter(Boolean))];
+};
+
+export const selectTransferDestinationsByCityName = (state, cityName) => {
+  const destinations = selectTransferDestinations(state);
+  return destinations.filter(destination => 
+    destination.CityNamewithCountry?.toLowerCase().includes(cityName.toLowerCase())
   );
 };
 
@@ -141,6 +151,7 @@ export const selectTransferCanSearchDestinations = (state) => {
 // Debug and monitoring selectors
 export const selectTransferDebugInfo = (state) => {
   const transfer = selectTransferState(state);
+  const destinationData = transfer.destinationSearchData;
   return {
     isAuthenticated: transfer.isAuthenticated,
     hasToken: !!transfer.authData?.TokenId,
@@ -162,6 +173,14 @@ export const selectTransferDebugInfo = (state) => {
       hasDestinationSearchData: !!transfer.destinationSearchData,
       countryCount: selectTransferCountryCount(state),
       destinationCount: selectTransferDestinationCount(state)
+    },
+    destinationSearchDebug: {
+      hasResponse: !!destinationData,
+      success: destinationData?.success,
+      hasDestinations: !!destinationData?.destinations,
+      destinationCount: destinationData?.destinations?.length || 0,
+      message: destinationData?.message,
+      responseKeys: destinationData ? Object.keys(destinationData) : []
     }
   };
 };
