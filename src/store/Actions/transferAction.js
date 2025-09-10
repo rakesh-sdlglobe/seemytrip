@@ -17,6 +17,11 @@ export const TRANSFER_STATIC_DATA_REQUEST = 'TRANSFER_STATIC_DATA_REQUEST';
 export const TRANSFER_STATIC_DATA_SUCCESS = 'TRANSFER_STATIC_DATA_SUCCESS';
 export const TRANSFER_STATIC_DATA_FAILURE = 'TRANSFER_STATIC_DATA_FAILURE';
 
+
+export const TRANSFER_SEARCH_REQUEST = 'TRANSFER_SEARCH_REQUEST';
+export const TRANSFER_SEARCH_SUCCESS = 'TRANSFER_SEARCH_SUCCESS';
+export const TRANSFER_SEARCH_FAILURE = 'TRANSFER_SEARCH_FAILURE';
+
 export const CLEAR_TRANSFER_ERROR = 'CLEAR_TRANSFER_ERROR';
 export const CLEAR_TRANSFER_DATA = 'CLEAR_TRANSFER_DATA';
 
@@ -77,6 +82,20 @@ export const transferStaticDataSuccess = (data) => ({
 
 export const transferStaticDataFailure = (error) => ({
   type: TRANSFER_STATIC_DATA_FAILURE,
+  payload: error
+});
+
+export const transferSearchRequest = () => ({
+  type: TRANSFER_SEARCH_REQUEST
+});
+
+export const transferSearchSuccess = (data) => ({
+  type: TRANSFER_SEARCH_SUCCESS,
+  payload: data
+});
+
+export const transferSearchFailure = (error) => ({
+  type: TRANSFER_SEARCH_FAILURE,
   payload: error
 });
 
@@ -347,6 +366,95 @@ export const getTransferStaticData = (staticData) => async (dispatch, getState) 
     throw new Error(errorMessage);
   }
 };
+
+
+// Search Transfer
+export const searchTransfer = (searchData) => async (dispatch, getState) => {
+  try {
+    console.log('🔍 [TRANSFER] Starting transfer search with data:', searchData);
+    console.log('🔍 [TRANSFER] Yes, calling the transfer API');
+    dispatch(transferSearchRequest());
+    
+    // Get token from state if available
+    const { transfer } = getState();
+    const tokenData = transfer.authData;
+    
+    console.log('🔑 [TRANSFER] Current auth state for search:', {
+      hasToken: !!tokenData?.TokenId,
+      hasEndUserIp: !!tokenData?.EndUserIp,
+      isAuthenticated: transfer.isAuthenticated
+    });
+    
+    if (!tokenData || !tokenData.TokenId) {
+      console.log('🔄 [TRANSFER] No token found for search, authenticating first...');
+      // If no token, authenticate first
+      await dispatch(authenticateTransferAPI());
+      const updatedState = getState();
+      searchData.TokenId = updatedState.transfer.authData.TokenId;
+      searchData.EndUserIp = updatedState.transfer.authData.EndUserIp;
+      console.log('✅ [TRANSFER] Authentication completed for search, token obtained');
+    } else {
+      searchData.TokenId = tokenData.TokenId;
+      searchData.EndUserIp = tokenData.EndUserIp;
+      console.log('✅ [TRANSFER] Using existing token for search');
+    }
+    
+    // Validate required fields as per backend
+    const requiredFields = [
+      'CountryCode', 'CityId', 'PickUpCode', 'PickUpPointCode',
+      'DropOffCode', 'DropOffPointCode', 'TransferTime', 'TransferDate', 'AdultCount'
+    ];
+    
+    const missingFields = requiredFields.filter(field => !searchData[field]);
+    if (missingFields.length > 0) {
+      const errorMsg = `Missing required fields: ${missingFields.join(', ')}`;
+      console.error('❌ [TRANSFER] Validation failed:', errorMsg);
+      throw new Error(errorMsg);
+    }
+    
+    // Add default values as per backend
+    const data = {
+      ...searchData,
+      PreferredCurrency: searchData.PreferredCurrency || "INR",
+      IsBaseCurrencyRequired: searchData.IsBaseCurrencyRequired !== undefined ? searchData.IsBaseCurrencyRequired : true
+    };
+    
+    console.log('📡 [TRANSFER] Making search request to:', `${API_URL}/transfer/GetSearchTransfer`);
+    console.log('📤 [TRANSFER] Request payload:', data);
+    console.log('📤 [TRANSFER] req.body', data);
+    
+    const response = await axios.post(`${API_URL}/transfer/GetSearchTransfer`, data);
+    
+    console.log('📥 [TRANSFER] Search response received:', {
+      status: response.status,
+      hasData: !!response.data,
+      dataKeys: response.data ? Object.keys(response.data) : 'No data'
+    });
+    console.log('📥 [TRANSFER] apiResponse', response.data);
+    
+    if (response.data) {
+      console.log('✅ [TRANSFER] Transfer search successful, dispatching success action');
+      dispatch(transferSearchSuccess(response.data));
+      return response.data;
+    } else {
+      const errorMsg = 'Invalid response from transfer search API';
+      console.error('❌ [TRANSFER] Invalid search response:', errorMsg);
+      throw new Error(errorMsg);
+    }
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || error.message || 'Transfer search failed';
+    console.error('❌ [TRANSFER] Search failed:', {
+      message: errorMessage,
+      status: error.response?.status,
+      data: error.response?.data,
+      originalError: error.message
+    });
+    console.error('❌ [TRANSFER] Error details:', error.message);
+    dispatch(transferSearchFailure(errorMessage));
+    throw new Error(errorMessage);
+  }
+};
+
 
 // Clear transfer data and errors
 export const resetTransferState = () => (dispatch) => {

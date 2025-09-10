@@ -32,6 +32,12 @@ export const selectTransferStaticDataLoading = (state) => selectTransferStaticDa
 export const selectTransferStaticDataData = (state) => selectTransferStaticData(state).staticDataData;
 export const selectTransferStaticDataError = (state) => selectTransferStaticData(state).staticDataError;
 
+// Transfer search selectors
+export const selectTransferSearch = (state) => selectTransferState(state);
+export const selectTransferSearchLoading = (state) => selectTransferSearch(state).searchLoading;
+export const selectTransferSearchData = (state) => selectTransferSearch(state).searchData;
+export const selectTransferSearchError = (state) => selectTransferSearch(state).searchError;
+
 // Enhanced destination search selectors
 export const selectTransferDestinationSearchResponse = (state) => selectTransferDestinationSearchData(state) || null;
 export const selectTransferDestinationSearchStatus = (state) => selectTransferDestinationSearchData(state)?.success || null;
@@ -95,7 +101,8 @@ export const selectTransferHasAnyError = (state) => {
     transfer.authError ||
     transfer.countryListError ||
     transfer.destinationSearchError ||
-    transfer.staticDataError
+    transfer.staticDataError ||
+    transfer.searchError
   );
 };
 
@@ -105,7 +112,8 @@ export const selectTransferIsAnyLoading = (state) => {
     transfer.authLoading ||
     transfer.countryListLoading ||
     transfer.destinationSearchLoading ||
-    transfer.staticDataLoading
+    transfer.staticDataLoading ||
+    transfer.searchLoading
   );
 };
 
@@ -163,6 +171,12 @@ export const selectTransferCanGetStaticData = (state) => {
   return isAuthenticated && hasCityId && hasTransferCategoryType;
 };
 
+export const selectTransferCanSearch = (state) => {
+  const isAuthenticated = selectTransferIsAuthenticated(state);
+  const hasRequiredFields = true; // This should be validated when calling
+  return isAuthenticated && hasRequiredFields;
+};
+
 // Debug and monitoring selectors
 export const selectTransferDebugInfo = (state) => {
   const transfer = selectTransferState(state);
@@ -176,19 +190,22 @@ export const selectTransferDebugInfo = (state) => {
       auth: transfer.authLoading,
       countryList: transfer.countryListLoading,
       destinationSearch: transfer.destinationSearchLoading,
-      staticData: transfer.staticDataLoading
+      staticData: transfer.staticDataLoading,
+      search: transfer.searchLoading
     },
     errorStates: {
       auth: !!transfer.authError,
       countryList: !!transfer.countryListError,
       destinationSearch: !!transfer.destinationSearchError,
-      staticData: !!transfer.staticDataError
+      staticData: !!transfer.staticDataError,
+      search: !!transfer.searchError
     },
     dataStates: {
       hasAuthData: !!transfer.authData,
       hasCountryListData: !!transfer.countryListData,
       hasDestinationSearchData: !!transfer.destinationSearchData,
       hasStaticData: !!transfer.staticDataData,
+      hasSearchData: !!transfer.searchData,
       countryCount: selectTransferCountryCount(state),
       destinationCount: selectTransferDestinationCount(state)
     },
@@ -203,6 +220,10 @@ export const selectTransferDebugInfo = (state) => {
     staticDataDebug: {
       hasResponse: !!transfer.staticDataData,
       dataKeys: transfer.staticDataData ? Object.keys(transfer.staticDataData) : []
+    },
+    searchDebug: {
+      hasResponse: !!transfer.searchData,
+      dataKeys: transfer.searchData ? Object.keys(transfer.searchData) : []
     }
   };
 };
@@ -223,6 +244,9 @@ export const selectTransferAllErrors = (state) => {
   }
   if (transfer.staticDataError) {
     errors.push({ type: 'staticData', message: transfer.staticDataError });
+  }
+  if (transfer.searchError) {
+    errors.push({ type: 'search', message: transfer.searchError });
   }
   
   return errors;
@@ -248,4 +272,29 @@ export const selectTransferStaticDataKeys = (state) => {
 export const selectTransferStaticDataHasData = (state) => {
   const staticData = selectTransferStaticDataData(state);
   return !!staticData && Object.keys(staticData).length > 0;
+};
+
+// Transfer search utility selectors
+export const selectTransferSearchResponse = (state) => selectTransferSearchData(state) || null;
+
+export const selectTransferSearchResults = (state) => {
+  const searchData = selectTransferSearchData(state);
+  // This selector can be customized based on the actual response structure
+  // from the GetSearchTransfer API
+  return searchData?.Results || searchData?.TransferOptions || searchData || [];
+};
+
+export const selectTransferSearchHasResults = (state) => {
+  const results = selectTransferSearchResults(state);
+  return Array.isArray(results) ? results.length > 0 : !!results;
+};
+
+export const selectTransferSearchKeys = (state) => {
+  const searchData = selectTransferSearchData(state);
+  return searchData ? Object.keys(searchData) : [];
+};
+
+export const selectTransferSearchHasData = (state) => {
+  const searchData = selectTransferSearchData(state);
+  return !!searchData && Object.keys(searchData).length > 0;
 };

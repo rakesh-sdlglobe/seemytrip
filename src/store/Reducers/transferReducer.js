@@ -11,6 +11,9 @@ import {
   TRANSFER_STATIC_DATA_REQUEST,
   TRANSFER_STATIC_DATA_SUCCESS,
   TRANSFER_STATIC_DATA_FAILURE,
+  TRANSFER_SEARCH_REQUEST,
+  TRANSFER_SEARCH_SUCCESS,
+  TRANSFER_SEARCH_FAILURE,
   CLEAR_TRANSFER_ERROR,
   CLEAR_TRANSFER_DATA
 } from '../Actions/transferAction';
@@ -35,6 +38,11 @@ const initialState = {
     staticDataLoading: false,
     staticDataData: null,
     staticDataError: null,
+
+    // Transfer search state
+    searchLoading: false,
+    searchData: null,
+    searchError: null,
   
   
   // General state
@@ -51,6 +59,7 @@ const transferReducer = (state = initialState, action) => {
         countryListLoading: state.countryListLoading,
         destinationSearchLoading: state.destinationSearchLoading,
         staticDataLoading: state.staticDataLoading,
+        searchLoading: state.searchLoading,
         lastAction: state.lastAction
       }
   });
@@ -192,6 +201,39 @@ const transferReducer = (state = initialState, action) => {
         lastAction: 'STATIC_DATA_FAILURE'
       };
 
+    // Transfer search cases
+    case TRANSFER_SEARCH_REQUEST:
+      console.log('🔍 [TRANSFER REDUCER] Setting search loading to true');
+      return {
+        ...state,
+        searchLoading: true,
+        searchError: null,
+        lastAction: 'SEARCH_REQUEST'
+      };
+    
+    case TRANSFER_SEARCH_SUCCESS:
+      console.log('✅ [TRANSFER REDUCER] Search success, data received:', {
+        hasData: !!action.payload,
+        dataKeys: action.payload ? Object.keys(action.payload) : 'No data'
+      });
+      console.log('🔍 [TRANSFER REDUCER] Search results received:', action.payload);
+      return {
+        ...state,
+        searchLoading: false,
+        searchData: action.payload,
+        searchError: null,
+        lastAction: 'SEARCH_SUCCESS'
+      };
+    
+    case TRANSFER_SEARCH_FAILURE:
+      console.log('❌ [TRANSFER REDUCER] Search failure:', action.payload);
+      return {
+        ...state,
+        searchLoading: false,
+        searchData: null,
+        searchError: action.payload,
+        lastAction: 'SEARCH_FAILURE'
+      };
 
    
     // Clear cases
@@ -203,6 +245,7 @@ const transferReducer = (state = initialState, action) => {
         countryListError: null,
         destinationSearchError: null,
         staticDataError: null,
+        searchError: null,
         lastAction: 'CLEAR_ERROR'
       };
 
@@ -214,6 +257,7 @@ const transferReducer = (state = initialState, action) => {
         countryListData: null,
         destinationSearchData: null,
         staticDataData: null,
+        searchData: null,
         isAuthenticated: false,
         lastAction: 'CLEAR_DATA'
       };
