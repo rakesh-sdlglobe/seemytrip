@@ -26,6 +26,12 @@ export const selectTransferDestinationSearchError = (state) => selectTransferDes
 export const selectTransferDestinations = (state) => selectTransferDestinationSearchData(state)?.destinations || [];
 export const selectTransferDestinationCount = (state) => selectTransferDestinations(state).length;
 
+// Transfer static data selectors
+export const selectTransferStaticData = (state) => selectTransferState(state);
+export const selectTransferStaticDataLoading = (state) => selectTransferStaticData(state).staticDataLoading;
+export const selectTransferStaticDataData = (state) => selectTransferStaticData(state).staticDataData;
+export const selectTransferStaticDataError = (state) => selectTransferStaticData(state).staticDataError;
+
 // Enhanced destination search selectors
 export const selectTransferDestinationSearchResponse = (state) => selectTransferDestinationSearchData(state) || null;
 export const selectTransferDestinationSearchStatus = (state) => selectTransferDestinationSearchData(state)?.success || null;
@@ -88,7 +94,8 @@ export const selectTransferHasAnyError = (state) => {
   return !!(
     transfer.authError ||
     transfer.countryListError ||
-    transfer.destinationSearchError
+    transfer.destinationSearchError ||
+    transfer.staticDataError
   );
 };
 
@@ -97,7 +104,8 @@ export const selectTransferIsAnyLoading = (state) => {
   return !!(
     transfer.authLoading ||
     transfer.countryListLoading ||
-    transfer.destinationSearchLoading
+    transfer.destinationSearchLoading ||
+    transfer.staticDataLoading
   );
 };
 
@@ -148,6 +156,13 @@ export const selectTransferCanSearchDestinations = (state) => {
   return isAuthenticated && hasCountryCode;
 };
 
+export const selectTransferCanGetStaticData = (state) => {
+  const isAuthenticated = selectTransferIsAuthenticated(state);
+  const hasCityId = true; // This should be passed as parameter when calling
+  const hasTransferCategoryType = true; // This should be passed as parameter when calling
+  return isAuthenticated && hasCityId && hasTransferCategoryType;
+};
+
 // Debug and monitoring selectors
 export const selectTransferDebugInfo = (state) => {
   const transfer = selectTransferState(state);
@@ -160,17 +175,20 @@ export const selectTransferDebugInfo = (state) => {
     loadingStates: {
       auth: transfer.authLoading,
       countryList: transfer.countryListLoading,
-      destinationSearch: transfer.destinationSearchLoading
+      destinationSearch: transfer.destinationSearchLoading,
+      staticData: transfer.staticDataLoading
     },
     errorStates: {
       auth: !!transfer.authError,
       countryList: !!transfer.countryListError,
-      destinationSearch: !!transfer.destinationSearchError
+      destinationSearch: !!transfer.destinationSearchError,
+      staticData: !!transfer.staticDataError
     },
     dataStates: {
       hasAuthData: !!transfer.authData,
       hasCountryListData: !!transfer.countryListData,
       hasDestinationSearchData: !!transfer.destinationSearchData,
+      hasStaticData: !!transfer.staticDataData,
       countryCount: selectTransferCountryCount(state),
       destinationCount: selectTransferDestinationCount(state)
     },
@@ -181,6 +199,10 @@ export const selectTransferDebugInfo = (state) => {
       destinationCount: destinationData?.destinations?.length || 0,
       message: destinationData?.message,
       responseKeys: destinationData ? Object.keys(destinationData) : []
+    },
+    staticDataDebug: {
+      hasResponse: !!transfer.staticDataData,
+      dataKeys: transfer.staticDataData ? Object.keys(transfer.staticDataData) : []
     }
   };
 };
@@ -199,6 +221,31 @@ export const selectTransferAllErrors = (state) => {
   if (transfer.destinationSearchError) {
     errors.push({ type: 'destinationSearch', message: transfer.destinationSearchError });
   }
+  if (transfer.staticDataError) {
+    errors.push({ type: 'staticData', message: transfer.staticDataError });
+  }
   
   return errors;
+};
+
+// Transfer static data utility selectors
+export const selectTransferStaticDataResponse = (state) => selectTransferStaticDataData(state) || null;
+
+export const selectTransferStaticDataByCategory = (state, categoryType) => {
+  const staticData = selectTransferStaticDataData(state);
+  if (!staticData) return null;
+  
+  // This selector can be customized based on the actual response structure
+  // from the GetTransferStaticData API
+  return staticData[categoryType] || null;
+};
+
+export const selectTransferStaticDataKeys = (state) => {
+  const staticData = selectTransferStaticDataData(state);
+  return staticData ? Object.keys(staticData) : [];
+};
+
+export const selectTransferStaticDataHasData = (state) => {
+  const staticData = selectTransferStaticDataData(state);
+  return !!staticData && Object.keys(staticData).length > 0;
 };
