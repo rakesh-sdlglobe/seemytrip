@@ -8,6 +8,9 @@ import {
   TRANSFER_DESTINATION_SEARCH_REQUEST,
   TRANSFER_DESTINATION_SEARCH_SUCCESS,
   TRANSFER_DESTINATION_SEARCH_FAILURE,
+  TRANSFER_STATIC_DATA_REQUEST,
+  TRANSFER_STATIC_DATA_SUCCESS,
+  TRANSFER_STATIC_DATA_FAILURE,
   CLEAR_TRANSFER_ERROR,
   CLEAR_TRANSFER_DATA
 } from '../Actions/transferAction';
@@ -27,6 +30,11 @@ const initialState = {
     destinationSearchLoading: false,
     destinationSearchData: null,
     destinationSearchError: null,
+
+    // Transfer static data state
+    staticDataLoading: false,
+    staticDataData: null,
+    staticDataError: null,
   
   
   // General state
@@ -37,13 +45,14 @@ const initialState = {
 const transferReducer = (state = initialState, action) => {
   console.log('🔄 [TRANSFER REDUCER] Processing action:', action.type, {
     payload: action.payload,
-    currentState: {
-      isAuthenticated: state.isAuthenticated,
-      authLoading: state.authLoading,
-      countryListLoading: state.countryListLoading,
-      destinationSearchLoading: state.destinationSearchLoading,
-      lastAction: state.lastAction
-    }
+      currentState: {
+        isAuthenticated: state.isAuthenticated,
+        authLoading: state.authLoading,
+        countryListLoading: state.countryListLoading,
+        destinationSearchLoading: state.destinationSearchLoading,
+        staticDataLoading: state.staticDataLoading,
+        lastAction: state.lastAction
+      }
   });
 
   switch (action.type) {
@@ -149,6 +158,40 @@ const transferReducer = (state = initialState, action) => {
         lastAction: 'DESTINATION_SEARCH_FAILURE'
       };
 
+    // Transfer static data cases
+    case TRANSFER_STATIC_DATA_REQUEST:
+      console.log('📊 [TRANSFER REDUCER] Setting static data loading to true');
+      return {
+        ...state,
+        staticDataLoading: true,
+        staticDataError: null,
+        lastAction: 'STATIC_DATA_REQUEST'
+      };
+    
+    case TRANSFER_STATIC_DATA_SUCCESS:
+      console.log('✅ [TRANSFER REDUCER] Static data success, data received:', {
+        hasData: !!action.payload,
+        dataKeys: action.payload ? Object.keys(action.payload) : 'No data'
+      });
+      console.log('📊 [TRANSFER REDUCER] Static data received:', action.payload);
+      return {
+        ...state,
+        staticDataLoading: false,
+        staticDataData: action.payload,
+        staticDataError: null,
+        lastAction: 'STATIC_DATA_SUCCESS'
+      };
+    
+    case TRANSFER_STATIC_DATA_FAILURE:
+      console.log('❌ [TRANSFER REDUCER] Static data failure:', action.payload);
+      return {
+        ...state,
+        staticDataLoading: false,
+        staticDataData: null,
+        staticDataError: action.payload,
+        lastAction: 'STATIC_DATA_FAILURE'
+      };
+
 
    
     // Clear cases
@@ -159,6 +202,7 @@ const transferReducer = (state = initialState, action) => {
         authError: null,
         countryListError: null,
         destinationSearchError: null,
+        staticDataError: null,
         lastAction: 'CLEAR_ERROR'
       };
 
@@ -169,6 +213,7 @@ const transferReducer = (state = initialState, action) => {
         authData: null,
         countryListData: null,
         destinationSearchData: null,
+        staticDataData: null,
         isAuthenticated: false,
         lastAction: 'CLEAR_DATA'
       };
