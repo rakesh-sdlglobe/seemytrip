@@ -53,15 +53,21 @@ const initialState = {
 const transferReducer = (state = initialState, action) => {
   console.log('🔄 [TRANSFER REDUCER] Processing action:', action.type, {
     payload: action.payload,
-      currentState: {
-        isAuthenticated: state.isAuthenticated,
-        authLoading: state.authLoading,
-        countryListLoading: state.countryListLoading,
-        destinationSearchLoading: state.destinationSearchLoading,
-        staticDataLoading: state.staticDataLoading,
-        searchLoading: state.searchLoading,
-        lastAction: state.lastAction
-      }
+    timestamp: new Date().toISOString(),
+    currentState: {
+      isAuthenticated: state.isAuthenticated,
+      authLoading: state.authLoading,
+      countryListLoading: state.countryListLoading,
+      destinationSearchLoading: state.destinationSearchLoading,
+      staticDataLoading: state.staticDataLoading,
+      searchLoading: state.searchLoading,
+      lastAction: state.lastAction,
+      hasAuthData: !!state.authData,
+      hasCountryListData: !!state.countryListData,
+      hasDestinationSearchData: !!state.destinationSearchData,
+      hasStaticData: !!state.staticDataData,
+      hasSearchData: !!state.searchData
+    }
   });
 
   switch (action.type) {
@@ -77,6 +83,13 @@ const transferReducer = (state = initialState, action) => {
     
     case TRANSFER_AUTH_SUCCESS:
       console.log('✅ [TRANSFER REDUCER] Auth success, setting authenticated to true');
+      console.log('✅ [TRANSFER REDUCER] Auth data received:', {
+        hasTokenId: !!action.payload?.TokenId,
+        hasEndUserIp: !!action.payload?.EndUserIp,
+        hasAgencyId: !!action.payload?.AgencyId,
+        message: action.payload?.message,
+        fullPayload: action.payload
+      });
       return {
         ...state,
         authLoading: false,
@@ -110,7 +123,14 @@ const transferReducer = (state = initialState, action) => {
     case TRANSFER_COUNTRY_LIST_SUCCESS:
       console.log('✅ [TRANSFER REDUCER] Country list success, data received:', {
         hasData: !!action.payload,
-        dataKeys: action.payload ? Object.keys(action.payload) : 'No data'
+        dataKeys: action.payload ? Object.keys(action.payload) : 'No data',
+        hasResponse: !!action.payload?.Response,
+        hasCountryList: !!action.payload?.Response?.CountryList,
+        countryCount: action.payload?.Response?.CountryList?.length || 0
+      });
+      console.log('🌍 [TRANSFER REDUCER] Countries received:', {
+        count: action.payload?.Response?.CountryList?.length || 0,
+        countries: action.payload?.Response?.CountryList?.slice(0, 3) || 'No countries'
       });
       return {
         ...state,
@@ -146,9 +166,14 @@ const transferReducer = (state = initialState, action) => {
         success: action.payload?.success,
         hasDestinations: !!action.payload?.destinations,
         destinationCount: action.payload?.destinations?.length || 0,
-        dataKeys: action.payload ? Object.keys(action.payload) : 'No data'
+        dataKeys: action.payload ? Object.keys(action.payload) : 'No data',
+        message: action.payload?.message
       });
-      console.log('🏙️ [TRANSFER REDUCER] Transformed destinations:', action.payload?.destinations);
+      console.log('🏙️ [TRANSFER REDUCER] Transformed destinations:', {
+        count: action.payload?.destinations?.length || 0,
+        destinations: action.payload?.destinations?.slice(0, 3) || 'No destinations',
+        sampleDestination: action.payload?.destinations?.[0] || 'No sample'
+      });
       return {
         ...state,
         destinationSearchLoading: false,
@@ -180,9 +205,17 @@ const transferReducer = (state = initialState, action) => {
     case TRANSFER_STATIC_DATA_SUCCESS:
       console.log('✅ [TRANSFER REDUCER] Static data success, data received:', {
         hasData: !!action.payload,
-        dataKeys: action.payload ? Object.keys(action.payload) : 'No data'
+        dataKeys: action.payload ? Object.keys(action.payload) : 'No data',
+        hasTransferSearchResult: !!action.payload?.TransferSearchResult,
+        hasTransferSearchResults: !!action.payload?.TransferSearchResult?.TransferSearchResults,
+        resultCount: action.payload?.TransferSearchResult?.TransferSearchResults?.length || 0
       });
-      console.log('📊 [TRANSFER REDUCER] Static data received:', action.payload);
+      console.log('📊 [TRANSFER REDUCER] Static data received:', {
+        hasTransferSearchResult: !!action.payload?.TransferSearchResult,
+        hasTransferSearchResults: !!action.payload?.TransferSearchResult?.TransferSearchResults,
+        resultCount: action.payload?.TransferSearchResult?.TransferSearchResults?.length || 0,
+        results: action.payload?.TransferSearchResult?.TransferSearchResults?.slice(0, 2) || 'No results'
+      });
       return {
         ...state,
         staticDataLoading: false,
@@ -214,9 +247,17 @@ const transferReducer = (state = initialState, action) => {
     case TRANSFER_SEARCH_SUCCESS:
       console.log('✅ [TRANSFER REDUCER] Search success, data received:', {
         hasData: !!action.payload,
-        dataKeys: action.payload ? Object.keys(action.payload) : 'No data'
+        dataKeys: action.payload ? Object.keys(action.payload) : 'No data',
+        hasTransferSearchResult: !!action.payload?.TransferSearchResult,
+        hasTransferSearchResults: !!action.payload?.TransferSearchResult?.TransferSearchResults,
+        resultCount: action.payload?.TransferSearchResult?.TransferSearchResults?.length || 0
       });
-      console.log('🔍 [TRANSFER REDUCER] Search results received:', action.payload);
+      console.log('🔍 [TRANSFER REDUCER] Search results received:', {
+        hasTransferSearchResult: !!action.payload?.TransferSearchResult,
+        hasTransferSearchResults: !!action.payload?.TransferSearchResult?.TransferSearchResults,
+        resultCount: action.payload?.TransferSearchResult?.TransferSearchResults?.length || 0,
+        results: action.payload?.TransferSearchResult?.TransferSearchResults?.slice(0, 2) || 'No results'
+      });
       return {
         ...state,
         searchLoading: false,

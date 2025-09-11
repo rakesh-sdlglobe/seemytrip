@@ -279,9 +279,8 @@ export const selectTransferSearchResponse = (state) => selectTransferSearchData(
 
 export const selectTransferSearchResults = (state) => {
   const searchData = selectTransferSearchData(state);
-  // This selector can be customized based on the actual response structure
-  // from the GetSearchTransfer API
-  return searchData?.Results || searchData?.TransferOptions || searchData || [];
+  // Updated to match the actual response structure from GetSearchTransfer API
+  return searchData?.TransferSearchResult?.TransferSearchResults || [];
 };
 
 export const selectTransferSearchHasResults = (state) => {
@@ -297,4 +296,199 @@ export const selectTransferSearchKeys = (state) => {
 export const selectTransferSearchHasData = (state) => {
   const searchData = selectTransferSearchData(state);
   return !!searchData && Object.keys(searchData).length > 0;
+};
+
+// Enhanced search result selectors
+export const selectTransferSearchResultCount = (state) => {
+  const results = selectTransferSearchResults(state);
+  return Array.isArray(results) ? results.length : 0;
+};
+
+export const selectTransferSearchResultByIndex = (state, index) => {
+  const results = selectTransferSearchResults(state);
+  return Array.isArray(results) ? results[index] : null;
+};
+
+export const selectTransferSearchResultById = (state, id) => {
+  const results = selectTransferSearchResults(state);
+  return Array.isArray(results) ? results.find(result => result.Id === id) : null;
+};
+
+// Static data enhanced selectors
+export const selectTransferStaticDataResults = (state) => {
+  const staticData = selectTransferStaticDataData(state);
+  return staticData?.TransferSearchResult?.TransferSearchResults || [];
+};
+
+export const selectTransferStaticDataResultCount = (state) => {
+  const results = selectTransferStaticDataResults(state);
+  return Array.isArray(results) ? results.length : 0;
+};
+
+export const selectTransferStaticDataHasResults = (state) => {
+  const results = selectTransferStaticDataResults(state);
+  return Array.isArray(results) ? results.length > 0 : !!results;
+};
+
+// Debug selectors for enhanced logging
+export const selectTransferDebugState = (state) => {
+  const transfer = selectTransferState(state);
+  return {
+    isAuthenticated: transfer.isAuthenticated,
+    hasToken: !!transfer.authData?.TokenId,
+    hasEndUserIp: !!transfer.authData?.EndUserIp,
+    lastAction: transfer.lastAction,
+    loadingStates: {
+      auth: transfer.authLoading,
+      countryList: transfer.countryListLoading,
+      destinationSearch: transfer.destinationSearchLoading,
+      staticData: transfer.staticDataLoading,
+      search: transfer.searchLoading
+    },
+    errorStates: {
+      auth: !!transfer.authError,
+      countryList: !!transfer.countryListError,
+      destinationSearch: !!transfer.destinationSearchError,
+      staticData: !!transfer.staticDataError,
+      search: !!transfer.searchError
+    },
+    dataStates: {
+      hasAuthData: !!transfer.authData,
+      hasCountryListData: !!transfer.countryListData,
+      hasDestinationSearchData: !!transfer.destinationSearchData,
+      hasStaticData: !!transfer.staticDataData,
+      hasSearchData: !!transfer.searchData
+    }
+  };
+};
+
+// Performance monitoring selectors
+export const selectTransferPerformanceMetrics = (state) => {
+  const transfer = selectTransferState(state);
+  return {
+    totalRequests: [
+      transfer.authLoading,
+      transfer.countryListLoading,
+      transfer.destinationSearchLoading,
+      transfer.staticDataLoading,
+      transfer.searchLoading
+    ].filter(Boolean).length,
+    hasAnyData: !!(
+      transfer.authData ||
+      transfer.countryListData ||
+      transfer.destinationSearchData ||
+      transfer.staticDataData ||
+      transfer.searchData
+    ),
+    hasAnyError: !!(
+      transfer.authError ||
+      transfer.countryListError ||
+      transfer.destinationSearchError ||
+      transfer.staticDataError ||
+      transfer.searchError
+    )
+  };
+};
+
+// Enhanced data access selectors
+export const selectTransferAuthDetails = (state) => {
+  const authData = selectTransferAuthData(state);
+  return {
+    tokenId: authData?.TokenId,
+    endUserIp: authData?.EndUserIp,
+    agencyId: authData?.AgencyId,
+    message: authData?.message,
+    isComplete: !!(authData?.TokenId && authData?.EndUserIp)
+  };
+};
+
+export const selectTransferCountryDetails = (state) => {
+  const countries = selectTransferCountries(state);
+  return {
+    count: countries.length,
+    countries: countries,
+    hasData: countries.length > 0,
+    sampleCountry: countries[0] || null
+  };
+};
+
+export const selectTransferDestinationDetails = (state) => {
+  const destinations = selectTransferDestinations(state);
+  return {
+    count: destinations.length,
+    destinations: destinations,
+    hasData: destinations.length > 0,
+    sampleDestination: destinations[0] || null,
+    uniqueCountries: [...new Set(destinations.map(d => d.CountryCode))].length
+  };
+};
+
+export const selectTransferSearchDetails = (state) => {
+  const results = selectTransferSearchResults(state);
+  return {
+    count: results.length,
+    results: results,
+    hasData: results.length > 0,
+    sampleResult: results[0] || null
+  };
+};
+
+export const selectTransferStaticDataDetails = (state) => {
+  const results = selectTransferStaticDataResults(state);
+  return {
+    count: results.length,
+    results: results,
+    hasData: results.length > 0,
+    sampleResult: results[0] || null
+  };
+};
+
+// Validation selectors
+export const selectTransferCanPerformAction = (actionType) => (state) => {
+  const transfer = selectTransferState(state);
+  const isAuthenticated = transfer.isAuthenticated;
+  const hasToken = !!transfer.authData?.TokenId;
+  
+  switch (actionType) {
+    case 'authenticate':
+      return true; // Can always try to authenticate
+    case 'getCountries':
+      return isAuthenticated && hasToken;
+    case 'searchDestinations':
+      return isAuthenticated && hasToken;
+    case 'getStaticData':
+      return isAuthenticated && hasToken;
+    case 'searchTransfers':
+      return isAuthenticated && hasToken;
+    default:
+      return false;
+  }
+};
+
+// Error summary selector
+export const selectTransferErrorSummary = (state) => {
+  const transfer = selectTransferState(state);
+  const errors = [];
+  
+  if (transfer.authError) {
+    errors.push({ type: 'Authentication', message: transfer.authError });
+  }
+  if (transfer.countryListError) {
+    errors.push({ type: 'Country List', message: transfer.countryListError });
+  }
+  if (transfer.destinationSearchError) {
+    errors.push({ type: 'Destination Search', message: transfer.destinationSearchError });
+  }
+  if (transfer.staticDataError) {
+    errors.push({ type: 'Static Data', message: transfer.staticDataError });
+  }
+  if (transfer.searchError) {
+    errors.push({ type: 'Search', message: transfer.searchError });
+  }
+  
+  return {
+    hasErrors: errors.length > 0,
+    errorCount: errors.length,
+    errors: errors
+  };
 };
