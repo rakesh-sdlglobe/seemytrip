@@ -517,10 +517,10 @@ const Insurance_Cancel_Page = () => {
           {/* Page Header */}
           <div className="row mb-4">
             <div className="col-12">
-              <div className="card border-warning">
+              <div className="card border-danger">
                 <div className="card-body text-center p-4">
-                  <FaBan className="text-warning mb-3" size={60} />
-                  <h2 className="text-warning mb-2">Cancel Insurance Policy</h2>
+                  <FaBan className="text-primary mb-3" size={60} />
+                  <h2 className="text-primary mb-2">Cancel Insurance Policy</h2>
                   <p className="text-muted mb-0">Submit a cancellation request for your insurance policy</p>
                 </div>
               </div>
@@ -529,11 +529,11 @@ const Insurance_Cancel_Page = () => {
 
           {/* Main Content */}
           <div className="row justify-content-center">
-            <div className="col-lg-8">
+            <div className="col-lg-8 order-2 order-lg-1">
               <div className="card shadow-sm">
-                <div className="card-header bg-white">
-                  <h5 className="mb-0">
-                    <FaShieldAlt className="me-2 text-primary" />
+                <div className="card-header bg-primary">
+                  <h5 className="mb-0 text-light">
+                    <FaShieldAlt className="me-2 text-light" />
                     Cancellation Request Form
                   </h5>
                 </div>
@@ -599,10 +599,10 @@ const Insurance_Cancel_Page = () => {
                     </div>
 
                     {/* Navigation Buttons */}
-                    <div className="d-flex justify-content-between">
+                    <div className="d-flex justify-content-between flex-column flex-sm-row gap-2">
                       <button
                         type="button"
-                        className="btn btn-outline-secondary"
+                        className="btn btn-outline-primary"
                         onClick={handleGoBack}
                       >
                         <FaArrowLeft className="me-2" />
@@ -610,7 +610,7 @@ const Insurance_Cancel_Page = () => {
                       </button>
                       <button
                         type="submit"
-                        className="btn btn-warning"
+                        className="btn btn-primary"
                         disabled={cancelLoading}
                       >
                         {cancelLoading ? (
@@ -632,10 +632,10 @@ const Insurance_Cancel_Page = () => {
             </div>
 
             {/* Right Column - Information */}
-            <div className="col-lg-4">
+            <div className="col-lg-4 order-1 order-lg-2 mb-2">
               <div className="card shadow-sm">
-                <div className="card-header bg-info text-white">
-                  <h6 className="mb-0">
+                <div className="card-header bg-primary ">
+                  <h6 className="mb-0 text-light">
                     <FaInfoCircle className="me-2" />
                     Cancellation Information
                   </h6>
@@ -671,6 +671,25 @@ const Insurance_Cancel_Page = () => {
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+         @media (max-width: 768px) {
+        .btn{
+          height: 48px;
+          padding: 0px 10px;
+        }
+        }
+        @media (max-width: 576px) {
+          .btn{
+            height: 40px;
+            padding: 0px 10px;
+          }
+        }
+        
+        
+        
+      `}</style>  
+
 
       <Footer />
     </>

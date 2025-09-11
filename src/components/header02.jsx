@@ -292,7 +292,7 @@ const Header02 = () => {
 
               {/* Mobile version right-end Sign In/Register */}
               {!isLoggedIn && (
-                <div className="mobile_nav d-md-none">
+                <div className="mobile_nav d-md-none ">
                   <Link to="#" onClick={() => setShowAuthPopup(true)} className="bg-light-primary text-primary rounded nav-link">
                     <i className="fa-regular fa-circle-user fs-6" />
                   </Link>
@@ -304,7 +304,7 @@ const Header02 = () => {
               <ul className="nav-menu">
                 {navItems.map((item, index) => (
                   <li key={index} className="mt-3 ">
-                    <NavLink to={item.to}>
+                    <NavLink to={item.to} className="d-flex  flex-column align-items-center gap-3">
                       <i className={`${item.icon} me-2 fa-lg`} />
                       {item.text}
                     </NavLink>

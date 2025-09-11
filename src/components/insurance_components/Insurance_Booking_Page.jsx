@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header02 from '../header02';
 import Footer from '../footer';
+import SankashTC from './SankashTC.pdf';
 import { 
   selectInsuranceBookLoading, 
   selectInsuranceBookError, 
@@ -180,6 +181,22 @@ const Insurance_Booking_Page = () => {
         ...updated[passengerIndex],
         [field]: value
       };
+      
+      // Auto-select gender based on title selection
+      if (field === 'Title' && value) {
+        let genderValue = '';
+        if (value === 'MR' || value === 'DR') {
+          genderValue = '1'; // Male
+        } else if (value === 'MS' || value === 'MRS') {
+          genderValue = '2'; // Female
+        }
+        
+        if (genderValue) {
+          updated[passengerIndex].Gender = genderValue;
+          updated[passengerIndex].Sex = genderValue;
+        }
+      }
+      
       return updated;
     });
     
@@ -189,6 +206,16 @@ const Insurance_Booking_Page = () => {
         ...prev,
         [`${field}_${passengerIndex}`]: ''
       }));
+    }
+    
+    // Clear gender error when title is selected and gender is auto-selected
+    if (field === 'Title' && value) {
+      if (formErrors[`Gender_${passengerIndex}`]) {
+        setFormErrors(prev => ({
+          ...prev,
+          [`Gender_${passengerIndex}`]: ''
+        }));
+      }
     }
     
     // Special handling for DOB fields - clear DOB error when any DOB field changes
@@ -399,8 +426,8 @@ const Insurance_Booking_Page = () => {
       
       if (!passenger.BeneficiaryLastName.trim()) {
         errors[`BeneficiaryLastName_${index}`] = 'Beneficiary last name is required';
-      } else if (passenger.BeneficiaryLastName.trim().length < 2) {
-        errors[`BeneficiaryLastName_${index}`] = 'Beneficiary last name must be at least 2 characters';
+      } else if (passenger.BeneficiaryLastName.trim().length < 3) {
+        errors[`BeneficiaryLastName_${index}`] = 'Beneficiary last name must be at least 3 characters';
       }
       
       // Relationship validation
@@ -531,7 +558,8 @@ const Insurance_Booking_Page = () => {
 
   const genderOptions = [
     { value: '1', label: 'Male' },
-    { value: '2', label: 'Female' }
+    { value: '2', label: 'Female' },
+    { value: '3', label: 'Other' }
   ];
 
   const relationshipOptions = [
@@ -572,7 +600,7 @@ const Insurance_Booking_Page = () => {
         >
           <div className="d-flex align-items-center">
             <h6 className="mb-0 me-3">
-              Passenger {index + 1}
+              Passenger {index + 1} : 
               <small className="text-muted ms-2">
                 (passenger of age range 0.0 - 70)
               </small>
@@ -586,9 +614,9 @@ const Insurance_Booking_Page = () => {
           </div>
           <div className="d-flex align-items-center">
             {isExpanded ? (
-              <IoIosArrowUp size={24} className="text-muted "/>
+              <IoIosArrowUp size={24} className="text-dark "/>
             ) : (
-              <IoIosArrowDown size={24} className="text-muted"/>
+              <IoIosArrowDown size={24} className="text-dark"/>
             )}
           </div>
         </div>
@@ -601,7 +629,7 @@ const Insurance_Booking_Page = () => {
 
             {/* Insured Name */}
             <div className="mb-3 col-md-8 col-sm-12">
-              <label className="form-label  text-dark">Insured Name*</label>
+              <label className="form-label">Insured Name*</label>
               <div className="row g-2">
                 <div className="col-sm-12 col-lg-3 col-md-3 ">
                   <select
@@ -612,7 +640,7 @@ const Insurance_Booking_Page = () => {
                     data-field="Title"
                     data-passenger={index}
                   >
-                    <option value="">Select Title</option>
+                    <option value="">Title</option>
                     {titleOptions.map(option => (
                       <option key={option.value} value={option.value}>
                         {option.label}
@@ -652,7 +680,7 @@ const Insurance_Booking_Page = () => {
 
               {/* Insured Gender */}
               <div className="mb-3 col-md-4 col-sm-6">
-              <label className="form-label text-dark">Insured Gender*</label>
+              <label className="form-label">Insured Gender*</label>
               <select
                 className={`form-select ${formErrors[`Gender_${index}`] ? 'is-invalid' : ''}`}
                 value={passenger.Gender}
@@ -957,7 +985,7 @@ const Insurance_Booking_Page = () => {
                     data-field="BeneficiaryTitle"
                     data-passenger={index}
                   >
-                    <option value="">Select Title</option>
+                    <option value="">Title</option>
                     {titleOptions.map(option => (
                       <option key={option.value} value={option.value}>
                         {option.label}
@@ -1077,17 +1105,13 @@ const Insurance_Booking_Page = () => {
             <div className="col-lg-8 order-2 order-lg-1">
               {/* Insurance Plan Overview */}
               <div className="card shadow-sm mb-4 ">
-                <div className="card-body row align-items-center ">
+                <div className="card-body row g-2 align-items-center ">
                     <div className="col-md-6">
                       <div className="d-flex align-items-center">
                         <div className="me-3">
-                          <h4 className="mb-0 fw-bold text-primary">
-                            {(() => {
-                              const price = selectedPlan?.Price?.OfferedPriceRoundedOff || selectedPlan?.Price?.OfferedPrice || 0;
-                              const days = searchCriteria.days || 7;
-                              return `${price}K ${days} DAYS`;
-                            })()}
-                          </h4>
+                          <h3 className="mb-1 fw-bold text-dark">
+                            {selectedPlan?.PlanName || 'Insurance Plan'}
+                          </h3>
                           <p className="mb-0 text-warning fw-bold">
                             {searchCriteria.planCoverage === 4 ? 'India' : 
                              searchCriteria.planCoverage === 1 ? 'US' :
@@ -1108,8 +1132,8 @@ const Insurance_Booking_Page = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="col-md-6">
-                      <div className="text-end">
+                    <div className="col-md-6 ">
+                      <div className=" d-flex flex-column  align-items-sm-end">
                         <div className="mb-1">
                           <span className="text-muted">Start Date : </span>
                           <span className="fw-bold">
@@ -1159,7 +1183,7 @@ const Insurance_Booking_Page = () => {
               </div>
 
               {/* Passenger Details Form */}
-              <div className="card shadow-sm">
+              <div className="card shadow-sm p-0">
                 <div className="card-header bg-white">
                   <h5 className="mb-0">Enter Passenger Details</h5>
                 </div>
@@ -1179,8 +1203,8 @@ const Insurance_Booking_Page = () => {
                             required
                           />
                           <label className="form-check-label" htmlFor="termsCheck">
-                            I agree to the <a href="#" className="text-primary">Terms and Conditions</a> and 
-                            <a href="#" className="text-primary"> Privacy Policy</a> of the insurance policy.
+                            I agree to the <a href={SankashTC} target="_blank" className="text-primary">Terms and Conditions</a> and 
+                            <a href={SankashTC} target="_blank" className="text-primary"> Privacy Policy</a> of the insurance policy.
                           </label>
                         </div>
                       </div>
@@ -1197,7 +1221,7 @@ const Insurance_Booking_Page = () => {
                     <div className="d-flex justify-content-between mt-4">
                       <button
                         type="button"
-                        className="btn btn-outline-secondary"
+                        className="btn btn-outline-primary"
                         onClick={() => navigate('/insurance-list')}
                       >
                         <FaArrowLeft className="me-2" />
@@ -1233,62 +1257,13 @@ const Insurance_Booking_Page = () => {
             </div>
 
             {/* Right Column - Price Details */}
-            <div className="col-lg-4 order-1 order-lg-2">
-              <div className="card shadow-sm sticky-top" style={{ top: '100px' }}>
+            <div className="col-lg-4 order-1 order-lg-2 ">
+              <div className="card shadow-sm sticky-top z-0" style={{ top: '100px', }}>
                 <div className="card-header bg-primary">
-                  <h6 className="mb-0 text-light">Price Details</h6>
+                  <h5 className="mb-0 text-light">Price Details</h5>
                 </div>
                 <div className="card-body">
-                  {/* Dates and Pax */}
-                  {/* <div className="mb-3">
-                    <div className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">Start Date:</span>
-                      <span>
-                        {(() => {
-                          if (searchCriteria.departDate) {
-                            return new Date(searchCriteria.departDate).toLocaleDateString('en-GB', { 
-                              day: '2-digit', 
-                              month: 'short', 
-                              year: 'numeric' 
-                            });
-                          }
-                          return 'N/A';
-                        })()}
-                      </span>
-                    </div>
-                    <div className="d-flex justify-content-between mb-2">
-                      <span className="text-muted">End Date:</span>
-                      <span>
-                        {(() => {
-                          // If returnDate exists, use it; otherwise calculate it from departDate and duration
-                          if (searchCriteria.returnDate) {
-                            return new Date(searchCriteria.returnDate).toLocaleDateString('en-GB', { 
-                              day: '2-digit', 
-                              month: 'short', 
-                              year: 'numeric' 
-                            });
-                          } else if (searchCriteria.departDate && searchCriteria.duration) {
-                            const endDate = new Date(searchCriteria.departDate);
-                            endDate.setDate(endDate.getDate() + (searchCriteria.duration - 1));
-                            return endDate.toLocaleDateString('en-GB', { 
-                              day: '2-digit', 
-                              month: 'short', 
-                              year: 'numeric' 
-                            });
-                          }
-                          return 'N/A';
-                        })()}
-                      </span>
-                    </div>
-                    <div className="d-flex justify-content-between mb-3">
-                      <span className="text-muted">No. of Paxes:</span>
-                      <span>{passengerDetails.length}</span>
-                    </div>
-                    <hr />
-                  </div> */}
-
                   {/* Cost Breakdown */}
-                  <div className="mb-3">
                     <div className="d-flex justify-content-between mb-2">
                       <span>Age Group 0.0 - 70 Yrs</span>
                       <span>₹{priceDetails.basePrice}</span>
@@ -1298,9 +1273,9 @@ const Insurance_Booking_Page = () => {
                       <span>₹{priceDetails.total}</span>
                     </div>
                     <hr />
-                    <div className="d-flex justify-content-between">
-                      <span className="fw-bold fs-5">Total Price</span>
-                      <span className="fw-bold fs-5 text-primary">₹{priceDetails.grandTotal}</span>
+                    <div className="d-flex justify-content-between ">
+                      <h4 className="mb-0">Total Price</h4>
+                      <span className="fw-bold  fs-5 text-primary">₹{priceDetails.grandTotal}</span>
                     </div>
                   </div>
                 </div>
@@ -1308,16 +1283,11 @@ const Insurance_Booking_Page = () => {
             </div>
           </div>
         </div>
-      </div>
       <Footer />
 
       <style jsx>{`
-        .form-label {
-          font-size: 14px;
-          font-weight: 600;
-          color: #495057;
-          margin-bottom: 8px;
-        }
+
+
         
         .card-header {
           transition: background-color 0.2s ease;
@@ -1334,6 +1304,27 @@ const Insurance_Booking_Page = () => {
         .badge {
           font-size: 0.75rem;
         }
+
+
+
+         .form-control:focus,
+        .form-select:focus {
+          border-color: #cd2c22;
+          box-shadow: 0 0 0 0.25rem rgba(210, 0, 0, 0.25);
+        }
+
+          @media (max-width: 768px) {
+          .btn{
+            height: 48px;
+            padding: 0px 10px;
+          }
+          } 
+          @media (max-width: 576px) {
+          .btn{
+            height: 40px;
+            padding: 0px 10px;
+          }
+          } 
       `}</style>
     </>
   );

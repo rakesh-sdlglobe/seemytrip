@@ -14,6 +14,7 @@ import {
 import { getInsuranceList } from '../../store/Actions/insuranceAction';
 import { getEncryptedItem } from '../../utils/encryption';
 import { FaTimes, FaShieldAlt } from 'react-icons/fa';
+import './insurance.css';
 
 const InsuranceList = () => {
   const navigate = useNavigate();
@@ -34,6 +35,12 @@ const InsuranceList = () => {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [showAuthPopup, setShowAuthPopup] = useState(false);
   const [pendingPlan, setPendingPlan] = useState(null);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [emailData, setEmailData] = useState({
+    toEmail: '',
+    subject: 'Insurance Quotes Comparison',
+    message: ''
+  });
   const plansPerPage = 6;
 
   // Price filter state
@@ -68,6 +75,26 @@ const InsuranceList = () => {
       }
     }
   }, [location.state]);
+
+  // Scroll to search results when component loads with search results
+  useEffect(() => {
+    if (plans && plans.length > 0) {
+      // Small delay to ensure DOM is rendered
+      setTimeout(() => {
+        const searchResultsElement = document.getElementById('search-results');
+        if (searchResultsElement) {
+          searchResultsElement.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start',
+            inline: 'nearest'
+          });
+        } else {
+          // Fallback to scroll to top
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [plans]);
 
   // Filter plans based on price criteria
   useEffect(() => {
@@ -223,7 +250,7 @@ const InsuranceList = () => {
     // Check if user is now authenticated after popup closes
     if (pendingPlan) {
       const token = localStorage.getItem('authToken');
-      const user1 = getEncryptedItem('user1');
+      const user1 = localStorage.getItem('user1');
       
       if (token && user1) {
         proceedWithBooking(pendingPlan);
@@ -289,15 +316,59 @@ const InsuranceList = () => {
       alert('Please select at least one plan to email.');
       return;
     }
-    alert(`Emailing ${selectedPlans.length} selected quotes...`);
-    // TODO: Implement email functionality
+    setShowEmailModal(true);
   };
 
-  // Pagination
+  // Handle email modal close
+  const handleEmailModalClose = () => {
+    setShowEmailModal(false);
+    setEmailData({
+      toEmail: '',
+      subject: 'Insurance Quotes Comparison',
+      message: ''
+    });
+  };
+
+  // Handle email form submission
+  const handleEmailSubmit = (e) => {
+    e.preventDefault();
+    
+    if (!emailData.toEmail.trim()) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailData.toEmail)) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+
+    // Get selected plans data
+    const selectedPlansData = plans.filter(plan => selectedPlans.includes(plan.ResultIndex));
+    
+    // Show success message (in real implementation, this would send the email)
+    alert(`Email would be sent to ${emailData.toEmail} with ${selectedPlansData.length} insurance quotes.`);
+    
+    // Close modal and reset form
+    handleEmailModalClose();
+  };
+
+  // Handle email input changes
+  const handleEmailInputChange = (e) => {
+    const { name, value } = e.target;
+    setEmailData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Show More Logic
   const totalPages = Math.ceil((filteredPlans?.length || 0) / plansPerPage);
   const startIndex = (currentPage - 1) * plansPerPage;
-  const endIndex = startIndex + plansPerPage;
-  const currentPlans = filteredPlans ? filteredPlans.slice(startIndex, endIndex) : [];
+  const endIndex = currentPage * plansPerPage;
+  const currentPlans = filteredPlans ? filteredPlans.slice(0, endIndex) : [];
 
   if (loading) {
     return <InsuranceListSkeleton />;
@@ -365,10 +436,10 @@ const InsuranceList = () => {
       <div className="container-xl mt-4">
         <div className="row">
           {/* Left Sidebar - Search Criteria */}
-          <div className="col-md-3">
-            <div className="card shadow-sm border-0 sticky-top" style={{top: '20px'}}>
-              <div className="card-header bg-white border-0 pb-0">
-                <h5 className="fw-bold text-dark mb-0 pb-3 border-bottom border-2 border-primary">
+          <div className="col-md-3 ">
+            <div className="card shadow-sm border-0 sticky-top" style={{top: '20px', zIndex: 0}}>
+              <div className="card-header border-0 pb-0">
+                <h5 className="fw-bold text-dark mb-0 d-flex pb-3 border-bottom border-2 border-primary">
                   <i className="fas fa-search me-2 text-primary"></i>
                   Search Criteria
                 </h5>
@@ -377,12 +448,11 @@ const InsuranceList = () => {
               <div className="card-body">
                 <div className="d-flex align-items-center mb-3">
                   <i className="fas fa-user me-2 text-primary" style={{width: '20px', textAlign: 'center'}}></i>
-                  <span className="text-muted">{searchCriteria.planType === 1 ? 'Single Trip' : 'Annual Multi Trip'}</span>
+                  <span>{searchCriteria.planType === 1 ? 'Single Trip' : 'Annual Multi Trip'}</span>
                 </div>
-                
                 <div className="d-flex align-items-center mb-3">
                   <i className="fas fa-flag me-2 text-primary" style={{width: '20px', textAlign: 'center'}}></i>
-                  <span className="text-muted">
+                  <span>
                     {searchCriteria.planCoverage === 1 ? 'US' :
                      searchCriteria.planCoverage === 2 ? 'Non-US' :
                      searchCriteria.planCoverage === 3 ? 'WorldWide' :
@@ -396,7 +466,7 @@ const InsuranceList = () => {
                 
                 <div className="d-flex align-items-center mb-3">
                   <i className="fas fa-calendar me-2 text-primary" style={{width: '20px', textAlign: 'center'}}></i>
-                  <span className="text-muted">
+                  <span>
                     {searchCriteria.duration || 1} Day(s) 
                     ({searchCriteria.departDate && new Date(searchCriteria.departDate).toLocaleDateString('en-GB', { 
                       day: '2-digit', 
@@ -426,12 +496,12 @@ const InsuranceList = () => {
                 
                 <div className="d-flex align-items-center mb-3">
                   <i className="fas fa-users me-2 text-primary" style={{width: '20px', textAlign: 'center'}}></i>
-                  <span className="text-muted">No. of Pax: {searchCriteria.passengerCount || 1}</span>
+                  <span>No. of Pax: {searchCriteria.passengerCount || 1}</span>
                 </div>
                 
                 <div className="d-flex align-items-center mb-3">
                   <i className="fas fa-chart-line me-2 text-primary" style={{width: '20px', textAlign: 'center'}}></i>
-                  <span className="text-muted">{searchCriteria.passengerAges?.join(', ') || '25'} Years Old</span>
+                    <span>{searchCriteria.passengerAges?.join(', ') || '25'} Years Old</span>
                 </div>
                 
                 
@@ -451,9 +521,9 @@ const InsuranceList = () => {
           </div>
 
           {/* Right Section - Insurance Plans */}
-          <div className="col-md-9">
+          <div className="col-md-9" id="search-results">
             {/* Header with Email Button */}
-            <div className="d-flex justify-content-between align-items-center mb-3">
+            <div className="d-flex justify-content-between flex-column mt-2 gap-2 flex-md-row  align-items-center mb-3">
               <h5 className="fw-bold fs-6 mb-0">
                 Showing {currentPlans.length} of {filteredPlans.length} Insurance Plans
                 {filteredPlans.length !== plans.length && (
@@ -473,11 +543,7 @@ const InsuranceList = () => {
             </div>
 
             {/* Sticky Price Filter Bar */}
-            <div className="sticky-filter-bar bg-white border rounded p-3 mb-4 shadow-sm" style={{
-              position: 'sticky',
-              top: '20px',
-              zIndex: 1000
-            }}>
+            <div className="sticky-filter-bar bg-white border rounded p-3 mb-4 shadow-sm" >
               <div className="row align-items-center">
                 <div className="col-md-3">
                   <h6 className="fw-bold text-dark mb-0">
@@ -554,7 +620,7 @@ const InsuranceList = () => {
                     {/* Clear Filters */}
                     {(priceFilter.priceRange !== 'all' || priceFilter.minPrice || priceFilter.maxPrice) && (
                       <button
-                        className="btn btn-outline-secondary btn-sm"
+                        className="btn btn-outline-secondary btn-sm h-8"
                         onClick={clearPriceFilters}
                         title="Clear Filters"
                       >
@@ -589,14 +655,14 @@ const InsuranceList = () => {
             {/* Insurance Plans List */}
             {filteredPlans.length > 0 && (
               <>
-                <div className="d-flex flex-column gap-3">
+                <div className="d-flex flex-column gap-3 ">
                   {currentPlans.map((plan, index) => (
-                    <div key={plan.ResultIndex} className="border rounded p-3 mb-3 bg-white" style={{ borderColor: "#007bff" }}>
+                    <div key={plan.ResultIndex} className="border  rounded p-3 mb-3 hover:shadow-sm bg-white " style={{ borderColor: "#007bff" }}>
                       <div className="d-flex justify-content-between align-items-start flex-wrap position-relative">
                         {/* Top Section */}
                         <div className="d-flex justify-content-between flex-wrap w-100">
                           <div>
-                            <h5 className="fw-bold mb-1">{plan.PlanName}</h5>
+                            <h4 className=" mb-1 ">{plan.PlanName}</h4>
                             <p className="text-muted mb-2">
                               {searchCriteria.planType === 1 ? 'Single Trip' : 'Annual Multi Trip'} • 
                               {searchCriteria.planCoverage === 1 ? 'US' :
@@ -610,15 +676,15 @@ const InsuranceList = () => {
                             </p>
                           </div>
 
-                          <div className="d-flex gap-5 justify-content-between ">
-                          <div className=" flex flex-column fw-bold fs-4 fs-sm-6 ">
-                            ₹{plan.Price?.OfferedPriceRoundedOff || plan.Price?.OfferedPrice || 'N/A'}
-                            <div className="text-muted mb-2 fs-6">
+                          <div className="d-flex gap-5 justify-content-between w-lg-fit-content w-sm-100">
+                          <div className=" flex flex-column fw-bold">
+                            <h4>₹{plan.Price?.OfferedPriceRoundedOff || plan.Price?.OfferedPrice || 'N/A'}</h4>
+                            <div className="text-muted mb-2 h6">
                               {plan.Price?.OfferedPriceRoundedOff || plan.Price?.OfferedPrice ? 'Best Price' : 'Price on Request'}
                             </div>
                           </div>
-                          <div className="d-flex gap-2">
-                              <div className="d-flex align-items-center gap-2">
+                          <div className="d-flex gap-2 flex-column flex-sm-row align-items-center">
+                              <div className="d-flex align-items-center gap-2 ">
                                 <input
                                   className="form-check-input"
                                   type="checkbox"
@@ -631,7 +697,7 @@ const InsuranceList = () => {
                                   Email
                                 </label>
                               </div>
-                              <button className="btn btn-danger  hover-btn-color-danger" onClick={() => handlePlanBooking(plan)}>
+                              <button className="btn btn-danger hover-btn-color-danger" onClick={() => handlePlanBooking(plan)}>
                                 Choose This
                               </button>
                             </div>
@@ -702,45 +768,34 @@ const InsuranceList = () => {
                       </div>
 
                       {/* Action Links */}
-                      <div className="d-flex justify-content-center gap-4 mt-3 pt-3 border-top">
-                        <a href="#" className="text-primary text-decoration-none fs-6" onClick={(e) => handleCoverDetails(plan, e)}>
-                          <i className="fas fa-shield-alt me-1"></i>Cover Details
+                      <div className="d-flex justify-content-center align-items-center gap-4 mt-3 pt-3 border-top ">
+                        <a href="#" className="text-primary text-decoration-none fs-14 " onClick={(e) => handleCoverDetails(plan, e)}>
+                          <i className="fas fa-shield-alt me-2 ">
+                            </i>Cover Details
                         </a>
                         <span className="text-muted">|</span>
-                        <a href="#" className="text-primary text-decoration-none fs-6">
+                        <a href="#" className="text-primary text-decoration-none fs-14">
                           <i className="fas fa-calculator me-1"></i>Price Break Up
                         </a>
-                        <span className="text-muted">|</span>
+                        {/* <span className="text-muted">|</span>
                         <a href="#" className="text-primary text-decoration-none fs-6">
                           <i className="fas fa-file-alt me-1"></i>Policy Document
-                        </a>
+                        </a> */}
                       </div>
                     </div>
                   ))}
                 </div>
 
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
-                    <span className="text-muted fs-6">
-                      {currentPage} of {totalPages}
-                    </span>
-                    <div className="d-flex gap-2">
-                      <button 
-                        className="btn btn-outline-primary btn-sm"
-                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                        disabled={currentPage === 1}
-                      >
-                        Previous
-                      </button>
-                      <button 
-                        className="btn btn-outline-primary btn-sm"
-                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                        disabled={currentPage === totalPages}
-                      >
-                        Next
-                      </button>
-                    </div>
+                {/* Show More Button */}
+                {currentPage < totalPages && (
+                  <div className="d-flex justify-content-center mt-4 pt-3 border-top">
+                    <button 
+                      className="btn btn-primary"
+                      onClick={() => setCurrentPage(prev => prev + 1)}
+                    >
+                      <i className="fas fa-plus me-2"></i>
+                      Show More ({Math.min(currentPage * plansPerPage, filteredPlans.length)} of {filteredPlans.length} Plans)
+                    </button>
                   </div>
                 )}
               </>
@@ -940,6 +995,246 @@ const InsuranceList = () => {
         </div>
       )}
 
+      {/* Email Selected Quotes Modal */}
+      {showEmailModal && (
+        <div 
+          className="modal-overlay" 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 1050,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '20px'
+          }}
+          onClick={handleEmailModalClose}
+        >
+          <div 
+            className="modal-content" 
+            style={{
+              backgroundColor: 'white',
+              borderRadius: '12px',
+              maxWidth: '800px',
+              width: '100%',
+              maxHeight: '90vh',
+              overflow: 'auto',
+              position: 'relative',
+              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="modal-header" style={{
+              padding: '20px 24px 16px',
+              borderBottom: '1px solid #e9ecef',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}>
+              <div className="d-flex align-items-center">
+                <i className="fas fa-envelope text-primary me-2" style={{fontSize: '20px'}}></i>
+                <h4 className="mb-0 fw-bold text-dark">Email Selected Quotes</h4>
+              </div>
+              <button
+                onClick={handleEmailModalClose}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '24px',
+                  cursor: 'pointer',
+                  color: '#6c757d',
+                  padding: '4px',
+                  borderRadius: '4px',
+                  transition: 'color 0.2s'
+                }}
+                onMouseEnter={(e) => e.target.style.color = '#dc3545'}
+                onMouseLeave={(e) => e.target.style.color = '#6c757d'}
+              >
+                <FaTimes />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="modal-body" style={{ padding: '24px' }}>
+              {/* Selected Plans Summary */}
+              <div className="mb-4">
+                <h6 className="fw-bold text-dark mb-3">
+                  <i className="fas fa-check-circle text-success me-2"></i>
+                  Selected Insurance Plans ({selectedPlans.length})
+                </h6>
+                <div className="selected-plans-summary" style={{
+                  backgroundColor: '#f8f9fa',
+                  borderRadius: '8px',
+                  padding: '16px',
+                  border: '1px solid #e9ecef'
+                }}>
+                  {plans.filter(plan => selectedPlans.includes(plan.ResultIndex)).map((plan, index) => (
+                    <div key={plan.ResultIndex} className="d-flex justify-content-between align-items-center mb-2" style={{
+                      padding: '8px 0',
+                      borderBottom: index < selectedPlans.length - 1 ? '1px solid #dee2e6' : 'none'
+                    }}>
+                      <div>
+                        <span className="fw-semibold text-dark">{plan.PlanName}</span>
+                        <br />
+                        <small className="text-muted">
+                          {searchCriteria.planType === 1 ? 'Single Trip' : 'Annual Multi Trip'} • 
+                          {searchCriteria.planCoverage === 1 ? 'US' :
+                           searchCriteria.planCoverage === 2 ? 'Non-US' :
+                           searchCriteria.planCoverage === 3 ? 'WorldWide' :
+                           searchCriteria.planCoverage === 4 ? 'India' :
+                           searchCriteria.planCoverage === 5 ? 'Asia' :
+                           searchCriteria.planCoverage === 6 ? 'Canada' :
+                           searchCriteria.planCoverage === 7 ? 'Australia' :
+                           searchCriteria.planCoverage === 8 ? 'Schenegen Countries' : 'Unknown'} Coverage
+                        </small>
+                      </div>
+                      <div className="text-end">
+                        <span className="fw-bold text-success fs-5">
+                          ₹{plan.Price?.OfferedPriceRoundedOff || plan.Price?.OfferedPrice || 'N/A'}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Email Form */}
+              <form onSubmit={handleEmailSubmit}>
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="toEmail" className="form-label fw-semibold">
+                      <i className="fas fa-envelope me-2 text-primary"></i>
+                      To Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      className="form-control"
+                      id="toEmail"
+                      name="toEmail"
+                      value={emailData.toEmail}
+                      onChange={handleEmailInputChange}
+                      placeholder="Enter recipient email address"
+                      required
+                      style={{
+                        border: '1px solid #ced4da',
+                        borderRadius: '6px',
+                        padding: '12px 16px'
+                      }}
+                    />
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="subject" className="form-label fw-semibold">
+                      <i className="fas fa-tag me-2 text-primary"></i>
+                      Subject
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="subject"
+                      name="subject"
+                      value={emailData.subject}
+                      onChange={handleEmailInputChange}
+                      style={{
+                        border: '1px solid #ced4da',
+                        borderRadius: '6px',
+                        padding: '12px 16px'
+                      }}
+                    />
+                  </div>
+                </div>
+                
+                <div className="mb-4">
+                  <label htmlFor="message" className="form-label fw-semibold">
+                    <i className="fas fa-comment me-2 text-primary"></i>
+                    Additional Message (Optional)
+                  </label>
+                  <textarea
+                    className="form-control"
+                    id="message"
+                    name="message"
+                    value={emailData.message}
+                    onChange={handleEmailInputChange}
+                    rows="4"
+                    placeholder="Add any additional message or notes..."
+                    style={{
+                      border: '1px solid #ced4da',
+                      borderRadius: '6px',
+                      padding: '12px 16px',
+                      resize: 'vertical'
+                    }}
+                  />
+                </div>
+
+                {/* Preview Section */}
+                <div className="mb-4">
+                  <h6 className="fw-bold text-dark mb-3">
+                    <i className="fas fa-eye me-2 text-primary"></i>
+                    Email Preview
+                  </h6>
+                  <div className="email-preview" style={{
+                    backgroundColor: '#f8f9fa',
+                    border: '1px solid #dee2e6',
+                    borderRadius: '8px',
+                    padding: '16px',
+                    fontFamily: 'Arial, sans-serif'
+                  }}>
+                    <div className="mb-2">
+                      <strong>To:</strong> {emailData.toEmail || 'recipient@example.com'}
+                    </div>
+                    <div className="mb-2">
+                      <strong>Subject:</strong> {emailData.subject}
+                    </div>
+                    <div className="mb-3">
+                      <strong>Message:</strong>
+                      <p className="mb-2 mt-1">
+                        {emailData.message || 'Please find the attached insurance quotes for your review.'}
+                      </p>
+                    </div>
+                    <div>
+                      <strong>Attached Quotes:</strong> {selectedPlans.length} insurance plan(s) with detailed information
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="d-flex justify-content-end gap-3">
+                  <button
+                    type="button"
+                    className="btn btn-outline-primary"
+                    onClick={handleEmailModalClose}
+                    style={{
+                      padding: '12px 24px',
+                      borderRadius: '6px',
+                      fontWeight: '500'
+                    }}
+                  >
+                    <i className="fas fa-times me-2"></i>
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-danger"
+                    style={{
+                      padding: '12px 24px',
+                      borderRadius: '6px',
+                      fontWeight: '500'
+                    }}
+                  >
+                    <i className="fas fa-paper-plane me-2"></i>
+                    Send Email
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
       <style jsx>{`
         .card {
           transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -966,21 +1261,6 @@ const InsuranceList = () => {
           position: absolute;
           top: 50%;
           bottom: 50%;
-        }
-
-        /* When screen is between 600px and 1200px → absolute */
-        @media (max-width: 560px) {
-          .middle-section {
-            position: static;
-            margin-bottom: 10px;
-          }
-        }
-        
-        @media (max-width: 768px) {
-          .d-flex.justify-content-between.align-items-center.flex-wrap {
-            flex-direction: column;
-            align-items: flex-start !important;
-          }
         }
 
         /* Modal Styles */
@@ -1022,6 +1302,35 @@ const InsuranceList = () => {
           background-color: #f8f9fa !important;
         }
 
+        /* Email Modal Styles */
+        .email-preview {
+          font-size: 14px;
+          line-height: 1.5;
+        }
+        
+        .selected-plans-summary {
+          max-height: 200px;
+          overflow-y: auto;
+        }
+        
+        .selected-plans-summary::-webkit-scrollbar {
+          width: 6px;
+        }
+        
+        .selected-plans-summary::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 3px;
+        }
+        
+        .selected-plans-summary::-webkit-scrollbar-thumb {
+          background: #c1c1c1;
+          border-radius: 3px;
+        }
+        
+        .selected-plans-summary::-webkit-scrollbar-thumb:hover {
+          background: #a8a8a8;
+        }
+
         /* Responsive Modal */
         @media (max-width: 768px) {
           .modal-content {
@@ -1041,6 +1350,14 @@ const InsuranceList = () => {
           .table td {
             padding: 8px !important;
           }
+          
+          .email-preview {
+            font-size: 12px;
+          }
+          
+          .selected-plans-summary {
+            max-height: 150px;
+          }
         }
 
         /* Sticky Filter Bar Styles */
@@ -1048,6 +1365,7 @@ const InsuranceList = () => {
           transition: all 0.3s ease;
           backdrop-filter: blur(10px);
           background-color: rgba(255, 255, 255, 0.95) !important;
+          z-index: 0 !important;
         }
 
         .sticky-filter-bar .btn-group .btn {
@@ -1056,7 +1374,7 @@ const InsuranceList = () => {
         }
 
         /* Responsive Filter Bar */
-        @media (max-width: 768px) {
+        @media (max-width: 1200px) {
           .sticky-filter-bar .row {
             flex-direction: column;
             gap: 10px;
@@ -1088,8 +1406,29 @@ const InsuranceList = () => {
             width: 70px !important;
           }
         }
+          @media (max-width: 768px) {
+        .btn{
+        height: 48px;
+        padding: 0px 10px;
+        }
+          }
 
         @media (max-width: 576px) {
+
+        .w-lg-fit-content {
+          width: 100%;
+        }
+
+        .text-primary{
+        
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        }
+
+
           .sticky-filter-bar {
             padding: 15px !important;
           }
@@ -1103,6 +1442,13 @@ const InsuranceList = () => {
             font-size: 10px;
             padding: 3px 4px;
           }
+
+        .btn{
+        height: 40px;
+        padding: 0px 10px;
+        font-size: 14px;
+        }
+
         }
       `}</style>
       

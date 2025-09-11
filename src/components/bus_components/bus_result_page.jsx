@@ -441,7 +441,7 @@ const BusResultPage = ({ filters }) => {
                       width: "100%",
                     }}>
                       <div>
-                        <h5 className="fw-bold mb-1">{bus.TravelName}</h5>
+                        <h4 className="fw-bold mb-1">{bus.TravelName}</h4>
                         <p className="text-muted mb-2">{cleanBusType(bus.BusType)}</p>
                       </div>
                       <div className="fw-bold fs-4 mb-3">
@@ -548,6 +548,12 @@ const BusResultPage = ({ filters }) => {
            top: 50%;
            bottom: 50%;
         }
+           @media (max-width: 768px) {
+           .btn{
+            height: 40px;
+            padding: 0px 10px;
+           }
+           }
 
         /* When screen is between 600px and 1200px → absolute */
       @media (max-width: 560px) {
@@ -555,6 +561,13 @@ const BusResultPage = ({ filters }) => {
         position: static;
         margin-bottom:10px;
         }
+
+        .btn{
+          height: 40px;
+          padding: 0px 10px;
+          font-size: 14px;
+        }
+
         }
       `}
 

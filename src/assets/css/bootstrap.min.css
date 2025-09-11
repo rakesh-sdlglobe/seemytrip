@@ -2392,8 +2392,14 @@ progress {
 }
 
 .form-label {
-    margin-bottom: .5rem
-}
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+
+
+
+
 
 .col-form-label {
     padding-top: calc(.375rem + var(--bs-border-width));

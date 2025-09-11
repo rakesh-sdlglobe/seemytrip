@@ -26,8 +26,8 @@ const BusBookingModal = ({
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h5 className="modal-title">
-            <i className="fas fa-bus me-2"></i>
+          <h5 className="modal-title text-light">
+            <i className="fas fa-bus text-light me-2"></i>
             Bus Booking Details
           </h5>
           <button 
