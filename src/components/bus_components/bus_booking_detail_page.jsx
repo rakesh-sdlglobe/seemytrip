@@ -1907,12 +1907,7 @@ export const BusBookingPage = ({ isModal = false }) => {
           outline: none;
         }
         
-        .form-label {
-          font-size: 14px;
-          font-weight: 600;
-          color: #495057;
-          margin-bottom: 8px;
-        }
+
         
         /* Traveler Dropdown Styles */
         .traveler-dropdown {

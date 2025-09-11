@@ -340,13 +340,9 @@ const Insurance_Payment_Page = () => {
                 <div className="card-body">
                   <div className="row align-items-center">
                     <div className="col-md-6">
-                      <h4 className="mb-2 fw-bold text-primary">
-                        {(() => {
-                          const price = selectedPlan?.Price?.OfferedPriceRoundedOff || selectedPlan?.Price?.OfferedPrice || 0;
-                          const days = searchCriteria.days || 7;
-                          return `${price}K ${days} DAYS`;
-                        })()}
-                      </h4>
+                      <h3 className="mb-1 fw-bold text-dark">
+                        {selectedPlan?.PlanName || 'Insurance Plan'}
+                      </h3>
                       <p className="mb-2 text-warning fw-bold">
                         {searchCriteria.planCoverage === 4 ? 'India' : 
                          searchCriteria.planCoverage === 1 ? 'US' :
@@ -462,7 +458,6 @@ const Insurance_Payment_Page = () => {
                   <h6 className="mb-0 text-light">Price Details</h6>
                 </div>
                 <div className="card-body">
-                  <div className="mb-3">
                     <div className="d-flex justify-content-between mb-2">
                       <span>Age Group 0-70 Yrs</span>
                       <span>₹{priceDetails.basePrice}</span>
@@ -473,10 +468,9 @@ const Insurance_Payment_Page = () => {
                     </div>
                     <hr />
                     <div className="d-flex justify-content-between mb-4">
-                      <span className="fw-bold fs-5">Total Price</span>
-                      <span className="fw-bold fs-5 text-primary">₹{priceDetails.total}</span>
+                      <h4>Total Price</h4>
+                      <h4 className="text-primary">₹{priceDetails.total}</h4>
                     </div>
-                  </div>
                   
                   {/* Payment Button */}
                   <button
@@ -510,10 +504,9 @@ const Insurance_Payment_Page = () => {
           </div>
 
           {/* Navigation Buttons */}
-          <div className="row mt-4">
-              <div className="d-flex justify-content-between flex-lg-row flex-md-row flex-sm-column gap-sm-2 gap-md-2 gap-lg-2">
+            <div className="d-flex justify-content-between flex-column flex-sm-row mt-2 gap-2">
                 <button
-                  className="btn btn-outline-secondary"
+                  className="btn btn-outline-primary"
                   onClick={() => navigate('/insurance-booking')}
                 >
                   <FaArrowLeft className="me-2" />
@@ -525,10 +518,23 @@ const Insurance_Payment_Page = () => {
                 >
                   Cancel Booking
                 </button>
-            </div>
           </div>
         </div>
       </div>
+        <style jsx>{`
+
+        .btn{
+          height: 48px;
+          padding: 0px 10px;
+        }
+        @media (max-width: 576px) {
+          .btn{
+            height: 40px;
+            padding: 0px 10px;
+          }
+        }
+        
+        `}</style>
       <Footer />
     </>
   );

@@ -23,8 +23,12 @@ const InsuranceSearch = () => {
 
   // State for form inputs - Updated to match API specification
   const [departDate, setDepartDate] = useState(new Date());
-  const [returnDate, setReturnDate] = useState(new Date());
-  const [duration, setDuration] = useState(1);
+  const [returnDate, setReturnDate] = useState(() => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow;
+  });
+  const [duration, setDuration] = useState(2);
   const [passengerCount, setPassengerCount] = useState(1);
   const [passengerAges, setPassengerAges] = useState([25]);
   const [planCategory, setPlanCategory] = useState({ value: 1, label: "Domestic Travel Policy" });
@@ -168,12 +172,20 @@ const InsuranceSearch = () => {
 
   // Ensure return date is properly set for single trip on mount
   useEffect(() => {
-    if (planType.value === 1 && returnDate <= departDate) {
-      // If return date is not set or is before/equal to depart date, set it to depart date + 1 day
-      const nextDay = new Date(departDate);
-      nextDay.setDate(departDate.getDate() + 1);
-      setReturnDate(nextDay);
-      setDuration(1);
+    if (planType.value === 1) {
+      const departDateOnly = new Date(departDate.getFullYear(), departDate.getMonth(), departDate.getDate());
+      const returnDateOnly = new Date(returnDate.getFullYear(), returnDate.getMonth(), returnDate.getDate());
+      
+      if (returnDateOnly < departDateOnly) {
+        // If return date is before depart date, set it to depart date (same day)
+        setReturnDate(departDate);
+        setDuration(1); // 1 day: same day trip
+      } else {
+        // Calculate duration based on current dates
+        const timeDiff = returnDate.getTime() - departDate.getTime();
+        const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+        setDuration(Math.max(1, daysDiff));
+      }
     }
   }, [planType.value, departDate, returnDate]);
 
@@ -190,12 +202,10 @@ const InsuranceSearch = () => {
     
     if (planType.value === 1) {
       // Single Trip: Ensure return date is not before depart date
-      if (returnDate <= date) {
-        // Only update return date if it's before or equal to depart date
-        const nextDay = new Date(date);
-        nextDay.setDate(date.getDate() + 1);
-        setReturnDate(nextDay);
-        setDuration(1); // Reset to 1 day
+      if (returnDate < date) {
+        // If return date is before depart date, set it to depart date (same day)
+        setReturnDate(date);
+        setDuration(1); // 1 day: same day trip
       } else {
         // Calculate duration based on current return date
         const timeDiff = returnDate.getTime() - date.getTime();
@@ -276,8 +286,8 @@ const InsuranceSearch = () => {
       // Single Trip validation
       if (!returnDate) {
         errors.push("Return date is required for Single Trip");
-      } else if (departDate >= returnDate) {
-        errors.push("Return date must be after depart date");
+      } else if (departDate > returnDate) {
+        errors.push("Return date cannot be before depart date");
       }
     } else if (planType.value === 2) {
       // Annual Multi Trip validation
