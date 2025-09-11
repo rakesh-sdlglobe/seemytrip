@@ -113,25 +113,56 @@ export const clearTransferData = () => ({
 export const authenticateTransferAPI = () => async (dispatch) => {
   try {
     console.log('🔐 [TRANSFER] Starting authentication process');
+    console.log('🔐 [TRANSFER] Environment check:', {
+      hasApiUrl: !!API_URL,
+      apiUrl: API_URL,
+      nodeEnv: process.env.NODE_ENV
+    });
+    
     dispatch(transferAuthRequest());
     
     console.log('📡 [TRANSFER] Making authentication request to:', `${API_URL}/transfer/authenticateTransferAPI`);
-    const response = await axios.post(`${API_URL}/transfer/authenticateTransferAPI`);
+    console.log('📡 [TRANSFER] Request headers:', {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+    
+    const response = await axios.post(`${API_URL}/transfer/authenticateTransferAPI`, {}, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      timeout: 30000 // 30 second timeout
+    });
     
     console.log('📥 [TRANSFER] Authentication response received:', {
       status: response.status,
+      statusText: response.statusText,
       hasData: !!response.data,
       hasTokenId: !!response.data?.TokenId,
-      hasEndUserIp: !!response.data?.EndUserIp
+      hasEndUserIp: !!response.data?.EndUserIp,
+      hasAgencyId: !!response.data?.AgencyId,
+      responseKeys: response.data ? Object.keys(response.data) : 'No data',
+      fullResponse: response.data
     });
     
     if (response.data && response.data.TokenId) {
       console.log('✅ [TRANSFER] Authentication successful, dispatching success action');
+      console.log('✅ [TRANSFER] Token details:', {
+        TokenId: response.data.TokenId,
+        AgencyId: response.data.AgencyId,
+        EndUserIp: response.data.EndUserIp,
+        message: response.data.message
+      });
       dispatch(transferAuthSuccess(response.data));
       return response.data;
     } else {
-      const errorMsg = 'Invalid response from transfer authentication API';
-      console.error('❌ [TRANSFER] Invalid authentication response:', errorMsg);
+      const errorMsg = 'Invalid response from transfer authentication API - missing TokenId';
+      console.error('❌ [TRANSFER] Invalid authentication response:', {
+        error: errorMsg,
+        responseData: response.data,
+        hasTokenId: !!response.data?.TokenId
+      });
       throw new Error(errorMsg);
     }
   } catch (error) {
@@ -139,8 +170,12 @@ export const authenticateTransferAPI = () => async (dispatch) => {
     console.error('❌ [TRANSFER] Authentication failed:', {
       message: errorMessage,
       status: error.response?.status,
+      statusText: error.response?.statusText,
       data: error.response?.data,
-      originalError: error.message
+      originalError: error.message,
+      stack: error.stack,
+      isAxiosError: error.isAxiosError,
+      code: error.code
     });
     dispatch(transferAuthFailure(errorMessage));
     throw new Error(errorMessage);
@@ -148,9 +183,12 @@ export const authenticateTransferAPI = () => async (dispatch) => {
 };
 
 // Get Transfer Country List
-export const getTransferCountryList = (countryListData) => async (dispatch, getState) => {
+export const getTransferCountryList = (countryListData = {}) => async (dispatch, getState) => {
   try {
-    console.log('🌍 [TRANSFER] Starting country list retrieval with data:', countryListData);
+    console.log('🌍 [TRANSFER] Starting country list retrieval');
+    console.log('🌍 [TRANSFER] Input data:', countryListData);
+    console.log('🌍 [TRANSFER] Current Redux state before request:', getState().transfer);
+    
     dispatch(transferCountryListRequest());
     
     // Get token from state if available
@@ -160,36 +198,71 @@ export const getTransferCountryList = (countryListData) => async (dispatch, getS
     console.log('🔑 [TRANSFER] Current auth state for country list:', {
       hasToken: !!tokenData?.TokenId,
       hasEndUserIp: !!tokenData?.EndUserIp,
-      isAuthenticated: transfer.isAuthenticated
+      isAuthenticated: transfer.isAuthenticated,
+      tokenData: tokenData
     });
     
     if (!tokenData || !tokenData.TokenId) {
       console.log('🔄 [TRANSFER] No token found for country list, authenticating first...');
       // If no token, authenticate first
-      await dispatch(authenticateTransferAPI());
+      const authResult = await dispatch(authenticateTransferAPI());
+      console.log('🔄 [TRANSFER] Authentication result:', authResult);
+      
       const updatedState = getState();
       countryListData.TokenId = updatedState.transfer.authData.TokenId;
       countryListData.EndUserIp = updatedState.transfer.authData.EndUserIp;
-      console.log('✅ [TRANSFER] Authentication completed for country list, token obtained');
+      console.log('✅ [TRANSFER] Authentication completed for country list, token obtained:', {
+        TokenId: countryListData.TokenId,
+        EndUserIp: countryListData.EndUserIp
+      });
     } else {
       countryListData.TokenId = tokenData.TokenId;
       countryListData.EndUserIp = tokenData.EndUserIp;
-      console.log('✅ [TRANSFER] Using existing token for country list');
+      console.log('✅ [TRANSFER] Using existing token for country list:', {
+        TokenId: countryListData.TokenId,
+        EndUserIp: countryListData.EndUserIp
+      });
+    }
+    
+    // Validate required parameters as per backend
+    if (!countryListData.TokenId || !countryListData.EndUserIp) {
+      const errorMsg = 'TokenId and EndUserIp are required for country list';
+      console.error('❌ [TRANSFER] Validation failed:', errorMsg);
+      throw new Error(errorMsg);
     }
     
     console.log('📡 [TRANSFER] Making country list request to:', `${API_URL}/transfer/getTransferCountryList`);
     console.log('📤 [TRANSFER] Country list request payload:', countryListData);
+    console.log('📤 [TRANSFER] Request headers:', {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
     
-    const response = await axios.post(`${API_URL}/transfer/getTransferCountryList`, countryListData);
+    const response = await axios.post(`${API_URL}/transfer/getTransferCountryList`, countryListData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      timeout: 30000 // 30 second timeout
+    });
     
     console.log('📥 [TRANSFER] Country list response received:', {
       status: response.status,
+      statusText: response.statusText,
       hasData: !!response.data,
-      dataKeys: response.data ? Object.keys(response.data) : 'No data'
+      dataKeys: response.data ? Object.keys(response.data) : 'No data',
+      hasResponse: !!response.data?.Response,
+      hasCountryList: !!response.data?.Response?.CountryList,
+      countryCount: response.data?.Response?.CountryList?.length || 0
     });
+    console.log('📥 [TRANSFER] Full response data:', response.data);
     
     if (response.data) {
       console.log('✅ [TRANSFER] Country list retrieval successful, dispatching success action');
+      console.log('✅ [TRANSFER] Countries received:', {
+        count: response.data?.Response?.CountryList?.length || 0,
+        countries: response.data?.Response?.CountryList?.slice(0, 3) || 'No countries' // Show first 3 for debugging
+      });
       dispatch(transferCountryListSuccess(response.data));
       return response.data;
     } else {
@@ -202,8 +275,12 @@ export const getTransferCountryList = (countryListData) => async (dispatch, getS
     console.error('❌ [TRANSFER] Country list retrieval failed:', {
       message: errorMessage,
       status: error.response?.status,
+      statusText: error.response?.statusText,
       data: error.response?.data,
-      originalError: error.message
+      originalError: error.message,
+      stack: error.stack,
+      isAxiosError: error.isAxiosError,
+      code: error.code
     });
     dispatch(transferCountryListFailure(errorMessage));
     throw new Error(errorMessage);
@@ -211,71 +288,108 @@ export const getTransferCountryList = (countryListData) => async (dispatch, getS
 };
 
 // Get Destination Search
-export const getDestinationSearch = (destinationData) => async (dispatch, getState) => {
+export const getDestinationSearch = (destinationData = {}) => async (dispatch, getState) => {
   try {
-    console.log('🔍 [TRANSFER] Starting destination search with data:', destinationData);
-    console.log('🔍 [TRANSFER] Yes, calling the transfer API');
+    console.log('🔍 [TRANSFER] Starting destination search');
+    console.log('🔍 [TRANSFER] Input data:', destinationData);
+    console.log('🔍 [TRANSFER] Current Redux state before request:', getState().transfer);
+    
     dispatch(transferDestinationSearchRequest());
     
     // Get token from state if available
     const { transfer } = getState();
     const tokenData = transfer.authData;
     
-    console.log('🔑 [TRANSFER] Current auth state:', {
+    console.log('🔑 [TRANSFER] Current auth state for destination search:', {
       hasToken: !!tokenData?.TokenId,
       hasEndUserIp: !!tokenData?.EndUserIp,
-      isAuthenticated: transfer.isAuthenticated
+      isAuthenticated: transfer.isAuthenticated,
+      tokenData: tokenData
     });
     
     if (!tokenData || !tokenData.TokenId) {
-      console.log('🔄 [TRANSFER] No token found, authenticating first...');
+      console.log('🔄 [TRANSFER] No token found for destination search, authenticating first...');
       // If no token, authenticate first
-      await dispatch(authenticateTransferAPI());
+      const authResult = await dispatch(authenticateTransferAPI());
+      console.log('🔄 [TRANSFER] Authentication result:', authResult);
+      
       const updatedState = getState();
       destinationData.TokenId = updatedState.transfer.authData.TokenId;
       destinationData.EndUserIp = updatedState.transfer.authData.EndUserIp;
-      console.log('✅ [TRANSFER] Authentication completed, token obtained');
+      console.log('✅ [TRANSFER] Authentication completed for destination search, token obtained:', {
+        TokenId: destinationData.TokenId,
+        EndUserIp: destinationData.EndUserIp
+      });
     } else {
       destinationData.TokenId = tokenData.TokenId;
       destinationData.EndUserIp = tokenData.EndUserIp;
-      console.log('✅ [TRANSFER] Using existing token');
+      console.log('✅ [TRANSFER] Using existing token for destination search:', {
+        TokenId: destinationData.TokenId,
+        EndUserIp: destinationData.EndUserIp
+      });
     }
     
-    // Validate required parameters
-    if (!destinationData.CountryCode) {
-      const errorMsg = 'CountryCode is required for destination search';
-      console.error('❌ [TRANSFER] Validation failed:', errorMsg);
+    // Validate required parameters as per backend
+    if (!destinationData.TokenId || !destinationData.EndUserIp || !destinationData.CountryCode) {
+      const errorMsg = 'TokenId, EndUserIp and CountryCode are required for destination search';
+      console.error('❌ [TRANSFER] Validation failed:', {
+        error: errorMsg,
+        hasTokenId: !!destinationData.TokenId,
+        hasEndUserIp: !!destinationData.EndUserIp,
+        hasCountryCode: !!destinationData.CountryCode,
+        destinationData: destinationData
+      });
       throw new Error(errorMsg);
     }
     
-    console.log('📡 [TRANSFER] Making API request to:', `${API_URL}/transfer/GetDestinationSearch`);
+    console.log('📡 [TRANSFER] Making destination search request to:', `${API_URL}/transfer/GetDestinationSearch`);
     console.log('📤 [TRANSFER] Request payload:', destinationData);
-    console.log('📤 [TRANSFER] req.body', destinationData);
+    console.log('📤 [TRANSFER] Request headers:', {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
     
-    const response = await axios.post(`${API_URL}/transfer/GetDestinationSearch`, destinationData);
+    const response = await axios.post(`${API_URL}/transfer/GetDestinationSearch`, destinationData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      timeout: 30000 // 30 second timeout
+    });
     
-    console.log('📥 [TRANSFER] API response received:', {
+    console.log('📥 [TRANSFER] Destination search response received:', {
       status: response.status,
+      statusText: response.statusText,
       hasData: !!response.data,
       success: response.data?.success,
       hasDestinations: !!response.data?.destinations,
       destinationCount: response.data?.destinations?.length || 0,
-      dataKeys: response.data ? Object.keys(response.data) : 'No data'
+      dataKeys: response.data ? Object.keys(response.data) : 'No data',
+      message: response.data?.message
     });
-    console.log('📥 [TRANSFER] apiResponse', response.data);
+    console.log('📥 [TRANSFER] Full response data:', response.data);
     
     if (response.data && response.data.success) {
       console.log('✅ [TRANSFER] Destination search successful, dispatching success action');
-      console.log('🏙️ [TRANSFER] Transformed destinations received:', response.data.destinations);
+      console.log('🏙️ [TRANSFER] Transformed destinations received:', {
+        count: response.data.destinations?.length || 0,
+        destinations: response.data.destinations?.slice(0, 3) || 'No destinations' // Show first 3 for debugging
+      });
       dispatch(transferDestinationSearchSuccess(response.data));
       return response.data;
     } else if (response.data && !response.data.success) {
       const errorMsg = response.data.message || 'Destination search failed';
-      console.error('❌ [TRANSFER] Backend returned error:', errorMsg);
+      console.error('❌ [TRANSFER] Backend returned error:', {
+        error: errorMsg,
+        responseData: response.data
+      });
       throw new Error(errorMsg);
     } else {
       const errorMsg = 'Invalid response from transfer destination search API';
-      console.error('❌ [TRANSFER] Invalid response:', errorMsg);
+      console.error('❌ [TRANSFER] Invalid response:', {
+        error: errorMsg,
+        responseData: response.data
+      });
       throw new Error(errorMsg);
     }
   } catch (error) {
@@ -283,10 +397,13 @@ export const getDestinationSearch = (destinationData) => async (dispatch, getSta
     console.error('❌ [TRANSFER] Destination search failed:', {
       message: errorMessage,
       status: error.response?.status,
+      statusText: error.response?.statusText,
       data: error.response?.data,
-      originalError: error.message
+      originalError: error.message,
+      stack: error.stack,
+      isAxiosError: error.isAxiosError,
+      code: error.code
     });
-    console.error('❌ [TRANSFER] Error details:', error.message);
     dispatch(transferDestinationSearchFailure(errorMessage));
     throw new Error(errorMessage);
   }
@@ -294,10 +411,12 @@ export const getDestinationSearch = (destinationData) => async (dispatch, getSta
 
 
 // Get Transfer Static Data
-export const getTransferStaticData = (staticData) => async (dispatch, getState) => {
+export const getTransferStaticData = (staticData = {}) => async (dispatch, getState) => {
   try {
-    console.log('📊 [TRANSFER] Starting transfer static data retrieval with data:', staticData);
-    console.log('📊 [TRANSFER] Yes, calling the transfer API');
+    console.log('📊 [TRANSFER] Starting transfer static data retrieval');
+    console.log('📊 [TRANSFER] Input data:', staticData);
+    console.log('📊 [TRANSFER] Current Redux state before request:', getState().transfer);
+    
     dispatch(transferStaticDataRequest());
     
     // Get token from state if available
@@ -307,50 +426,88 @@ export const getTransferStaticData = (staticData) => async (dispatch, getState) 
     console.log('🔑 [TRANSFER] Current auth state for static data:', {
       hasToken: !!tokenData?.TokenId,
       hasEndUserIp: !!tokenData?.EndUserIp,
-      isAuthenticated: transfer.isAuthenticated
+      isAuthenticated: transfer.isAuthenticated,
+      tokenData: tokenData
     });
     
     if (!tokenData || !tokenData.TokenId) {
       console.log('🔄 [TRANSFER] No token found for static data, authenticating first...');
       // If no token, authenticate first
-      await dispatch(authenticateTransferAPI());
+      const authResult = await dispatch(authenticateTransferAPI());
+      console.log('🔄 [TRANSFER] Authentication result:', authResult);
+      
       const updatedState = getState();
       staticData.TokenId = updatedState.transfer.authData.TokenId;
       staticData.EndUserIp = updatedState.transfer.authData.EndUserIp;
-      console.log('✅ [TRANSFER] Authentication completed for static data, token obtained');
+      console.log('✅ [TRANSFER] Authentication completed for static data, token obtained:', {
+        TokenId: staticData.TokenId,
+        EndUserIp: staticData.EndUserIp
+      });
     } else {
       staticData.TokenId = tokenData.TokenId;
       staticData.EndUserIp = tokenData.EndUserIp;
-      console.log('✅ [TRANSFER] Using existing token for static data');
+      console.log('✅ [TRANSFER] Using existing token for static data:', {
+        TokenId: staticData.TokenId,
+        EndUserIp: staticData.EndUserIp
+      });
     }
     
-    // Validate required parameters
-    if (!staticData.CityId || !staticData.TransferCategoryType) {
-      const errorMsg = 'CityId and TransferCategoryType are required for transfer static data';
-      console.error('❌ [TRANSFER] Validation failed:', errorMsg);
+    // Validate required parameters as per backend
+    if (!staticData.TokenId || !staticData.EndUserIp || !staticData.CityId || !staticData.TransferCategoryType) {
+      const errorMsg = 'TokenId, EndUserIp, CityId and TransferCategoryType are required for transfer static data';
+      console.error('❌ [TRANSFER] Validation failed:', {
+        error: errorMsg,
+        hasTokenId: !!staticData.TokenId,
+        hasEndUserIp: !!staticData.EndUserIp,
+        hasCityId: !!staticData.CityId,
+        hasTransferCategoryType: !!staticData.TransferCategoryType,
+        staticData: staticData
+      });
       throw new Error(errorMsg);
     }
     
     console.log('📡 [TRANSFER] Making static data request to:', `${API_URL}/transfer/GetTransferStaticData`);
     console.log('📤 [TRANSFER] Request payload:', staticData);
-    console.log('📤 [TRANSFER] req.body', staticData);
+    console.log('📤 [TRANSFER] Request headers:', {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
     
-    const response = await axios.post(`${API_URL}/transfer/GetTransferStaticData`, staticData);
+    const response = await axios.post(`${API_URL}/transfer/GetTransferStaticData`, staticData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      timeout: 30000 // 30 second timeout
+    });
     
     console.log('📥 [TRANSFER] Static data response received:', {
       status: response.status,
+      statusText: response.statusText,
       hasData: !!response.data,
-      dataKeys: response.data ? Object.keys(response.data) : 'No data'
+      dataKeys: response.data ? Object.keys(response.data) : 'No data',
+      hasTransferSearchResult: !!response.data?.TransferSearchResult,
+      hasTransferSearchResults: !!response.data?.TransferSearchResult?.TransferSearchResults,
+      resultCount: response.data?.TransferSearchResult?.TransferSearchResults?.length || 0
     });
-    console.log('📥 [TRANSFER] apiResponse', response.data);
+    console.log('📥 [TRANSFER] Full response data:', response.data);
     
     if (response.data) {
       console.log('✅ [TRANSFER] Transfer static data retrieval successful, dispatching success action');
+      console.log('📊 [TRANSFER] Static data received:', {
+        hasTransferSearchResult: !!response.data.TransferSearchResult,
+        hasTransferSearchResults: !!response.data.TransferSearchResult?.TransferSearchResults,
+        resultCount: response.data.TransferSearchResult?.TransferSearchResults?.length || 0,
+        results: response.data.TransferSearchResult?.TransferSearchResults?.slice(0, 2) || 'No results' // Show first 2 for debugging
+      });
       dispatch(transferStaticDataSuccess(response.data));
       return response.data;
     } else {
       const errorMsg = 'Invalid response from transfer static data API';
-      console.error('❌ [TRANSFER] Invalid static data response:', errorMsg);
+      console.error('❌ [TRANSFER] Invalid static data response:', {
+        error: errorMsg,
+        responseData: response.data
+      });
       throw new Error(errorMsg);
     }
   } catch (error) {
@@ -358,10 +515,13 @@ export const getTransferStaticData = (staticData) => async (dispatch, getState) 
     console.error('❌ [TRANSFER] Static data retrieval failed:', {
       message: errorMessage,
       status: error.response?.status,
+      statusText: error.response?.statusText,
       data: error.response?.data,
-      originalError: error.message
+      originalError: error.message,
+      stack: error.stack,
+      isAxiosError: error.isAxiosError,
+      code: error.code
     });
-    console.error('❌ [TRANSFER] Error details:', error.message);
     dispatch(transferStaticDataFailure(errorMessage));
     throw new Error(errorMessage);
   }
@@ -369,10 +529,12 @@ export const getTransferStaticData = (staticData) => async (dispatch, getState) 
 
 
 // Search Transfer
-export const searchTransfer = (searchData) => async (dispatch, getState) => {
+export const searchTransfer = (searchData = {}) => async (dispatch, getState) => {
   try {
-    console.log('🔍 [TRANSFER] Starting transfer search with data:', searchData);
-    console.log('🔍 [TRANSFER] Yes, calling the transfer API');
+    console.log('🔍 [TRANSFER] Starting transfer search');
+    console.log('🔍 [TRANSFER] Input data:', searchData);
+    console.log('🔍 [TRANSFER] Current Redux state before request:', getState().transfer);
+    
     dispatch(transferSearchRequest());
     
     // Get token from state if available
@@ -382,33 +544,46 @@ export const searchTransfer = (searchData) => async (dispatch, getState) => {
     console.log('🔑 [TRANSFER] Current auth state for search:', {
       hasToken: !!tokenData?.TokenId,
       hasEndUserIp: !!tokenData?.EndUserIp,
-      isAuthenticated: transfer.isAuthenticated
+      isAuthenticated: transfer.isAuthenticated,
+      tokenData: tokenData
     });
     
     if (!tokenData || !tokenData.TokenId) {
       console.log('🔄 [TRANSFER] No token found for search, authenticating first...');
       // If no token, authenticate first
-      await dispatch(authenticateTransferAPI());
+      const authResult = await dispatch(authenticateTransferAPI());
+      console.log('🔄 [TRANSFER] Authentication result:', authResult);
+      
       const updatedState = getState();
       searchData.TokenId = updatedState.transfer.authData.TokenId;
       searchData.EndUserIp = updatedState.transfer.authData.EndUserIp;
-      console.log('✅ [TRANSFER] Authentication completed for search, token obtained');
+      console.log('✅ [TRANSFER] Authentication completed for search, token obtained:', {
+        TokenId: searchData.TokenId,
+        EndUserIp: searchData.EndUserIp
+      });
     } else {
       searchData.TokenId = tokenData.TokenId;
       searchData.EndUserIp = tokenData.EndUserIp;
-      console.log('✅ [TRANSFER] Using existing token for search');
+      console.log('✅ [TRANSFER] Using existing token for search:', {
+        TokenId: searchData.TokenId,
+        EndUserIp: searchData.EndUserIp
+      });
     }
     
     // Validate required fields as per backend
     const requiredFields = [
-      'CountryCode', 'CityId', 'PickUpCode', 'PickUpPointCode',
+      'TokenId', 'EndUserIp', 'CountryCode', 'CityId', 'PickUpCode', 'PickUpPointCode',
       'DropOffCode', 'DropOffPointCode', 'TransferTime', 'TransferDate', 'AdultCount'
     ];
     
     const missingFields = requiredFields.filter(field => !searchData[field]);
     if (missingFields.length > 0) {
       const errorMsg = `Missing required fields: ${missingFields.join(', ')}`;
-      console.error('❌ [TRANSFER] Validation failed:', errorMsg);
+      console.error('❌ [TRANSFER] Validation failed:', {
+        error: errorMsg,
+        missingFields: missingFields,
+        searchData: searchData
+      });
       throw new Error(errorMsg);
     }
     
@@ -421,24 +596,46 @@ export const searchTransfer = (searchData) => async (dispatch, getState) => {
     
     console.log('📡 [TRANSFER] Making search request to:', `${API_URL}/transfer/GetSearchTransfer`);
     console.log('📤 [TRANSFER] Request payload:', data);
-    console.log('📤 [TRANSFER] req.body', data);
+    console.log('📤 [TRANSFER] Request headers:', {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
     
-    const response = await axios.post(`${API_URL}/transfer/GetSearchTransfer`, data);
+    const response = await axios.post(`${API_URL}/transfer/GetSearchTransfer`, data, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      timeout: 30000 // 30 second timeout
+    });
     
     console.log('📥 [TRANSFER] Search response received:', {
       status: response.status,
+      statusText: response.statusText,
       hasData: !!response.data,
-      dataKeys: response.data ? Object.keys(response.data) : 'No data'
+      dataKeys: response.data ? Object.keys(response.data) : 'No data',
+      hasTransferSearchResult: !!response.data?.TransferSearchResult,
+      hasTransferSearchResults: !!response.data?.TransferSearchResult?.TransferSearchResults,
+      resultCount: response.data?.TransferSearchResult?.TransferSearchResults?.length || 0
     });
-    console.log('📥 [TRANSFER] apiResponse', response.data);
+    console.log('📥 [TRANSFER] Full response data:', response.data);
     
     if (response.data) {
       console.log('✅ [TRANSFER] Transfer search successful, dispatching success action');
+      console.log('🔍 [TRANSFER] Search results received:', {
+        hasTransferSearchResult: !!response.data.TransferSearchResult,
+        hasTransferSearchResults: !!response.data.TransferSearchResult?.TransferSearchResults,
+        resultCount: response.data.TransferSearchResult?.TransferSearchResults?.length || 0,
+        results: response.data.TransferSearchResult?.TransferSearchResults?.slice(0, 2) || 'No results' // Show first 2 for debugging
+      });
       dispatch(transferSearchSuccess(response.data));
       return response.data;
     } else {
       const errorMsg = 'Invalid response from transfer search API';
-      console.error('❌ [TRANSFER] Invalid search response:', errorMsg);
+      console.error('❌ [TRANSFER] Invalid search response:', {
+        error: errorMsg,
+        responseData: response.data
+      });
       throw new Error(errorMsg);
     }
   } catch (error) {
@@ -446,10 +643,13 @@ export const searchTransfer = (searchData) => async (dispatch, getState) => {
     console.error('❌ [TRANSFER] Search failed:', {
       message: errorMessage,
       status: error.response?.status,
+      statusText: error.response?.statusText,
       data: error.response?.data,
-      originalError: error.message
+      originalError: error.message,
+      stack: error.stack,
+      isAxiosError: error.isAxiosError,
+      code: error.code
     });
-    console.error('❌ [TRANSFER] Error details:', error.message);
     dispatch(transferSearchFailure(errorMessage));
     throw new Error(errorMessage);
   }
@@ -458,6 +658,81 @@ export const searchTransfer = (searchData) => async (dispatch, getState) => {
 
 // Clear transfer data and errors
 export const resetTransferState = () => (dispatch) => {
+  console.log('🧹 [TRANSFER] Resetting transfer state');
   dispatch(clearTransferError());
   dispatch(clearTransferData());
+};
+
+// Utility function to get current transfer state
+export const getTransferState = () => (dispatch, getState) => {
+  const state = getState();
+  console.log('📊 [TRANSFER] Current transfer state:', state.transfer);
+  return state.transfer;
+};
+
+// Utility function to check if transfer is ready for operations
+export const isTransferReady = () => (dispatch, getState) => {
+  const { transfer } = getState();
+  const isReady = transfer.isAuthenticated && transfer.authData?.TokenId;
+  console.log('🔍 [TRANSFER] Transfer ready check:', {
+    isReady,
+    isAuthenticated: transfer.isAuthenticated,
+    hasToken: !!transfer.authData?.TokenId,
+    hasEndUserIp: !!transfer.authData?.EndUserIp
+  });
+  return isReady;
+};
+
+// Utility function to validate search parameters
+export const validateSearchParameters = (searchData) => {
+  const requiredFields = [
+    'CountryCode', 'CityId', 'PickUpCode', 'PickUpPointCode',
+    'DropOffCode', 'DropOffPointCode', 'TransferTime', 'TransferDate', 'AdultCount'
+  ];
+  
+  const missingFields = requiredFields.filter(field => !searchData[field]);
+  const isValid = missingFields.length === 0;
+  
+  console.log('✅ [TRANSFER] Search parameters validation:', {
+    isValid,
+    missingFields,
+    searchData
+  });
+  
+  return { isValid, missingFields };
+};
+
+// Utility function to get debug information
+export const getTransferDebugInfo = () => (dispatch, getState) => {
+  const { transfer } = getState();
+  const debugInfo = {
+    isAuthenticated: transfer.isAuthenticated,
+    hasToken: !!transfer.authData?.TokenId,
+    hasEndUserIp: !!transfer.authData?.EndUserIp,
+    lastAction: transfer.lastAction,
+    loadingStates: {
+      auth: transfer.authLoading,
+      countryList: transfer.countryListLoading,
+      destinationSearch: transfer.destinationSearchLoading,
+      staticData: transfer.staticDataLoading,
+      search: transfer.searchLoading
+    },
+    errorStates: {
+      auth: !!transfer.authError,
+      countryList: !!transfer.countryListError,
+      destinationSearch: !!transfer.destinationSearchError,
+      staticData: !!transfer.staticDataError,
+      search: !!transfer.searchError
+    },
+    dataStates: {
+      hasAuthData: !!transfer.authData,
+      hasCountryListData: !!transfer.countryListData,
+      hasDestinationSearchData: !!transfer.destinationSearchData,
+      hasStaticData: !!transfer.staticDataData,
+      hasSearchData: !!transfer.searchData
+    }
+  };
+  
+  console.log('🐛 [TRANSFER] Debug information:', debugInfo);
+  return debugInfo;
 };
