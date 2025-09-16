@@ -51,6 +51,10 @@ export const GET_INSURANCE_BOOKING_STATS_REQUEST = 'GET_INSURANCE_BOOKING_STATS_
 export const GET_INSURANCE_BOOKING_STATS_SUCCESS = 'GET_INSURANCE_BOOKING_STATS_SUCCESS';
 export const GET_INSURANCE_BOOKING_STATS_FAILURE = 'GET_INSURANCE_BOOKING_STATS_FAILURE';
 
+export const SEND_SELECTED_QUOTES_REQUEST = 'SEND_SELECTED_QUOTES_REQUEST';
+export const SEND_SELECTED_QUOTES_SUCCESS = 'SEND_SELECTED_QUOTES_SUCCESS';
+export const SEND_SELECTED_QUOTES_FAILURE = 'SEND_SELECTED_QUOTES_FAILURE';
+
 export const CLEAR_INSURANCE_ERROR = 'CLEAR_INSURANCE_ERROR';
 export const CLEAR_INSURANCE_DATA = 'CLEAR_INSURANCE_DATA';
 
@@ -232,6 +236,20 @@ export const getInsuranceBookingStatsSuccess = (data) => ({
 
 export const getInsuranceBookingStatsFailure = (error) => ({
   type: GET_INSURANCE_BOOKING_STATS_FAILURE,
+  payload: error
+});
+
+export const sendSelectedQuotesRequest = () => ({
+  type: SEND_SELECTED_QUOTES_REQUEST
+});
+
+export const sendSelectedQuotesSuccess = (data) => ({
+  type: SEND_SELECTED_QUOTES_SUCCESS,
+  payload: data
+});
+
+export const sendSelectedQuotesFailure = (error) => ({
+  type: SEND_SELECTED_QUOTES_FAILURE,
   payload: error
 });
 
@@ -611,6 +629,50 @@ export const getInsuranceBookingStats = (userId) => async (dispatch) => {
   } catch (error) {
     const errorMessage = error.response?.data?.message || error.message || 'Failed to get insurance booking statistics';
     dispatch(getInsuranceBookingStatsFailure(errorMessage));
+    throw new Error(errorMessage);
+  }
+};
+
+// Send Selected Insurance Quotes via Email
+export const sendSelectedQuotes = (selectedPlans, searchCriteria, emailData) => async (dispatch) => {
+  try {
+    dispatch(sendSelectedQuotesRequest());
+    
+    // Get user_id from encrypted localStorage
+    const user1 = getEncryptedItem('user1');
+    const user_id = user1?.user_id;
+    
+    if (!user_id) {
+      throw new Error('User not logged in. Please login to send quotes via email.');
+    }
+    
+    // Validate email data
+    if (!emailData || !emailData.toEmail) {
+      throw new Error('Email address is required');
+    }
+    
+    const requestData = {
+      user_id,
+      selectedPlans,
+      searchCriteria,
+      emailData: {
+        toEmail: emailData.toEmail,
+        subject: emailData.subject || 'Insurance Quotes Comparison',
+        message: emailData.message || ''
+      }
+    };
+    
+    const response = await axios.post(`${API_URL}/insurance/sendSelectedQuotes`, requestData);
+    
+    if (response.data && response.data.success) {
+      dispatch(sendSelectedQuotesSuccess(response.data));
+      return response.data;
+    } else {
+      throw new Error('Invalid response from send selected quotes API');
+    }
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || error.message || 'Failed to send selected quotes via email';
+    dispatch(sendSelectedQuotesFailure(errorMessage));
     throw new Error(errorMessage);
   }
 };

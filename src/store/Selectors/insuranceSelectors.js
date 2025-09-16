@@ -49,6 +49,16 @@ export const selectInsuranceCancelData = (state) => selectInsuranceCancel(state)
 export const selectInsuranceCancelError = (state) => selectInsuranceCancel(state).cancelError;
 export const selectInsuranceCancelStatus = (state) => selectInsuranceCancelData(state)?.Response?.Status;
 
+// Email selectors
+export const selectInsuranceEmail = (state) => selectInsuranceState(state);
+export const selectInsuranceEmailLoading = (state) => selectInsuranceEmail(state).emailLoading;
+export const selectInsuranceEmailData = (state) => selectInsuranceEmail(state).emailData;
+export const selectInsuranceEmailError = (state) => selectInsuranceEmail(state).emailError;
+export const selectInsuranceEmailSuccess = (state) => selectInsuranceEmailData(state)?.success;
+export const selectInsuranceEmailMessage = (state) => selectInsuranceEmailData(state)?.message;
+export const selectInsuranceEmailRecipient = (state) => selectInsuranceEmailData(state)?.recipientEmail;
+export const selectInsuranceEmailPlansCount = (state) => selectInsuranceEmailData(state)?.plansCount;
+
 // General selectors
 export const selectInsuranceLastAction = (state) => selectInsuranceState(state).lastAction;
 export const selectInsuranceHasAnyError = (state) => {
@@ -59,7 +69,8 @@ export const selectInsuranceHasAnyError = (state) => {
     insurance.bookError ||
     insurance.policyError ||
     insurance.bookingDetailsError ||
-    insurance.cancelError
+    insurance.cancelError ||
+    insurance.emailError
   );
 };
 
@@ -71,7 +82,8 @@ export const selectInsuranceIsAnyLoading = (state) => {
     insurance.bookLoading ||
     insurance.policyLoading ||
     insurance.bookingDetailsLoading ||
-    insurance.cancelLoading
+    insurance.cancelLoading ||
+    insurance.emailLoading
   );
 };
 
