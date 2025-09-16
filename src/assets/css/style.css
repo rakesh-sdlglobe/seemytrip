@@ -656,6 +656,7 @@ h6 {
 .btn-danger:focus {
   background: var(--bs-danger-bg-dark) !important;
   border-color: var(--bs-danger-bg-dark) !important;
+  color: var(--bs-white) !important;
 }
 
 .btn-danger:active {

@@ -56,6 +56,14 @@ const Insurance_Payment_Page = () => {
     }
   }, [location.state]);
 
+  // Cleanup effect to reset loading states when component unmounts
+  useEffect(() => {
+    return () => {
+      setIsProcessingPayment(false);
+      setIsGeneratingPolicy(false);
+    };
+  }, []);
+
   // Load Razorpay SDK
   const loadRazorpay = async () => {
     const res = await loadRazorpayScript();
@@ -88,8 +96,6 @@ const Insurance_Payment_Page = () => {
         Passenger: passengerDetails
       };
       
-      console.log("💳 Payment Page: Preparing booking payload:", JSON.stringify(bookingPayload, null, 2));
-      console.log("💳 Payment Page: Passenger details:", JSON.stringify(passengerDetails, null, 2));
       
       const result = await dispatch(bookInsurance(bookingPayload));
       
@@ -101,6 +107,17 @@ const Insurance_Payment_Page = () => {
           // Handle error response with detailed error info
           const errorCode = result.Response.Error.ErrorCode;
           const errorMessage = result.Response.Error.ErrorMessage;
+          
+          // Check for trace ID expiration
+          if (errorCode === 1001 || errorMessage.toLowerCase().includes('trace') || 
+              errorMessage.toLowerCase().includes('expire') || errorMessage.toLowerCase().includes('invalid trace')) {
+            // Trace ID has expired
+            alert('Your search session has expired. Please start a new search to continue.');
+            navigate('/home-insurance');
+            setIsProcessingPayment(false);
+            return;
+          }
+          
           alert(`Booking failed: ${errorMessage} (Code: ${errorCode})`);
           setIsProcessingPayment(false);
         } else {
@@ -114,6 +131,16 @@ const Insurance_Payment_Page = () => {
         setIsProcessingPayment(false);
       }
     } catch (error) {
+      // Check if error message indicates trace expiration
+      if (error.message && (error.message.toLowerCase().includes('trace') || 
+          error.message.toLowerCase().includes('expire') || 
+          error.message.toLowerCase().includes('invalid trace'))) {
+        alert('Your search session has expired. Please start a new search to continue.');
+        navigate('/home-insurance');
+        setIsProcessingPayment(false);
+        return;
+      }
+      
       alert('Booking failed. Please try again.');
       setIsProcessingPayment(false);
     }
@@ -177,6 +204,34 @@ const Insurance_Payment_Page = () => {
         setIsGeneratingPolicy(false);
       });
 
+      // Handle payment modal dismissal (when user cancels or closes)
+      paymentObject.on('payment.dismissed', function (response) {
+        setIsProcessingPayment(false);
+        setIsGeneratingPolicy(false);
+      });
+
+      // Add a timeout to reset loading state if payment modal doesn't trigger events
+      const paymentTimeout = setTimeout(() => {
+        // Check if we're still processing payment after 30 seconds
+        if (isProcessingPayment) {
+          setIsProcessingPayment(false);
+          setIsGeneratingPolicy(false);
+        }
+      }, 30000); // 30 seconds timeout
+
+      // Clear timeout when payment succeeds or fails
+      paymentObject.on('payment.success', function (response) {
+        clearTimeout(paymentTimeout);
+      });
+
+      paymentObject.on('payment.failed', function (response) {
+        clearTimeout(paymentTimeout);
+      });
+
+      paymentObject.on('payment.dismissed', function (response) {
+        clearTimeout(paymentTimeout);
+      });
+
       paymentObject.open();
 
     } catch (error) {
@@ -223,11 +278,8 @@ const Insurance_Payment_Page = () => {
             base_premium: priceDetails.base || priceDetails.total || 0
           };
           
-          console.log("💳 Updating booking status with:", statusUpdateData);
           await dispatch(updateInsuranceBookingStatus(bookingId, statusUpdateData));
-          console.log("✅ Booking status updated successfully");
         } catch (updateError) {
-          console.error("❌ Failed to update booking status:", updateError);
           // Don't fail the flow, just log the error
         }
         
@@ -355,7 +407,18 @@ const Insurance_Payment_Page = () => {
                       </p>
                       <button 
                         className="btn btn-link p-0 text-decoration-underline"
-                        onClick={() => navigate('/insurance-booking')}
+                        onClick={() => navigate('/insurance-booking', {
+                          state: {
+                            selectedPlan: selectedPlan,
+                            searchCriteria: searchCriteria,
+                            passengerDetails: passengerDetails,
+                            priceDetails: priceDetails,
+                            authData: authData,
+                            traceId: location.state?.traceId || '',
+                            termsAccepted: true, // Terms were already accepted
+                            isEditing: true // Flag to indicate we're coming back to edit
+                          }
+                        })}
                       >
                         Change Passenger Details
                       </button>
@@ -507,7 +570,18 @@ const Insurance_Payment_Page = () => {
             <div className="d-flex justify-content-between flex-column flex-sm-row mt-2 gap-2">
                 <button
                   className="btn btn-outline-primary"
-                  onClick={() => navigate('/insurance-booking')}
+                  onClick={() => navigate('/insurance-booking', {
+                    state: {
+                      selectedPlan: selectedPlan,
+                      searchCriteria: searchCriteria,
+                      passengerDetails: passengerDetails,
+                      priceDetails: priceDetails,
+                      authData: authData,
+                      traceId: location.state?.traceId || '',
+                      termsAccepted: true, // Terms were already accepted
+                      isEditing: true // Flag to indicate we're coming back to edit
+                    }
+                  })}
                 >
                   <FaArrowLeft className="me-2" />
                   Back to Edit Details
