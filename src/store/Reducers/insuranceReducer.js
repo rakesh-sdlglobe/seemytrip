@@ -17,6 +17,9 @@ import {
   INSURANCE_CANCEL_REQUEST,
   INSURANCE_CANCEL_SUCCESS,
   INSURANCE_CANCEL_FAILURE,
+  SEND_SELECTED_QUOTES_REQUEST,
+  SEND_SELECTED_QUOTES_SUCCESS,
+  SEND_SELECTED_QUOTES_FAILURE,
   CLEAR_INSURANCE_ERROR,
   CLEAR_INSURANCE_DATA
 } from '../Actions/insuranceAction';
@@ -51,6 +54,11 @@ const initialState = {
   cancelLoading: false,
   cancelData: null,
   cancelError: null,
+  
+  // Email state
+  emailLoading: false,
+  emailData: null,
+  emailError: null,
   
   // General state
   isAuthenticated: false,
@@ -217,6 +225,32 @@ const insuranceReducer = (state = initialState, action) => {
         lastAction: 'CANCEL_FAILURE'
       };
       
+    // Email cases
+    case SEND_SELECTED_QUOTES_REQUEST:
+      return {
+        ...state,
+        emailLoading: true,
+        emailError: null,
+        lastAction: 'SEND_QUOTES_REQUEST'
+      };
+      
+    case SEND_SELECTED_QUOTES_SUCCESS:
+      return {
+        ...state,
+        emailLoading: false,
+        emailData: action.payload,
+        emailError: null,
+        lastAction: 'SEND_QUOTES_SUCCESS'
+      };
+      
+    case SEND_SELECTED_QUOTES_FAILURE:
+      return {
+        ...state,
+        emailLoading: false,
+        emailError: action.payload,
+        lastAction: 'SEND_QUOTES_FAILURE'
+      };
+      
     // Clear cases
     case CLEAR_INSURANCE_ERROR:
       return {
@@ -226,7 +260,8 @@ const insuranceReducer = (state = initialState, action) => {
         bookError: null,
         policyError: null,
         bookingDetailsError: null,
-        cancelError: null
+        cancelError: null,
+        emailError: null
       };
       
     case CLEAR_INSURANCE_DATA:
@@ -236,7 +271,8 @@ const insuranceReducer = (state = initialState, action) => {
         bookData: null,
         policyData: null,
         bookingDetailsData: null,
-        cancelData: null
+        cancelData: null,
+        emailData: null
       };
       
     default:

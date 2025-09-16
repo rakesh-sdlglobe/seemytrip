@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Header02 from '../header02';
 import Footer from '../footer';
 import AuthPopup from '../auth/AuthPopup';
@@ -9,9 +11,13 @@ import {
   selectIsInsuranceSearching, 
   selectInsuranceSearchError,
   selectInsuranceSearchResults,
-  selectInsurancePlanCount 
+  selectInsurancePlanCount,
+  selectInsuranceEmailLoading,
+  selectInsuranceEmailError,
+  selectInsuranceEmailSuccess,
+  selectInsuranceEmailMessage
 } from '../../store/Selectors/insuranceSelectors';
-import { getInsuranceList } from '../../store/Actions/insuranceAction';
+import { getInsuranceList, sendSelectedQuotes } from '../../store/Actions/insuranceAction';
 import { getEncryptedItem } from '../../utils/encryption';
 import { FaTimes, FaShieldAlt } from 'react-icons/fa';
 import './insurance.css';
@@ -24,6 +30,12 @@ const InsuranceList = () => {
   const error = useSelector(selectInsuranceSearchError);
   const plans = useSelector(selectInsuranceSearchResults);
   const planCount = useSelector(selectInsurancePlanCount);
+  
+  // Email state
+  const emailLoading = useSelector(selectInsuranceEmailLoading);
+  const emailError = useSelector(selectInsuranceEmailError);
+  const emailSuccess = useSelector(selectInsuranceEmailSuccess);
+  const emailMessage = useSelector(selectInsuranceEmailMessage);
   
 
   
@@ -75,6 +87,13 @@ const InsuranceList = () => {
       }
     }
   }, [location.state]);
+
+  // Handle email error states
+  useEffect(() => {
+    if (emailError) {
+      toast.error(emailError);
+    }
+  }, [emailError]);
 
   // Scroll to search results when component loads with search results
   useEffect(() => {
@@ -179,32 +198,9 @@ const InsuranceList = () => {
         PlanCategory: searchParams.planCategory || 1
       };
       
-      const result = await dispatch(getInsuranceList(searchData));
-      
-      // Check if the result indicates trace ID expiration
-      if (result && result.Response && result.Response.Error) {
-        const errorCode = result.Response.Error.ErrorCode;
-        const errorMessage = result.Response.Error.ErrorMessage;
-        
-        if (errorCode === 1001 || errorMessage.toLowerCase().includes('trace') || 
-            errorMessage.toLowerCase().includes('expire') || errorMessage.toLowerCase().includes('invalid trace')) {
-          // Trace ID has expired - show message and redirect to search
-          alert('Your search session has expired. Please start a new search to continue.');
-          navigate('/home-insurance');
-          return;
-        }
-      }
+      await dispatch(getInsuranceList(searchData));
     } catch (error) {
       console.error('Error fetching insurance data:', error);
-      
-      // Check if error message indicates trace expiration
-      if (error.message && (error.message.toLowerCase().includes('trace') || 
-          error.message.toLowerCase().includes('expire') || 
-          error.message.toLowerCase().includes('invalid trace'))) {
-        alert('Your search session has expired. Please start a new search to continue.');
-        navigate('/home-insurance');
-        return;
-      }
     }
   };
 
@@ -336,7 +332,7 @@ const InsuranceList = () => {
   // Handle email selected quotes
   const handleEmailSelected = () => {
     if (selectedPlans.length === 0) {
-      alert('Please select at least one plan to email.');
+      toast.warning('Please select at least one plan to email.');
       return;
     }
     setShowEmailModal(true);
@@ -353,29 +349,38 @@ const InsuranceList = () => {
   };
 
   // Handle email form submission
-  const handleEmailSubmit = (e) => {
+  const handleEmailSubmit = async (e) => {
     e.preventDefault();
     
     if (!emailData.toEmail.trim()) {
-      alert('Please enter a valid email address.');
+      toast.error('Please enter a valid email address.');
       return;
     }
 
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(emailData.toEmail)) {
-      alert('Please enter a valid email address.');
+      toast.error('Please enter a valid email address.');
       return;
     }
 
-    // Get selected plans data
-    const selectedPlansData = plans.filter(plan => selectedPlans.includes(plan.ResultIndex));
-    
-    // Show success message (in real implementation, this would send the email)
-    alert(`Email would be sent to ${emailData.toEmail} with ${selectedPlansData.length} insurance quotes.`);
-    
-    // Close modal and reset form
-    handleEmailModalClose();
+    try {
+      // Get the selected plan objects from the filtered plans
+      const selectedPlanObjects = filteredPlans.filter(plan => 
+        selectedPlans.includes(plan.ResultIndex)
+      );
+
+      // Dispatch the email action with email data
+      await dispatch(sendSelectedQuotes(selectedPlanObjects, searchCriteria, emailData));
+      
+      // Close modal and clear selected plans after successful email
+      handleEmailModalClose();
+      setSelectedPlans([]);
+      
+    } catch (error) {
+      console.error('Error sending email:', error);
+      toast.error(`Error sending email: ${error.message}`);
+    }
   };
 
   // Handle email input changes
@@ -387,54 +392,34 @@ const InsuranceList = () => {
     }));
   };
 
-  // Show More Logic
+  // Pagination
   const totalPages = Math.ceil((filteredPlans?.length || 0) / plansPerPage);
   const startIndex = (currentPage - 1) * plansPerPage;
-  const endIndex = currentPage * plansPerPage;
-  const currentPlans = filteredPlans ? filteredPlans.slice(0, endIndex) : [];
+  const endIndex = startIndex + plansPerPage;
+  const currentPlans = filteredPlans ? filteredPlans.slice(startIndex, endIndex) : [];
 
   if (loading) {
     return <InsuranceListSkeleton />;
   }
 
   if (error) {
-    // Check if error indicates trace ID expiration
-    const isTraceExpired = error.toLowerCase().includes('trace') || 
-                          error.toLowerCase().includes('expire') || 
-                          error.toLowerCase().includes('invalid trace') ||
-                          error.includes('1001');
-
     return (
       <>
         <Header02 />
         <div className="container mt-5">
           <div className="row">
             <div className="col-12">
-              <div className={`alert ${isTraceExpired ? 'alert-warning' : 'alert-danger'}`} role="alert">
-                <h4 className="alert-heading">{isTraceExpired ? 'Session Expired!' : 'Error!'}</h4>
-                <p>
-                  {isTraceExpired 
-                    ? 'Your search session has expired. Please start a new search to continue.' 
-                    : error
-                  }
-                </p>
+              <div className="alert alert-danger" role="alert">
+                <h4 className="alert-heading">Error!</h4>
+                <p>{error}</p>
                 <hr />
                 <p className="mb-0">
-                  {isTraceExpired ? (
-                    <button 
-                      className="btn btn-primary"
-                      onClick={() => navigate('/home-insurance')}
-                    >
-                      Start New Search
-                    </button>
-                  ) : (
-                    <button 
-                      className="btn btn-outline-danger"
-                      onClick={() => fetchInsuranceData(searchCriteria)}
-                    >
-                      Try Again
-                    </button>
-                  )}
+                  <button 
+                    className="btn btn-outline-danger"
+                    onClick={() => fetchInsuranceData(searchCriteria)}
+                  >
+                    Try Again
+                  </button>
                 </p>
               </div>
             </div>
@@ -566,7 +551,7 @@ const InsuranceList = () => {
           {/* Right Section - Insurance Plans */}
           <div className="col-md-9" id="search-results">
             {/* Header with Email Button */}
-            <div className="d-flex justify-content-between flex-column mt-2 gap-2 flex-md-row  align-items-center mb-3">
+            <div className="d-flex justify-content-between align-items-center mb-3">
               <h5 className="fw-bold fs-6 mb-0">
                 Showing {currentPlans.length} of {filteredPlans.length} Insurance Plans
                 {filteredPlans.length !== plans.length && (
@@ -585,8 +570,29 @@ const InsuranceList = () => {
               </button>
             </div>
 
+            {/* Email Success/Error Messages */}
+            {emailSuccess && emailMessage && (
+              <div className="alert alert-success alert-dismissible fade show" role="alert">
+                <i className="fas fa-check-circle me-2"></i>
+                {emailMessage}
+                <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            )}
+            
+            {emailError && (
+              <div className="alert alert-danger alert-dismissible fade show" role="alert">
+                <i className="fas fa-exclamation-circle me-2"></i>
+                {emailError}
+                <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            )}
+
             {/* Sticky Price Filter Bar */}
-            <div className="sticky-filter-bar bg-white border rounded p-3 mb-4 shadow-sm" >
+            <div className="sticky-filter-bar bg-white border rounded p-3 mb-4 shadow-sm" style={{
+              position: 'sticky',
+              top: '20px',
+              zIndex: 1000
+            }}>
               <div className="row align-items-center">
                 <div className="col-md-3">
                   <h6 className="fw-bold text-dark mb-0">
@@ -719,15 +725,15 @@ const InsuranceList = () => {
                             </p>
                           </div>
 
-                          <div className="d-flex gap-5 justify-content-between w-lg-fit-content w-sm-100">
-                          <div className=" flex flex-column fw-bold">
-                            <h4>₹{plan.Price?.OfferedPriceRoundedOff || plan.Price?.OfferedPrice || 'N/A'}</h4>
-                            <div className="text-muted mb-2 h6">
+                          <div className="d-flex gap-5 justify-content-between">
+                          <div className=" flex flex-column fw-bold fs-4 fs-sm-6 ">
+                            ₹{plan.Price?.OfferedPriceRoundedOff || plan.Price?.OfferedPrice || 'N/A'}
+                            <div className="text-muted mb-2 fs-6">
                               {plan.Price?.OfferedPriceRoundedOff || plan.Price?.OfferedPrice ? 'Best Price' : 'Price on Request'}
                             </div>
                           </div>
-                          <div className="d-flex gap-2 flex-column flex-sm-row align-items-center">
-                              <div className="d-flex align-items-center gap-2 ">
+                          <div className="d-flex gap-2">
+                              <div className="d-flex align-items-center gap-2">
                                 <input
                                   className="form-check-input"
                                   type="checkbox"
@@ -740,7 +746,7 @@ const InsuranceList = () => {
                                   Email
                                 </label>
                               </div>
-                              <button className="btn btn-danger hover-btn-color-danger" onClick={() => handlePlanBooking(plan)}>
+                              <button className="btn btn-danger  hover-btn-color-danger" onClick={() => handlePlanBooking(plan)}>
                                 Choose This
                               </button>
                             </div>
@@ -811,34 +817,45 @@ const InsuranceList = () => {
                       </div>
 
                       {/* Action Links */}
-                      <div className="d-flex justify-content-center align-items-center gap-4 mt-3 pt-3 border-top ">
-                        <a href="#" className="text-primary text-decoration-none fs-14 " onClick={(e) => handleCoverDetails(plan, e)}>
-                          <i className="fas fa-shield-alt me-2 ">
-                            </i>Cover Details
+                      <div className="d-flex justify-content-center gap-4 mt-3 pt-3 border-top">
+                        <a href="#" className="text-primary text-decoration-none fs-6" onClick={(e) => handleCoverDetails(plan, e)}>
+                          <i className="fas fa-shield-alt me-1"></i>Cover Details
                         </a>
                         <span className="text-muted">|</span>
-                        <a href="#" className="text-primary text-decoration-none fs-14">
+                        <a href="#" className="text-primary text-decoration-none fs-6">
                           <i className="fas fa-calculator me-1"></i>Price Break Up
                         </a>
-                        {/* <span className="text-muted">|</span>
+                        <span className="text-muted">|</span>
                         <a href="#" className="text-primary text-decoration-none fs-6">
                           <i className="fas fa-file-alt me-1"></i>Policy Document
-                        </a> */}
+                        </a>
                       </div>
                     </div>
                   ))}
                 </div>
 
-                {/* Show More Button */}
-                {currentPage < totalPages && (
-                  <div className="d-flex justify-content-center mt-4 pt-3 border-top">
-                    <button 
-                      className="btn btn-primary"
-                      onClick={() => setCurrentPage(prev => prev + 1)}
-                    >
-                      <i className="fas fa-plus me-2"></i>
-                      Show More ({Math.min(currentPage * plansPerPage, filteredPlans.length)} of {filteredPlans.length} Plans)
-                    </button>
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                    <span className="text-muted fs-6">
+                      {currentPage} of {totalPages}
+                    </span>
+                    <div className="d-flex gap-2">
+                      <button 
+                        className="btn btn-outline-primary btn-sm"
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                      >
+                        Previous
+                      </button>
+                      <button 
+                        className="btn btn-outline-primary btn-sm"
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        disabled={currentPage === totalPages}
+                      >
+                        Next
+                      </button>
+                    </div>
                   </div>
                 )}
               </>
@@ -1114,7 +1131,9 @@ const InsuranceList = () => {
                   backgroundColor: '#f8f9fa',
                   borderRadius: '8px',
                   padding: '16px',
-                  border: '1px solid #e9ecef'
+                  border: '1px solid #e9ecef',
+                  maxHeight: '200px',
+                  overflowY: 'auto'
                 }}>
                   {plans.filter(plan => selectedPlans.includes(plan.ResultIndex)).map((plan, index) => (
                     <div key={plan.ResultIndex} className="d-flex justify-content-between align-items-center mb-2" style={{
@@ -1224,7 +1243,9 @@ const InsuranceList = () => {
                     border: '1px solid #dee2e6',
                     borderRadius: '8px',
                     padding: '16px',
-                    fontFamily: 'Arial, sans-serif'
+                    fontFamily: 'Arial, sans-serif',
+                    fontSize: '14px',
+                    lineHeight: '1.5'
                   }}>
                     <div className="mb-2">
                       <strong>To:</strong> {emailData.toEmail || 'recipient@example.com'}
@@ -1262,14 +1283,24 @@ const InsuranceList = () => {
                   <button
                     type="submit"
                     className="btn btn-danger"
+                    disabled={emailLoading}
                     style={{
                       padding: '12px 24px',
                       borderRadius: '6px',
                       fontWeight: '500'
                     }}
                   >
-                    <i className="fas fa-paper-plane me-2"></i>
-                    Send Email
+                    {emailLoading ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <i className="fas fa-paper-plane me-2"></i>
+                        Send Email
+                      </>
+                    )}
                   </button>
                 </div>
               </form>
@@ -1374,6 +1405,21 @@ const InsuranceList = () => {
           background: #a8a8a8;
         }
 
+        /* When screen is between 600px and 1200px → absolute */
+        @media (max-width: 560px) {
+          .middle-section {
+            position: static;
+            margin-bottom: 10px;
+          }
+        }
+        
+        @media (max-width: 768px) {
+          .d-flex.justify-content-between.align-items-center.flex-wrap {
+            flex-direction: column;
+            align-items: flex-start !important;
+          }
+        }
+
         /* Responsive Modal */
         @media (max-width: 768px) {
           .modal-content {
@@ -1408,7 +1454,6 @@ const InsuranceList = () => {
           transition: all 0.3s ease;
           backdrop-filter: blur(10px);
           background-color: rgba(255, 255, 255, 0.95) !important;
-          z-index: 0 !important;
         }
 
         .sticky-filter-bar .btn-group .btn {
@@ -1417,7 +1462,7 @@ const InsuranceList = () => {
         }
 
         /* Responsive Filter Bar */
-        @media (max-width: 1200px) {
+        @media (max-width: 768px) {
           .sticky-filter-bar .row {
             flex-direction: column;
             gap: 10px;
@@ -1449,29 +1494,8 @@ const InsuranceList = () => {
             width: 70px !important;
           }
         }
-          @media (max-width: 768px) {
-        .btn{
-        height: 48px;
-        padding: 0px 10px;
-        }
-          }
 
         @media (max-width: 576px) {
-
-        .w-lg-fit-content {
-          width: 100%;
-        }
-
-        .text-primary{
-        
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-
-        }
-
-
           .sticky-filter-bar {
             padding: 15px !important;
           }
@@ -1485,13 +1509,6 @@ const InsuranceList = () => {
             font-size: 10px;
             padding: 3px 4px;
           }
-
-        .btn{
-        height: 40px;
-        padding: 0px 10px;
-        font-size: 14px;
-        }
-
         }
       `}</style>
       
@@ -1500,6 +1517,20 @@ const InsuranceList = () => {
         isOpen={showAuthPopup} 
         onClose={handleAuthClose} 
         mode="login" 
+      />
+      
+      {/* Toast Container */}
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
       />
       
       <Footer />
