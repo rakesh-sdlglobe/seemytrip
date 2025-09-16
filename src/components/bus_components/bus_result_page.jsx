@@ -43,80 +43,107 @@ const getDuration = (start, end) => {
   return `${hours}h ${minutes}m`;
 };
 
+const SearchSkeleton = () => (
+  <div className="d-flex flex-column mt-2 border rounded gap-2 align-items-center w-100 bg-white p-3">
+    {/* Search input skeleton */}
+    <div className="placeholder-glow w-100">
+      <div className="placeholder col-12" style={{ height: 40 }}></div>
+    </div>
+
+    {/* Results count and sort options skeleton */}
+    <div className="d-flex justify-content-between flex-wrap gap-2 align-items-center w-100">
+      <div className="placeholder-glow">
+        <div className="placeholder" style={{ width: 120, height: 20 }}></div>
+      </div>
+      <div className="d-flex align-items-center justify-content-center overflow-auto">
+        <div className="placeholder-glow me-3">
+          <div className="placeholder" style={{ width: 60, height: 16 }}></div>
+        </div>
+        <div className="d-flex align-items-center justify-content-center overflow-auto py-2 scroll-container" style={{width: "100%", scrollbarWidth: "thin", scrollbarColor: " #dc3545 #f8d7da"}}>
+          <div className="btn-group" role="group" style={{width: "100%", minWidth: 0}}>
+            {[1, 2, 3, 4, 5, 6].map((item) => (
+              <div key={item} className="placeholder-glow">
+                <div className="placeholder" style={{ width: 80, height: 32, margin: "0 2px" }}></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 const ResultSkeleton = () => (
-  <div className="card list-layout-block rounded-3 p-3 mb-4">
-    <div className="row">
-      <div className="col-xl-4 col-lg-3 col-md">
-        <div
-          className="skeleton skeleton-img rounded-2 mb-3"
-          style={{ width: "100%", height: 120, background: "#eee" }}
-        />
+  <div className="border rounded p-3 mb-3 bg-white" style={{ borderColor: "#007bff" }}>
+    <div className="d-flex justify-content-between align-items-start flex-wrap position-relative">
+      {/* Top section - Travel name and price */}
+      <div className="flex w-100" style={{
+        display: "flex",
+        justifyContent: "space-between",
+        width: "100%",
+      }}>
+        <div>
+          <div className="placeholder-glow mb-2">
+            <div className="placeholder" style={{ width: "60%", height: 28 }}></div>
+          </div>
+          <div className="placeholder-glow">
+            <div className="placeholder" style={{ width: "40%", height: 18 }}></div>
+          </div>
+        </div>
+        <div className="placeholder-glow">
+          <div className="placeholder" style={{ width: 80, height: 32 }}></div>
+        </div>
       </div>
-      <div className="col-xl col-lg col-md">
-        <div
-          className="skeleton skeleton-title mb-2"
-          style={{
-            width: "60%",
-            height: 24,
-            borderRadius: 4,
-            background: "#eee",
-          }}
-        />
-        <div
-          className="skeleton skeleton-line mb-2"
-          style={{
-            width: "40%",
-            height: 16,
-            borderRadius: 4,
-            background: "#eee",
-          }}
-        />
-        <div
-          className="skeleton skeleton-line mb-2"
-          style={{
-            width: "30%",
-            height: 16,
-            borderRadius: 4,
-            background: "#eee",
-          }}
-        />
-        <div
-          className="skeleton skeleton-line mb-2"
-          style={{
-            width: "50%",
-            height: 16,
-            borderRadius: 4,
-            background: "#eee",
-          }}
-        />
-        <div
-          className="skeleton skeleton-line mb-2"
-          style={{
-            width: "80%",
-            height: 16,
-            borderRadius: 4,
-            background: "#eee",
-          }}
-        />
+
+      {/* Middle section - Departure, Duration, Arrival */}
+      <div className="middle-section">
+        <div className="text-center me-4">
+          <div className="placeholder-glow mb-1">
+            <div className="placeholder" style={{ width: 60, height: 24 }}></div>
+          </div>
+          <div className="placeholder-glow">
+            <div className="placeholder" style={{ width: 40, height: 16 }}></div>
+          </div>
+        </div>
+        <div className="text-center mx-3">
+          <div className="placeholder-glow">
+            <div className="placeholder" style={{ width: 80, height: 20 }}></div>
+          </div>
+        </div>
+        <div className="text-center ms-4">
+          <div className="placeholder-glow mb-1">
+            <div className="placeholder" style={{ width: 60, height: 24 }}></div>
+          </div>
+          <div className="placeholder-glow">
+            <div className="placeholder" style={{ width: 40, height: 16 }}></div>
+          </div>
+        </div>
       </div>
-      <div className="col-xl-auto col-lg-auto col-md-auto text-right text-md-left d-flex align-items-start align-items-md-end flex-column">
-        <div
-          className="skeleton skeleton-rating mb-2"
-          style={{ width: 40, height: 40, borderRadius: 8, background: "#eee" }}
-        />
-        <div
-          className="skeleton skeleton-price mb-2"
-          style={{ width: 80, height: 24, borderRadius: 4, background: "#eee" }}
-        />
-        <div
-          className="skeleton skeleton-btn"
-          style={{
-            width: 120,
-            height: 36,
-            borderRadius: 8,
-            background: "#eee",
-          }}
-        />
+
+      {/* Bottom section - Rating, reviews, and button */}
+      <div className="d-flex justify-content-between w-100">
+        <div>
+          <div className="d-flex align-items-center mb-2">
+            <div className="placeholder-glow me-2">
+              <div className="placeholder rounded-pill" style={{ width: 50, height: 24 }}></div>
+            </div>
+            <div className="placeholder-glow">
+              <div className="placeholder" style={{ width: 80, height: 16 }}></div>
+            </div>
+          </div>
+          <div className="placeholder-glow">
+            <div className="placeholder" style={{ width: 70, height: 28 }}></div>
+          </div>
+        </div>
+
+        <div>
+          <div className="placeholder-glow mb-2">
+            <div className="placeholder" style={{ width: 100, height: 16 }}></div>
+          </div>
+          <div className="placeholder-glow">
+            <div className="placeholder" style={{ width: 120, height: 40 }}></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -388,26 +415,115 @@ const BusResultPage = ({ filters }) => {
 
   // Filter by travel name (case-insensitive)
   const [travelNameFilter, setTravelNameFilter] = useState("");
-  const filteredPaginatedResults = paginatedResults.filter(bus =>
+  
+  // Sorting state
+  const [sortBy, setSortBy] = useState("relevance");
+  
+  // Apply travel name filter
+  const nameFilteredResults = paginatedResults.filter(bus =>
     bus.TravelName?.toLowerCase().includes(travelNameFilter.toLowerCase())
   );
 
-  return (
-    <div className="col-xl-9 col-lg-8 col-md-12 ">
-      {/* Travel Name Filter Search Bar */}
-      <div className="mb-1">
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Search by Travel Name..."
-          value={travelNameFilter}
-          onChange={e => setTravelNameFilter(e.target.value)}
-        />
-      </div>
+  // Apply sorting
+  const getSortedResults = (results) => {
+    const sorted = [...results];
+    
+    switch (sortBy) {
+      case 'relevance':
+        // Keep original order (already filtered)
+        return sorted;
+      case 'rating':
+        return sorted.sort((a, b) => (b.Rating || 0) - (a.Rating || 0));
+      case 'price':
+        return sorted.sort((a, b) => (a.BusPrice?.PublishedPriceRoundedOff || 0) - (b.BusPrice?.PublishedPriceRoundedOff || 0));
+      case 'fastest':
+        return sorted.sort((a, b) => {
+          const durationA = getDuration(a.DepartureTime, a.ArrivalTime);
+          const durationB = getDuration(b.DepartureTime, b.ArrivalTime);
+          // Convert duration to minutes for comparison
+          const getMinutes = (duration) => {
+            if (!duration || duration === '-') return Infinity;
+            const match = duration.match(/(\d+)h\s*(\d+)m/);
+            if (match) return parseInt(match[1]) * 60 + parseInt(match[2]);
+            return Infinity;
+          };
+          return getMinutes(durationA) - getMinutes(durationB);
+        });
+      case 'departure':
+        return sorted.sort((a, b) => new Date(a.DepartureTime) - new Date(b.DepartureTime));
+      case 'arrival':
+        return sorted.sort((a, b) => new Date(a.ArrivalTime) - new Date(b.ArrivalTime));
+      default:
+        return sorted;
+    }
+  };
 
-      <div className="row align-items-center g-2 mt-2">
+  const filteredPaginatedResults = getSortedResults(nameFilteredResults);
+
+  return (
+    <div className="col-xl-9 col-lg-8 col-md-12  ">
+      {/* Travel Name Filter Search Bar */}
+      {loading ? (
+        <SearchSkeleton />
+      ) : (
+        <div className="d-flex  flex-column mt-2 border rounded gap-2 align-items-center w-100 bg-white p-3">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search by Travel Name..."
+            value={travelNameFilter}
+            onChange={e => setTravelNameFilter(e.target.value)}
+          />
+
+        {/* Results Count and Sort Options */}
+        <div className="d-flex justify-content-between flex-wrap gap-2 align-items-center  w-100">
+          <div className="fw-bold text-nowrap">
+            {filteredPaginatedResults.length} buses found
+          </div>
+          <div className="d-flex align-items-center justify-content-center overflow-auto" >
+            <span className="fw-bold me-3 text-nowrap">SORT BY:</span>
+            <div className="d-flex align-items-center justify-content-center overflow-auto py-2 scroll-container" style={{width: "100%",
+              scrollbarWidth: "thin",
+              scrollbarColor: " #dc3545 #f8d7da"
+            }}>
+            <div className="btn-group" role="group" style={{
+              width: "100%",
+              minWidth:0
+              }}>
+              {[
+                { key: 'relevance', label: 'Relevance' },
+                { key: 'rating', label: 'Rating' },
+                { key: 'price', label: 'Price' },
+                { key: 'fastest', label: 'Fastest' },
+                { key: 'departure', label: 'Departure' },
+                { key: 'arrival', label: 'Arrival' }
+              ].map((option) => (
+                <button
+                  key={option.key}
+                  type="button"
+                  className={`btn btn-sm btn-sort flex-shrink-0  ${sortBy === option.key ? 'btn-primary' : 'btn-outline-primary'}`}
+                  onClick={() => setSortBy(option.key)}
+                >
+                  {option.label}
+                  {sortBy === option.key && option.key === 'fastest' && (
+                    <i className="fas fa-arrow-up ms-1" style={{ fontSize: '0.7rem' }}></i>
+                  )}
+                </button>
+              ))}
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      )}
+
+
+      <div className="row align-items-center g-2 mt-2 ">
         {loading ? (
           <>
+            <div className="col-xl-12">
+              <ResultSkeleton />
+            </div>
             <div className="col-xl-12">
               <ResultSkeleton />
             </div>
@@ -481,18 +597,17 @@ const BusResultPage = ({ filters }) => {
                             103 Reviews
                           </span>
                         </div>
-                        <button className="btn btn-outline-secondary btn-sm px-3 py-1">
+                        <button className="btn border border-secondary  btn-sm px-3 py-1">
                           On Time
                         </button>
                       </div>
-
 
                       <div>
                         <div className="text-muted mb-2">
                           {bus.AvailableSeats} Seats Left
                         </div>
                         <button
-                          className="btn btn-danger hover-btn-color-white"
+                          className="btn btn-md btn-danger hover-btn-color-white"
                           onClick={() => handleSeatToggle(bus, index)}
                           disabled={seatLayoutLoading && openSeatIndex === index}
                         >
@@ -529,16 +644,25 @@ const BusResultPage = ({ filters }) => {
         )}
       </div>
 
-      {/* Skeleton animation */}
+      {/* Light skeleton styles */}
       <style>{`
-        .skeleton {
-          animation: skeleton-loading 1.2s infinite linear alternate;
+        /* Light skeleton overrides - matching left sidebar color */
+        .placeholder {
+          background-color: #E0E0E0 !important;
+          opacity: 1;
         }
-        @keyframes skeleton-loading {
-          0% { background-color: #eee; }
-          100% { background-color: #e0e0e0; }
+        
+        .placeholder-glow .placeholder {
+          background: linear-gradient(90deg, #E0E0E0 0%, #F0F0F0 50%, #E0E0E0 100%) !important;
+          background-size: 200% 100%;
+          animation: placeholder-glow 2s ease-in-out infinite;
         }
-
+        
+        @keyframes placeholder-glow {
+          0% { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
+        }
+        
         .middle-section{
            display: flex;
            justify-Content: center;
@@ -548,26 +672,50 @@ const BusResultPage = ({ filters }) => {
            top: 50%;
            bottom: 50%;
         }
-           @media (max-width: 768px) {
-           .btn{
+        
+        /* Responsive styles for middle section */
+        @media (max-width: 560px) {
+          .middle-section {
+            position: static;
+            margin-bottom: 10px;
+            flex-direction: column;
+            gap: 8px;
+          }
+          
+          .middle-section > div {
+            margin: 0 !important;
+          }
+        }
+
+        /* Button responsive styles */
+        @media (max-width: 768px) {
+          .btn{
             height: 40px;
             padding: 0px 10px;
-           }
-           }
+          }
 
-        /* When screen is between 600px and 1200px → absolute */
-      @media (max-width: 560px) {
-      .middle-section {
-        position: static;
-        margin-bottom:10px;
+          .btn-sort{
+            height: 36px;
+            padding: 0px 10px;
+          }
         }
 
-        .btn{
-          height: 40px;
-          padding: 0px 10px;
-          font-size: 14px;
+        @media (max-width: 560px) {
+          .btn{
+            height: 40px;
+            padding: 0px 10px;
+            font-size: 14px;
+          }
+
+          .btn-sort{
+            height: 30px;
+            padding: 0px 10px;
+            font-size: 12px;
+          }
         }
 
+        .btn-outline-primary:hover{
+          background:#f79d9d !important;
         }
       `}
 

@@ -440,6 +440,14 @@ const InsuranceSearch = () => {
           // API returned an error
           const errorMsg = searchResponse.Response.Error.ErrorMessage || 'Search failed';
           const errorCode = searchResponse.Response.Error.ErrorCode;
+          
+          // Check for trace ID expiration
+          if (errorCode === 1001 || errorMsg.toLowerCase().includes('trace') || 
+              errorMsg.toLowerCase().includes('expire') || errorMsg.toLowerCase().includes('invalid trace')) {
+            alert('Your search session has expired. Please start a new search to continue.');
+            return;
+          }
+          
           alert(`Search failed: ${errorMsg}\nError Code: ${errorCode}`);
         } else {
           // No results or other issue
@@ -457,6 +465,10 @@ const InsuranceSearch = () => {
         alert('No insurance plans found for the selected criteria. This combination may not be supported. Please try different options.');
       } else if (error.message && error.message.includes('400')) {
         alert('Bad Request: The selected combination of parameters may not be supported by the API. Please try different options.');
+      } else if (error.message && (error.message.toLowerCase().includes('trace') || 
+                 error.message.toLowerCase().includes('expire') || 
+                 error.message.toLowerCase().includes('invalid trace'))) {
+        alert('Your search session has expired. Please start a new search to continue.');
       } else {
         alert(`Search failed: ${error.message || 'Please try again.'}`);
       }

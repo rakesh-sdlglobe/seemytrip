@@ -179,9 +179,32 @@ const InsuranceList = () => {
         PlanCategory: searchParams.planCategory || 1
       };
       
-      await dispatch(getInsuranceList(searchData));
+      const result = await dispatch(getInsuranceList(searchData));
+      
+      // Check if the result indicates trace ID expiration
+      if (result && result.Response && result.Response.Error) {
+        const errorCode = result.Response.Error.ErrorCode;
+        const errorMessage = result.Response.Error.ErrorMessage;
+        
+        if (errorCode === 1001 || errorMessage.toLowerCase().includes('trace') || 
+            errorMessage.toLowerCase().includes('expire') || errorMessage.toLowerCase().includes('invalid trace')) {
+          // Trace ID has expired - show message and redirect to search
+          alert('Your search session has expired. Please start a new search to continue.');
+          navigate('/home-insurance');
+          return;
+        }
+      }
     } catch (error) {
       console.error('Error fetching insurance data:', error);
+      
+      // Check if error message indicates trace expiration
+      if (error.message && (error.message.toLowerCase().includes('trace') || 
+          error.message.toLowerCase().includes('expire') || 
+          error.message.toLowerCase().includes('invalid trace'))) {
+        alert('Your search session has expired. Please start a new search to continue.');
+        navigate('/home-insurance');
+        return;
+      }
     }
   };
 
@@ -375,23 +398,43 @@ const InsuranceList = () => {
   }
 
   if (error) {
+    // Check if error indicates trace ID expiration
+    const isTraceExpired = error.toLowerCase().includes('trace') || 
+                          error.toLowerCase().includes('expire') || 
+                          error.toLowerCase().includes('invalid trace') ||
+                          error.includes('1001');
+
     return (
       <>
         <Header02 />
         <div className="container mt-5">
           <div className="row">
             <div className="col-12">
-              <div className="alert alert-danger" role="alert">
-                <h4 className="alert-heading">Error!</h4>
-                <p>{error}</p>
+              <div className={`alert ${isTraceExpired ? 'alert-warning' : 'alert-danger'}`} role="alert">
+                <h4 className="alert-heading">{isTraceExpired ? 'Session Expired!' : 'Error!'}</h4>
+                <p>
+                  {isTraceExpired 
+                    ? 'Your search session has expired. Please start a new search to continue.' 
+                    : error
+                  }
+                </p>
                 <hr />
                 <p className="mb-0">
-                  <button 
-                    className="btn btn-outline-danger"
-                    onClick={() => fetchInsuranceData(searchCriteria)}
-                  >
-                    Try Again
-                  </button>
+                  {isTraceExpired ? (
+                    <button 
+                      className="btn btn-primary"
+                      onClick={() => navigate('/home-insurance')}
+                    >
+                      Start New Search
+                    </button>
+                  ) : (
+                    <button 
+                      className="btn btn-outline-danger"
+                      onClick={() => fetchInsuranceData(searchCriteria)}
+                    >
+                      Try Again
+                    </button>
+                  )}
                 </p>
               </div>
             </div>

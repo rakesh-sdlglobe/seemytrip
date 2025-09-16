@@ -83,13 +83,14 @@ const Insurance_Booking_Page = () => {
   const [formErrors, setFormErrors] = useState({});
   const [expandedPassengers, setExpandedPassengers] = useState({});
   const [isNavigating, setIsNavigating] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   // Load data on component mount and when search results change
   useEffect(() => {
     loadBookingData();
     // Clear any existing form errors on component mount
     setFormErrors({});
-  }, [searchResults]);
+  }, [searchResults, location.state]);
 
   // Expand first passenger by default when passengers are loaded
   useEffect(() => {
@@ -114,6 +115,16 @@ const Insurance_Booking_Page = () => {
       const state = location.state;
       const planId = state?.planId;
       const params = state?.searchParams;
+      
+      // Check if we're coming back from payment page (editing mode)
+      if (state?.isEditing && state?.passengerDetails) {
+        // Restore all data from the payment page
+        setSelectedPlan(state.selectedPlan || null);
+        setSearchCriteria(state.searchCriteria || {});
+        setPassengerDetails(state.passengerDetails || []);
+        setTermsAccepted(state.termsAccepted || true); // Restore terms acceptance status
+        return;
+      }
       
       if (planId && params) {
         setSearchCriteria(params);
@@ -272,7 +283,12 @@ const Insurance_Booking_Page = () => {
     
     // Real-time validation for phone number
     if (field === 'PhoneNumber') {
-      if (value && value.trim()) {
+      if (!value || !value.trim()) {
+        setFormErrors(prev => ({
+          ...prev,
+          [`PhoneNumber_${passengerIndex}`]: 'Phone number is required'
+        }));
+      } else {
         const phoneRegex = /^[6-9]\d{9}$/;
         if (!phoneRegex.test(value.trim())) {
           setFormErrors(prev => ({
@@ -357,11 +373,12 @@ const Insurance_Booking_Page = () => {
       }
       
       // Phone number validation
-      if (!passenger.PhoneNumber.trim()) {
+      if (!passenger.PhoneNumber || !passenger.PhoneNumber.trim()) {
         errors[`PhoneNumber_${index}`] = 'Phone number is required';
       } else {
         const phoneRegex = /^[6-9]\d{9}$/;
-        if (!phoneRegex.test(passenger.PhoneNumber.trim())) {
+        const trimmedPhone = passenger.PhoneNumber.trim();
+        if (!phoneRegex.test(trimmedPhone)) {
           errors[`PhoneNumber_${index}`] = 'Please enter a valid 10-digit mobile number';
         }
       }
@@ -426,8 +443,12 @@ const Insurance_Booking_Page = () => {
       
       if (!passenger.BeneficiaryLastName.trim()) {
         errors[`BeneficiaryLastName_${index}`] = 'Beneficiary last name is required';
-      } else if (passenger.BeneficiaryLastName.trim().length < 3) {
-        errors[`BeneficiaryLastName_${index}`] = 'Beneficiary last name must be at least 3 characters';
+      } else {
+        // Remove spaces and check length (API requirement)
+        const beneficiaryLastNameNoSpaces = passenger.BeneficiaryLastName.replace(/\s+/g, '');
+        if (beneficiaryLastNameNoSpaces.length < 3) {
+          errors[`BeneficiaryLastName_${index}`] = 'Beneficiary last name must be at least 3 characters (spaces will be removed)';
+        }
       }
       
       // Relationship validation
@@ -451,6 +472,11 @@ const Insurance_Booking_Page = () => {
       }
     });
     
+    // Terms and conditions validation
+    if (!termsAccepted) {
+      errors.termsAccepted = 'You must accept the terms and conditions to continue';
+    }
+    
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -458,6 +484,16 @@ const Insurance_Booking_Page = () => {
   const scrollToFirstError = () => {
     const firstErrorField = Object.keys(formErrors)[0];
     if (firstErrorField) {
+      // Special handling for terms and conditions error
+      if (firstErrorField === 'termsAccepted') {
+        const termsElement = document.getElementById('termsCheck');
+        if (termsElement) {
+          termsElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          termsElement.focus();
+        }
+        return;
+      }
+      
       const fieldName = firstErrorField.split('_')[0];
       const passengerIndex = parseInt(firstErrorField.split('_')[1]);
       
@@ -508,7 +544,9 @@ const Insurance_Booking_Page = () => {
 
     // Prepare passengers array for review
     const passengersForReview = passengerDetails.map(passenger => {
-      const beneficiaryName = `${passenger.BeneficiaryTitle} ${passenger.BeneficiaryFirstName} ${passenger.BeneficiaryLastName}`.trim();
+      // Remove spaces from beneficiary last name for API compatibility
+      const beneficiaryLastName = passenger.BeneficiaryLastName ? passenger.BeneficiaryLastName.replace(/\s+/g, '') : '';
+      const beneficiaryName = `${passenger.BeneficiaryTitle} ${passenger.BeneficiaryFirstName} ${beneficiaryLastName}`.trim();
       
       // Construct DOB from separate fields
       const dob = passenger.DOBDay && passenger.DOBMonth && passenger.DOBYear 
@@ -520,6 +558,7 @@ const Insurance_Booking_Page = () => {
         ...passenger,
         DOB: dob,
         BeneficiaryName: beneficiaryName,
+        BeneficiaryLastName: beneficiaryLastName, // Use the space-removed version
         // Set defaults for API if user didn't select
         PassportCountry: passenger.PassportCountry || 'IND',
         CountryCode: passenger.CountryCode || 'IND',
@@ -542,7 +581,8 @@ const Insurance_Booking_Page = () => {
           passengerDetails: passengersForReview,
           priceDetails,
           authData: location.state?.authData || {},
-          traceId: location.state?.traceId || ''
+          traceId: location.state?.traceId || '',
+          termsAccepted: termsAccepted // Pass terms acceptance status
         }
       });
     }, 1000);
@@ -1019,6 +1059,7 @@ const Insurance_Booking_Page = () => {
                     data-passenger={index}
                   />
                   {formErrors[`BeneficiaryLastName_${index}`] && <div className="invalid-feedback d-block" style={{color: '#dc3545', fontSize: '0.875em', marginTop: '0.25rem'}}>{formErrors[`BeneficiaryLastName_${index}`]}</div>}
+                  <small className="text-muted">Note: Spaces will be automatically removed</small>
                 </div>
             </div>
           </div>
@@ -1200,12 +1241,28 @@ const Insurance_Booking_Page = () => {
                             className="form-check-input"
                             type="checkbox"
                             id="termsCheck"
-                            required
+                            checked={termsAccepted}
+                            onChange={(e) => {
+                              setTermsAccepted(e.target.checked);
+                              // Clear error when user checks the box
+                              if (e.target.checked && formErrors.termsAccepted) {
+                                setFormErrors(prev => {
+                                  const newErrors = { ...prev };
+                                  delete newErrors.termsAccepted;
+                                  return newErrors;
+                                });
+                              }
+                            }}
                           />
                           <label className="form-check-label" htmlFor="termsCheck">
                             I agree to the <a href={SankashTC} target="_blank" className="text-primary">Terms and Conditions</a> and 
                             <a href={SankashTC} target="_blank" className="text-primary"> Privacy Policy</a> of the insurance policy.
                           </label>
+                          {formErrors.termsAccepted && (
+                            <div className="text-danger" style={{fontSize: '0.875em', marginTop: '0.25rem'}}>
+                              {formErrors.termsAccepted}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

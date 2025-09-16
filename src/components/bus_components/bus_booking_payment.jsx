@@ -576,16 +576,37 @@ const BusBookingPayment = () => {
                       </h6>
                       <div className="bg-light p-3 rounded">
                         {blockData.DepartureTime && (
-                          <div className="text-center mb-2">
-                            <span className="badge bg-primary">{formatDate(blockData.DepartureTime)}</span>
+                          <div className="text-center mb-3">
+                            <span className="badge bg-primary fs-6">{formatDate(blockData.DepartureTime)}</span>
                           </div>
                         )}
-                        <div className="text-center mb-3">
-                          <i className="fas fa-map-marker-alt text-success me-2"></i>
-                          <strong>{busData.OriginName || busData.Origin || 'From'}</strong>
-                          <i className="fas fa-arrow-right mx-2 text-muted"></i>
-                          <strong>{busData.DestinationName || busData.Destination || 'To'}</strong>
-                          <i className="fas fa-map-marker-alt text-danger ms-2"></i>
+                        
+                        {/* Main Route Display */}
+                        <div className="bg-white p-3 rounded mb-3 border">
+                          <div className="text-center">
+                            <h5 className="mb-3 text-primary">
+                              <i className="fas fa-route me-2"></i>
+                              Your Journey
+                            </h5>
+                            <div className="d-flex justify-content-center align-items-center flex-wrap">
+                              <div className="text-center me-4">
+                                <div className="fs-4 fw-bold text-success">
+                                  {busData.OriginName || busData.Origin || (getEncryptedItem("busSearchparams") || {}).fromCityName || 'From City'}
+                                </div>
+                                <div className="small text-muted">Departure</div>
+                              </div>
+                              <div className="mx-3">
+                                <i className="fas fa-arrow-right fs-3 text-primary d-sm-none d-none"></i>
+                                <i className="fas fa-arrow-down fs-3 text-primary"></i>
+                              </div>
+                              <div className="text-center">
+                                <div className="fs-4 fw-bold text-danger">
+                                  {busData.DestinationName || busData.Destination || (getEncryptedItem("busSearchparams") || {}).toCityName || 'To City'}
+                                </div>
+                                <div className="small text-muted">Arrival</div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                         <div className="mb-2">
                           <i className="fas fa-bus text-primary me-2"></i>
