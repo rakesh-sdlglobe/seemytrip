@@ -38,6 +38,18 @@ export const selectTransferSearchLoading = (state) => selectTransferSearch(state
 export const selectTransferSearchData = (state) => selectTransferSearch(state).searchData;
 export const selectTransferSearchError = (state) => selectTransferSearch(state).searchError;
 
+// Transfer booking selectors
+export const selectTransferBooking = (state) => selectTransferState(state);
+export const selectTransferBookingLoading = (state) => selectTransferBooking(state).bookingLoading;
+export const selectTransferBookingData = (state) => selectTransferBooking(state).bookingData;
+export const selectTransferBookingError = (state) => selectTransferBooking(state).bookingError;
+
+// Transfer booking detail selectors
+export const selectTransferBookingDetail = (state) => selectTransferState(state);
+export const selectTransferBookingDetailLoading = (state) => selectTransferBookingDetail(state).bookingDetailLoading;
+export const selectTransferBookingDetailData = (state) => selectTransferBookingDetail(state).bookingDetailData;
+export const selectTransferBookingDetailError = (state) => selectTransferBookingDetail(state).bookingDetailError;
+
 // Enhanced destination search selectors
 export const selectTransferDestinationSearchResponse = (state) => selectTransferDestinationSearchData(state) || null;
 export const selectTransferDestinationSearchStatus = (state) => selectTransferDestinationSearchData(state)?.success || null;
@@ -102,7 +114,9 @@ export const selectTransferHasAnyError = (state) => {
     transfer.countryListError ||
     transfer.destinationSearchError ||
     transfer.staticDataError ||
-    transfer.searchError
+    transfer.searchError ||
+    transfer.bookingError ||
+    transfer.bookingDetailError
   );
 };
 
@@ -113,7 +127,9 @@ export const selectTransferIsAnyLoading = (state) => {
     transfer.countryListLoading ||
     transfer.destinationSearchLoading ||
     transfer.staticDataLoading ||
-    transfer.searchLoading
+    transfer.searchLoading ||
+    transfer.bookingLoading ||
+    transfer.bookingDetailLoading
   );
 };
 
@@ -177,6 +193,18 @@ export const selectTransferCanSearch = (state) => {
   return isAuthenticated && hasRequiredFields;
 };
 
+export const selectTransferCanBook = (state) => {
+  const isAuthenticated = selectTransferIsAuthenticated(state);
+  const hasRequiredFields = true; // This should be validated when calling
+  return isAuthenticated && hasRequiredFields;
+};
+
+export const selectTransferCanGetBookingDetail = (state) => {
+  const isAuthenticated = selectTransferIsAuthenticated(state);
+  const hasRequiredFields = true; // This should be validated when calling
+  return isAuthenticated && hasRequiredFields;
+};
+
 // Debug and monitoring selectors
 export const selectTransferDebugInfo = (state) => {
   const transfer = selectTransferState(state);
@@ -191,14 +219,18 @@ export const selectTransferDebugInfo = (state) => {
       countryList: transfer.countryListLoading,
       destinationSearch: transfer.destinationSearchLoading,
       staticData: transfer.staticDataLoading,
-      search: transfer.searchLoading
+      search: transfer.searchLoading,
+      booking: transfer.bookingLoading,
+      bookingDetail: transfer.bookingDetailLoading
     },
     errorStates: {
       auth: !!transfer.authError,
       countryList: !!transfer.countryListError,
       destinationSearch: !!transfer.destinationSearchError,
       staticData: !!transfer.staticDataError,
-      search: !!transfer.searchError
+      search: !!transfer.searchError,
+      booking: !!transfer.bookingError,
+      bookingDetail: !!transfer.bookingDetailError
     },
     dataStates: {
       hasAuthData: !!transfer.authData,
@@ -206,6 +238,8 @@ export const selectTransferDebugInfo = (state) => {
       hasDestinationSearchData: !!transfer.destinationSearchData,
       hasStaticData: !!transfer.staticDataData,
       hasSearchData: !!transfer.searchData,
+      hasBookingData: !!transfer.bookingData,
+      hasBookingDetailData: !!transfer.bookingDetailData,
       countryCount: selectTransferCountryCount(state),
       destinationCount: selectTransferDestinationCount(state)
     },
@@ -465,6 +499,69 @@ export const selectTransferCanPerformAction = (actionType) => (state) => {
   }
 };
 
+// Transfer booking utility selectors
+export const selectTransferBookingResponse = (state) => selectTransferBookingData(state) || null;
+
+export const selectTransferBookingDetails = (state) => {
+  const bookingData = selectTransferBookingData(state);
+  return {
+    bookingId: bookingData?.BookingId,
+    bookingStatus: bookingData?.BookingStatus,
+    bookingDetails: bookingData?.BookingDetails,
+    success: bookingData?.success,
+    hasBookingId: !!bookingData?.BookingId,
+    hasBookingStatus: !!bookingData?.BookingStatus,
+    hasBookingDetails: !!bookingData?.BookingDetails
+  };
+};
+
+export const selectTransferBookingHasData = (state) => {
+  const bookingData = selectTransferBookingData(state);
+  return !!bookingData && Object.keys(bookingData).length > 0;
+};
+
+export const selectTransferBookingKeys = (state) => {
+  const bookingData = selectTransferBookingData(state);
+  return bookingData ? Object.keys(bookingData) : [];
+};
+
+// Transfer booking detail utility selectors
+export const selectTransferBookingDetailResponse = (state) => selectTransferBookingDetailData(state) || null;
+
+export const selectTransferBookingDetailDetails = (state) => {
+  const bookingDetailData = selectTransferBookingDetailData(state);
+  return {
+    bookingId: bookingDetailData?.BookingId,
+    bookingStatus: bookingDetailData?.BookingStatus,
+    bookingDetails: bookingDetailData?.BookingDetails,
+    success: bookingDetailData?.success,
+    hasBookingId: !!bookingDetailData?.BookingId,
+    hasBookingStatus: !!bookingDetailData?.BookingStatus,
+    hasBookingDetails: !!bookingDetailData?.BookingDetails
+  };
+};
+
+export const selectTransferBookingDetailHasData = (state) => {
+  const bookingDetailData = selectTransferBookingDetailData(state);
+  return !!bookingDetailData && Object.keys(bookingDetailData).length > 0;
+};
+
+export const selectTransferBookingDetailKeys = (state) => {
+  const bookingDetailData = selectTransferBookingDetailData(state);
+  return bookingDetailData ? Object.keys(bookingDetailData) : [];
+};
+
+// Enhanced booking selectors
+export const selectTransferBookingById = (state, bookingId) => {
+  const bookingData = selectTransferBookingData(state);
+  return bookingData?.BookingId === bookingId ? bookingData : null;
+};
+
+export const selectTransferBookingByStatus = (state, status) => {
+  const bookingData = selectTransferBookingData(state);
+  return bookingData?.BookingStatus === status ? bookingData : null;
+};
+
 // Error summary selector
 export const selectTransferErrorSummary = (state) => {
   const transfer = selectTransferState(state);
@@ -484,6 +581,12 @@ export const selectTransferErrorSummary = (state) => {
   }
   if (transfer.searchError) {
     errors.push({ type: 'Search', message: transfer.searchError });
+  }
+  if (transfer.bookingError) {
+    errors.push({ type: 'Booking', message: transfer.bookingError });
+  }
+  if (transfer.bookingDetailError) {
+    errors.push({ type: 'Booking Detail', message: transfer.bookingDetailError });
   }
   
   return {
