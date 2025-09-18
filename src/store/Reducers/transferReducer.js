@@ -67,28 +67,31 @@ const initialState = {
 };
 
 const transferReducer = (state = initialState, action) => {
-  console.log('🔄 [TRANSFER REDUCER] Processing action:', action.type, {
-    payload: action.payload,
-    timestamp: new Date().toISOString(),
-    currentState: {
-      isAuthenticated: state.isAuthenticated,
-      authLoading: state.authLoading,
-      countryListLoading: state.countryListLoading,
-      destinationSearchLoading: state.destinationSearchLoading,
-      staticDataLoading: state.staticDataLoading,
-      searchLoading: state.searchLoading,
-      bookingLoading: state.bookingLoading,
-      bookingDetailLoading: state.bookingDetailLoading,
-      lastAction: state.lastAction,
-      hasAuthData: !!state.authData,
-      hasCountryListData: !!state.countryListData,
-      hasDestinationSearchData: !!state.destinationSearchData,
-      hasStaticData: !!state.staticDataData,
-      hasSearchData: !!state.searchData,
-      hasBookingData: !!state.bookingData,
-      hasBookingDetailData: !!state.bookingDetailData
-    }
-  });
+  // Only log transfer-related actions, not all actions
+  if (action.type && action.type.startsWith('TRANSFER_')) {
+    console.log('�� [TRANSFER REDUCER] Processing action:', action.type, {
+      payload: action.payload,
+      timestamp: new Date().toISOString(),
+      currentState: {
+        isAuthenticated: state.isAuthenticated,
+        authLoading: state.authLoading,
+        countryListLoading: state.countryListLoading,
+        destinationSearchLoading: state.destinationSearchLoading,
+        staticDataLoading: state.staticDataLoading,
+        searchLoading: state.searchLoading,
+        bookingLoading: state.bookingLoading,
+        bookingDetailLoading: state.bookingDetailLoading,
+        lastAction: state.lastAction,
+        hasAuthData: !!state.authData,
+        hasCountryListData: !!state.countryListData,
+        hasDestinationSearchData: !!state.destinationSearchData,
+        hasStaticData: !!state.staticDataData,
+        hasSearchData: !!state.searchData,
+        hasBookingData: !!state.bookingData,
+        hasBookingDetailData: !!state.bookingDetailData
+      }
+    });
+  }
 
   switch (action.type) {
     // Authentication cases
@@ -418,7 +421,10 @@ const transferReducer = (state = initialState, action) => {
       };
 
     default:
-      console.log('❓ [TRANSFER REDUCER] Unknown action type:', action.type);
+      // Only log unknown actions that are transfer-related
+      if (action.type && action.type.startsWith('TRANSFER_')) {
+        console.log('❓ [TRANSFER REDUCER] Unknown action type:', action.type);
+      }
       return state;
   }
 };
