@@ -14,6 +14,12 @@ import {
   TRANSFER_SEARCH_REQUEST,
   TRANSFER_SEARCH_SUCCESS,
   TRANSFER_SEARCH_FAILURE,
+  TRANSFER_BOOKING_REQUEST,
+  TRANSFER_BOOKING_SUCCESS,
+  TRANSFER_BOOKING_FAILURE,
+  TRANSFER_BOOKING_DETAIL_REQUEST,
+  TRANSFER_BOOKING_DETAIL_SUCCESS,
+  TRANSFER_BOOKING_DETAIL_FAILURE,
   CLEAR_TRANSFER_ERROR,
   CLEAR_TRANSFER_DATA
 } from '../Actions/transferAction';
@@ -43,6 +49,16 @@ const initialState = {
     searchLoading: false,
     searchData: null,
     searchError: null,
+
+    // Transfer booking state
+    bookingLoading: false,
+    bookingData: null,
+    bookingError: null,
+
+    // Transfer booking detail state
+    bookingDetailLoading: false,
+    bookingDetailData: null,
+    bookingDetailError: null,
   
   
   // General state
@@ -61,12 +77,16 @@ const transferReducer = (state = initialState, action) => {
       destinationSearchLoading: state.destinationSearchLoading,
       staticDataLoading: state.staticDataLoading,
       searchLoading: state.searchLoading,
+      bookingLoading: state.bookingLoading,
+      bookingDetailLoading: state.bookingDetailLoading,
       lastAction: state.lastAction,
       hasAuthData: !!state.authData,
       hasCountryListData: !!state.countryListData,
       hasDestinationSearchData: !!state.destinationSearchData,
       hasStaticData: !!state.staticDataData,
-      hasSearchData: !!state.searchData
+      hasSearchData: !!state.searchData,
+      hasBookingData: !!state.bookingData,
+      hasBookingDetailData: !!state.bookingDetailData
     }
   });
 
@@ -276,6 +296,96 @@ const transferReducer = (state = initialState, action) => {
         lastAction: 'SEARCH_FAILURE'
       };
 
+    // Transfer booking cases
+    case TRANSFER_BOOKING_REQUEST:
+      console.log('📝 [TRANSFER REDUCER] Setting booking loading to true');
+      return {
+        ...state,
+        bookingLoading: true,
+        bookingError: null,
+        lastAction: 'BOOKING_REQUEST'
+      };
+    
+    case TRANSFER_BOOKING_SUCCESS:
+      console.log('✅ [TRANSFER REDUCER] Booking success, data received:', {
+        hasData: !!action.payload,
+        dataKeys: action.payload ? Object.keys(action.payload) : 'No data',
+        hasBookingId: !!action.payload?.BookingId,
+        hasBookingStatus: !!action.payload?.BookingStatus,
+        hasBookingDetails: !!action.payload?.BookingDetails,
+        success: action.payload?.success
+      });
+      console.log('📝 [TRANSFER REDUCER] Booking details received:', {
+        hasBookingId: !!action.payload?.BookingId,
+        hasBookingStatus: !!action.payload?.BookingStatus,
+        hasBookingDetails: !!action.payload?.BookingDetails,
+        bookingId: action.payload?.BookingId,
+        bookingStatus: action.payload?.BookingStatus,
+        success: action.payload?.success
+      });
+      return {
+        ...state,
+        bookingLoading: false,
+        bookingData: action.payload,
+        bookingError: null,
+        lastAction: 'BOOKING_SUCCESS'
+      };
+    
+    case TRANSFER_BOOKING_FAILURE:
+      console.log('❌ [TRANSFER REDUCER] Booking failure:', action.payload);
+      return {
+        ...state,
+        bookingLoading: false,
+        bookingData: null,
+        bookingError: action.payload,
+        lastAction: 'BOOKING_FAILURE'
+      };
+
+    // Transfer booking detail cases
+    case TRANSFER_BOOKING_DETAIL_REQUEST:
+      console.log('📋 [TRANSFER REDUCER] Setting booking detail loading to true');
+      return {
+        ...state,
+        bookingDetailLoading: true,
+        bookingDetailError: null,
+        lastAction: 'BOOKING_DETAIL_REQUEST'
+      };
+    
+    case TRANSFER_BOOKING_DETAIL_SUCCESS:
+      console.log('✅ [TRANSFER REDUCER] Booking detail success, data received:', {
+        hasData: !!action.payload,
+        dataKeys: action.payload ? Object.keys(action.payload) : 'No data',
+        hasBookingDetails: !!action.payload?.BookingDetails,
+        hasBookingId: !!action.payload?.BookingId,
+        hasBookingStatus: !!action.payload?.BookingStatus,
+        success: action.payload?.success
+      });
+      console.log('📋 [TRANSFER REDUCER] Booking detail received:', {
+        hasBookingDetails: !!action.payload?.BookingDetails,
+        hasBookingId: !!action.payload?.BookingId,
+        hasBookingStatus: !!action.payload?.BookingStatus,
+        bookingId: action.payload?.BookingId,
+        bookingStatus: action.payload?.BookingStatus,
+        success: action.payload?.success
+      });
+      return {
+        ...state,
+        bookingDetailLoading: false,
+        bookingDetailData: action.payload,
+        bookingDetailError: null,
+        lastAction: 'BOOKING_DETAIL_SUCCESS'
+      };
+    
+    case TRANSFER_BOOKING_DETAIL_FAILURE:
+      console.log('❌ [TRANSFER REDUCER] Booking detail failure:', action.payload);
+      return {
+        ...state,
+        bookingDetailLoading: false,
+        bookingDetailData: null,
+        bookingDetailError: action.payload,
+        lastAction: 'BOOKING_DETAIL_FAILURE'
+      };
+
    
     // Clear cases
     case CLEAR_TRANSFER_ERROR:
@@ -287,6 +397,8 @@ const transferReducer = (state = initialState, action) => {
         destinationSearchError: null,
         staticDataError: null,
         searchError: null,
+        bookingError: null,
+        bookingDetailError: null,
         lastAction: 'CLEAR_ERROR'
       };
 
@@ -299,6 +411,8 @@ const transferReducer = (state = initialState, action) => {
         destinationSearchData: null,
         staticDataData: null,
         searchData: null,
+        bookingData: null,
+        bookingDetailData: null,
         isAuthenticated: false,
         lastAction: 'CLEAR_DATA'
       };

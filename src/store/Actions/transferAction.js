@@ -22,6 +22,14 @@ export const TRANSFER_SEARCH_REQUEST = 'TRANSFER_SEARCH_REQUEST';
 export const TRANSFER_SEARCH_SUCCESS = 'TRANSFER_SEARCH_SUCCESS';
 export const TRANSFER_SEARCH_FAILURE = 'TRANSFER_SEARCH_FAILURE';
 
+export const TRANSFER_BOOKING_REQUEST = 'TRANSFER_BOOKING_REQUEST';
+export const TRANSFER_BOOKING_SUCCESS = 'TRANSFER_BOOKING_SUCCESS';
+export const TRANSFER_BOOKING_FAILURE = 'TRANSFER_BOOKING_FAILURE';
+
+export const TRANSFER_BOOKING_DETAIL_REQUEST = 'TRANSFER_BOOKING_DETAIL_REQUEST';
+export const TRANSFER_BOOKING_DETAIL_SUCCESS = 'TRANSFER_BOOKING_DETAIL_SUCCESS';
+export const TRANSFER_BOOKING_DETAIL_FAILURE = 'TRANSFER_BOOKING_DETAIL_FAILURE';
+
 export const CLEAR_TRANSFER_ERROR = 'CLEAR_TRANSFER_ERROR';
 export const CLEAR_TRANSFER_DATA = 'CLEAR_TRANSFER_DATA';
 
@@ -96,6 +104,34 @@ export const transferSearchSuccess = (data) => ({
 
 export const transferSearchFailure = (error) => ({
   type: TRANSFER_SEARCH_FAILURE,
+  payload: error
+});
+
+export const transferBookingRequest = () => ({
+  type: TRANSFER_BOOKING_REQUEST
+});
+
+export const transferBookingSuccess = (data) => ({
+  type: TRANSFER_BOOKING_SUCCESS,
+  payload: data
+});
+
+export const transferBookingFailure = (error) => ({
+  type: TRANSFER_BOOKING_FAILURE,
+  payload: error
+});
+
+export const transferBookingDetailRequest = () => ({
+  type: TRANSFER_BOOKING_DETAIL_REQUEST
+});
+
+export const transferBookingDetailSuccess = (data) => ({
+  type: TRANSFER_BOOKING_DETAIL_SUCCESS,
+  payload: data
+});
+
+export const transferBookingDetailFailure = (error) => ({
+  type: TRANSFER_BOOKING_DETAIL_FAILURE,
   payload: error
 });
 
@@ -702,6 +738,246 @@ export const validateSearchParameters = (searchData) => {
   return { isValid, missingFields };
 };
 
+// Book Transfer
+export const bookTransfer = (bookingData = {}) => async (dispatch, getState) => {
+  try {
+    console.log('📝 [TRANSFER] Starting transfer booking');
+    console.log('📝 [TRANSFER] Input data:', bookingData);
+    console.log('📝 [TRANSFER] Current Redux state before request:', getState().transfer);
+    
+    dispatch(transferBookingRequest());
+    
+    // Get token from state if available
+    const { transfer } = getState();
+    const tokenData = transfer.authData;
+    
+    console.log('🔑 [TRANSFER] Current auth state for booking:', {
+      hasToken: !!tokenData?.TokenId,
+      hasEndUserIp: !!tokenData?.EndUserIp,
+      isAuthenticated: transfer.isAuthenticated,
+      tokenData: tokenData
+    });
+    
+    if (!tokenData || !tokenData.TokenId) {
+      console.log('🔄 [TRANSFER] No token found for booking, authenticating first...');
+      // If no token, authenticate first
+      const authResult = await dispatch(authenticateTransferAPI());
+      console.log('🔄 [TRANSFER] Authentication result:', authResult);
+      
+      const updatedState = getState();
+      bookingData.TokenId = updatedState.transfer.authData.TokenId;
+      bookingData.EndUserIp = updatedState.transfer.authData.EndUserIp;
+      console.log('✅ [TRANSFER] Authentication completed for booking, token obtained:', {
+        TokenId: bookingData.TokenId,
+        EndUserIp: bookingData.EndUserIp
+      });
+    } else {
+      bookingData.TokenId = tokenData.TokenId;
+      bookingData.EndUserIp = tokenData.EndUserIp;
+      console.log('✅ [TRANSFER] Using existing token for booking:', {
+        TokenId: bookingData.TokenId,
+        EndUserIp: bookingData.EndUserIp
+      });
+    }
+    
+    // Validate required fields as per backend
+    const requiredFields = [
+      'TokenId', 'EndUserIp', 'TransferCode', 'VehicleIndex'
+    ];
+    
+    const missingFields = requiredFields.filter(field => !bookingData[field]);
+    if (missingFields.length > 0) {
+      const errorMsg = `Missing required fields: ${missingFields.join(', ')}`;
+      console.error('❌ [TRANSFER] Validation failed:', {
+        error: errorMsg,
+        missingFields: missingFields,
+        bookingData: bookingData
+      });
+      throw new Error(errorMsg);
+    }
+    
+    console.log('📡 [TRANSFER] Making booking request to:', `${API_URL}/transfer/GetBookingTransfer`);
+    console.log('📤 [TRANSFER] Request payload:', bookingData);
+    console.log('📤 [TRANSFER] Request headers:', {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+    
+    const response = await axios.post(`${API_URL}/transfer/GetBookingTransfer`, bookingData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      timeout: 60000 // 60 second timeout for booking
+    });
+    
+    console.log('📥 [TRANSFER] Booking response received:', {
+      status: response.status,
+      statusText: response.statusText,
+      hasData: !!response.data,
+      dataKeys: response.data ? Object.keys(response.data) : 'No data',
+      hasBookingId: !!response.data?.BookingId,
+      hasBookingStatus: !!response.data?.BookingStatus,
+      success: response.data?.success
+    });
+    console.log('📥 [TRANSFER] Full response data:', response.data);
+    
+    if (response.data) {
+      console.log('✅ [TRANSFER] Transfer booking successful, dispatching success action');
+      console.log('📝 [TRANSFER] Booking details received:', {
+        hasBookingId: !!response.data.BookingId,
+        hasBookingStatus: !!response.data.BookingStatus,
+        hasBookingDetails: !!response.data.BookingDetails,
+        bookingId: response.data.BookingId,
+        bookingStatus: response.data.BookingStatus,
+        success: response.data.success
+      });
+      dispatch(transferBookingSuccess(response.data));
+      return response.data;
+    } else {
+      const errorMsg = 'Invalid response from transfer booking API';
+      console.error('❌ [TRANSFER] Invalid booking response:', {
+        error: errorMsg,
+        responseData: response.data
+      });
+      throw new Error(errorMsg);
+    }
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || error.message || 'Transfer booking failed';
+    console.error('❌ [TRANSFER] Booking failed:', {
+      message: errorMessage,
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      originalError: error.message,
+      stack: error.stack,
+      isAxiosError: error.isAxiosError,
+      code: error.code
+    });
+    dispatch(transferBookingFailure(errorMessage));
+    throw new Error(errorMessage);
+  }
+};
+
+// Get Transfer Booking Detail
+export const getTransferBookingDetail = (bookingDetailData = {}) => async (dispatch, getState) => {
+  try {
+    console.log('📋 [TRANSFER] Starting transfer booking detail retrieval');
+    console.log('📋 [TRANSFER] Input data:', bookingDetailData);
+    console.log('📋 [TRANSFER] Current Redux state before request:', getState().transfer);
+    
+    dispatch(transferBookingDetailRequest());
+    
+    // Get token from state if available
+    const { transfer } = getState();
+    const tokenData = transfer.authData;
+    
+    console.log('🔑 [TRANSFER] Current auth state for booking detail:', {
+      hasToken: !!tokenData?.TokenId,
+      hasEndUserIp: !!tokenData?.EndUserIp,
+      isAuthenticated: transfer.isAuthenticated,
+      tokenData: tokenData
+    });
+    
+    if (!tokenData || !tokenData.TokenId) {
+      console.log('🔄 [TRANSFER] No token found for booking detail, authenticating first...');
+      // If no token, authenticate first
+      const authResult = await dispatch(authenticateTransferAPI());
+      console.log('🔄 [TRANSFER] Authentication result:', authResult);
+      
+      const updatedState = getState();
+      bookingDetailData.TokenId = updatedState.transfer.authData.TokenId;
+      bookingDetailData.EndUserIp = updatedState.transfer.authData.EndUserIp;
+      console.log('✅ [TRANSFER] Authentication completed for booking detail, token obtained:', {
+        TokenId: bookingDetailData.TokenId,
+        EndUserIp: bookingDetailData.EndUserIp
+      });
+    } else {
+      bookingDetailData.TokenId = tokenData.TokenId;
+      bookingDetailData.EndUserIp = tokenData.EndUserIp;
+      console.log('✅ [TRANSFER] Using existing token for booking detail:', {
+        TokenId: bookingDetailData.TokenId,
+        EndUserIp: bookingDetailData.EndUserIp
+      });
+    }
+    
+    // Validate required fields as per backend
+    const requiredFields = ['TokenId', 'EndUserIp', 'BookingId', 'AgencyId'];
+    const missingFields = requiredFields.filter(field => !bookingDetailData[field]);
+    
+    if (missingFields.length > 0) {
+      const errorMsg = `Missing required fields: ${missingFields.join(', ')}`;
+      console.error('❌ [TRANSFER] Validation failed:', {
+        error: errorMsg,
+        missingFields: missingFields,
+        bookingDetailData: bookingDetailData
+      });
+      throw new Error(errorMsg);
+    }
+    
+    console.log('📡 [TRANSFER] Making booking detail request to:', `${API_URL}/transfer/GetBookingDetail`);
+    console.log('📤 [TRANSFER] Request payload:', bookingDetailData);
+    console.log('📤 [TRANSFER] Request headers:', {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+    
+    const response = await axios.post(`${API_URL}/transfer/GetBookingDetail`, bookingDetailData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      timeout: 30000 // 30 second timeout
+    });
+    
+    console.log('📥 [TRANSFER] Booking detail response received:', {
+      status: response.status,
+      statusText: response.statusText,
+      hasData: !!response.data,
+      dataKeys: response.data ? Object.keys(response.data) : 'No data',
+      hasBookingDetails: !!response.data?.BookingDetails,
+      hasBookingId: !!response.data?.BookingId,
+      success: response.data?.success
+    });
+    console.log('📥 [TRANSFER] Full response data:', response.data);
+    
+    if (response.data) {
+      console.log('✅ [TRANSFER] Transfer booking detail retrieval successful, dispatching success action');
+      console.log('📋 [TRANSFER] Booking detail received:', {
+        hasBookingDetails: !!response.data.BookingDetails,
+        hasBookingId: !!response.data.BookingId,
+        hasBookingStatus: !!response.data.BookingStatus,
+        bookingId: response.data.BookingId,
+        bookingStatus: response.data.BookingStatus,
+        success: response.data.success
+      });
+      dispatch(transferBookingDetailSuccess(response.data));
+      return response.data;
+    } else {
+      const errorMsg = 'Invalid response from transfer booking detail API';
+      console.error('❌ [TRANSFER] Invalid booking detail response:', {
+        error: errorMsg,
+        responseData: response.data
+      });
+      throw new Error(errorMsg);
+    }
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || error.message || 'Transfer booking detail retrieval failed';
+    console.error('❌ [TRANSFER] Booking detail retrieval failed:', {
+      message: errorMessage,
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      originalError: error.message,
+      stack: error.stack,
+      isAxiosError: error.isAxiosError,
+      code: error.code
+    });
+    dispatch(transferBookingDetailFailure(errorMessage));
+    throw new Error(errorMessage);
+  }
+};
+
 // Utility function to get debug information
 export const getTransferDebugInfo = () => (dispatch, getState) => {
   const { transfer } = getState();
@@ -715,21 +991,27 @@ export const getTransferDebugInfo = () => (dispatch, getState) => {
       countryList: transfer.countryListLoading,
       destinationSearch: transfer.destinationSearchLoading,
       staticData: transfer.staticDataLoading,
-      search: transfer.searchLoading
+      search: transfer.searchLoading,
+      booking: transfer.bookingLoading,
+      bookingDetail: transfer.bookingDetailLoading
     },
     errorStates: {
       auth: !!transfer.authError,
       countryList: !!transfer.countryListError,
       destinationSearch: !!transfer.destinationSearchError,
       staticData: !!transfer.staticDataError,
-      search: !!transfer.searchError
+      search: !!transfer.searchError,
+      booking: !!transfer.bookingError,
+      bookingDetail: !!transfer.bookingDetailError
     },
     dataStates: {
       hasAuthData: !!transfer.authData,
       hasCountryListData: !!transfer.countryListData,
       hasDestinationSearchData: !!transfer.destinationSearchData,
       hasStaticData: !!transfer.staticDataData,
-      hasSearchData: !!transfer.searchData
+      hasSearchData: !!transfer.searchData,
+      hasBookingData: !!transfer.bookingData,
+      hasBookingDetailData: !!transfer.bookingDetailData
     }
   };
   
