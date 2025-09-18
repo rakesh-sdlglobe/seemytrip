@@ -464,14 +464,14 @@ export const fetchBusBookingDetails = (bookingDetailsData) => async (dispatch) =
       // console.error("Error details:", {
       //   message: error.message,
       //   status: error.response?.status,
-        statusText: error.response?.statusText,
-        responseData: error.response?.data,
-        config: {
-          url: error.config?.url,
-          method: error.config?.method,
-          data: error.config?.data
-        }
-      });
+      //   statusText: error.response?.statusText,
+      //   responseData: error.response?.data,
+      //   config: {
+      //     url: error.config?.url,
+      //     method: error.config?.method,
+      //     data: error.config?.data
+      //   }
+      // });
       dispatch(fetchBusBookingDetailsFailure(error.message));
       // console.log("=== BUS BOOKING DETAILS ACTION FAILURE - ERROR ===");
       return null;
