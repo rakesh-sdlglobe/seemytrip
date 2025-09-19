@@ -492,7 +492,7 @@ const Insurance_Cancel_Page = () => {
                   </button>
                   <button
                     type="button"
-                    className="btn btn-primary btn-lg"
+                    className="btn btn-md btn-danger btn-lg"
                     onClick={handleGoBack}
                   >
                     Go to Insurance Home
@@ -610,7 +610,7 @@ const Insurance_Cancel_Page = () => {
                       </button>
                       <button
                         type="submit"
-                        className="btn btn-primary"
+                        className="btn btn-danger"
                         disabled={cancelLoading}
                       >
                         {cancelLoading ? (

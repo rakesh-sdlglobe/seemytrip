@@ -290,7 +290,7 @@ const Bus_Comfirmation_Page = () => {
                 {/* Ticket Details Card */}
                 <div className="card shadow-sm border-0">
                   <div className="card-header bg-primary text-white text-center py-3">
-                    <h2 className="mb-0 fw-bold fs-4">Ticket Details</h2>
+                    <h4 className="mb-0  fs-5 text-white">Ticket Details</h4>
                   </div>
                   <div className="card-body p-0">
                     

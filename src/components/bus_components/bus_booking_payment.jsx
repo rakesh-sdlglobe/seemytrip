@@ -51,94 +51,58 @@ const BusBookingPayment = () => {
   const createBookingLoading = useSelector(selectCreateBookingLoading);
   const updateStatusLoading = useSelector(selectUpdateStatusLoading);
   const [timeLeft, setTimeLeft] = useState(360); // 6 minutes in seconds
-  const [hasLogged, setHasLogged] = useState(false); // NEW: Track if we've already logged
   const [isInitialized, setIsInitialized] = useState(false); // Prevent multiple initializations
   
   // Check if block data is available - RUN ONLY ONCE
   useEffect(() => {
-    // Prevent multiple initializations
-    if (isInitialized) {
-      return;
-    }
+    if (isInitialized) return;
     setIsInitialized(true);
 
-    // Only log once when component mounts
-    if (!hasLogged) {
-      setHasLogged(true);
-    }
+    // Check if we have the necessary data
+    const hasValidData = blockData && Object.keys(blockData).length > 0 && 
+                        busData && Object.keys(busData).length > 0;
 
-    // Check if we have any block data in any format
-    const hasBlockData = blockData && Object.keys(blockData).length > 0;
-    const hasBlockResponse = blockResponse && Object.keys(blockResponse).length > 0;
-
-    if (!hasBlockData && !hasBlockResponse) {
+    if (!hasValidData) {
+      // Try to get data from localStorage as fallback
       const storedBlockResponse = getEncryptedItem("blockResponse");
-      if (storedBlockResponse) {
-        // Don't reload the page as it causes infinite loops
-        // Instead, try to parse and use the stored data
-        try {
-          const parsedData = storedBlockResponse;
-          if (parsedData && Object.keys(parsedData).length > 0) {
-            return; // Continue with the component
-          }
-        } catch (error) {
-          console.error("Error parsing stored block data:", error);
-        }
+      const storedBusData = getEncryptedItem("selectedBusData");
+      
+      if (storedBlockResponse && storedBusData) {
+        // Data exists in localStorage, continue
+        return;
       }
-
+      
       toast.error("No booking data found. Please start over.");
       navigate('/bus-list');
     }
-  }, [isInitialized, hasLogged, blockData, blockResponse, busData, formData, navigate]); // Added proper dependencies
+  }, [isInitialized, blockData, busData, navigate]);
+
+  // Separate function for session expiry
+  const handleSessionExpiry = () => {
+    toast.error('Booking session expired. Please start over.');
+    localStorage.removeItem("blockResponse");
+    localStorage.removeItem("blockTimestamp");
+    localStorage.removeItem("blockRequestData");
+    navigate('/bus-search');
+  };
 
   // Timer countdown - SEPARATE useEffect
   useEffect(() => {
-    // Only start timers if we have valid data
-    if (!blockData || Object.keys(blockData).length === 0) {
-      return;
-    }
+    if (!blockData || Object.keys(blockData).length === 0) return;
 
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
           clearInterval(timer);
-          toast.error('Booking session expired. Please start over.');
-          // Clear localStorage before navigating
-          localStorage.removeItem("blockResponse");
-          localStorage.removeItem("blockTimestamp");
-          localStorage.removeItem("blockRequestData");
-          navigate('/bus-search');
+          handleSessionExpiry();
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
 
-    // Check block expiry every 60 seconds (less aggressive)
-    const blockCheckTimer = setInterval(() => {
-      const blockTimestamp = getEncryptedItem("blockTimestamp");
-      if (blockTimestamp) {
-        const blockTime = parseInt(blockTimestamp);
-        const currentTime = Date.now();
-        const timeDiff = currentTime - blockTime;
-        const maxBlockTime = 6 * 60 * 1000; // 6 minutes in milliseconds
-        
-        if (timeDiff > maxBlockTime) {
-          toast.error('Seat block has expired. Please start over.');
-          // Clear the expired data from localStorage
-          localStorage.removeItem("blockResponse");
-          localStorage.removeItem("blockTimestamp");
-          localStorage.removeItem("blockRequestData");
-          navigate('/bus-list');
-        }
-      }
-    }, 60000); // Check every 60 seconds instead of 30
-    
-    return () => {
-      clearInterval(timer);
-      clearInterval(blockCheckTimer);
-    };
-  }, [navigate, blockData]);
+    return () => clearInterval(timer);
+  }, [blockData, navigate]);
   
   // Format time
   const formatTime = (seconds) => {
@@ -187,12 +151,8 @@ const BusBookingPayment = () => {
   
   const fareDetails = calculateTotal();
   
-  // Show loading state if no data is available
-  const hasBlockData = blockData && Object.keys(blockData).length > 0;
-  const hasBlockResponse = blockResponse && Object.keys(blockResponse).length > 0;
-  
   // Show loading state if component is not initialized or no data is available
-  if (!isInitialized || (!hasBlockData && !hasBlockResponse)) {
+  if (!isInitialized || !blockData || Object.keys(blockData).length === 0) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
         <div className="text-center">
@@ -224,8 +184,9 @@ const BusBookingPayment = () => {
   // Validate block status before payment
   const validateBlockStatus = () => {
     const blockTimestamp = getEncryptedItem("blockTimestamp");
+    const blockRequestData = getEncryptedItem("blockRequestData");
     
-    if (!blockTimestamp) {
+    if (!blockTimestamp || !blockRequestData) {
       toast.error('No valid seat block found. Please start over.');
       navigate('/bus-list');
       return false;
@@ -234,10 +195,14 @@ const BusBookingPayment = () => {
     const blockTime = parseInt(blockTimestamp);
     const currentTime = Date.now();
     const timeDiff = currentTime - blockTime;
-    const maxBlockTime = 6 * 60 * 1000; // 6 minutes in milliseconds
+    const maxBlockTime = 6 * 60 * 1000; // 6 minutes
 
     if (timeDiff > maxBlockTime) {
       toast.error('Seat block has expired. Please start over.');
+      // Clear expired data
+      localStorage.removeItem("blockResponse");
+      localStorage.removeItem("blockTimestamp");
+      localStorage.removeItem("blockRequestData");
       navigate('/bus-list');
       return false;
     }
@@ -269,6 +234,22 @@ const BusBookingPayment = () => {
     };
 
     return requestData;
+  };
+
+  // Helper function to prepare booking data
+  const prepareBookingData = (bookingResult, bookingId) => {
+    return {
+      blockData,
+      busData,
+      formData,
+      fareDetails,
+      bookingResult,
+      bookingId,
+      selectedBoardingPoint: getEncryptedItem("selectedBoardingPoint") || "",
+      selectedDroppingPoint: getEncryptedItem("selectedDroppingPoint") || "",
+      fromCity: (getEncryptedItem("busSearchparams") || {}).fromCityName || "",
+      toCity: (getEncryptedItem("busSearchparams") || {}).toCityName || ""
+    };
   };
 
   // Save booking to database using Redux
@@ -329,83 +310,67 @@ const BusBookingPayment = () => {
 
   // Main handler for payment
   const handleProceedToPay = async () => {
-    // Validate block status first
-    if (!validateBlockStatus()) {
-      return;
-    }
+    if (!validateBlockStatus()) return;
 
     try {
       // 1. Book the bus
       const bookingRequest = getBookingRequest();
       const bookingResult = await dispatch(fetchBusBooking(bookingRequest));
 
-      // 2. If booking is successful, get booking details
-      if (bookingResult && bookingResult.BookResult && bookingResult.BookResult.ResponseStatus === 1) {
-        // Save to database using Redux
-        const bookingId = await saveBookingToDatabase();
-
-        if (bookingId) {
-          // Update booking status using Redux
-          await updateBookingStatus(bookingResult.BookResult);
-
-          // 3. Get booking details
-          const busId = bookingResult.BookResult.BusId;
-          const bookingDetailsRequest = getBookingDetailsRequest(busId);
-          await dispatch(fetchBusBookingDetails(bookingDetailsRequest));
-
-          // Store booking data for confirmation page
-          const bookingData = {
-            blockData,
-            busData,
-            formData,
-            fareDetails,
-            bookingResult,
-            bookingId, // Include the database booking ID
-            selectedBoardingPoint: getEncryptedItem("selectedBoardingPoint") || "",
-            selectedDroppingPoint: getEncryptedItem("selectedDroppingPoint") || "",
-            fromCity: (getEncryptedItem("busSearchparams") || {}).fromCityName || "",
-            toCity: (getEncryptedItem("busSearchparams") || {}).toCityName || ""
-          };
-          
-          // Store booking result in localStorage for seat layout refresh detection
-          setEncryptedItem("bookingResult", bookingResult);
-          setEncryptedItem("bookingTimestamp", Date.now().toString());
-          setEncryptedItem("databaseBookingId", bookingId.toString());
-
-          // Fetch latest seat layout after successful booking
-          try {
-            const searchParams = getEncryptedItem("busSearchparams") || {};
-            const { TokenId, EndUserIp } = searchParams;
-            const currentBus = getEncryptedItem("selectedBusData") || {};
-
-            if (TokenId && EndUserIp && currentBus.ResultIndex && searchParams.TraceId) {
-              await dispatch(fetchBusSeatLayout(
-                TokenId,
-                EndUserIp,
-                currentBus.ResultIndex,
-                searchParams.TraceId
-              ));
-            }
-          } catch (error) {
-            console.error("Error fetching latest seat layout:", error);
-          }
-
-          // Navigate to confirmation page
-          navigate('/bus-confirmation', { 
-            state: { bookingData },
-            replace: true 
-          });
-
-          toast.success('Payment successful! Your booking has been confirmed and saved to database.');
-        } else {
-          toast.error('Booking failed - could not save to database');
-        }
-      } else {
-        // Handle booking error
-        toast.error(bookingResult?.BookResult?.Error?.ErrorMessage || "Booking failed");
+      if (bookingResult?.BookResult?.ResponseStatus !== 1) {
+        throw new Error(bookingResult?.BookResult?.Error?.ErrorMessage || "Booking failed");
       }
+
+      // 2. Save to database
+      const bookingId = await saveBookingToDatabase();
+      if (!bookingId) {
+        throw new Error("Failed to save booking to database");
+      }
+
+      // 3. Update booking status
+      await updateBookingStatus(bookingResult.BookResult);
+
+      // 4. Get booking details
+      const busId = bookingResult.BookResult.BusId;
+      const bookingDetailsRequest = getBookingDetailsRequest(busId);
+      await dispatch(fetchBusBookingDetails(bookingDetailsRequest));
+
+      // 5. Prepare navigation data
+      const bookingData = prepareBookingData(bookingResult, bookingId);
+      
+      // Store booking result in localStorage for seat layout refresh detection
+      setEncryptedItem("bookingResult", bookingResult);
+      setEncryptedItem("bookingTimestamp", Date.now().toString());
+      setEncryptedItem("databaseBookingId", bookingId.toString());
+
+      // Fetch latest seat layout after successful booking
+      try {
+        const searchParams = getEncryptedItem("busSearchparams") || {};
+        const { TokenId, EndUserIp } = searchParams;
+        const currentBus = getEncryptedItem("selectedBusData") || {};
+
+        if (TokenId && EndUserIp && currentBus.ResultIndex && searchParams.TraceId) {
+          await dispatch(fetchBusSeatLayout(
+            TokenId,
+            EndUserIp,
+            currentBus.ResultIndex,
+            searchParams.TraceId
+          ));
+        }
+      } catch (error) {
+        console.error("Error fetching latest seat layout:", error);
+      }
+
+      // 6. Navigate to confirmation
+      navigate('/bus-confirmation', { 
+        state: { bookingData },
+        replace: true 
+      });
+
+      toast.success('Payment successful! Booking confirmed.');
+
     } catch (error) {
-      console.error("Error in handleProceedToPay:", error);
+      console.error("Payment error:", error);
       toast.error(error.message || "Payment failed");
     }
   };
@@ -446,6 +411,37 @@ const BusBookingPayment = () => {
     if (genderCode === 1) return 'Male';
     if (genderCode === 2) return 'Female';
     return 'Other';
+  };
+
+  // Format seat number to display properly (L1, U1, L2, U2, etc.)
+  const formatSeatNumber = (seatLabel) => {
+    if (!seatLabel) return "";
+    
+    // If seat label already has L or U prefix, return as is
+    if (seatLabel.startsWith('L') || seatLabel.startsWith('U')) {
+      return seatLabel;
+    }
+    
+    // Try to get actual seat data from stored layout
+    try {
+      const seatLayoutData = getEncryptedItem("seatLayoutData") || {};
+      const seatData = seatLayoutData.seats?.find(s => s.label === seatLabel);
+      
+      if (seatData && seatData.deck) {
+        const deckPrefix = seatData.deck.toUpperCase().charAt(0);
+        return `${deckPrefix}${seatLabel}`;
+      }
+      
+      if (seatData && typeof seatData.isUpper === 'boolean') {
+        const deckPrefix = seatData.isUpper ? "U" : "L";
+        return `${deckPrefix}${seatLabel}`;
+      }
+    } catch (error) {
+      console.error('Error parsing seat layout data:', error);
+    }
+    
+    // Final fallback - return original label
+    return seatLabel;
   };
 
   return (
@@ -502,7 +498,7 @@ const BusBookingPayment = () => {
               <div className="col-xl-8 col-lg-8 col-md-12">
                 <div className="card">
                   <div className="card-header">
-                    <div className="d-flex justify-content-between align-items-center">
+                    <div className="d-flex justify-content-between gap-2 align-items-center">
                       <div className="d-flex align-items-center">
                         <i className="fas fa-clock me-2 text-primary"></i>
                         <h5 className="mb-0">Complete Booking in</h5>
@@ -630,8 +626,26 @@ const BusBookingPayment = () => {
                                 Boarding Point
                               </div>
                               <div className="text-muted small">
-                                {blockData.BoardingPointdetails?.CityPointName || 'Boarding Point'} - 
-                                {blockData.BoardingPointdetails?.CityPointLocation || 'Location'}
+                                {(() => {
+                                  // Try to get boarding point from selectedBoardingPoint first
+                                  const selectedBoarding = getEncryptedItem("selectedBoardingPoint");
+                                  if (selectedBoarding) {
+                                    return selectedBoarding;
+                                  }
+                                  
+                                  // Fallback to blockData if available
+                                  if (blockData.BoardingPointdetails?.CityPointName) {
+                                    return `${blockData.BoardingPointdetails.CityPointName} - ${blockData.BoardingPointdetails.CityPointLocation || 'Location'}`;
+                                  }
+                                  
+                                  // Fallback to busData boarding points
+                                  if (busData.BoardingPointsDetails && busData.BoardingPointsDetails.length > 0) {
+                                    const firstBoardingPoint = busData.BoardingPointsDetails[0];
+                                    return `${firstBoardingPoint.CityPointName} - ${firstBoardingPoint.CityPointLocation || 'Location'}`;
+                                  }
+                                  
+                                  return 'Boarding Point - Location';
+                                })()}
                               </div>
                             </div>
                           </div>
@@ -651,8 +665,26 @@ const BusBookingPayment = () => {
                                 Dropping Point
                               </div>
                               <div className="text-muted small">
-                                {blockData.DroppingPointdetails?.CityPointName || 'Dropping Point'} - 
-                                {blockData.DroppingPointdetails?.CityPointLocation || 'Location'}
+                                {(() => {
+                                  // Try to get dropping point from selectedDroppingPoint first
+                                  const selectedDropping = getEncryptedItem("selectedDroppingPoint");
+                                  if (selectedDropping) {
+                                    return selectedDropping;
+                                  }
+                                  
+                                  // Fallback to blockData if available
+                                  if (blockData.DroppingPointdetails?.CityPointName) {
+                                    return `${blockData.DroppingPointdetails.CityPointName} - ${blockData.DroppingPointdetails.CityPointLocation || 'Location'}`;
+                                  }
+                                  
+                                  // Fallback to busData dropping points
+                                  if (busData.DroppingPointsDetails && busData.DroppingPointsDetails.length > 0) {
+                                    const firstDroppingPoint = busData.DroppingPointsDetails[0];
+                                    return `${firstDroppingPoint.CityPointName} - ${firstDroppingPoint.CityPointLocation || 'Location'}`;
+                                  }
+                                  
+                                  return 'Dropping Point - Location';
+                                })()}
                               </div>
                             </div>
                           </div>
@@ -674,7 +706,7 @@ const BusBookingPayment = () => {
                                 <strong>{traveler.firstName} {traveler.lastName}</strong>
                                 <div className="text-muted small">
                                   {traveler.gender}, {traveler.age}y
-                                  <span className="ms-2">• Seat {seatLabel}</span>
+                                  <span className="ms-2">• Seat <span className="seat-number-badge">{formatSeatNumber(seatLabel)}</span></span>
                                 </div>
                                 {traveler.idNumber && (
                                   <div className="text-muted small">
@@ -697,7 +729,7 @@ const BusBookingPayment = () => {
                                 <div className="text-muted small">
                                   {getGenderText(passenger.Gender)}, {passenger.Age}y
                                   {passenger.Seat?.SeatName && (
-                                    <span className="ms-2">• Seat {passenger.Seat.SeatName}</span>
+                                    <span className="ms-2">• Seat <span className="seat-number-badge">{formatSeatNumber(passenger.Seat.SeatName)}</span></span>
                                   )}
                                 </div>
                                 {passenger.IdNumber && (
@@ -882,15 +914,29 @@ const BusBookingPayment = () => {
           border-bottom: 1px solid #dee2e6;
         }
         
-        .btn-danger {
-          background-color: #dc3545;
-          border-color: #dc3545;
+        .seat-number-badge {
+          background: linear-gradient(135deg, #cd2c22 0%, #e74c3c 100%);
+          color: white;
+          padding: 2px 8px;
+          border-radius: 12px;
+          font-weight: 600;
+          font-size: 0.75rem;
+          display: inline-block;
+          box-shadow: 0 1px 3px rgba(205, 44, 34, 0.3);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
         }
         
-        .btn-danger:hover {
-          background-color: #c82333;
-          border-color: #bd2130;
+        .seat-number-badge:before {
+          content: '';
+          display: inline-block;
+          width: 6px;
+          height: 6px;
+          background: rgba(255, 255, 255, 0.8);
+          border-radius: 50%;
+          margin-right: 4px;
         }
+
       `}</style>
     </div>
   );

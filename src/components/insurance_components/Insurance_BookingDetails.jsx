@@ -484,7 +484,7 @@ const Insurance_BookingDetails = () => {
                   <div className="d-flex gap-3 justify-content-center flex-wrap">
                     {bookingId && (
                       <button 
-                        className="btn btn-primary d-flex align-items-center"
+                        className="btn btn-md btn-danger d-flex align-items-center"
                         onClick={handleRefreshBookingDetails}
                         disabled={isLoading || bookingDetailsLoading}
                       >
@@ -494,7 +494,7 @@ const Insurance_BookingDetails = () => {
                     )}
 
                     <button 
-                      className="btn btn-outline-primary"
+                      className="btn btn-md btn-outline-danger"
                       onClick={handleGoHome}
                     >
                       Go to Insurance Home
@@ -526,7 +526,7 @@ const Insurance_BookingDetails = () => {
                   <h2 className="mb-3 fw-bold">No Policy Data Found</h2>
                   <p className="text-muted mb-4">Please generate an insurance policy first to view the details.</p>
                   <button 
-                    className="btn btn-primary px-4"
+                    className="btn btn-md btn-danger px-4"
                     onClick={handleGoHome}
                   >
                     Go to Insurance Home
@@ -817,7 +817,7 @@ const Insurance_BookingDetails = () => {
                     Back to Edit Details
                   </button>
                   <button
-                    className="btn btn-outline-primary"
+                    className="btn btn-outline-danger"
                     onClick={handleGoHome}
                   >
                     Cancel Booking
@@ -925,7 +925,7 @@ const Insurance_BookingDetails = () => {
           
                      <div className="nav-item me-2">
                         <button 
-                          className={`nav-link d-flex align-items-center px-3 py-2 rounded-pill ${activeTab === 'price' ? 'active' : ''}`}
+                          className={`nav-link btn btn-sm d-flex align-items-center px-3 py-2 rounded-pill ${activeTab === 'price' ? 'active' : ''}`}
                           onClick={() => setActiveTab('price')}
                           style={{
                             whiteSpace: 'nowrap',
@@ -944,7 +944,7 @@ const Insurance_BookingDetails = () => {
                       </div>
                       <div className="nav-item me-2">
                         <button 
-                          className={`nav-link d-flex align-items-center px-3 py-2 rounded-pill ${activeTab === 'summary' ? 'active' : ''}`}
+                          className={`nav-link btn btn-sm d-flex align-items-center px-3 py-2 rounded-pill ${activeTab === 'summary' ? 'active' : ''}`}
                           onClick={() => setActiveTab('summary')}
                           style={{
                             whiteSpace: 'nowrap',
@@ -964,7 +964,7 @@ const Insurance_BookingDetails = () => {
                    
                       <div className="nav-item me-2">
                         <button 
-                          className={`nav-link d-flex align-items-center px-3 py-2 rounded-pill ${activeTab === 'passenger' ? 'active' : ''}`}
+                          className={`nav-link btn btn-sm d-flex align-items-center px-3 py-2 rounded-pill ${activeTab === 'passenger' ? 'active' : ''}`}
                           onClick={() => setActiveTab('passenger')}
                           style={{
                             whiteSpace: 'nowrap',
@@ -983,7 +983,7 @@ const Insurance_BookingDetails = () => {
                       </div>
                       <div className="nav-item me-2">
                         <button 
-                          className={`nav-link d-flex align-items-center px-3 py-2 rounded-pill ${activeTab === 'coverage' ? 'active' : ''}`}
+                          className={`nav-link btn btn-sm d-flex align-items-center px-3 py-2 rounded-pill ${activeTab === 'coverage' ? 'active' : ''}`}
                           onClick={() => setActiveTab('coverage')}
                           style={{
                             whiteSpace: 'nowrap',
@@ -1002,7 +1002,7 @@ const Insurance_BookingDetails = () => {
                       </div>
                       <div className="nav-item me-2">
                         <button 
-                          className={`nav-link d-flex align-items-center px-3 py-2 rounded-pill ${activeTab === 'documents' ? 'active' : ''}`}
+                          className={`nav-link btn btn-sm  d-flex align-items-center px-3 py-2 rounded-pill ${activeTab === 'documents' ? 'active' : ''}`}
                           onClick={() => setActiveTab('documents')}
                           style={{
                             whiteSpace: 'nowrap',
@@ -1124,7 +1124,7 @@ const Insurance_BookingDetails = () => {
                               'N/A'}
                             </p>
                             <button 
-                              className="btn btn-sm btn-outline-primary"
+                              className="btn btn-sm btn-outline-danger"
                               onClick={() => copyToClipboard(
                                 passengerData?.PolicyNo || 
                                 bookingDetailsData?.Response?.Itinerary?.PaxInfo?.[0]?.PolicyNo
@@ -1436,21 +1436,21 @@ const Insurance_BookingDetails = () => {
                     </p>
                     <div className="d-flex flex-wrap gap-3 justify-content-center">
                       <button
-                        className="btn btn-primary d-flex align-items-center"
+                        className="btn btn-md btn-danger d-flex align-items-center"
                         onClick={() => window.open(passengerData.DocumentURL, '_blank')}
                       >
                         <FaDownload className="me-2" />
                         Download Policy
                       </button>
                       <button
-                        className="btn btn-outline-primary d-flex align-items-center"
+                        className="btn btn-md btn-outline-danger d-flex align-items-center"
                         onClick={() => window.open(passengerData.DocumentURL, '_blank')}
                       >
                         <FaEye className="me-2" />
                         View Online
                       </button>
                       <button
-                        className="btn btn-outline-secondary d-flex align-items-center"
+                        className="btn btn-md btn-outline-secondary d-flex align-items-center"
                         onClick={() => window.print()}
                       >
                         <FaPrint className="me-2" />
@@ -1476,7 +1476,7 @@ const Insurance_BookingDetails = () => {
                 <div className="card-body">
                   <div className="d-grid gap-2">
                     <button
-                      className="btn btn-outline-primary d-flex align-items-center justify-content-center"
+                      className="btn btn-outline-danger d-flex align-items-center justify-content-center"
                       onClick={() => copyToClipboard(
                         passengerData?.PolicyNo || 
                         bookingDetailsData?.Response?.Itinerary?.PaxInfo?.[0]?.PolicyNo
@@ -1520,7 +1520,7 @@ const Insurance_BookingDetails = () => {
                       Save to Favorites
                     </button> */}
                     <button
-                      className="btn btn-outline-primary d-flex align-items-center justify-content-center"
+                      className="btn  btn-outline-danger d-flex align-items-center justify-content-center"
                       onClick={handleCancelInsurance}
                     >
                       <FaBan className="me-2" />
@@ -1580,7 +1580,7 @@ const Insurance_BookingDetails = () => {
                 {bookingId && (
                   <button
                     type="button"
-                    className="btn btn-outline-primary d-flex align-items-center"
+                    className="btn btn-md btn-outline-danger d-flex align-items-center"
                     onClick={handleRefreshBookingDetails}
                     disabled={isLoading || bookingDetailsLoading}
                   >
@@ -1591,7 +1591,7 @@ const Insurance_BookingDetails = () => {
 
                 <button
                   type="button"
-                  className="btn btn-primary d-flex align-items-center"
+                  className="btn btn-md btn-danger d-flex align-items-center"
                   onClick={handleGoHome}
                 >
                   Go to Insurance Home
@@ -1604,11 +1604,6 @@ const Insurance_BookingDetails = () => {
       </div>
 
       <style jsx>{`
-         @media (max-width: 768px) {
-        .btn{
-          height: 48px;
-          padding: 0px 10px;
-        }
         }
         @media (max-width: 576px) {
           .btn{

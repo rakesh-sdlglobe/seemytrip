@@ -30,7 +30,7 @@ const InsuranceList = () => {
   const error = useSelector(selectInsuranceSearchError);
   const plans = useSelector(selectInsuranceSearchResults);
   const planCount = useSelector(selectInsurancePlanCount);
-  
+
   // Email state
   const emailLoading = useSelector(selectInsuranceEmailLoading);
   const emailError = useSelector(selectInsuranceEmailError);
@@ -94,6 +94,13 @@ const InsuranceList = () => {
       toast.error(emailError);
     }
   }, [emailError]);
+
+  // Handle email success states
+  useEffect(() => {
+    if (emailSuccess && emailMessage) {
+      toast.success(emailMessage);
+    }
+  }, [emailSuccess, emailMessage]);
 
   // Scroll to search results when component loads with search results
   useEffect(() => {
@@ -351,6 +358,7 @@ const InsuranceList = () => {
   // Handle email form submission
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
+    console.log('Email submit clicked');
     
     if (!emailData.toEmail.trim()) {
       toast.error('Please enter a valid email address.');
@@ -365,13 +373,22 @@ const InsuranceList = () => {
     }
 
     try {
+      console.log('Starting email send process...');
       // Get the selected plan objects from the filtered plans
       const selectedPlanObjects = filteredPlans.filter(plan => 
         selectedPlans.includes(plan.ResultIndex)
       );
 
+      console.log('Selected plans:', selectedPlanObjects);
+      console.log('Search criteria:', searchCriteria);
+      console.log('Email data:', emailData);
+
       // Dispatch the email action with email data
-      await dispatch(sendSelectedQuotes(selectedPlanObjects, searchCriteria, emailData));
+      const result = await dispatch(sendSelectedQuotes(selectedPlanObjects, searchCriteria, emailData));
+      console.log('Email send result:', result);
+      
+      // Show success message
+      toast.success(`Email successfully sent to ${emailData.toEmail} with ${selectedPlanObjects.length} insurance quotes!`);
       
       // Close modal and clear selected plans after successful email
       handleEmailModalClose();
@@ -392,11 +409,11 @@ const InsuranceList = () => {
     }));
   };
 
-  // Pagination
+  // Show More Logic
   const totalPages = Math.ceil((filteredPlans?.length || 0) / plansPerPage);
   const startIndex = (currentPage - 1) * plansPerPage;
-  const endIndex = startIndex + plansPerPage;
-  const currentPlans = filteredPlans ? filteredPlans.slice(startIndex, endIndex) : [];
+  const endIndex = currentPage * plansPerPage;
+  const currentPlans = filteredPlans ? filteredPlans.slice(0, endIndex) : [];
 
   if (loading) {
     return <InsuranceListSkeleton />;
@@ -534,7 +551,7 @@ const InsuranceList = () => {
                 
                 
                 <button 
-                  className="btn btn-danger w-100 mt-3"
+                  className="btn btn-md btn-danger w-100 mt-3"
                   onClick={() => navigate('/home-insurance', { 
                     state: { 
                       searchParams: searchCriteria,
@@ -551,7 +568,7 @@ const InsuranceList = () => {
           {/* Right Section - Insurance Plans */}
           <div className="col-md-9" id="search-results">
             {/* Header with Email Button */}
-            <div className="d-flex justify-content-between align-items-center mb-3">
+            <div className="d-flex justify-content-between flex-column mt-2 gap-2 flex-md-row  align-items-center mb-3">
               <h5 className="fw-bold fs-6 mb-0">
                 Showing {currentPlans.length} of {filteredPlans.length} Insurance Plans
                 {filteredPlans.length !== plans.length && (
@@ -561,7 +578,7 @@ const InsuranceList = () => {
                 )}
               </h5>
               <button 
-                className="btn btn-danger"
+                className="btn btn-md btn-danger"
                 onClick={handleEmailSelected}
                 disabled={selectedPlans.length === 0}
               >
@@ -570,29 +587,8 @@ const InsuranceList = () => {
               </button>
             </div>
 
-            {/* Email Success/Error Messages */}
-            {emailSuccess && emailMessage && (
-              <div className="alert alert-success alert-dismissible fade show" role="alert">
-                <i className="fas fa-check-circle me-2"></i>
-                {emailMessage}
-                <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>
-            )}
-            
-            {emailError && (
-              <div className="alert alert-danger alert-dismissible fade show" role="alert">
-                <i className="fas fa-exclamation-circle me-2"></i>
-                {emailError}
-                <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>
-            )}
-
             {/* Sticky Price Filter Bar */}
-            <div className="sticky-filter-bar bg-white border rounded p-3 mb-4 shadow-sm" style={{
-              position: 'sticky',
-              top: '20px',
-              zIndex: 1000
-            }}>
+            <div className="sticky-filter-bar justify-content-between bg-white border rounded p-3 mb-4 shadow-sm" >
               <div className="row align-items-center">
                 <div className="col-md-3">
                   <h6 className="fw-bold text-dark mb-0">
@@ -606,35 +602,35 @@ const InsuranceList = () => {
                   <div className="btn-group w-100" role="group">
                     <button
                       type="button"
-                      className={`btn btn-sm ${priceFilter.priceRange === 'all' ? 'btn-primary' : 'btn-outline-primary'}`}
+                      className={`btn btn-sm btn-filters ${priceFilter.priceRange === 'all' ? 'btn-primary' : 'btn-outline-primary'}`}
                       onClick={() => handlePriceRangeChange('all')}
                     >
                       All Prices
                     </button>
                     <button
                       type="button"
-                      className={`btn btn-sm ${priceFilter.priceRange === 'under-1000' ? 'btn-primary' : 'btn-outline-primary'}`}
+                      className={`btn btn-sm btn-filters ${priceFilter.priceRange === 'under-1000' ? 'btn-primary' : 'btn-outline-primary'}`}
                       onClick={() => handlePriceRangeChange('under-1000')}
                     >
                       Under ₹1K
                     </button>
                     <button
                       type="button"
-                      className={`btn btn-sm ${priceFilter.priceRange === '1000-5000' ? 'btn-primary' : 'btn-outline-primary'}`}
+                      className={`btn btn-sm btn-filters ${priceFilter.priceRange === '1000-5000' ? 'btn-primary' : 'btn-outline-primary'}`}
                       onClick={() => handlePriceRangeChange('1000-5000')}
                     >
                       ₹1K - ₹5K
                     </button>
                     <button
                       type="button"
-                      className={`btn btn-sm ${priceFilter.priceRange === '5000-10000' ? 'btn-primary' : 'btn-outline-primary'}`}
+                      className={`btn btn-sm btn-filters ${priceFilter.priceRange === '5000-10000' ? 'btn-primary' : 'btn-outline-primary'}`}
                       onClick={() => handlePriceRangeChange('5000-10000')}
                     >
                       ₹5K - ₹10K
                     </button>
                     <button
                       type="button"
-                      className={`btn btn-sm ${priceFilter.priceRange === 'over-10000' ? 'btn-primary' : 'btn-outline-primary'}`}
+                      className={`btn btn-sm btn-filters ${priceFilter.priceRange === 'over-10000' ? 'btn-primary' : 'btn-outline-primary'}`}
                       onClick={() => handlePriceRangeChange('over-10000')}
                     >
                       Over ₹10K
@@ -725,15 +721,15 @@ const InsuranceList = () => {
                             </p>
                           </div>
 
-                          <div className="d-flex gap-5 justify-content-between">
-                          <div className=" flex flex-column fw-bold fs-4 fs-sm-6 ">
-                            ₹{plan.Price?.OfferedPriceRoundedOff || plan.Price?.OfferedPrice || 'N/A'}
-                            <div className="text-muted mb-2 fs-6">
+                          <div className="d-flex gap-5 justify-content-between w-lg-fit-content w-sm-100">
+                          <div className=" flex flex-column fw-bold">
+                            <h4>₹{plan.Price?.OfferedPriceRoundedOff || plan.Price?.OfferedPrice || 'N/A'}</h4>
+                            <div className="text-muted mb-2 h6">
                               {plan.Price?.OfferedPriceRoundedOff || plan.Price?.OfferedPrice ? 'Best Price' : 'Price on Request'}
                             </div>
                           </div>
-                          <div className="d-flex gap-2">
-                              <div className="d-flex align-items-center gap-2">
+                          <div className="d-flex gap-2 flex-column flex-sm-row align-items-center">
+                              <div className="d-flex align-items-center gap-2 ">
                                 <input
                                   className="form-check-input"
                                   type="checkbox"
@@ -746,7 +742,7 @@ const InsuranceList = () => {
                                   Email
                                 </label>
                               </div>
-                              <button className="btn btn-danger  hover-btn-color-danger" onClick={() => handlePlanBooking(plan)}>
+                              <button className="btn btn-md btn-danger" onClick={() => handlePlanBooking(plan)}>
                                 Choose This
                               </button>
                             </div>
@@ -817,45 +813,34 @@ const InsuranceList = () => {
                       </div>
 
                       {/* Action Links */}
-                      <div className="d-flex justify-content-center gap-4 mt-3 pt-3 border-top">
-                        <a href="#" className="text-primary text-decoration-none fs-6" onClick={(e) => handleCoverDetails(plan, e)}>
-                          <i className="fas fa-shield-alt me-1"></i>Cover Details
+                      <div className="d-flex justify-content-center align-items-center gap-4 mt-3 pt-3 border-top ">
+                        <a href="#" className="text-primary text-decoration-none fs-14 " onClick={(e) => handleCoverDetails(plan, e)}>
+                          <i className="fas fa-shield-alt me-2 ">
+                            </i>Cover Details
                         </a>
                         <span className="text-muted">|</span>
-                        <a href="#" className="text-primary text-decoration-none fs-6">
+                        <a href="#" className="text-primary text-decoration-none fs-14">
                           <i className="fas fa-calculator me-1"></i>Price Break Up
                         </a>
-                        <span className="text-muted">|</span>
+                        {/* <span className="text-muted">|</span>
                         <a href="#" className="text-primary text-decoration-none fs-6">
                           <i className="fas fa-file-alt me-1"></i>Policy Document
-                        </a>
+                        </a> */}
                       </div>
                     </div>
                   ))}
                 </div>
 
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
-                    <span className="text-muted fs-6">
-                      {currentPage} of {totalPages}
-                    </span>
-                    <div className="d-flex gap-2">
-                      <button 
-                        className="btn btn-outline-primary btn-sm"
-                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                        disabled={currentPage === 1}
-                      >
-                        Previous
-                      </button>
-                      <button 
-                        className="btn btn-outline-primary btn-sm"
-                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                        disabled={currentPage === totalPages}
-                      >
-                        Next
-                      </button>
-                    </div>
+                {/* Show More Button */}
+                {currentPage < totalPages && (
+                  <div className="d-flex justify-content-center mt-4 pt-3 border-top">
+                    <button 
+                      className="btn btn-md btn-danger"
+                      onClick={() => setCurrentPage(prev => prev + 1)}
+                    >
+                      <i className="fas fa-plus me-2"></i>
+                      Show More ({Math.min(currentPage * plansPerPage, filteredPlans.length)} of {filteredPlans.length} Plans)
+                    </button>
                   </div>
                 )}
               </>
@@ -1131,9 +1116,7 @@ const InsuranceList = () => {
                   backgroundColor: '#f8f9fa',
                   borderRadius: '8px',
                   padding: '16px',
-                  border: '1px solid #e9ecef',
-                  maxHeight: '200px',
-                  overflowY: 'auto'
+                  border: '1px solid #e9ecef'
                 }}>
                   {plans.filter(plan => selectedPlans.includes(plan.ResultIndex)).map((plan, index) => (
                     <div key={plan.ResultIndex} className="d-flex justify-content-between align-items-center mb-2" style={{
@@ -1243,9 +1226,7 @@ const InsuranceList = () => {
                     border: '1px solid #dee2e6',
                     borderRadius: '8px',
                     padding: '16px',
-                    fontFamily: 'Arial, sans-serif',
-                    fontSize: '14px',
-                    lineHeight: '1.5'
+                    fontFamily: 'Arial, sans-serif'
                   }}>
                     <div className="mb-2">
                       <strong>To:</strong> {emailData.toEmail || 'recipient@example.com'}
@@ -1405,21 +1386,6 @@ const InsuranceList = () => {
           background: #a8a8a8;
         }
 
-        /* When screen is between 600px and 1200px → absolute */
-        @media (max-width: 560px) {
-          .middle-section {
-            position: static;
-            margin-bottom: 10px;
-          }
-        }
-        
-        @media (max-width: 768px) {
-          .d-flex.justify-content-between.align-items-center.flex-wrap {
-            flex-direction: column;
-            align-items: flex-start !important;
-          }
-        }
-
         /* Responsive Modal */
         @media (max-width: 768px) {
           .modal-content {
@@ -1453,16 +1419,12 @@ const InsuranceList = () => {
         .sticky-filter-bar {
           transition: all 0.3s ease;
           backdrop-filter: blur(10px);
-          background-color: rgba(255, 255, 255, 0.95) !important;
+          z-index: 0 !important;
         }
 
-        .sticky-filter-bar .btn-group .btn {
-          font-size: 12px;
-          padding: 6px 8px;
-        }
 
         /* Responsive Filter Bar */
-        @media (max-width: 768px) {
+        @media (max-width: 1200px) {
           .sticky-filter-bar .row {
             flex-direction: column;
             gap: 10px;
@@ -1471,20 +1433,9 @@ const InsuranceList = () => {
           .sticky-filter-bar .col-md-3,
           .sticky-filter-bar .col-md-6 {
             width: 100%;
-            max-width: 100%;
           }
           
-          .sticky-filter-bar .btn-group {
-            flex-wrap: wrap;
-            gap: 5px;
-          }
-          
-          .sticky-filter-bar .btn-group .btn {
-            flex: 1;
-            min-width: 0;
-            font-size: 11px;
-            padding: 4px 6px;
-          }
+
           
           .sticky-filter-bar .d-flex.gap-2 {
             justify-content: center;
@@ -1496,6 +1447,19 @@ const InsuranceList = () => {
         }
 
         @media (max-width: 576px) {
+
+        .w-lg-fit-content {
+          width: 100%;
+        }
+
+        .text-primary{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        }
+
+
           .sticky-filter-bar {
             padding: 15px !important;
           }
@@ -1509,6 +1473,18 @@ const InsuranceList = () => {
             font-size: 10px;
             padding: 3px 4px;
           }
+
+          .btn-filters {
+            height: 34px !important;
+            font-size: 14px;
+          }
+
+        .btn{
+        height: 40px;
+        padding: 0px 10px;
+        font-size: 14px;
+        }
+
         }
       `}</style>
       
@@ -1518,7 +1494,7 @@ const InsuranceList = () => {
         onClose={handleAuthClose} 
         mode="login" 
       />
-      
+
       {/* Toast Container */}
       <ToastContainer
         position="top-right"

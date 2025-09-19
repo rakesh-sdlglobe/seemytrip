@@ -66,7 +66,7 @@ const HomeBus = () => {
         {/* Top header  */}
         {/* ============================================================== */}
         {/* ============================ Hero Banner  Start================================== */}
-        <div className="image-cover hero-header bg-white" style={{ background: 'url(../images/Buses.png)no-repeat' }} data-overlay={5}>
+        <div className="image-cover hero-header bg-white " style={{ background: 'url(../images/Buses.png)no-repeat' }} data-overlay={5}>
           <div className="container">
             {/* Search Form */}
             <div className="row justify-content-center align-items-center">
@@ -82,7 +82,7 @@ const HomeBus = () => {
                 </div>
               </div>
               <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-              <div className="search-wrap bg-white rounded-3 p-3">
+              <div className="search-wrap bg-white rounded-3 p-3 pb-4">
                 <Features/>
                 <BusSearch/>
               </div>
