@@ -57,18 +57,16 @@ const BusSearch = () => {
           setToCity({ value: params.toCityId, label: params.toCityName });
         }
         
-        // Check if stored date is from a previous day
+        // Use stored date if available, otherwise use today's date
         if (params.date && /^\d{4}-\d{2}-\d{2}$/.test(params.date)) {
           const storedDate = new Date(params.date + 'T00:00:00');
+          // Only use stored date if it's not in the past
           const today = new Date();
-          const todayString = today.toISOString().split('T')[0];
-          const storedDateString = storedDate.toISOString().split('T')[0];
-          
-          // If stored date is not today, use today's date instead
-          if (storedDateString !== todayString) {
-            setStartDate(new Date());
-          } else {
+          today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
+          if (storedDate >= today) {
             setStartDate(storedDate);
+          } else {
+            setStartDate(new Date());
           }
         } else {
           setStartDate(new Date());
