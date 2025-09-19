@@ -964,31 +964,6 @@ export const BusBookingPage = ({ isModal = false }) => {
             </div>
           </div>
 
-          {/* Error Summary */}
-          {hasSubmitted && Object.keys(errors).length > 0 && (
-            <div className="row mb-4">
-              <div className="col-12">
-                <div className="alert alert-danger" role="alert">
-                  <div className="d-flex align-items-center">
-                    <i className="fas fa-exclamation-triangle me-3 fs-4"></i>
-                    <div>
-                      <h6 className="alert-heading mb-2">Please fix the following errors:</h6>
-                      <ul className="mb-0">
-                        {Object.entries(errors).slice(0, 5).map(([field, message]) => (
-                          <li key={field} className="error-item">
-                            {message}
-                          </li>
-                        ))}
-                        {Object.keys(errors).length > 5 && (
-                          <li className="text-muted">... and {Object.keys(errors).length - 5} more errors</li>
-                        )}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Second Container - Traveler Details */}
           <form onSubmit={handleSubmit} autoComplete="on">
@@ -1054,7 +1029,7 @@ export const BusBookingPage = ({ isModal = false }) => {
                         <div className={`traveler-form ${expandedTraveler === "all" || expandedTraveler === seatLabel ? 'expanded' : 'collapsed'}`}>
                           <div className="traveler-form-content">
                             <div className="row">
-                              <div className="col-md-2">
+                              <div className="col-md-4 col-lg-2">
                                 <div className="mb-3">
                                   <label className="form-label">Title *</label>
                                   <select
@@ -1072,7 +1047,7 @@ export const BusBookingPage = ({ isModal = false }) => {
                                   )}
                                 </div>
                               </div>
-                              <div className="col-md-3">
+                              <div className="col-md-4 col-lg-3">
                                 <div className="mb-3">
                                   <label className="form-label">First Name *</label>
                                   <input
@@ -1089,7 +1064,7 @@ export const BusBookingPage = ({ isModal = false }) => {
                                   )}
                                 </div>
                               </div>
-                              <div className="col-md-3">
+                              <div className="col-md-4 col-lg-3">
                                 <div className="mb-3">
                                   <label className="form-label">Last Name *</label>
                                   <input
@@ -1104,7 +1079,7 @@ export const BusBookingPage = ({ isModal = false }) => {
                                   )}
                                 </div>
                               </div>
-                              <div className="col-md-2">
+                              <div className="col-md-4 col-lg-2">
                                 <div className="mb-3">
                                   <label className="form-label">Age *</label>
                                   <input
@@ -1121,7 +1096,7 @@ export const BusBookingPage = ({ isModal = false }) => {
                                   )}
                                 </div>
                               </div>
-                              <div className="col-md-2">
+                              <div className="col-md-4 col-lg-2">
                                 <div className="mb-3">
                                   <label className="form-label">Gender *</label>
                                   {(() => {
@@ -1291,7 +1266,7 @@ export const BusBookingPage = ({ isModal = false }) => {
                       <i className="fas fa-map-marker-alt me-2"></i>
                       Address Details
                       {hasSubmitted && Object.keys(errors).some(key => key.startsWith('addressDetails')) && (
-                        <span className="error-badge ms-2">
+                        <span className="error-badge ms-2 text-light">
                           <i className="fas fa-exclamation-circle me-1"></i>
                           Errors
                         </span>
@@ -1392,12 +1367,10 @@ export const BusBookingPage = ({ isModal = false }) => {
             </div>
 
             {/* Proceed to Payment Button */}
-            <div className="row">
-              <div className="col-12">
-                <div className="text-center">
+              <div className="col-12 ">
                   <button 
                     type="submit" 
-                    className="btn btn-primary btn-lg w-100"
+                    className="btn btn-danger w-100 mb-4"
                     disabled={loading}
                   >
                     {loading ? (
@@ -1409,9 +1382,7 @@ export const BusBookingPage = ({ isModal = false }) => {
                       "Proceed to Payment"
                     )}
                   </button>
-                </div>
               </div>
-            </div>
           </form>
             </div>
           </div>

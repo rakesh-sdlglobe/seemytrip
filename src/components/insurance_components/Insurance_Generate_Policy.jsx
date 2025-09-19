@@ -44,7 +44,7 @@ const Insurance_Generate_Policy = () => {
                   {/* Action Buttons */}
                   <div className="d-flex gap-3 justify-content-center">
                     <button
-                      className="btn btn-primary btn-lg"
+                      className="btn btn-md btn-danger btn-lg"
                       onClick={() => navigate('/insurance-booking-details', { 
                         state: { 
                           bookingId: bookingId,
@@ -56,7 +56,7 @@ const Insurance_Generate_Policy = () => {
                       View Details
                     </button>
                     <button
-                      className="btn btn-outline-primary btn-lg"
+                      className="btn btn-md btn-outline-primary"
                       onClick={() => navigate('/home-insurance')}
                     >
                       <FaArrowLeft className="me-2" />

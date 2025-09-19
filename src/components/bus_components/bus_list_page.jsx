@@ -4,7 +4,7 @@ import FooterDark from '../footer-dark';
 import BusSearch from './bus_search_page';
 import BusFilterPage from './bus_filter_page';
 import BusResultPage from './bus_result_page';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { selectBusSearchList, selectBusSearchLoading } from '../../store/Selectors/busSelectors';
 
@@ -20,16 +20,37 @@ const defaultFilters = {
     arrivalTimes: [],
     pickupPoints: [],
     droppingPoints: [],
-    priceSort: '', // <-- add this
+    priceSorts: [], // Changed to array for multiple selections
+    priceMin: 0,
+    priceMax: Infinity,
 };
 
 const BusList = () => {
     const [filters, setFilters] = useState(defaultFilters);
     const loading = useSelector(selectBusSearchLoading);
 
-    // Handler for filter changes
-    const handleFilterChange = (newFilters) => setFilters(prev => ({ ...prev, ...newFilters }));
-    const handleClear = () => setFilters(defaultFilters);
+    // Handler for filter changes - optimized to prevent unnecessary re-renders
+    const handleFilterChange = useCallback((newFilters) => {
+        setFilters(prev => {
+            // Check if any values actually changed to prevent unnecessary updates
+            const hasChanges = Object.keys(newFilters).some(key => {
+                const newValue = newFilters[key];
+                const prevValue = prev[key];
+                
+                // Handle array comparisons
+                if (Array.isArray(newValue) && Array.isArray(prevValue)) {
+                    return newValue.length !== prevValue.length || 
+                           !newValue.every((val, index) => val === prevValue[index]);
+                }
+                
+                return newValue !== prevValue;
+            });
+            
+            return hasChanges ? { ...prev, ...newFilters } : prev;
+        });
+    }, []);
+    
+    const handleClear = useCallback(() => setFilters(defaultFilters), []);
 
     const searchList = useSelector(selectBusSearchList);
     const busResults = searchList?.BusSearchResult?.BusResults || [];
@@ -71,7 +92,7 @@ const BusList = () => {
                 {/*  Searches List Start  */}
                 <section className="gray-simple" >
                     <div className="container-xl" >
-                        <div className="row justify-content-between gy-4 gx-xl-4 gx-lg-3 gx-md-3 gx-4">
+                        <div className="row justify-content-between gx-xl-4 gx-lg-3 gx-md-3">
                             {/* Sidebar */}
                             <BusFilterPage
                                 filters={filters}

@@ -1278,7 +1278,7 @@ const Insurance_Booking_Page = () => {
                     <div className="d-flex justify-content-between mt-4">
                       <button
                         type="button"
-                        className="btn btn-outline-primary"
+                        className="btn btn-md btn-outline-primary"
                         onClick={() => navigate('/insurance-list')}
                       >
                         <FaArrowLeft className="me-2" />
@@ -1286,7 +1286,7 @@ const Insurance_Booking_Page = () => {
                       </button>
                       <button
                         type="button"
-                        className="btn btn-primary"
+                        className="btn btn-md btn-danger"
                         onClick={handleContinue}
                         disabled={loading || isNavigating}
                       >
@@ -1370,11 +1370,7 @@ const Insurance_Booking_Page = () => {
           box-shadow: 0 0 0 0.25rem rgba(210, 0, 0, 0.25);
         }
 
-          @media (max-width: 768px) {
-          .btn{
-            height: 48px;
-            padding: 0px 10px;
-          }
+  
           } 
           @media (max-width: 576px) {
           .btn{

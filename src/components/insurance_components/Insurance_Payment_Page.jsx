@@ -569,7 +569,7 @@ const Insurance_Payment_Page = () => {
           {/* Navigation Buttons */}
             <div className="d-flex justify-content-between flex-column flex-sm-row mt-2 gap-2">
                 <button
-                  className="btn btn-outline-primary"
+                  className="btn  btn-outline-primary"
                   onClick={() => navigate('/insurance-booking', {
                     state: {
                       selectedPlan: selectedPlan,
@@ -587,7 +587,7 @@ const Insurance_Payment_Page = () => {
                   Back to Edit Details
                 </button>
                 <button
-                  className="btn btn-outline-primary"
+                  className="btn  btn-outline-primary"
                   onClick={handleGoHome}
                 >
                   Cancel Booking

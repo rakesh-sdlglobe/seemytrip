@@ -45,13 +45,13 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [boardingSubTab, setBoardingSubTab] = useState("boarding");
-  const [isNarrow, setIsNarrow] = useState(window.innerWidth < 1200);
+  const [isNarrow, setIsNarrow] = useState(window.innerWidth < 560);
   const [showAuthPopup, setShowAuthPopup] = useState(false);
   const [pendingBooking, setPendingBooking] = useState(false);
 
   // Handle screen resize for 1200px breakpoint
   useEffect(() => {
-    const handleResize = () => setIsNarrow(window.innerWidth < 1200);
+    const handleResize = () => setIsNarrow(window.innerWidth < 560);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -874,7 +874,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
     <div className="seat-wrapper">
       <style jsx>{`
         .seat-wrapper {
-          padding: 20px;
+          padding: 4px;
           font-family: "Poppins", sans-serif;
           background: #f8f9fa;
           border-radius: 12px;
@@ -884,7 +884,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
         .tabs {
           display: flex;
           gap: 20px;
-          margin-bottom: 30px;
+          margin-bottom: 10px;
           cursor: pointer;
           width: 100%;
           justify-content: center;
@@ -1177,11 +1177,6 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
           border-color: #cd2c22;
         }
 
-        .filters .btn-danger:hover {
-          background-color: #b30000;
-          border-color: #b30000;
-        }
-
         .deck-container {
           display: flex;
           flex-direction: column;
@@ -1369,169 +1364,52 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
           color: #cd2c22;
         }
 
-        .boarding-points-wrapper {
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-        }
+        // .boarding-points-wrapper {
+        //   display: flex;
+        //   flex-direction: column;
+        //   gap: 20px;
+        // }
 
-        .boarding-points-container {
-          background: #f1f7ff; // light blue for visibility
-          border-radius: 12px;
-          padding: 20px;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          margin-top: 20px;
-        }
+        // .boarding-points-container {
+        //   background: #f1f7ff; // light blue for visibility
+        //   border-radius: 12px;
+        //   padding: 20px;
+        //   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        //   margin-top: 20px;
+        // }
 
-        .point-item {
-          border: 2px solid #e9ecef;
-          border-radius: 8px;
-          padding: 15px;
-          margin-bottom: 15px;
-          transition: all 0.3s ease;
-          cursor: pointer;
-        }
+        // .point-item {
+        //   border: 2px solid #e9ecef;
+        //   border-radius: 8px;
+        //   padding: 15px;
+        //   margin-bottom: 15px;
+        //   transition: all 0.3s ease;
+        //   cursor: pointer;
+        // }
 
-        .point-item:hover {
-          border-color: #cd2c22;
-          background: rgba(205, 44, 34, 0.05);
-        }
+        // .point-item:hover {
+        //   border-color: #cd2c22;
+        //   background: rgba(205, 44, 34, 0.05);
+        // }
 
-        .point-item input[type="radio"]:checked + .point-content {
-          border-color: #cd2c22;
-          background: rgba(205, 44, 34, 0.1);
-        }
+        // .point-item input[type="radio"]:checked + .point-content {
+        //   border-color: #cd2c22;
+        //   background: rgba(205, 44, 34, 0.1);
+        // }
 
-        .point-content {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
 
-        .point-icon {
-          width: 40px;
-          height: 40px;
-          background: #cd2c22;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-        }
 
-        .point-details h6 {
-          margin: 0;
-          font-weight: 600;
-          color: #343a40;
-        }
+ 
 
-        .point-details p {
-          margin: 0;
-          color: #6c757d;
-          font-size: 14px;
-        }
+        // .point-time {
+        //   background: #cd2c22;
+        //   color: white;
+        //   padding: 4px 8px;
+        //   border-radius: 4px;
+        //   font-size: 12px;
+        //   font-weight: 600;
+        // }
 
-        .point-time {
-          background: #cd2c22;
-          color: white;
-          padding: 4px 8px;
-          border-radius: 4px;
-          font-size: 12px;
-          font-weight: 600;
-        }
-
-        .payment-section {
-          margin-top: 30px;
-        }
-
-        .payment-summary {
-          background: white !important;
-          border: 2px solid #e9ecef;
-          border-radius: 12px;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          transition: all 0.3s ease;
-        }
-
-        .payment-summary:hover {
-          border-color: #cd2c22;
-          box-shadow: 0 4px 15px rgba(205, 44, 34, 0.1);
-        }
-
-        .payment-summary h6 {
-          color: #343a40;
-          font-weight: 600;
-          border-bottom: 2px solid #cd2c22;
-          padding-bottom: 10px;
-        }
-
-        .payment-summary .btn {
-          border-radius: 25px;
-          padding: 12px 30px;
-          font-weight: 600;
-          transition: all 0.3s ease;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .payment-summary .btn:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .payment-summary .btn-danger {
-          background: linear-gradient(135deg, #cd2c22 0%, #b30000 100%);
-          border: none;
-          color: white;
-        }
-
-        .payment-summary .btn-danger:hover {
-          background: linear-gradient(135deg, #b30000 0%, #8b0000 100%);
-          color: white;
-        }
-
-        .payment-summary .btn-secondary {
-          background: #6c757d;
-          border: none;
-          cursor: not-allowed;
-        }
-
-        .payment-summary .btn-secondary:hover {
-          background: #6c757d;
-          transform: none;
-        }
-        
-        .btn-danger:disabled {
-          background: #6c757d !important;
-          border-color: #6c757d !important;
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-        
-        .btn-danger:disabled:hover {
-          background: #6c757d !important;
-          border-color: #6c757d !important;
-          box-shadow: none !important;
-        }
-
-        /* Book Now button specific styles */
-        .btn-danger {
-          color: white !important;
-          background: linear-gradient(135deg, #cd2c22 0%, #b30000 100%) !important;
-          border: none !important;
-          transition: all 0.3s ease;
-        }
-
-        .btn-danger:hover {
-          color: white !important;
-          background: linear-gradient(135deg, #b30000 0%, #8b0000 100%) !important;
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(205, 44, 34, 0.3);
-        }
-
-        .btn-danger:focus {
-          color: white !important;
-          background: linear-gradient(135deg, #b30000 0%, #8b0000 100%) !important;
-          box-shadow: 0 0 0 0.2rem rgba(205, 44, 34, 0.25);
-        }
 
         /* Custom Alert Styles */
         .custom-alert-overlay {
@@ -1649,29 +1527,13 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
             padding: 6px 12px;
           }
 
-          .boarding-points-container {
-            padding: 15px;
-          }
 
-          .point-content {
-            flex-direction: column;
-            text-align: center;
-          }
+ 
 
-          .point-details {
-            text-align: center;
-          }
-
-          .point-details p {
-            font-size: 12px;
-          }
         }
 
         /* New 1200px responsive rules */
         @media (max-width: 1200px) {
-          .boarding-dropping-row {
-            flex-direction: column;
-          }
 
           .tabs {
             justify-content: center;
@@ -1680,6 +1542,13 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
           .deck-title { font-size: 16px; }
           .filters .btn { font-size: 13px; }
         }
+          @media (max-width: 576px) {
+            .scroll-bar {
+              overflow-x: auto;
+              scrollbar-width: thin;
+              scrollbar-color: #cd2c22 #f8f9fa;
+            }
+          }
       `}</style>
 
       <div className="tabs">
@@ -1713,7 +1582,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
             {prices.map((p) => (
               <button
                 key={p}
-                className={`btn ${priceFilter === p ? "btn-danger" : "btn-outline-secondary"
+                className={`btn btn-sm ${priceFilter === p ? "btn-danger" : "btn-outline-primary"
                   }`}
                 onClick={() => setPriceFilter(p)}
               >
@@ -1733,7 +1602,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
                   <p className="text-muted">No seat layout data is currently available.</p>
                 </div>
               ) : (
-                <div className="d-flex gap-2" style={{ scrollbarWidth: "thin", overflow: "auto", scrollbarWidth: "12px" }}>
+                <div className="d-flex gap-2 scroll-bar" >
                   <div className="col-xl-6 col-md-6 col-lg-6 col-sm-6">
                     <div className="deck-container">
                       <h4 className="deck-title">
@@ -1751,8 +1620,8 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
                   </div>
                   <div className=" col-xl-6 col-md-6 col-lg-6 col-sm-6">
                     <div className="deck-container">
-                      <h4 className="deck-title">
-                        <FaBus className="text-primary" />
+                      <h4 className="deck-title text-nowrap">
+                        <FaBus className="text-primary " />
                         Upper Deck
                       </h4>
                       <div className="d-flex gap-5 gap-lg-5 gap-xl-4 gap-md-4 ">
@@ -1903,8 +1772,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
             </>
           ) : (
             <div
-              className="boarding-dropping-row"
-              style={{ display: "flex", gap: 24 }}
+              className="d-flex gap-2  boarding-dropping-row"
             >
               <div style={{ flex: 1 }}>
                 <BoardingPointsPage
@@ -1977,7 +1845,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
                 proceedWithBooking();
               }
             }}
-            style={{ padding: "12px 30px", fontSize: "16px", fontWeight: "600" }}
+            style={{ padding: "12px 30px", fontSize: "16px", fontWeight: "600"  }}
           >
             Book Now
           </button>
