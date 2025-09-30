@@ -35,7 +35,7 @@ export const CLEAR_TRANSFER_ERROR = 'CLEAR_TRANSFER_ERROR';
 export const CLEAR_TRANSFER_DATA = 'CLEAR_TRANSFER_DATA';
 
 // API URL
-export const API_URL = API_URL || 'https://tripadmin.seemytrip.com/api';
+// export const API_URL = API_URL || 'https://tripadmin.seemytrip.com/api';
 
 // Action Creators
 export const transferAuthRequest = () => ({
