@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { getEncryptedItem } from '../../utils/encryption';
+import { API_URL, } from "./authActions";
 
 // Action Types
 export const INSURANCE_AUTH_REQUEST = 'INSURANCE_AUTH_REQUEST';
@@ -59,7 +60,7 @@ export const CLEAR_INSURANCE_ERROR = 'CLEAR_INSURANCE_ERROR';
 export const CLEAR_INSURANCE_DATA = 'CLEAR_INSURANCE_DATA';
 
 // API URL
-export const API_URL = process.env.REACT_APP_API_URL || 'https://tripadmin.seemytrip.com/api';
+export const API_URL = API_URL || 'https://tripadmin.seemytrip.com/api';
 
 // Action Creators
 export const insuranceAuthRequest = () => ({

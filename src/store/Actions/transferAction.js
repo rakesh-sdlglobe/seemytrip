@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { API_URL, } from "./authActions";
 
 // Action Types
 export const TRANSFER_AUTH_REQUEST = 'TRANSFER_AUTH_REQUEST';
@@ -34,7 +35,7 @@ export const CLEAR_TRANSFER_ERROR = 'CLEAR_TRANSFER_ERROR';
 export const CLEAR_TRANSFER_DATA = 'CLEAR_TRANSFER_DATA';
 
 // API URL
-export const API_URL = process.env.REACT_APP_API_URL || 'https://tripadmin.seemytrip.com/api';
+export const API_URL = API_URL || 'https://tripadmin.seemytrip.com/api';
 
 // Action Creators
 export const transferAuthRequest = () => ({

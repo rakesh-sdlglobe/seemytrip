@@ -1,6 +1,7 @@
 import axios from "axios";
 import { selectBusAuthData,selectBusSearchList } from "../Selectors/busSelectors";
 import { setEncryptedItem, getEncryptedItem } from "../../utils/encryption";
+import { API_URL, } from "./authActions";
 
 // Action types
 export const FETCH_BUS_CITY_LIST_REQUEST = "FETCH_BUS_CITY_LIST_REQUEST";
@@ -64,7 +65,7 @@ export const fetchBusAuth = () => async (dispatch, getState) => {
     dispatch(fetchBusAuthRequest());
 
     const response = await axios.post(
-      `${process.env.REACT_APP_API_URL}/bus/authenticateBusAPI`
+      `${API_URL}/bus/authenticateBusAPI`
     );
     // console.log("Response from bus auth API:", response.data);
 
@@ -100,7 +101,7 @@ export const fetchBusCityList = (TokenId, IpAddress) => async (dispatch) => {
     dispatch(fetchBusCityListRequest());
 
     const response = await axios.post(
-      `${process.env.REACT_APP_API_URL}/bus/getBusCityList`,
+      `${API_URL}/bus/getBusCityList`,
       { TokenId, IpAddress }
     );
 
@@ -120,7 +121,7 @@ export const fetchBusSearch = (searchParams) => async (dispatch) => {
     dispatch(fetchBusSearchRequest());
 
     const response = await axios.post(
-      `${process.env.REACT_APP_API_URL}/bus/BusSearch`,
+      `${API_URL}/bus/BusSearch`,
       searchParams
     );
 
@@ -162,7 +163,7 @@ export const fetchBusSeatLayout =
 
       // 1. Try with current credentials
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/bus/getBusSeatLayout`,
+        `${API_URL}/bus/getBusSeatLayout`,
         { TokenId, IpAddress, ResultIndex, TraceId }
       );
 
@@ -195,7 +196,7 @@ export const fetchBusSeatLayout =
 
         // Retry seat layout with new credentials
         const retryResponse = await axios.post(
-          `${process.env.REACT_APP_API_URL}/bus/getBusSeatLayout`,
+          `${API_URL}/bus/getBusSeatLayout`,
           {
             TokenId: authData.TokenId,
             IpAddress: authData.EndUserIp,
@@ -247,7 +248,7 @@ export const fetchBusSeatLayout =
       dispatch(fetchBusBoardingPointsRequest());
   
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/bus/getBoardingPointDetails`,
+        `${API_URL}/bus/getBoardingPointDetails`,
         { TokenId, IpAddress, ResultIndex, TraceId }
       );
   
@@ -287,7 +288,7 @@ export const fetchBusSeatLayout =
       dispatch(fetchBusBlockRequest());
 
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/bus/getBlock`,
+        `${API_URL}/bus/getBlock`,
         blockData
       );
 
@@ -334,7 +335,7 @@ export const fetchBusBooking = (bookingData) => async (dispatch, getState) => {
       dispatch(fetchBusBookingRequest());
 
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/bus/getBooking`,
+        `${API_URL}/bus/getBooking`,
         bookingData
       );
 
@@ -376,7 +377,7 @@ export const fetchBusBooking = (bookingData) => async (dispatch, getState) => {
 
           // Retry booking with new credentials
           const retryResponse = await axios.post(
-            `${process.env.REACT_APP_API_URL}/bus/getBooking`,
+            `${API_URL}/bus/getBooking`,
             updatedBookingData
           );
           
@@ -426,7 +427,7 @@ export const fetchBusBooking = (bookingData) => async (dispatch, getState) => {
 export const fetchBusBookingDetails = (bookingDetailsData) => async (dispatch) => {
     // console.log("=== BUS BOOKING DETAILS ACTION START ===");
     // console.log("1. Request data:", JSON.stringify(bookingDetailsData, null, 2));
-    // console.log("2. API endpoint:", `${process.env.REACT_APP_API_URL}/bus/getBookingDetails`);
+    // console.log("2. API endpoint:", `${API_URL}/bus/getBookingDetails`);
 
     try {
       // console.log("3. Dispatching FETCH_BUS_BOOKING_DETAILS_REQUEST");
@@ -434,7 +435,7 @@ export const fetchBusBookingDetails = (bookingDetailsData) => async (dispatch) =
 
       // console.log("4. Making API call...");
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/bus/getBookingDetails`,
+        `${API_URL}/bus/getBookingDetails`,
         bookingDetailsData
       );
        // console.log("Response from bus booking details API:", response.data);
@@ -535,7 +536,7 @@ export const fetchBusBookingDetails = (bookingDetailsData) => async (dispatch) =
       };
 
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/bus/createBusBooking`,
+        `${API_URL}/bus/createBusBooking`,
         bookingDataWithSearch
       );
 
@@ -577,7 +578,7 @@ export const fetchBusBookingDetails = (bookingDetailsData) => async (dispatch) =
       dispatch(fetchUserBusBookingsRequest());
 
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/bus/userBookings/${userId}`
+        `${API_URL}/bus/userBookings/${userId}`
       );
 
       // console.log("Response from user bus bookings API:", response.data);
@@ -618,7 +619,7 @@ export const fetchBusBookingDetails = (bookingDetailsData) => async (dispatch) =
       dispatch(updateBusBookingStatusRequest());
 
       const response = await axios.put(
-        `${process.env.REACT_APP_API_URL}/bus/updateBookingStatus/${bookingId}`,
+        `${API_URL}/bus/updateBookingStatus/${bookingId}`,
         statusData
       );
 
@@ -660,7 +661,7 @@ export const fetchBusBookingDetails = (bookingDetailsData) => async (dispatch) =
       dispatch(cancelBusBookingRequest());
 
       const response = await axios.put(
-        `${process.env.REACT_APP_API_URL}/bus/cancelBooking/${bookingId}`
+        `${API_URL}/bus/cancelBooking/${bookingId}`
       );
 
       // console.log("Response from cancel bus booking API:", response.data);
@@ -701,7 +702,7 @@ export const fetchBusBookingDetails = (bookingDetailsData) => async (dispatch) =
       dispatch(fetchBusBookingStatsRequest());
 
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/bus/bookingStats/${userId}`
+        `${API_URL}/bus/bookingStats/${userId}`
       );
 
       // console.log("Response from bus booking stats API:", response.data);
