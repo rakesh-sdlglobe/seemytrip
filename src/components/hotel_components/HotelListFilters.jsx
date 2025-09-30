@@ -75,10 +75,10 @@ const HotelsFilters = ({
       return [minPrice, maxPrice];
     }
     const [min, max] = selectPrice.split('|').map(Number);
-    // Clamp values to the current min/max from API
+    // Allow custom ranges but ensure they're valid
     return [
-      Math.max(minPrice, Math.min(min, maxPrice)),
-      Math.max(minPrice, Math.min(max, maxPrice))
+      Math.min(min, max),
+      Math.max(min, max)
     ];
   };
 
@@ -88,23 +88,13 @@ const HotelsFilters = ({
     // eslint-disable-next-line
   }, [selectPrice, minPrice, maxPrice]);
 
-  // If API range changes and selectPrice is out of bounds, reset
+  // Only reset if the range is invalid (min > max)
   useEffect(() => {
-    if (
-      priceRange[0] < minPrice ||
-      priceRange[1] > maxPrice ||
-      priceRange[0] > priceRange[1]
-    ) {
-      setPriceRange([minPrice, maxPrice]);
-      onFilterChange({
-        target: {
-          checked: true,
-          value: `${minPrice}|${maxPrice}`
-        }
-      });
+    if (priceRange[0] > priceRange[1]) {
+      setPriceRange([priceRange[1], priceRange[0]]);
     }
     // eslint-disable-next-line
-  }, [minPrice, maxPrice]);
+  }, [priceRange]);
 
   const handlePriceChange = (event, newValue) => {
     setPriceRange(newValue);
@@ -112,10 +102,14 @@ const HotelsFilters = ({
 
   const handlePriceChangeCommitted = (event, newValue) => {
     const [min, max] = newValue;
+    // Ensure min is always less than or equal to max
+    const finalMin = Math.min(min, max);
+    const finalMax = Math.max(min, max);
+    
     onFilterChange({
       target: {
         checked: true,
-        value: `${min}|${max}`
+        value: `${finalMin}|${finalMax}`
       }
     });
   };
@@ -227,40 +221,40 @@ const HotelsFilters = ({
                 <Typography variant="body2" color="text.secondary" gutterBottom>
                   {formatPrice(priceRange[0])} - {formatPrice(priceRange[1])}
                 </Typography>
-                <Slider
-                  getAriaLabel={() => 'Price range'}
-                  value={priceRange}
-                  onChange={handlePriceChange}
-                  onChangeCommitted={handlePriceChangeCommitted}
-                  valueLabelDisplay="auto"
-                  getAriaValueText={valuetext}
-                  min={minPrice}
-                  max={maxPrice}
-                  step={100}
-                  disableSwap
-                  sx={{
-                    '& .MuiSlider-thumb': {
-                      backgroundColor: '#007bff',
-                      '&:hover, &.Mui-focusVisible': {
-                        boxShadow: '0 0 0 8px rgba(0, 123, 255, 0.16)',
-                      },
-                    },
-                    '& .MuiSlider-track': {
-                      backgroundColor: '#007bff',
-                    },
-                    '& .MuiSlider-rail': {
-                      backgroundColor: '#e0e0e0',
-                    },
-                  }}
-                />
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
-                  <Typography variant="caption" color="text.secondary">
-                    {formatPrice(minPrice)}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {formatPrice(maxPrice)}
-                  </Typography>
-                </Box>
+                                 <Slider
+                   getAriaLabel={() => 'Price range'}
+                   value={priceRange}
+                   onChange={handlePriceChange}
+                   onChangeCommitted={handlePriceChangeCommitted}
+                   valueLabelDisplay="auto"
+                   getAriaValueText={valuetext}
+                   min={0}
+                   max={100000}
+                   step={100}
+                   disableSwap
+                   sx={{
+                     '& .MuiSlider-thumb': {
+                       backgroundColor: '#007bff',
+                       '&:hover, &.Mui-focusVisible': {
+                         boxShadow: '0 0 0 8px rgba(0, 123, 255, 0.16)',
+                       },
+                     },
+                     '& .MuiSlider-track': {
+                       backgroundColor: '#007bff',
+                     },
+                     '& .MuiSlider-rail': {
+                       backgroundColor: '#e0e0e0',
+                     },
+                   }}
+                 />
+                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
+                   <Typography variant="caption" color="text.secondary">
+                     {formatPrice(0)}
+                   </Typography>
+                   <Typography variant="caption" color="text.secondary">
+                     {formatPrice(100000)}
+                   </Typography>
+                 </Box>
               </Box>
             </div>
           </div>

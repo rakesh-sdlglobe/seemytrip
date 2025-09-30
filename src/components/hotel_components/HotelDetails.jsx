@@ -62,6 +62,8 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { HotelSearchbar } from "./HotelSearchbar";
 import HotelDetailsSkeleton from "./HotelDetailsSkeleton";
+// import { Button as BsButton } from "react-bootstrap";
+// import "bootstrap/dist/css/bootstrap.min.css";
 
 const amenityIconMap = {
   "Free WiFi": FaWifi,
@@ -304,7 +306,7 @@ export default function HotelDetails() {
           isLoggedIn: true,
           user,
         });
-        localStorage.setItem("userloginemail", user.email);
+        localStorage.setItem("userloginemail", user.emailuser);
         
         // Store the selected room data in localStorage for confirmation page
         const bookingData = {
@@ -334,6 +336,26 @@ export default function HotelDetails() {
     }, 100);
   }, [navigate, seletedRoomState, details, checkInDate, checkOutDate, Rooms, adults, children]);
 
+  // Add at the top, after other imports
+  // Add these states for modal
+  const [showRoomModal, setShowRoomModal] = useState(false);
+  const [modalRoomName, setModalRoomName] = useState("");
+  const [modalMainDetails, setModalMainDetails] = useState([]);
+  const [modalMoreDetails, setModalMoreDetails] = useState([]);
+
+  const openRoomModal = (roomName, main, more) => {
+    // First close the modal to reset state
+    setShowRoomModal(false);
+    
+    // Use setTimeout to ensure state is cleared before setting new values
+    setTimeout(() => {
+      setModalRoomName(roomName);
+      setModalMainDetails(main || []);
+      setModalMoreDetails(more || []);
+      setShowRoomModal(true);
+    }, 100);
+  };
+
   const searchParams = JSON.parse(
     localStorage.getItem("hotelSearchParams") || "{}"
   );
@@ -344,6 +366,33 @@ export default function HotelDetails() {
       setTimeout(() => setShowSkeleton(false), 1000); // 1 second delay
     }
   }, [details]);
+
+  // Add useEffect for ESC key functionality
+  useEffect(() => {
+    const handleEscKey = (event) => {
+      if (event.key === 'Escape' && showRoomModal) {
+        setShowRoomModal(false);
+      }
+    };
+
+    if (showRoomModal) {
+      document.addEventListener('keydown', handleEscKey);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscKey);
+    };
+  }, [showRoomModal]);
+
+  // Add cleanup effect for modal state
+  useEffect(() => {
+    if (!showRoomModal) {
+      // Reset modal state when modal is closed
+      setModalRoomName("");
+      setModalMainDetails([]);
+      setModalMoreDetails([]);
+    }
+  }, [showRoomModal]);
 
   return (
     <>
@@ -606,84 +655,12 @@ export default function HotelDetails() {
                                       }}
                                     />
                                     <div className="card-body p-3">
-                                      <h3 className="h5 mb-2">{RoomName}</h3>
-                                      <ul className="list-unstyled mb-2">
-                                        {mainDetails.map((line, i) => (
-                                          <li key={line + i} className="mb-1">
-                                            {line}
-                                          </li>
-                                        ))}
-                                      </ul>
-                                      <div className="border-top pt-2 mt-2">
-                                        <div className="row">
-                                          {(() => {
-                                            // Remove empty, comma, and semicolon-only lines
-                                            const cleanDetails = moreDetails
-                                              .map((line) =>
-                                                line.replace(/[,;]$/, "").trim()
-                                              )
-                                              .filter(
-                                                (line) =>
-                                                  line &&
-                                                  line !== "," &&
-                                                  line !== ";"
-                                              );
-
-                                            const half = Math.ceil(
-                                              cleanDetails.length / 2
-                                            );
-                                            const firstHalf =
-                                              cleanDetails.slice(0, half);
-                                            const secondHalf =
-                                              cleanDetails.slice(half);
-
-                                            return (
-                                              <>
-                                                <div className="col-6">
-                                                  <ul
-                                                    style={{
-                                                      listStyleType: "disc",
-                                                      paddingLeft: 24,
-                                                    }}
-                                                    className="mb-0"
-                                                  >
-                                                    {firstHalf.map(
-                                                      (line, i) => (
-                                                        <li
-                                                          key={line + i}
-                                                          className="small"
-                                                        >
-                                                          {line}
-                                                        </li>
-                                                      )
-                                                    )}
-                                                  </ul>
-                                                </div>
-                                                <div className="col-6">
-                                                  <ul
-                                                    style={{
-                                                      listStyleType: "disc",
-                                                      paddingLeft: 24,
-                                                    }}
-                                                    className="mb-0"
-                                                  >
-                                                    {secondHalf.map(
-                                                      (line, i) => (
-                                                        <li
-                                                          key={line + i}
-                                                          className="small"
-                                                        >
-                                                          {line}
-                                                        </li>
-                                                      )
-                                                    )}
-                                                  </ul>
-                                                </div>
-                                              </>
-                                            );
-                                          })()}
-                                        </div>
+                                      <div className="d-flex align-items-center justify-content-between mb-2">
+                                        <h3 className="h5 mb-2">{RoomName}</h3>
                                       </div>
+                                      
+                                      {/* Move Room details text to the right */}
+                                      
                                     </div>
                                   </div>
                                 </div>
@@ -725,6 +702,7 @@ export default function HotelDetails() {
                                           "Not Available" ? (
                                           <div className="text-success small mb-2">
                                             {room.RefundableText}
+                                            
                                           </div>
                                         ) : (
                                           <div className="text-danger small mb-2">
@@ -738,6 +716,16 @@ export default function HotelDetails() {
                                             </li>
                                           ))}
                                         </ul>
+                                        <div className="text-start">
+                                        <span
+                                          role="button"
+                                          className="text-primary small"
+                                          style={{ textDecoration: "none", cursor: "pointer" }}
+                                          onClick={() => openRoomModal(RoomName, mainDetails, moreDetails)}
+                                        >
+                                          Room details
+                                        </span>
+                                      </div>
                                       </div>
                                       {/* Price Container (40%) */}
                                       <div
@@ -791,9 +779,7 @@ export default function HotelDetails() {
                                           >
                                             Select Room
                                           </button>
-                                          {/* <div className="text-center">
-                                        <span className="text-primary small">{pkg.offer}</span>
-                                      </div> */}
+                                          
                                         </div>
                                       </div>
                                     </div>
@@ -1152,6 +1138,164 @@ export default function HotelDetails() {
         onClose={() => setShowAuthPopup(false)}
         onAuthSuccess={handleAuthSuccess}
       />
+
+      {/* Room Details Modal */}
+      <div
+        className="modal fade"
+        id="roomDetailsModal"
+        tabIndex="-1"
+        aria-labelledby="roomDetailsModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="roomDetailsModalLabel">
+                {modalRoomName} Details
+              </h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="modal-body">
+              <h6>Main Details</h6>
+              <ul>
+                {modalMainDetails.map((line, i) => (
+                  <li key={line + i}>{line}</li>
+                ))}
+              </ul>
+              {modalMoreDetails.length > 0 && (
+                <>
+                  <h6>More Details</h6>
+                  <div className="row">
+                    <div className="col-6">
+                      <ul>
+                        {modalMoreDetails
+                          .slice(0, Math.ceil(modalMoreDetails.length / 2))
+                          .map((line, i) => (
+                            <li key={line + i}>{line}</li>
+                          ))}
+                      </ul>
+                    </div>
+                    <div className="col-6">
+                      <ul>
+                        {modalMoreDetails
+                          .slice(Math.ceil(modalMoreDetails.length / 2))
+                          .map((line, i) => (
+                            <li key={line + i}>{line}</li>
+                          ))}
+                      </ul>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {showRoomModal && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.5)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 1050,
+          }}
+          onClick={() => setShowRoomModal(false)}
+        >
+          <div
+            style={{
+              width: "900px",
+              maxWidth: "95vw",
+              background: "#fff",
+              borderRadius: "12px",
+              overflow: "hidden",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Highlighted Header */}
+            <div
+              style={{
+                background: "#dc3545",
+                color: "#fff",
+                padding: "16px 20px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <h5 className="mb-0 fw-bold">{modalRoomName} Details</h5>
+              <button
+                className="btn btn-sm btn-outline-light"
+                onClick={() => setShowRoomModal(false)}
+                style={{
+                  border: "1px solid #fff",
+                  color: "#fff",
+                  background: "transparent",
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div style={{ padding: "20px", maxHeight: "65vh", overflowY: "auto" }}>
+              {modalMainDetails.length > 0 && (
+                <>
+                  <h6 className="fw-bold mb-3">Room Details</h6>
+                  <ul className="mb-4">
+                    {modalMainDetails.map((line, i) => (
+                      <li key={`main-${i}`} className="mb-2">{line}</li>
+                    ))}
+                  </ul>
+                </>
+              )}
+
+              {modalMoreDetails.length > 0 && (
+                <>
+                  <h6 className="fw-bold mb-3">Description</h6>
+                  <div className="row">
+                    <div className="col-12">
+                      <ul>
+                        {modalMoreDetails
+                          .slice(0, Math.ceil(modalMoreDetails.length ))
+                          .map((line, i) => (
+                            <li key={`more-left-${i}`} className="mb-2">{line}</li>
+                          ))}
+                      </ul>
+                    </div>
+                    <div className="col-6">
+                      {/* <ul>
+                        {modalMoreDetails
+                          .slice(Math.ceil(modalMoreDetails.length / 2))
+                          .map((line, i) => (
+                            <li key={`more-right-${i}`}>{line}</li>
+                          ))}
+                      </ul> */}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

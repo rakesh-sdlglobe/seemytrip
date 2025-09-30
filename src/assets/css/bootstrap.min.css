@@ -832,7 +832,7 @@ progress {
     .container-md,
     .container-sm,
     .container-xl {
-        max-width: 1140px
+        max-width: 1200px
     }
 }
 
@@ -2392,8 +2392,14 @@ progress {
 }
 
 .form-label {
-    margin-bottom: .5rem
-}
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+
+
+
+
 
 .col-form-label {
     padding-top: calc(.375rem + var(--bs-border-width));
@@ -5508,6 +5514,7 @@ fieldset:disabled .btn {
     font-weight: var(--bs-badge-font-weight);
     line-height: 1;
     color: var(--bs-badge-color);
+    width: fit-content;
     text-align: center;
     white-space: nowrap;
     vertical-align: baseline;

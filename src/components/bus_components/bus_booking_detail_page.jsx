@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { selectBusBoardingPoints, selectBusAuthData, selectBusSearchList } from "../../store/Selectors/busSelectors";
 import { fetchBusBlock } from "../../store/Actions/busActions";
+import { getEncryptedItem, setEncryptedItem } from "../../utils/encryption";
 import Header02 from "../header02";
 import FooterDark from "../footer-dark";
 import { bus } from "../../assets/images";
@@ -19,15 +20,7 @@ export const BusBookingPage = ({ isModal = false }) => {
   // Bus data from navigation state or localStorage
   const busData =
     location.state?.busData ||
-    JSON.parse(localStorage.getItem("selectedBusData") || "{}");
-    
-  // Debug log for bus data
-  console.log('Bus data:', busData);
-  console.log('Departure time:', busData.DepartureTime);
-  console.log('Arrival time:', busData.ArrivalTime);
-  console.log('Bus data keys:', busData ? Object.keys(busData) : 'No bus data');
-  console.log('Duration field:', busData.Duration);
-  console.log('Full bus data structure:', JSON.stringify(busData, null, 2));
+    getEncryptedItem("selectedBusData") || {};
 
   // Check if bus data is available
   const isBusDataAvailable = busData && Object.keys(busData).length > 0;
@@ -35,10 +28,10 @@ export const BusBookingPage = ({ isModal = false }) => {
   // State for form data
   const [selectedSeat, setSelectedSeat] = useState("DU3");
   const [selectedBoardingPoint, setSelectedBoardingPoint] = useState(
-    localStorage.getItem("selectedBoardingPoint") || ""
+    getEncryptedItem("selectedBoardingPoint") || ""
   );
   const [selectedDroppingPoint, setSelectedDroppingPoint] = useState(
-    localStorage.getItem("selectedDroppingPoint") || ""
+    getEncryptedItem("selectedDroppingPoint") || ""
   );
   const [showGSTDetails, setShowGSTDetails] = useState(false);
   
@@ -53,35 +46,79 @@ export const BusBookingPage = ({ isModal = false }) => {
 
   // Load selected seats from localStorage on component mount
   useEffect(() => {
-    const seatsFromStorage = JSON.parse(localStorage.getItem("selectedSeats") || "[]");
-    console.log('Loading selected seats from localStorage:', seatsFromStorage);
+    const seatsFromStorage = getEncryptedItem("selectedSeats") || [];
     setSelectedSeats(seatsFromStorage);
     
-    // Debug: Check seat layout data
+    // Check seat layout data
     try {
-      const seatLayoutData = JSON.parse(localStorage.getItem("seatLayoutData") || "{}");
-      console.log('Seat layout data:', seatLayoutData);
-      if (seatLayoutData.seats) {
-        console.log('Available seats:', seatLayoutData.seats);
-      }
+      const seatLayoutData = getEncryptedItem("seatLayoutData") || {};
+      const originalSeatLayout = getEncryptedItem("originalSeatLayoutData") || {};
+      
     } catch (error) {
       console.error('Error parsing seat layout data:', error);
     }
     
-    // Initialize traveler details for each seat
+    // Initialize traveler details for each seat with automatic gender selection
     const initialDetails = {};
     seatsFromStorage.forEach((seatLabel) => {
+      // Get seat data to check for gender restrictions
+      let autoGender = "";
+      try {
+        const seatLayoutData = getEncryptedItem("seatLayoutData") || {};
+        const seatData = seatLayoutData.seats?.find(s => s.label === seatLabel);
+        
+        if (seatData) {
+          // Check if seat is ladies-only
+          if (seatData.isLadiesSeat === true || seatData.originalSeatInfo?.IsLadiesSeat === true) {
+            autoGender = "female";
+
+          }
+          // Check if seat is males-only
+          else if (seatData.isMalesSeat === true || seatData.originalSeatInfo?.IsMalesSeat === true) {
+            autoGender = "male";
+
+          }
+        }
+        
+        // Also check original seat layout data
+        const originalSeatLayout = getEncryptedItem("originalSeatLayoutData") || {};
+        if (originalSeatLayout.SeatLayout && originalSeatLayout.SeatLayout.SeatDetails) {
+          for (let rowIndex = 0; rowIndex < originalSeatLayout.SeatLayout.SeatDetails.length; rowIndex++) {
+            const row = originalSeatLayout.SeatLayout.SeatDetails[rowIndex];
+            if (Array.isArray(row)) {
+              for (let colIndex = 0; colIndex < row.length; colIndex++) {
+                const seat = row[colIndex];
+                if (seat) {
+                  const seatName = seat.SeatNumber || seat.SeatName || `${rowIndex + 1}${String.fromCharCode(65 + colIndex)}`;
+                  if (seatName === seatLabel) {
+                    if (seat.IsLadiesSeat === true) {
+                      autoGender = "female";
+
+                    } else if (seat.IsMalesSeat === true) {
+                      autoGender = "male";
+
+                    }
+                    break;
+                  }
+                }
+              }
+            }
+            if (autoGender) break;
+          }
+        }
+      } catch (error) {
+        console.error('Error checking seat gender restrictions:', error);
+      }
+      
       initialDetails[seatLabel] = {
         title: "",
         firstName: "",
         lastName: "",
         age: "",
-        gender: "",
-        idType: "",
-        idNumber: "",
+        gender: autoGender, // Set gender based on seat restrictions
       };
     });
-    console.log('Initializing traveler details:', initialDetails);
+
     setTravelerDetails(initialDetails);
     
     // Set all seats as expanded by default
@@ -94,15 +131,62 @@ export const BusBookingPage = ({ isModal = false }) => {
   useEffect(() => {
     const newTravelerDetails = {};
     selectedSeats.forEach((seatLabel) => {
-      // Preserve existing data if available
+      // Get seat data to check for gender restrictions
+      let autoGender = "";
+      try {
+        const seatLayoutData = getEncryptedItem("seatLayoutData") || {};
+        const seatData = seatLayoutData.seats?.find(s => s.label === seatLabel);
+        
+        if (seatData) {
+          // Check if seat is ladies-only
+          if (seatData.isLadiesSeat === true || seatData.originalSeatInfo?.IsLadiesSeat === true) {
+            autoGender = "female";
+
+          }
+          // Check if seat is males-only
+          else if (seatData.isMalesSeat === true || seatData.originalSeatInfo?.IsMalesSeat === true) {
+            autoGender = "male";
+
+          }
+        }
+        
+        // Also check original seat layout data
+        const originalSeatLayout = getEncryptedItem("originalSeatLayoutData") || {};
+        if (originalSeatLayout.SeatLayout && originalSeatLayout.SeatLayout.SeatDetails) {
+          for (let rowIndex = 0; rowIndex < originalSeatLayout.SeatLayout.SeatDetails.length; rowIndex++) {
+            const row = originalSeatLayout.SeatLayout.SeatDetails[rowIndex];
+            if (Array.isArray(row)) {
+              for (let colIndex = 0; colIndex < row.length; colIndex++) {
+                const seat = row[colIndex];
+                if (seat) {
+                  const seatName = seat.SeatNumber || seat.SeatName || `${rowIndex + 1}${String.fromCharCode(65 + colIndex)}`;
+                  if (seatName === seatLabel) {
+                    if (seat.IsLadiesSeat === true) {
+                      autoGender = "female";
+
+                    } else if (seat.IsMalesSeat === true) {
+                      autoGender = "male";
+
+                    }
+                    break;
+                  }
+                }
+              }
+            }
+            if (autoGender) break;
+          }
+        }
+      } catch (error) {
+        console.error('Error checking seat gender restrictions:', error);
+      }
+      
+      // Preserve existing data if available, but override gender if seat has restrictions
       newTravelerDetails[seatLabel] = {
         title: travelerDetails[seatLabel]?.title || "",
         firstName: travelerDetails[seatLabel]?.firstName || "",
         lastName: travelerDetails[seatLabel]?.lastName || "",
         age: travelerDetails[seatLabel]?.age || "",
-        gender: travelerDetails[seatLabel]?.gender || "",
-        idType: travelerDetails[seatLabel]?.idType || "",
-        idNumber: travelerDetails[seatLabel]?.idNumber || "",
+        gender: autoGender || travelerDetails[seatLabel]?.gender || "", // Use auto gender if available, otherwise preserve existing
       };
     });
     setTravelerDetails(newTravelerDetails);
@@ -122,87 +206,7 @@ export const BusBookingPage = ({ isModal = false }) => {
     state: "",
   });
 
-  // Add this object for validation and placeholder logic
-  const idValidationPatterns = {
-    "pan-card": {
-      regex: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/,
-      maxLength: 10,
-      placeholder: "ABCDE1234F",
-      description: "10 characters, e.g. ABCDE1234F",
-      filter: v => v.replace(/[^A-Z0-9]/gi, "").toUpperCase(),
-    },
-    "voter-id": {
-      regex: /^[A-Z]{3}[0-9]{7}$/,
-      maxLength: 10,
-      placeholder: "ABC1234567",
-      description: "10 characters, e.g. ABC1234567",
-      filter: v => v.replace(/[^A-Z0-9]/gi, "").toUpperCase(),
-    },
-    "passport": {
-      regex: /^[A-PR-WYa-pr-wy][0-9]{7}$/,
-      maxLength: 8,
-      placeholder: "A1234567",
-      description: "8 characters, e.g. A1234567",
-      filter: v => v.replace(/[^A-Z0-9]/gi, "").toUpperCase(),
-    },
-    "aadhar-card": {
-      regex: /^\d{4}\s?\d{4}\s?\d{4}$/,
-      maxLength: 14, // 12 digits + 2 spaces
-      placeholder: "1234 5678 9012",
-      description: "12 digits with optional spaces, e.g. 1234 5678 9012",
-      filter: v => {
-        // Remove all non-digits and non-spaces, then format with spaces
-        const cleaned = v.replace(/[^0-9\s]/g, "");
-        const digits = cleaned.replace(/\s/g, "");
-        if (digits.length <= 4) return digits;
-        if (digits.length <= 8) return `${digits.slice(0, 4)} ${digits.slice(4)}`;
-        return `${digits.slice(0, 4)} ${digits.slice(4, 8)} ${digits.slice(8, 12)}`;
-      },
-    },
-  };
 
-  // Add the validateId function
-  const validateId = (id) => {
-    const aadharRegex = /^\d{4}\s?\d{4}\s?\d{4}$/;
-    const passportRegex = /^[A-PR-WYa-pr-wy][0-9]{7}$/;
-    const voterIdRegex = /^[A-Z]{3}[0-9]{7}$/;
-    const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]$/;
-
-    if (aadharRegex.test(id)) return "Aadhaar";
-    if (passportRegex.test(id)) return "Passport";
-    if (voterIdRegex.test(id)) return "Voter ID";
-    if (panRegex.test(id)) return "PAN";
-    return "Invalid ID format";
-  };
-
-  // Add this function to handle input and enforce pattern
-  const handleIdNumberChange = (seatLabel, e) => {
-    const { value } = e.target;
-    const { idType } = travelerDetails[seatLabel];
-    if (!idType) return;
-    const pattern = idValidationPatterns[idType];
-    let filtered = pattern.filter(value);
-    if (filtered.length > pattern.maxLength) {
-      filtered = filtered.slice(0, pattern.maxLength);
-    }
-    setTravelerDetails(prev => ({
-      ...prev,
-      [seatLabel]: {
-        ...prev[seatLabel],
-        idNumber: filtered,
-      }
-    }));
-    
-    // Clear error for this field
-    setErrors((prev) => {
-      const newErrors = { ...prev, [`travelerDetails.${seatLabel}.idNumber`]: undefined };
-      // If all errors are cleared, reset hasSubmitted
-      if (Object.keys(newErrors).every(key => newErrors[key] === undefined)) {
-        setHasSubmitted(false);
-      }
-      return newErrors;
-    });
-  };
 
   // Format time helper
   const formatTime = (timeString) => {
@@ -257,7 +261,6 @@ export const BusBookingPage = ({ isModal = false }) => {
       }
       
       if (isNaN(date.getTime())) {
-        console.log('Invalid date format:', dateString);
         return "";
       }
       
@@ -276,13 +279,10 @@ export const BusBookingPage = ({ isModal = false }) => {
   // Calculate duration - using the same approach as bus result page
   const getDuration = (departure, arrival) => {
     if (!departure || !arrival) {
-      console.log('Missing departure or arrival time:', { departure, arrival });
       return "";
     }
     
     try {
-      console.log('Calculating duration for:', { departure, arrival });
-      
       let startDate, endDate;
       
       // Handle full datetime format like "2025-08-04T06:00:00"
@@ -300,7 +300,6 @@ export const BusBookingPage = ({ isModal = false }) => {
       
       // Check if dates are valid
       if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-        console.log('Invalid time format:', { departure, arrival, startDate, endDate });
         return "";
       }
       
@@ -310,11 +309,58 @@ export const BusBookingPage = ({ isModal = false }) => {
       const hours = Math.floor(diff / 3600);
       const minutes = Math.floor((diff % 3600) / 60);
       
-      console.log('Duration calculated:', `${hours}h ${minutes}m`);
       return `${hours}h ${minutes}m`;
     } catch (error) {
       console.error('Error calculating duration:', error, { departure, arrival });
       return "";
+    }
+  };
+
+  // Helper function to check seat gender restrictions
+  const getSeatGenderRestriction = (seatLabel) => {
+    try {
+      const seatLayoutData = getEncryptedItem("seatLayoutData") || {};
+      const seatData = seatLayoutData.seats?.find(s => s.label === seatLabel);
+      
+      if (seatData) {
+        // Check if seat is ladies-only
+        if (seatData.isLadiesSeat === true || seatData.originalSeatInfo?.IsLadiesSeat === true) {
+          return "female";
+        }
+        // Check if seat is males-only
+        if (seatData.isMalesSeat === true || seatData.originalSeatInfo?.IsMalesSeat === true) {
+          return "male";
+        }
+      }
+      
+      // Also check original seat layout data
+      const originalSeatLayout = getEncryptedItem("originalSeatLayoutData") || {};
+      if (originalSeatLayout.SeatLayout && originalSeatLayout.SeatLayout.SeatDetails) {
+        for (let rowIndex = 0; rowIndex < originalSeatLayout.SeatLayout.SeatDetails.length; rowIndex++) {
+          const row = originalSeatLayout.SeatLayout.SeatDetails[rowIndex];
+          if (Array.isArray(row)) {
+            for (let colIndex = 0; colIndex < row.length; colIndex++) {
+              const seat = row[colIndex];
+              if (seat) {
+                const seatName = seat.SeatNumber || seat.SeatName || `${rowIndex + 1}${String.fromCharCode(65 + colIndex)}`;
+                if (seatName === seatLabel) {
+                  if (seat.IsLadiesSeat === true) {
+                    return "female";
+                  } else if (seat.IsMalesSeat === true) {
+                    return "male";
+                  }
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+      
+      return null; // No gender restriction
+    } catch (error) {
+      console.error('Error checking seat gender restrictions:', error);
+      return null;
     }
   };
 
@@ -329,7 +375,7 @@ export const BusBookingPage = ({ isModal = false }) => {
     
     // Get seat layout data from localStorage to determine deck
     try {
-      const seatLayoutData = JSON.parse(localStorage.getItem("seatLayoutData") || "{}");
+      const seatLayoutData = getEncryptedItem("seatLayoutData") || {};
       const seatData = seatLayoutData.seats?.find(s => s.label === seatLabel);
       
       if (seatData) {
@@ -380,20 +426,6 @@ export const BusBookingPage = ({ isModal = false }) => {
               .min(1, "Age must be at least 1")
               .max(120, "Age must be less than 120"),
             gender: Yup.string().required("Gender is required"),
-            idType: Yup.string().optional(),
-            idNumber: Yup.string()
-              .optional()
-              .test("idNumber-format", "Invalid ID Number format", function (value) {
-                const { idType } = this.parent;
-                if (!idType || !value) return true; // Allow empty values
-                const pattern = idValidationPatterns[idType];
-                return pattern && pattern.regex.test(value);
-              })
-              .test("idNumber-validation", "Invalid ID format", function (value) {
-                if (!value) return true; // Allow empty values
-                const validationResult = validateId(value);
-                return validationResult !== "Invalid ID format";
-              }),
           });
           return acc;
         }, {})
@@ -464,19 +496,14 @@ export const BusBookingPage = ({ isModal = false }) => {
 
   // Handlers for form fields
   const handleTravelerChange = (seatLabel, field, value) => {
-    console.log('handleTravelerChange called:', { seatLabel, field, value });
-    console.log('Current travelerDetails:', travelerDetails);
-    
     setTravelerDetails(prev => {
       const newState = {
         ...prev,
         [seatLabel]: {
           ...prev[seatLabel],
           [field]: value,
-          ...(field === "idType" ? { idNumber: "" } : {}),
         }
       };
-      console.log('New travelerDetails state:', newState);
       return newState;
     });
     
@@ -525,25 +552,19 @@ export const BusBookingPage = ({ isModal = false }) => {
   // Helper function to format block request data
   const formatBlockRequest = (formData, selectedSeats, boardingPointId, droppingPointId) => {
     const { TokenId, EndUserIp } = authData;
-    const searchParams = JSON.parse(localStorage.getItem("busSearchparams") || "{}");
-    const busData = location.state?.busData || JSON.parse(localStorage.getItem("selectedBusData") || "{}");
+    const searchParams = getEncryptedItem("busSearchparams") || {};
+    const busData = location.state?.busData || getEncryptedItem("selectedBusData") || {};
     
     // Get original seat layout data from localStorage
-    const originalSeatLayout = JSON.parse(localStorage.getItem("originalSeatLayoutData") || "{}");
-    const seatLayout = JSON.parse(localStorage.getItem("seatLayoutData") || "{}");
-    
-    console.log("Original seat layout data:", originalSeatLayout);
-    console.log("Simplified seat layout data:", seatLayout);
-    
+    const originalSeatLayout = getEncryptedItem("originalSeatLayoutData") || {};
+    const seatLayout = getEncryptedItem("seatLayoutData") || {};
+
     const passengers = selectedSeats.map((seatLabel, index) => {
       const isLeadPassenger = index === 0;
       
       // Try to find the original seat data from the API response
       let originalSeatData = null;
       if (originalSeatLayout.SeatLayout && originalSeatLayout.SeatLayout.SeatDetails) {
-        console.log(`Looking for seat: ${seatLabel}`);
-        console.log("Available seats in original data:");
-        
         // Search through the original seat layout to find the matching seat
         for (let rowIndex = 0; rowIndex < originalSeatLayout.SeatLayout.SeatDetails.length; rowIndex++) {
           const row = originalSeatLayout.SeatLayout.SeatDetails[rowIndex];
@@ -552,10 +573,9 @@ export const BusBookingPage = ({ isModal = false }) => {
               const seat = row[colIndex];
               if (seat) {
                 const seatName = seat.SeatNumber || seat.SeatName || `${rowIndex + 1}${String.fromCharCode(65 + colIndex)}`;
-                console.log(`  Seat at [${rowIndex}][${colIndex}]: ${seatName} (${seat.SeatName || seat.SeatNumber})`);
+
                 if (seatName === seatLabel) {
                   originalSeatData = seat;
-                  console.log(`Found matching seat:`, seat);
                   break;
                 }
               }
@@ -565,32 +585,29 @@ export const BusBookingPage = ({ isModal = false }) => {
         }
         
         if (!originalSeatData) {
-          console.log(`Could not find original seat data for: ${seatLabel}`);
+          // Original seat data not found
         }
       }
       
-      // Fallback to simplified seat data if original not found
+      // Fallback to enhanced seat data if original not found
       const seatData = seatLayout.seats?.find(s => s.label === seatLabel);
-      
-      console.log(`Seat ${seatLabel} - Original data:`, originalSeatData);
-      console.log(`Seat ${seatLabel} - Simplified data:`, seatData);
-      
+
       const seatStructure = {
-        ColumnNo: originalSeatData?.ColumnNo || seatData?.columnNo || "001",
-        Height: originalSeatData?.Height || seatData?.height || 1,
-        IsLadiesSeat: originalSeatData?.IsLadiesSeat || seatData?.isLadiesSeat || false,
-        IsMalesSeat: originalSeatData?.IsMalesSeat || seatData?.isMalesSeat || false,
-        IsUpper: originalSeatData?.IsUpper || seatData?.isUpper || false,
-        RowNo: originalSeatData?.RowNo || seatData?.rowNo || "001",
-        SeatIndex: originalSeatData?.SeatIndex || seatData?.seatIndex || seatLabel,
+        ColumnNo: originalSeatData?.ColumnNo || seatData?.columnNo || seatData?.seatInfo?.ColumnNo || "001",
+        Height: originalSeatData?.Height || seatData?.height || seatData?.seatInfo?.Height || 1,
+        IsLadiesSeat: originalSeatData?.IsLadiesSeat || seatData?.isLadiesSeat || seatData?.seatInfo?.IsLadiesSeat || false,
+        IsMalesSeat: originalSeatData?.IsMalesSeat || seatData?.isMalesSeat || seatData?.seatInfo?.IsMalesSeat || false,
+        IsUpper: originalSeatData?.IsUpper || seatData?.isUpper || seatData?.seatInfo?.IsUpper || false,
+        RowNo: originalSeatData?.RowNo || seatData?.rowNo || seatData?.seatInfo?.RowNo || "001",
+        SeatIndex: originalSeatData?.SeatIndex || seatData?.seatIndex || seatData?.seatInfo?.SeatIndex || seatLabel,
         SeatName: seatLabel,
         SeatStatus: true,
-        SeatType: originalSeatData?.SeatType || seatData?.seatType || 1,
-        Width: originalSeatData?.Width || seatData?.width || 1,
-        // Add SeatFare and PublishedPrice directly on the seat object
-        SeatFare: originalSeatData?.SeatFare || seatData?.price || busData.BusPrice?.PublishedPriceRoundedOff || 0,
-        PublishedPrice: originalSeatData?.PublishedPrice || seatData?.price || busData.BusPrice?.PublishedPriceRoundedOff || 0,
-        Price: originalSeatData?.Price || {
+        SeatType: originalSeatData?.SeatType || seatData?.seatType || seatData?.seatInfo?.SeatType || 1,
+        Width: originalSeatData?.Width || seatData?.width || seatData?.seatInfo?.Width || 1,
+        // Use enhanced price data from seatData.seatInfo if available
+        SeatFare: originalSeatData?.SeatFare || seatData?.SeatFare || seatData?.seatInfo?.SeatFare || seatData?.price || busData.BusPrice?.PublishedPriceRoundedOff || 0,
+        PublishedPrice: originalSeatData?.PublishedPrice || seatData?.PublishedPrice || seatData?.seatInfo?.PublishedPrice || seatData?.price || busData.BusPrice?.PublishedPriceRoundedOff || 0,
+        Price: originalSeatData?.Price || seatData?.seatInfo?.Price || {
           CurrencyCode: "INR",
           BasePrice: seatData?.price || busData.BusPrice?.PublishedPriceRoundedOff || 0,
           Tax: 0.0,
@@ -616,9 +633,7 @@ export const BusBookingPage = ({ isModal = false }) => {
           }
         }
       };
-      
-      console.log(`Final seat structure for ${seatLabel}:`, seatStructure);
-      
+
       return {
         LeadPassenger: isLeadPassenger,
         PassengerId: index,
@@ -627,16 +642,15 @@ export const BusBookingPage = ({ isModal = false }) => {
         Age: parseInt(formData.travelerDetails[seatLabel].age),
         Email: formData.contactDetails.email,
         FirstName: formData.travelerDetails[seatLabel].firstName,
-        Gender: formData.travelerDetails[seatLabel].gender === "Male" ? 1 : 2,
-        IdNumber: formData.travelerDetails[seatLabel].idNumber || null,
-        IdType: formData.travelerDetails[seatLabel].idType || null,
+        Gender: formData.travelerDetails[seatLabel].gender === "male" ? 1 : 2,
+
         LastName: formData.travelerDetails[seatLabel].lastName,
         Phoneno: formData.contactDetails.mobile,
         Seat: seatStructure
       };
     });
 
-    return {
+    const blockRequest = {
       EndUserIp: EndUserIp,
       ResultIndex: busData.ResultIndex || searchParams.ResultIndex,
       TraceId: searchList?.BusSearchResult?.TraceId,
@@ -645,6 +659,8 @@ export const BusBookingPage = ({ isModal = false }) => {
       DroppingPointId: droppingPointId,
       Passenger: passengers
     };
+
+    return blockRequest;
   };
 
   // Function to scroll to first error
@@ -692,23 +708,12 @@ export const BusBookingPage = ({ isModal = false }) => {
       }
 
       // Get boarding and dropping point IDs from boarding points data
-      console.log("Selected boarding point:", selectedBoardingPoint);
-      console.log("Selected dropping point:", selectedDroppingPoint);
-      console.log("Bus data boarding points:", busData.BoardingPointsDetails);
-      console.log("Bus data dropping points:", busData.DroppingPointsDetails);
-      
       const boardingPointId = selectedBoardingPoint ? 
         busData.BoardingPointsDetails?.find(p => p.CityPointName === selectedBoardingPoint)?.CityPointIndex : null;
       const droppingPointId = selectedDroppingPoint ? 
         busData.DroppingPointsDetails?.find(p => p.CityPointName === selectedDroppingPoint)?.CityPointIndex : null;
 
-      console.log("Found boarding point ID:", boardingPointId);
-      console.log("Found dropping point ID:", droppingPointId);
-
       if (!boardingPointId || !droppingPointId) {
-        console.log("Missing boarding or dropping point ID");
-        console.log("Boarding point ID:", boardingPointId);
-        console.log("Dropping point ID:", droppingPointId);
         alert("Please select both boarding and dropping points.");
         setLoading(false);
         return;
@@ -722,22 +727,21 @@ export const BusBookingPage = ({ isModal = false }) => {
         droppingPointId
       );
 
-      console.log("Block request data:", blockRequestData);
+
 
       // Store the block request data in localStorage for booking API
-      localStorage.setItem("blockRequestData", JSON.stringify(blockRequestData));
-      console.log("Block request data stored in localStorage for booking API");
+      setEncryptedItem("blockRequestData", blockRequestData);
 
       // Call the block API
       const result = await dispatch(fetchBusBlock(blockRequestData));
-      
-      console.log("Block result:", result);
-      
+
       if (result && result.BlockResult) {
-        console.log("Block successful:", result);
         // Store block response for payment page
-        localStorage.setItem("blockResponse", JSON.stringify(result));
+        setEncryptedItem("blockResponse", result);
         
+        // Store block timestamp for validation
+        setEncryptedItem("blockTimestamp", Date.now().toString());
+
         // Navigate immediately to payment page without any loading states
         setLoading(false); // Stop local loading first
         
@@ -749,11 +753,11 @@ export const BusBookingPage = ({ isModal = false }) => {
         };
         
               // Store state data in localStorage as backup
-      localStorage.setItem("paymentPageState", JSON.stringify(stateData));
+      setEncryptedItem("paymentPageState", stateData);
       
       // Store bus search list for booking details API
       if (searchList) {
-        localStorage.setItem("busSearchList", JSON.stringify(searchList));
+        setEncryptedItem("busSearchList", searchList);
       }
         
         // Navigate immediately using React Router with replace
@@ -773,11 +777,7 @@ export const BusBookingPage = ({ isModal = false }) => {
           formErrors[error.path] = error.message;
         });
         setErrors(formErrors);
-        
-        console.log("=== VALIDATION ERRORS ===");
-        console.log("Errors:", formErrors);
-        console.log("Raw validation error:", err);
-        
+
         // Scroll to first error after setting errors
         scrollToFirstError();
       }
@@ -826,7 +826,7 @@ export const BusBookingPage = ({ isModal = false }) => {
                   className="text-decoration-none"
                   onClick={(e) => {
                     e.preventDefault();
-                    console.log('Navigating to bus-list page...');
+
                     // Force a page reload to ensure we get fresh data
                     window.location.href = '/bus-list';
                   }}
@@ -949,7 +949,7 @@ export const BusBookingPage = ({ isModal = false }) => {
                         <div className="price-info">
                           <div className="total-price">
                             ₹{selectedSeats.reduce((acc, label) => {
-                              const seatLayoutData = JSON.parse(localStorage.getItem("seatLayoutData") || "{}");
+                              const seatLayoutData = getEncryptedItem("seatLayoutData") || {};
                               const seatData = seatLayoutData.seats?.find(s => s.label === label);
                               return acc + (seatData?.price || busData.BusPrice?.PublishedPriceRoundedOff || 0);
                             }, 0)}
@@ -964,31 +964,6 @@ export const BusBookingPage = ({ isModal = false }) => {
             </div>
           </div>
 
-          {/* Error Summary */}
-          {hasSubmitted && Object.keys(errors).length > 0 && (
-            <div className="row mb-4">
-              <div className="col-12">
-                <div className="alert alert-danger" role="alert">
-                  <div className="d-flex align-items-center">
-                    <i className="fas fa-exclamation-triangle me-3 fs-4"></i>
-                    <div>
-                      <h6 className="alert-heading mb-2">Please fix the following errors:</h6>
-                      <ul className="mb-0">
-                        {Object.entries(errors).slice(0, 5).map(([field, message]) => (
-                          <li key={field} className="error-item">
-                            {message}
-                          </li>
-                        ))}
-                        {Object.keys(errors).length > 5 && (
-                          <li className="text-muted">... and {Object.keys(errors).length - 5} more errors</li>
-                        )}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Second Container - Traveler Details */}
           <form onSubmit={handleSubmit} autoComplete="on">
@@ -1008,9 +983,6 @@ export const BusBookingPage = ({ isModal = false }) => {
                     </h5>
                   </div>
                   <div className="card-body">
-                    {console.log('Rendering traveler forms for seats:', selectedSeats)}
-                    {console.log('Current travelerDetails:', travelerDetails)}
-                    
                     {selectedSeats.map((seatLabel, index) => (
                       <div key={seatLabel} className="traveler-dropdown mb-3">
                         {/* Traveler Dropdown Header */}
@@ -1031,6 +1003,15 @@ export const BusBookingPage = ({ isModal = false }) => {
                               <h6 className="mb-0">
                                 <i className="fas fa-chair me-2"></i>
                                 Seat {formatSeatNumber(seatLabel)} - Traveler {index + 1}
+                                {(() => {
+                                  const genderRestriction = getSeatGenderRestriction(seatLabel);
+                                  if (genderRestriction === "female") {
+                                    return <span className="badge bg-pink ms-2"><i className="fas fa-female me-1"></i>Female Only</span>;
+                                  } else if (genderRestriction === "male") {
+                                    return <span className="badge bg-blue ms-2"><i className="fas fa-male me-1"></i>Male Only</span>;
+                                  }
+                                  return null;
+                                })()}
                               </h6>
                               {travelerDetails[seatLabel]?.firstName && (
                                 <small className="text-muted">
@@ -1048,7 +1029,7 @@ export const BusBookingPage = ({ isModal = false }) => {
                         <div className={`traveler-form ${expandedTraveler === "all" || expandedTraveler === seatLabel ? 'expanded' : 'collapsed'}`}>
                           <div className="traveler-form-content">
                             <div className="row">
-                              <div className="col-md-2">
+                              <div className="col-md-4 col-lg-2">
                                 <div className="mb-3">
                                   <label className="form-label">Title *</label>
                                   <select
@@ -1066,7 +1047,7 @@ export const BusBookingPage = ({ isModal = false }) => {
                                   )}
                                 </div>
                               </div>
-                              <div className="col-md-3">
+                              <div className="col-md-4 col-lg-3">
                                 <div className="mb-3">
                                   <label className="form-label">First Name *</label>
                                   <input
@@ -1074,7 +1055,6 @@ export const BusBookingPage = ({ isModal = false }) => {
                                     className={`form-control ${hasSubmitted && errors[`travelerDetails.${seatLabel}.firstName`] ? 'is-invalid' : ''}`}
                                     value={travelerDetails[seatLabel]?.firstName || ""}
                                     onChange={e => {
-                                      console.log('Input change for', seatLabel, 'firstName:', e.target.value);
                                       handleTravelerChange(seatLabel, "firstName", e.target.value);
                                     }}
                                     placeholder="Enter first name"
@@ -1084,7 +1064,7 @@ export const BusBookingPage = ({ isModal = false }) => {
                                   )}
                                 </div>
                               </div>
-                              <div className="col-md-3">
+                              <div className="col-md-4 col-lg-3">
                                 <div className="mb-3">
                                   <label className="form-label">Last Name *</label>
                                   <input
@@ -1099,7 +1079,7 @@ export const BusBookingPage = ({ isModal = false }) => {
                                   )}
                                 </div>
                               </div>
-                              <div className="col-md-2">
+                              <div className="col-md-4 col-lg-2">
                                 <div className="mb-3">
                                   <label className="form-label">Age *</label>
                                   <input
@@ -1116,86 +1096,45 @@ export const BusBookingPage = ({ isModal = false }) => {
                                   )}
                                 </div>
                               </div>
-                              <div className="col-md-2">
+                              <div className="col-md-4 col-lg-2">
                                 <div className="mb-3">
                                   <label className="form-label">Gender *</label>
-                                  <select
-                                    className={`form-select ${hasSubmitted && errors[`travelerDetails.${seatLabel}.gender`] ? 'is-invalid' : ''}`}
-                                    value={travelerDetails[seatLabel]?.gender || ""}
-                                    onChange={e => handleTravelerChange(seatLabel, "gender", e.target.value)}
-                                  >
-                                    <option value="">Select Gender</option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                    <option value="other">Other</option>
-                                  </select>
-                                  {hasSubmitted && errors[`travelerDetails.${seatLabel}.gender`] && (
-                                    <div className="text-danger">{errors[`travelerDetails.${seatLabel}.gender`]}</div>
-                                  )}
+                                  {(() => {
+                                    const genderRestriction = getSeatGenderRestriction(seatLabel);
+                                    const isDisabled = genderRestriction !== null;
+                                    const restrictionText = genderRestriction === "female" ? "Female Only" : 
+                                                          genderRestriction === "male" ? "Male Only" : "";
+                                    
+                                    return (
+                                      <>
+                                        <select
+                                          className={`form-select ${hasSubmitted && errors[`travelerDetails.${seatLabel}.gender`] ? 'is-invalid' : ''} ${isDisabled ? 'disabled' : ''}`}
+                                          value={travelerDetails[seatLabel]?.gender || ""}
+                                          onChange={e => handleTravelerChange(seatLabel, "gender", e.target.value)}
+                                          disabled={isDisabled}
+                                        >
+                                          <option value="">Select Gender</option>
+                                          <option value="male">Male</option>
+                                          <option value="female">Female</option>
+                                          <option value="other">Other</option>
+                                        </select>
+                                        {isDisabled && (
+                                          <small className="text-info d-block mt-1">
+                                            <i className="fas fa-info-circle me-1"></i>
+                                            {restrictionText} seat
+                                          </small>
+                                        )}
+                                        {hasSubmitted && errors[`travelerDetails.${seatLabel}.gender`] && (
+                                          <div className="text-danger">{errors[`travelerDetails.${seatLabel}.gender`]}</div>
+                                        )}
+                                      </>
+                                    );
+                                  })()}
                                 </div>
                               </div>
                             </div>
                             
-                            <div className="row">
-                              <div className="col-md-12 mb-2">
-                                <small className="text-muted">
-                                  <i className="fas fa-info-circle me-1"></i>
-                                  ID details are optional but recommended for faster check-in
-                                </small>
-                              </div>
-                              <div className="col-md-6">
-                                <div className="mb-3">
-                                  <label className="form-label">ID Type (Optional)</label>
-                                  <select
-                                    className={`form-select ${hasSubmitted && errors[`travelerDetails.${seatLabel}.idType`] ? 'is-invalid' : ''}`}
-                                    value={travelerDetails[seatLabel]?.idType || ""}
-                                    onChange={e => handleTravelerChange(seatLabel, "idType", e.target.value)}
-                                  >
-                                    <option value="">Select ID Type</option>
-                                    <option value="pan-card">PAN Card</option>
-                                    <option value="voter-id">Voter ID Card</option>
-                                    <option value="passport">Passport</option>
-                                    <option value="aadhar-card">Aadhar Card</option>
-                                  </select>
-                                  {hasSubmitted && errors[`travelerDetails.${seatLabel}.idType`] && (
-                                    <div className="text-danger">{errors[`travelerDetails.${seatLabel}.idType`]}</div>
-                                  )}
-                                </div>
-                              </div>
-                              <div className="col-md-6">
-                                <div className="mb-3">
-                                  <label className="form-label">
-                                    ID Number (Optional)
-                                    {travelerDetails[seatLabel]?.idType &&
-                                      idValidationPatterns[travelerDetails[seatLabel].idType] && (
-                                        <span className="text-muted ms-2" style={{ fontSize: "0.8em" }}>
-                                          ({idValidationPatterns[travelerDetails[seatLabel].idType].description})
-                                        </span>
-                                      )}
-                                  </label>
-                                  <input
-                                    type="text"
-                                    className={`form-control ${hasSubmitted && errors[`travelerDetails.${seatLabel}.idNumber`] ? 'is-invalid' : ''}`}
-                                    value={travelerDetails[seatLabel]?.idNumber || ""}
-                                    onChange={(e) => handleIdNumberChange(seatLabel, e)}
-                                    placeholder={
-                                      travelerDetails[seatLabel]?.idType
-                                        ? idValidationPatterns[travelerDetails[seatLabel].idType].placeholder
-                                        : "Enter ID number (optional)"
-                                    }
-                                    maxLength={
-                                      travelerDetails[seatLabel]?.idType
-                                        ? idValidationPatterns[travelerDetails[seatLabel].idType].maxLength
-                                        : undefined
-                                    }
-                                    disabled={false}
-                                  />
-                                  {hasSubmitted && errors[`travelerDetails.${seatLabel}.idNumber`] && (
-                                    <div className="text-danger">{errors[`travelerDetails.${seatLabel}.idNumber`]}</div>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
+
                           </div>
                         </div>
                       </div>
@@ -1327,7 +1266,7 @@ export const BusBookingPage = ({ isModal = false }) => {
                       <i className="fas fa-map-marker-alt me-2"></i>
                       Address Details
                       {hasSubmitted && Object.keys(errors).some(key => key.startsWith('addressDetails')) && (
-                        <span className="error-badge ms-2">
+                        <span className="error-badge ms-2 text-light">
                           <i className="fas fa-exclamation-circle me-1"></i>
                           Errors
                         </span>
@@ -1428,12 +1367,10 @@ export const BusBookingPage = ({ isModal = false }) => {
             </div>
 
             {/* Proceed to Payment Button */}
-            <div className="row">
-              <div className="col-12">
-                <div className="text-center">
+              <div className="col-12 ">
                   <button 
                     type="submit" 
-                    className="btn btn-primary btn-lg w-100"
+                    className="btn btn-danger w-100 mb-4"
                     disabled={loading}
                   >
                     {loading ? (
@@ -1445,9 +1382,7 @@ export const BusBookingPage = ({ isModal = false }) => {
                       "Proceed to Payment"
                     )}
                   </button>
-                </div>
               </div>
-            </div>
           </form>
             </div>
           </div>
@@ -1943,12 +1878,7 @@ export const BusBookingPage = ({ isModal = false }) => {
           outline: none;
         }
         
-        .form-label {
-          font-size: 14px;
-          font-weight: 600;
-          color: #495057;
-          margin-bottom: 8px;
-        }
+
         
         /* Traveler Dropdown Styles */
         .traveler-dropdown {
@@ -2109,6 +2039,56 @@ export const BusBookingPage = ({ isModal = false }) => {
           .btn-primary {
             padding: 12px 24px;
           }
+        }
+        
+        /* Disabled form select styles */
+        .form-select.disabled {
+          background-color: #f8f9fa !important;
+          border-color: #dee2e6 !important;
+          color: #6c757d !important;
+          cursor: not-allowed !important;
+          opacity: 0.7;
+        }
+        
+        .form-select.disabled:focus {
+          border-color: #dee2e6 !important;
+          box-shadow: none !important;
+          -webkit-box-shadow: none !important;
+          -moz-box-shadow: none !important;
+        }
+        
+        .form-select.disabled option {
+          color: #6c757d;
+        }
+        
+        /* Info text styling */
+        .text-info {
+          color: #17a2b8 !important;
+        }
+        
+        .text-info i {
+          font-size: 0.875rem;
+        }
+        
+        /* Gender restriction badges */
+        .badge.bg-pink {
+          background-color: #e91e63 !important;
+          color: white;
+          font-size: 0.75rem;
+          font-weight: 600;
+          padding: 4px 8px;
+        }
+        
+        .badge.bg-blue {
+          background-color: #1976d2 !important;
+          color: white;
+          font-size: 0.75rem;
+          font-weight: 600;
+          padding: 4px 8px;
+        }
+        
+        .badge i {
+          font-size: 0.7rem;
         }
       `}</style>
     </>

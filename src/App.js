@@ -52,10 +52,21 @@ import HomeCar from "./components/home-car";
 import HomeCruise from "./components/home-cruise.jsx";
 import HomeFlight from "./components/home-flight";
 import HomeHotel from "./components/home-hotel";
+import InsuranceHome from './components/insurance_home';
+import InsuranceList from './components/insurance_components/InsuranceList';
+import InsuranceGeneratePolicy from './components/insurance_components/Insurance_Generate_Policy';
+import InsuranceBookingDetails from './components/insurance_components/Insurance_BookingDetails';
+import InsurancePaymentPage from './components/insurance_components/Insurance_Payment_Page';
+import InsuranceSearchPage from './components/insurance_components/insurance_search_page';
+import InsuranceCancelPage from './components/insurance_components/Insurance_Cancel_Page';
+
 import MedicalTrourism from "./components/Home-Medicaltourism.jsx";
 import HomeRental from "./components/home-rental";
 import HomeStay from "./components/home-stay";
 import HomeBus from "./components/homebus.jsx";
+// import HomeInsurance from "./components/insurance/home-insurance.jsx";
+// import InsuranceDetail from "./components/insurance-detail.jsx";
+// import InsurancePayment from "./components/insurance-payment.jsx";
 import HotelDetail02 from "./components/hotel-detail-2";
 import HotelList03 from "./components/hotel-list-03.jsx";
 import { HotelBookingPage } from "./components/hotel_components/BookingPage.jsx";
@@ -117,6 +128,9 @@ import CancellationAndRefundPolicy from "./components/footer/CancellationAndRefu
 import BusSeatLayoutPage from "./components/bus_components/BusSeatLayoutPage.jsx";
 import { BusBookingPage } from "./components/bus_components/bus_booking_detail_page.jsx";
 import BoardingPointsPage from "./components/bus_components/BoardingPointsPage.jsx";
+import Bus_Comfirmation_Page from "./components/bus_components/Bus_Comfirmation_Page.jsx";
+import InsuranceBookingPage from './components/insurance_components/Insurance_Booking_Page';
+
 
 function App() {
   const dispatch = useDispatch();
@@ -249,6 +263,21 @@ function App() {
           <Route path="/bus-seat-layout" element={<BusSeatLayoutPage />} />
           <Route path="/boarding-points" element={<BoardingPointsPage />} />
           <Route path="/busBookingpayment" element={<BusBookingPayment />} />
+          <Route path="/bus-confirmation" element={<Bus_Comfirmation_Page/>} />
+
+          {/* Insurance Routes */}
+          <Route path="/home-insurance" element={<InsuranceHome />} />
+          <Route path="/insurance-search" element={<InsuranceSearchPage />} />
+          <Route path="/insurance-list" element={<InsuranceList />} />
+          <Route path="/insurance-booking-page" element={<InsuranceBookingPage />} />
+          <Route path="/insurance-booking" element={<InsuranceBookingPage />} />
+          <Route path="/insurance-payment" element={<InsurancePaymentPage />} />
+          <Route path="/insurance-generate-policy" element={<InsuranceGeneratePolicy />} />
+          <Route path="/insurance-booking-details" element={<InsuranceBookingDetails />} />
+          <Route path="/insurance-cancel" element={<InsuranceCancelPage />} />
+
+          {/* <Route path="/insurance-detail" element={<InsuranceDetail />} />
+          <Route path="/insurance-payment" element={<InsurancePayment />} /> */}
 
           {/* Cruise Routes */}
           <Route path="/home-cruise" element={<HomeCruise />} />
@@ -258,6 +287,9 @@ function App() {
             path="/cruiseBookingPayment"
             element={<CruiseBookingPayment />}
           />
+
+
+          {/* Medical Tourism Routes */}
 
           {/* Tourism Routes */}
           <Route path="/home-businesstourism" element={<BusinessTrourism />} />

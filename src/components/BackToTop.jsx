@@ -31,25 +31,76 @@ const BackToTop = () => {
 
   return (
     <>
-      {isVisible && 
+      {isVisible && (
         <Link 
           id="back2Top" 
-          className="top-scroll" 
+          className="back-to-top-button" 
           title="Back to top" 
           to="#"
           onClick={scrollToTop}
           style={{
-            display: 'block',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             position: 'fixed',
-            bottom: '20px',
-            right: '20px',
+            bottom: '30px',
+            right: '30px',
+            width: '50px',
+            height: '50px',
+            background: 'linear-gradient(135deg, #cd2c22 0%, #b31b1b 100%)',
+            color: 'white',
+            borderRadius: '50%',
             cursor: 'pointer',
-            zIndex: 999
+            zIndex: 9999,
+            textDecoration: 'none',
+            boxShadow: '0 4px 15px rgba(205, 44, 34, 0.3)',
+            transition: 'all 0.3s ease',
+            animation: 'fadeInUp 0.5s ease-out',
           }}
         >
-          <i className="fa-solid fa-sort-up" />
+          <svg 
+            width="18" 
+            height="18" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2.5" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+          >
+            <path d="M12 19V5"/>
+            <path d="m5 12 7-7 7 7"/>
+          </svg>
         </Link>
-      }
+      )}
+      
+      <style jsx>{`
+        .back-to-top-button:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 8px 25px rgba(205, 44, 34, 0.4);
+          background: linear-gradient(135deg, #b31b1b 0%, #8b0000 100%);
+        }
+        
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @media (max-width: 768px) {
+          .back-to-top-button {
+            bottom: 20px !important;
+            right: 20px !important;
+            width: 45px !important;
+            height: 45px !important;
+          }
+        }
+      `}</style>
     </>
   );
 };

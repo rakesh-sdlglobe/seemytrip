@@ -8,6 +8,8 @@ import { flightReducer } from './Reducers/flightReducer';
 import mobileOtpReducer from './Reducers/mobileOtpreducer';
 import emailAuthReducer from './Reducers/emailreducer';
 import busReducer from './Reducers/busReducer';
+import insuranceReducer from './Reducers/insuranceReducer';
+import transferReducer from './Reducers/transferReducer';
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -18,6 +20,8 @@ const rootReducer = combineReducers({
   bus:busReducer,
   mobileOtp: mobileOtpReducer,
   emailAuth: emailAuthReducer,
+  insurance: insuranceReducer,
+  transfer: transferReducer,
 });
 
 // Add thunk middleware when creating the store

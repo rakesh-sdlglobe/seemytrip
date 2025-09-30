@@ -29,7 +29,7 @@ const HomeFlight = () => {
   const handleSearchResults = (data) => {
     console.log('Search results:', data); // Check if flight results are coming
     setFlightResults(data);
-    navigate('/flight-list', { state: { flightResults: data } });
+    navigate('/flight-list', { state: { flightsearchrequest: data} });
   };
 
   return (

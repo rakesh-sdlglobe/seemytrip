@@ -16,6 +16,36 @@ export default function HotelTraveller({
   const today = new Date();
   const DobStartDate = new Date(today);
   DobStartDate.setDate(today.getDate() - 730);
+  const styles = {
+    grid4: {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+      gap: 12,
+    },
+    grid3: {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+      gap: 12,
+    },
+    label: {
+      fontSize: 12,
+      color: "#555",
+      marginBottom: 6,
+      display: "block",
+    },
+    calendarWrapper: {
+      position: "relative",
+    },
+    calendarPopup: {
+      position: "absolute",
+      zIndex: 20,
+      background: "#fff",
+      boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+      borderRadius: 8,
+      padding: 8,
+      marginTop: 6,
+    },
+  };
   const calculateAge = (dob) => {
     if (!dob) return null;
 
@@ -31,6 +61,8 @@ export default function HotelTraveller({
 
     return age;
   };
+  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email || "");
+  const isLeadAdult = (roomIndex, paxIndex) => roomIndex === 0 && paxIndex === 0;
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -101,27 +133,44 @@ export default function HotelTraveller({
 
   useEffect(() => {
     localStorage.setItem("hotelTravelers", JSON.stringify(travellerDetails));
-    
-    // Also store in a more accessible format for confirmation page
-    const travelersForConfirmation = travellerDetails.map(traveler => ({
-      id: `${traveler.RoomID}-${traveler.PaxType}-${traveler.PaxId}`,
-      Forename: traveler.Forename,
-      Surname: traveler.Surname,
-      PaxEmail: traveler.PaxEmail,
-      PaxMobile: traveler.PaxMobile,
-      PaxType: traveler.PaxType,
-      RoomID: traveler.RoomID,
-      LeadPax: traveler.LeadPax
-    }));
-    
-    localStorage.setItem("hotelTravelersForConfirmation", JSON.stringify(travelersForConfirmation));
   }, [travellerDetails]);
+
+  const isFormComplete = (() => {
+    if (!roomData || roomData.length === 0) return false;
+    for (let roomIndex = 0; roomIndex < roomData.length; roomIndex++) {
+      const room = roomData[roomIndex];
+
+      for (let paxIndex = 0; paxIndex < (room.Adults || 0); paxIndex++) {
+        const firstName = (getTravellerValue(roomIndex, "A", paxIndex, "Forename") || "").trim();
+        const lastName = (getTravellerValue(roomIndex, "A", paxIndex, "Surname") || "").trim();
+        if (!firstName || !lastName) return false;
+
+        if (isLeadAdult(roomIndex, paxIndex)) {
+          const email = (getTravellerValue(roomIndex, "A", paxIndex, "PaxEmail") || "").trim();
+          const mobile = (getTravellerValue(roomIndex, "A", paxIndex, "PaxMobile") || "").trim();
+          if (!isValidEmail(email)) return false;
+          if (!/^\d{10}$/.test(mobile)) return false;
+        }
+      }
+
+      for (let paxIndex = 0; paxIndex < (room.Children || 0); paxIndex++) {
+        const firstName = (getTravellerValue(roomIndex, "C", paxIndex, "Forename") || "").trim();
+        const lastName = (getTravellerValue(roomIndex, "C", paxIndex, "Surname") || "").trim();
+        const dob = (getTravellerValue(roomIndex, "C", paxIndex, "DOB") || "").trim();
+        if (!firstName || !lastName || !dob) return false;
+      }
+    }
+    return true;
+  })();
 
   return (
     <form
+      ref={startDateRef}
       onSubmit={(e) => {
         e.preventDefault();
-        validatePrices(travellerDetails);
+        if (isFormComplete) {
+          validatePrices(travellerDetails);
+        }
       }}
     >
       <div className="form-group mt-3">
@@ -131,11 +180,19 @@ export default function HotelTraveller({
 
             {/* Adults */}
             {[...Array(room.Adults)].map((_, i) => (
-              <div key={`adult-${i}`}>
+              <div
+                key={`adult-${i}`}
+                style={{
+                  marginTop: i > 0 ? 16 : 8,
+                  paddingTop: i > 0 ? 12 : 0,
+                  borderTop: i > 0 ? "1px solid #eee" : "none",
+                  marginBottom: 8,
+                }}
+              >
                 <h6>Adult {i + 1}</h6>
-                <div className="d-flex gap-3 align-items-center">
+                <div style={styles.grid4}>
                   <div>
-                    <label className="me-2">First Name</label>
+                    <label style={styles.label}>First Name</label>
                     <input
                       type="text"
                       className="form-control"
@@ -157,7 +214,7 @@ export default function HotelTraveller({
                     />
                   </div>
                   <div>
-                    <label className="me-2">Last Name</label>
+                    <label style={styles.label}>Last Name</label>
                     <input
                       className="form-control"
                       type="text"
@@ -179,7 +236,7 @@ export default function HotelTraveller({
                     />
                   </div>
                   <div>
-                    <label className="me-2">Email</label>
+                    <label style={styles.label}>Email</label>
                     <input
                       className="form-control"
                       type="email"
@@ -198,7 +255,7 @@ export default function HotelTraveller({
                     />
                   </div>
                   <div>
-                    <label className="me-2">Mobile</label>
+                    <label style={styles.label}>Mobile</label>
                     <input
                       className="form-control"
                       type="text"
@@ -227,11 +284,19 @@ export default function HotelTraveller({
             {/* Children */}
             {room.Children > 0 &&
               [...Array(room.Children)].map((_, i) => (
-                <div key={`child-${i}`}>
+                <div
+                  key={`child-${i}`}
+                  style={{
+                    marginTop: i > 0 ? 16 : 8,
+                    paddingTop: i > 0 ? 12 : 0,
+                    borderTop: i > 0 ? "1px solid #eee" : "none",
+                    marginBottom: 8,
+                  }}
+                >
                   <h6>Child {i + 1}</h6>
-                  <div className="d-flex gap-3 align-items-center">
+                  <div style={styles.grid3}>
                     <div>
-                      <label className="me-2">First Name</label>
+                      <label style={styles.label}>First Name</label>
                       <input
                         className="form-control"
                         type="text"
@@ -252,7 +317,7 @@ export default function HotelTraveller({
                       />
                     </div>
                     <div>
-                      <label className="me-2">Last Name</label>
+                      <label style={styles.label}>Last Name</label>
                       <input
                         className="form-control"
                         type="text"
@@ -272,8 +337,8 @@ export default function HotelTraveller({
                         }}
                       />
                     </div>
-                    <div>
-                      <label className="me-2">Date of birth</label>
+                    <div style={styles.calendarWrapper}>
+                      <label style={styles.label}>Date of birth</label>
 
                       <input
                         type="text"
@@ -290,7 +355,7 @@ export default function HotelTraveller({
                         placeholder="Date of Birth"
                       />
                       {openCalendars[`${idx}-C-${i}`] && (
-                        <div className="calendar-popup">
+                        <div style={styles.calendarPopup}>
                           <Calendar
                             onChange={(date) => {
                               const formattedDate = date
@@ -346,7 +411,7 @@ export default function HotelTraveller({
           </div>
         ))}
       </div>
-      {!hideButtom && (
+      {!hideButtom && isFormComplete && (
         <button
           style={{
             background: "#0077ff",

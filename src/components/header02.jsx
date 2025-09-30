@@ -36,13 +36,11 @@ const Header02 = () => {
         const user1 = getEncryptedItem('user1');
         
         if (token && user1) {
-          console.log('Header02: Found auth data in localStorage:', { token: !!token, user1 });
           setLocalAuthState({
             isLoggedIn: true,
             user1
           });
         } else {
-          console.log('Header02: No auth data found in localStorage');
           setLocalAuthState({
             isLoggedIn: false,
             user1: null
@@ -62,7 +60,6 @@ const Header02 = () => {
     // Listen for storage changes (when localStorage is updated from other parts of the app)
     const handleStorageChange = (e) => {
       if (e.key === 'authToken' || e.key === 'user1') {
-        console.log('Header02: Storage changed:', e.key);
         checkLocalAuth();
       }
     };
@@ -77,29 +74,14 @@ const Header02 = () => {
   // Determine if user is logged in (check both Redux and local state)
   const isLoggedIn = Boolean(googleUser || phoneNumber || emailuser) || localAuthState.isLoggedIn;
 
-  // Debug logging
-  useEffect(() => {
-    console.log('Header02: Auth state debug:', {
-      googleUser,
-      phoneNumber,
-      emailuser,
-      localAuthState,
-      isLoggedIn,
-      emailUserName,
-      googleUserName
-    });
-  }, [googleUser, phoneNumber, emailuser, localAuthState, isLoggedIn, emailUserName, googleUserName]);
-
   // Handle successful authentication from AuthPopup
   const handleAuthSuccess = useCallback(() => {
-    console.log('Header02: Authentication successful, updating state...');
     setShowAuthPopup(false);
     // Force a re-check of localStorage
     setTimeout(() => {
       const token = localStorage.getItem('authToken');
       const user = getEncryptedItem('user1');
       if (token && user) {
-        console.log('Header02: Setting auth state after success:', user);
         setLocalAuthState({
           isLoggedIn: true,
           user
@@ -166,7 +148,7 @@ const Header02 = () => {
     { to: "/home-hotel", icon: "fa-solid fa-hotel", text: "Hotels" },
     { to: "/home-car", icon: "fa-solid fa-car", text: "Cabs" },
     { to: "/home-cruise", icon: "fa-solid fa-ship", text: "Cruises" },
-
+    { to: "/home-insurance", icon: "fa-solid fa-shield-halved", text: "Insurance" },
     { to: "/packages", icon: "fa-solid fa-suitcase-rolling", text: "Packages" },
   ];
 
@@ -310,7 +292,7 @@ const Header02 = () => {
 
               {/* Mobile version right-end Sign In/Register */}
               {!isLoggedIn && (
-                <div className="mobile_nav d-md-none">
+                <div className="mobile_nav d-md-none ">
                   <Link to="#" onClick={() => setShowAuthPopup(true)} className="bg-light-primary text-primary rounded nav-link">
                     <i className="fa-regular fa-circle-user fs-6" />
                   </Link>
@@ -322,7 +304,7 @@ const Header02 = () => {
               <ul className="nav-menu">
                 {navItems.map((item, index) => (
                   <li key={index} className="mt-3 ">
-                    <NavLink to={item.to}>
+                    <NavLink to={item.to} className="d-flex  flex-column align-items-center gap-3">
                       <i className={`${item.icon} me-2 fa-lg`} />
                       {item.text}
                     </NavLink>
