@@ -225,6 +225,15 @@ const PointsFilterSection = ({
 
 // Price Range Slider Component
 const PriceRangeSlider = ({ minPrice, maxPrice, currentMin, currentMax, onChange, className = '' }) => {
+  const [localMinValue, setLocalMinValue] = useState(currentMin);
+  const [localMaxValue, setLocalMaxValue] = useState(currentMax);
+
+  // Update local state when props change
+  useEffect(() => {
+    setLocalMinValue(currentMin);
+    setLocalMaxValue(currentMax);
+  }, [currentMin, currentMax]);
+
   const handleMinChange = (e) => {
     const value = Math.min(parseInt(e.target.value), currentMax - 100);
     onChange({ min: value, max: currentMax });
@@ -276,10 +285,32 @@ const PriceRangeSlider = ({ minPrice, maxPrice, currentMin, currentMax, onChange
             type="number"
             id="min-price-input"
             className="form-control form-control-sm"
-            value={currentMin}
+            value={localMinValue}
             onChange={(e) => {
-              const value = Math.max(minPrice, Math.min(parseInt(e.target.value) || minPrice, currentMax - 100));
-              onChange({ min: value, max: currentMax });
+              const inputValue = e.target.value;
+              setLocalMinValue(inputValue);
+              
+              if (inputValue === '') {
+                return;
+              }
+              
+              const value = parseInt(inputValue);
+              if (!isNaN(value)) {
+                const clampedValue = Math.max(minPrice, Math.min(value, currentMax - 100));
+                onChange({ min: clampedValue, max: currentMax });
+              }
+            }}
+            onBlur={(e) => {
+              const inputValue = e.target.value;
+              if (inputValue === '' || isNaN(parseInt(inputValue))) {
+                setLocalMinValue(currentMin);
+                onChange({ min: currentMin, max: currentMax });
+              } else {
+                const value = parseInt(inputValue);
+                const clampedValue = Math.max(minPrice, Math.min(value, currentMax - 100));
+                setLocalMinValue(clampedValue);
+                onChange({ min: clampedValue, max: currentMax });
+              }
             }}
             min={minPrice}
             max={maxPrice}
@@ -292,10 +323,32 @@ const PriceRangeSlider = ({ minPrice, maxPrice, currentMin, currentMax, onChange
             type="number"
             id="max-price-input"
             className="form-control form-control-sm"
-            value={currentMax}
+            value={localMaxValue}
             onChange={(e) => {
-              const value = Math.min(maxPrice, Math.max(parseInt(e.target.value) || maxPrice, currentMin + 100));
-              onChange({ min: currentMin, max: value });
+              const inputValue = e.target.value;
+              setLocalMaxValue(inputValue);
+              
+              if (inputValue === '') {
+                return;
+              }
+              
+              const value = parseInt(inputValue);
+              if (!isNaN(value)) {
+                const clampedValue = Math.min(maxPrice, Math.max(value, currentMin + 100));
+                onChange({ min: currentMin, max: clampedValue });
+              }
+            }}
+            onBlur={(e) => {
+              const inputValue = e.target.value;
+              if (inputValue === '' || isNaN(parseInt(inputValue))) {
+                setLocalMaxValue(currentMax);
+                onChange({ min: currentMin, max: currentMax });
+              } else {
+                const value = parseInt(inputValue);
+                const clampedValue = Math.min(maxPrice, Math.max(value, currentMin + 100));
+                setLocalMaxValue(clampedValue);
+                onChange({ min: currentMin, max: clampedValue });
+              }
             }}
             min={minPrice}
             max={maxPrice}
@@ -1665,20 +1718,22 @@ const BusFilterPage = ({
         .price-range-input::-webkit-slider-thumb {
           -webkit-appearance: none;
           appearance: none;
-          width: 20px;
-          height: 20px;
+          width: 22px;
+          height: 22px;
           border-radius: 50%;
           background: #cd2c22;
           cursor: pointer;
           pointer-events: all;
           border: 2px solid white;
           box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+
           transition: all 0.2s ease;
         }
 
         .price-range-input::-webkit-slider-thumb:hover {
           transform: scale(1.1);
-          box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+          box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.3)
+
         }
 
         .price-range-input::-moz-range-thumb {
