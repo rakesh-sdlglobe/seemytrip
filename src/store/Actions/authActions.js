@@ -11,7 +11,9 @@ export const GOOGLE_LOGIN_SUCCESS = 'GOOGLE_LOGIN_SUCCESS';
 export const GOOGLE_LOGIN_FAILURE = 'GOOGLE_LOGIN_FAILURE';
 
 // export const API_URL = process.env.REACT_APP_API_URL ;
-export const API_URL = 'https://tripadmin.seemytrip.com/api';
+export const API_URL = process.env.REACT_APP_API_URL || 'https://tripadmin.seemytrip.com/api';
+// export const API_URL =  'https://tripadmin.seemytrip.com/api';
+
 // export const API_URL = 'https://tripadmin.onrender.com/api';
 
 const AUTH_TOKEN_KEY = 'authToken';
@@ -33,14 +35,14 @@ export const setEmail = (email) => ({ type: SET_EMAIL, payload: email });
 
 export const setName = (firstName) => ({ type: SET_NAME, payload: firstName });
 
-export const googleLoginSuccess = ({ token, user }) => ({ 
-  type: GOOGLE_LOGIN_SUCCESS, 
-  payload: { token, user } 
+export const googleLoginSuccess = ({ token, user }) => ({
+  type: GOOGLE_LOGIN_SUCCESS,
+  payload: { token, user }
 });
 
-export const googleLoginFailure = (error) => ({ 
-  type: GOOGLE_LOGIN_FAILURE, 
-  payload: error 
+export const googleLoginFailure = (error) => ({
+  type: GOOGLE_LOGIN_FAILURE,
+  payload: error
 });
 
 
@@ -64,8 +66,8 @@ export const handleGoogleLogin = (accessToken) => async (dispatch) => {
     const response = await axios.get(`${process.env.REACT_APP_API_URL}/auth/google`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
-    
-    console.log("Google login response:", response.data); 
+
+    console.log("Google login response:", response.data);
 
     clearTimeout(timeout);
 
@@ -96,7 +98,7 @@ export const handleGoogleLogin = (accessToken) => async (dispatch) => {
     // Handle different error scenarios
     console.error('Google login error:', error);
     let errorMessage = 'Google login failed';
-    
+
     if (axios.isCancel(error)) {
       errorMessage = 'Request timeout';
     } else if (error.response) {
@@ -107,7 +109,7 @@ export const handleGoogleLogin = (accessToken) => async (dispatch) => {
 
     console.error('Google login error:', errorMessage);
     dispatch(googleLoginFailure(errorMessage));
-    
+
     // Optional: Clear auth data on failure
     localStorage.removeItem(AUTH_TOKEN_KEY);
     removeEncryptedItem(USER_DATA_KEY);

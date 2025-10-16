@@ -12,7 +12,7 @@ const PointList = React.memo(({
   type,
   hideHeadings
 }) => {
-  const filteredPoints = useMemo(() => 
+  const filteredPoints = useMemo(() =>
     points.filter(point =>
       point.location.toLowerCase().includes(searchValue.toLowerCase())
     ), [points, searchValue]
@@ -137,11 +137,11 @@ const BoardingPointsPage = ({
         hour = hour % 12 || 12;
 
         rawTime = `${currentDate.toISOString().split('T')[0]}T${h.padStart(2, '0')}:${minute.padStart(2, '0')}:00`;
-        
-        return { 
-          time: `${hour}:${minute.padStart(2, '0')} ${ampm}`, 
+
+        return {
+          time: `${hour}:${minute.padStart(2, '0')} ${ampm}`,
           date: `${day} ${month}`,
-          rawTime 
+          rawTime
         };
       }
 
@@ -154,8 +154,8 @@ const BoardingPointsPage = ({
       const hour = hours % 12 || 12;
       const minute = minutes.toString().padStart(2, '0');
 
-      return { 
-        time: `${hour}:${minute} ${ampm}`, 
+      return {
+        time: `${hour}:${minute} ${ampm}`,
         date: `${day} ${month}`,
         rawTime: timeString
       };
@@ -165,7 +165,7 @@ const BoardingPointsPage = ({
   }, []);
 
   // ✅ Format boarding & dropping points with useMemo for performance
-  const processedBoardingPoints = useMemo(() => 
+  const processedBoardingPoints = useMemo(() =>
     boardingPoints.map(point => ({
       location: point.CityPointName || point.location,
       timeData: formatTimeWithDate(point.CityPointTime || point.time),
@@ -175,7 +175,7 @@ const BoardingPointsPage = ({
     })), [boardingPoints, formatTimeWithDate]
   );
 
-  const processedDroppingPoints = useMemo(() => 
+  const processedDroppingPoints = useMemo(() =>
     droppingPoints.map(point => ({
       location: point.CityPointName || point.location,
       timeData: formatTimeWithDate(point.CityPointTime || point.time),
@@ -464,7 +464,7 @@ const BoardingPointsPage = ({
         {/* Boarding Points */}
         {processedBoardingPoints.length > 0 && (
           <PointList
-            title="Boarding Points"
+            title="Pickup Point"
             points={processedBoardingPoints}
             selectedPoint={selectedBoarding}
             onChange={handleBoardingChange}
@@ -478,7 +478,7 @@ const BoardingPointsPage = ({
         {/* Dropping Points */}
         {processedDroppingPoints.length > 0 && (
           <PointList
-            title="Dropping Points"
+            title="Drop Points"
             points={processedDroppingPoints}
             selectedPoint={selectedDropping}
             onChange={handleDroppingChange}
@@ -496,7 +496,7 @@ const BoardingPointsPage = ({
           <div className="contact-info">
             <h3><FaPhone aria-hidden="true" /> Contact Information</h3>
             <p>
-              For any queries regarding boarding points, please contact our customer support at{' '}
+              For any queries regarding Pickup points, please contact our customer support at{' '}
               <strong>{processedBoardingPoints[0]?.phone || '7303093510'}</strong>
             </p>
           </div>

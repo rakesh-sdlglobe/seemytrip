@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { getEncryptedItem } from '../../utils/encryption';
-import { API_URL, } from "./authActions";
+import { API_URL } from "./authActions";
 
 // Action Types
 export const INSURANCE_AUTH_REQUEST = 'INSURANCE_AUTH_REQUEST';

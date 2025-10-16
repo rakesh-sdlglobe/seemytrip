@@ -15,6 +15,9 @@ import {
   selectInsuranceSearchError,
   selectInsuranceAuthData,
 } from "../../store/Selectors/insuranceSelectors";
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const InsuranceSearch = () => {
   const dispatch = useDispatch();
@@ -80,7 +83,7 @@ const InsuranceSearch = () => {
   useEffect(() => {
     const state = location.state;
     let params = null;
-    
+
     // First check if we have search params from navigation state (modify mode)
     if (state && state.searchParams) {
       params = state.searchParams;
@@ -88,7 +91,7 @@ const InsuranceSearch = () => {
       // Fallback to localStorage
       params = getEncryptedItem('insuranceSearchParams');
     }
-    
+
     if (params) {
       // Parse dates more safely
       if (params.departDate) {
@@ -106,7 +109,7 @@ const InsuranceSearch = () => {
       if (params.duration) setDuration(params.duration);
       if (params.passengerCount) setPassengerCount(params.passengerCount);
       if (params.passengerAges) setPassengerAges(params.passengerAges);
-      
+
       // Handle plan category - convert from value to object if needed
       if (params.planCategory) {
         if (typeof params.planCategory === 'object') {
@@ -116,7 +119,7 @@ const InsuranceSearch = () => {
           if (category) setPlanCategory(category);
         }
       }
-      
+
       // Handle plan type - convert from value to object if needed
       if (params.planType) {
         if (typeof params.planType === 'object') {
@@ -126,7 +129,7 @@ const InsuranceSearch = () => {
           if (type) setPlanType(type);
         }
       }
-      
+
       // Handle plan coverage - convert from value to object if needed
       if (params.planCoverage) {
         if (typeof params.planCoverage === 'object') {
@@ -175,7 +178,7 @@ const InsuranceSearch = () => {
     if (planType.value === 1) {
       const departDateOnly = new Date(departDate.getFullYear(), departDate.getMonth(), departDate.getDate());
       const returnDateOnly = new Date(returnDate.getFullYear(), returnDate.getMonth(), returnDate.getDate());
-      
+
       if (returnDateOnly < departDateOnly) {
         // If return date is before depart date, set it to depart date (same day)
         setReturnDate(departDate);
@@ -199,7 +202,7 @@ const InsuranceSearch = () => {
 
   const handleDepartDateChange = useCallback((date) => {
     setDepartDate(date);
-    
+
     if (planType.value === 1) {
       // Single Trip: Ensure return date is not before depart date
       if (returnDate < date) {
@@ -228,7 +231,7 @@ const InsuranceSearch = () => {
 
   const handleDurationChange = useCallback((e) => {
     const value = parseInt(e.target.value);
-    
+
     if (planType.value === 1) {
       // Single Trip: Update return date based on duration
       if (value >= 1) {
@@ -329,26 +332,29 @@ const InsuranceSearch = () => {
       // Step 1: Ensure we have authentication data
       if (!authData || !authData.TokenId) {
         const authResponse = await dispatch(authenticateInsuranceAPI());
-        
+
         if (!authResponse || !authResponse.TokenId) {
-          alert('Authentication failed. Please try again.');
+          // alert('Authentication failed. Please try again.');
+          toast.error('Authentication failed. Please try again.');
           return;
         }
       }
-      
+
       // No localStorage storage - auth data will be passed via navigation state
-      
+
       // Step 2: Validate form data according to API specification
       const formErrors = validateForm();
       if (formErrors.length > 0) {
-        alert(formErrors.join('\n'));
+        // alert(formErrors.join('\n'));
+        toast.error(formErrors.join('\n'));
         return;
       }
 
       // Step 3: Validate API parameter combinations (no restrictions - allow all combinations)
       const apiErrors = validateApiCombination();
       if (apiErrors.length > 0) {
-        alert(apiErrors.join('\n'));
+        // alert(apiErrors.join('\n'));
+        toast.warning(apiErrors.join('\n'));
         return;
       }
 
@@ -356,7 +362,7 @@ const InsuranceSearch = () => {
       const validAges = passengerAges.slice(0, passengerCount);
       const minAge = planType.value === 1 ? 0.5 : 1; // Single trip: 6 months, AMT: 1 year
       const maxAge = 70;
-      
+
       if (validAges.some(age => age < minAge || age > maxAge)) {
         const passengerType = planType.value === 1 ? "Traveler" : "Member";
         alert(`${passengerType} ages must be between ${minAge} and ${maxAge} years for ${planType.label}`);
@@ -381,7 +387,7 @@ const InsuranceSearch = () => {
 
       // Store form data in localStorage for better UX
       setEncryptedItem('insuranceSearchParams', searchParams);
-      
+
       // Step 3: Prepare API parameters according to specification
       const apiParams = {
         PlanCategory: planCategory.value,
@@ -403,18 +409,18 @@ const InsuranceSearch = () => {
         endDate.setDate(departDate.getDate() + duration - 1);
         apiParams.TravelEndDate = `${endDate.getFullYear()}/${(endDate.getMonth() + 1).toString().padStart(2, '0')}/${endDate.getDate().toString().padStart(2, '0')}`;
       }
-      
+
       // Validate API parameters
       if (!apiParams.TokenId) {
         alert('Authentication token missing. Please try again.');
         return;
       }
-      
+
       if (!apiParams.EndUserIp) {
         alert('User IP missing. Please try again.');
         return;
       }
-      
+
       const searchResponse = await dispatch(getInsuranceList(apiParams));
 
       // Check if the search was successful
@@ -423,7 +429,7 @@ const InsuranceSearch = () => {
           // Check if we have actual results
           if (searchResponse.Response.Results && searchResponse.Response.Results.length > 0) {
             // No localStorage storage - TraceId will be passed via navigation state
-            
+
             // Success with results - navigate to results with search data
             navigate('/insurance-list', {
               state: {
@@ -434,20 +440,21 @@ const InsuranceSearch = () => {
             });
           } else {
             // Success but no results found
-            alert('No insurance plans found for the selected criteria. This combination may not be supported. Please try different options.');
+            // alert('No insurance plans found for the selected criteria. This combination may not be supported. Please try different options.');
+            toast.info('No insurance plans found for the selected criteria.');
           }
         } else if (searchResponse.Response.Error) {
           // API returned an error
           const errorMsg = searchResponse.Response.Error.ErrorMessage || 'Search failed';
           const errorCode = searchResponse.Response.Error.ErrorCode;
-          
+
           // Check for trace ID expiration
-          if (errorCode === 1001 || errorMsg.toLowerCase().includes('trace') || 
-              errorMsg.toLowerCase().includes('expire') || errorMsg.toLowerCase().includes('invalid trace')) {
+          if (errorCode === 1001 || errorMsg.toLowerCase().includes('trace') ||
+            errorMsg.toLowerCase().includes('expire') || errorMsg.toLowerCase().includes('invalid trace')) {
             alert('Your search session has expired. Please start a new search to continue.');
             return;
           }
-          
+
           alert(`Search failed: ${errorMsg}\nError Code: ${errorCode}`);
         } else {
           // No results or other issue
@@ -465,12 +472,14 @@ const InsuranceSearch = () => {
         alert('No insurance plans found for the selected criteria. This combination may not be supported. Please try different options.');
       } else if (error.message && error.message.includes('400')) {
         alert('Bad Request: The selected combination of parameters may not be supported by the API. Please try different options.');
-      } else if (error.message && (error.message.toLowerCase().includes('trace') || 
-                 error.message.toLowerCase().includes('expire') || 
-                 error.message.toLowerCase().includes('invalid trace'))) {
+      } else if (error.message && (error.message.toLowerCase().includes('trace') ||
+        error.message.toLowerCase().includes('expire') ||
+        error.message.toLowerCase().includes('invalid trace'))) {
         alert('Your search session has expired. Please start a new search to continue.');
       } else {
-        alert(`Search failed: ${error.message || 'Please try again.'}`);
+        // alert(`Search failed: ${error.message || 'Please try again.'}`);
+        toast.error(`Search failed: ${error.message || 'Please try again.'}`);
+
       }
     }
   }, [departDate, returnDate, duration, passengerCount, passengerAges, planCategory, planType, planCoverage, authData, dispatch, navigate]);
@@ -744,314 +753,334 @@ const InsuranceSearch = () => {
 
         `}
       </style>
-      
+
       <div className="container">
+
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        />
+
         <div className="row justify-content-center align-items-center">
           <div className="col-12">
             <div className="search-wrap">
-                             {/* Plan Type Tabs - Single Trip is active by default */}
-               <div className="plan-type-tabs">
-                 <button
-                   className={`btn ${planType.value === 1 ? 'active' : ''}`}
-                   onClick={() => setPlanType({ value: 1, label: "Single Trip" })}
-                   aria-pressed={planType.value === 1}
-                   data-active={planType.value === 1}
-                   style={{
-                     color: planType.value === 1 ? '#cd2c22' : '#6c757d',
-                     background: planType.value === 1 ? '#fff' : 'none',
-                     borderBottom: planType.value === 1 ? '3px solid #cd2c22' : 'none',
-                     fontWeight: planType.value === 1 ? '600' : '500',
-                     transform: planType.value === 1 ? 'translateY(-1px)' : 'none',
-                     boxShadow: planType.value === 1 ? '0 2px 4px rgba(0, 0, 0, 0.1)' : 'none',
-                     borderRadius: planType.value === 1 ? '4px 4px 0 0' : '0',
-                     position: 'relative',
-                     zIndex: planType.value === 1 ? '2' : '1'
-                   }}
-                 >
-                   Single Trip
-                 </button>
-                 <button
-                   className={`btn ${planType.value === 2 ? 'active' : ''}`}
-                   onClick={() => setPlanType({ value: 2, label: "Annual Multi Trip (AMT)" })}
-                   aria-pressed={planType.value === 2}
-                   data-active={planType.value === 2}
-                   style={{
-                     color: planType.value === 2 ? '#cd2c22' : '#6c757d',
-                     background: planType.value === 2 ? '#fff' : 'none',
-                     borderBottom: planType.value === 2 ? '3px solid #cd2c22' : 'none',
-                     fontWeight: planType.value === 2 ? '600' : '500',
-                     transform: planType.value === 2 ? 'translateY(-1px)' : 'none',
-                     boxShadow: planType.value === 2 ? '0 2px 4px rgba(0, 0, 0, 0.1)' : 'none',
-                     borderRadius: planType.value === 2 ? '4px 4px 0 0' : '0',
-                     position: 'relative',
-                     zIndex: planType.value === 2 ? '2' : '1'
-                   }}
-                 >
-                   Annual Multi Trip
-                 </button>
-               </div>
+              {/* Plan Type Tabs - Single Trip is active by default */}
+              <div className="plan-type-tabs">
+                <button
+                  className={`btn ${planType.value === 1 ? 'active' : ''}`}
+                  onClick={() => setPlanType({ value: 1, label: "Single Trip" })}
+                  aria-pressed={planType.value === 1}
+                  data-active={planType.value === 1}
+                  style={{
+                    color: planType.value === 1 ? '#cd2c22' : '#6c757d',
+                    background: planType.value === 1 ? '#fff' : 'none',
+                    borderBottom: planType.value === 1 ? '3px solid #cd2c22' : 'none',
+                    fontWeight: planType.value === 1 ? '600' : '500',
+                    transform: planType.value === 1 ? 'translateY(-1px)' : 'none',
+                    boxShadow: planType.value === 1 ? '0 2px 4px rgba(0, 0, 0, 0.1)' : 'none',
+                    borderRadius: planType.value === 1 ? '4px 4px 0 0' : '0',
+                    position: 'relative',
+                    zIndex: planType.value === 1 ? '2' : '1'
+                  }}
+                >
+                  Single Trip
+                </button>
+                <button
+                  className={`btn ${planType.value === 2 ? 'active' : ''}`}
+                  onClick={() => setPlanType({ value: 2, label: "Annual Multi Trip (AMT)" })}
+                  aria-pressed={planType.value === 2}
+                  data-active={planType.value === 2}
+                  style={{
+                    color: planType.value === 2 ? '#cd2c22' : '#6c757d',
+                    background: planType.value === 2 ? '#fff' : 'none',
+                    borderBottom: planType.value === 2 ? '3px solid #cd2c22' : 'none',
+                    fontWeight: planType.value === 2 ? '600' : '500',
+                    transform: planType.value === 2 ? 'translateY(-1px)' : 'none',
+                    boxShadow: planType.value === 2 ? '0 2px 4px rgba(0, 0, 0, 0.1)' : 'none',
+                    borderRadius: planType.value === 2 ? '4px 4px 0 0' : '0',
+                    position: 'relative',
+                    zIndex: planType.value === 2 ? '2' : '1'
+                  }}
+                >
+                  Annual Multi Trip
+                </button>
+              </div>
 
-                             {/* Single Trip Form Fields */}
-               {planType.value === 1 && (
-                 <>
-                   <div className="tab-indicator">
-                     🚀 Single Trip Insurance - One-time coverage for your journey
-                   </div>
-                   <div className="form-section">
-                     <div className="row gy-3 gx-md-3 gx-sm-2">
-                   <div className="col-xl-3 col-lg-6 col-md-6 col-sm-12">
-                     <label className="form-label fw-bold text-dark">Plan Category</label>
-                     <Select
-                       options={planCategoryOptions}
-                       value={planCategory}
-                       onChange={handlePlanCategoryChange}
-                       styles={customSelectStyles}
-                       placeholder="Select Plan Category"
-                     />
-                   </div>
+              {/* Single Trip Form Fields */}
+              {planType.value === 1 && (
+                <>
+                  <div className="tab-indicator">
+                    🚀 Single Trip Insurance - One-time coverage for your journey
+                  </div>
+                  <div className="form-section">
+                    <div className="row gy-3 gx-md-3 gx-sm-2">
+                      <div className="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+                        <label className="form-label fw-bold text-dark">Plan Category</label>
+                        <Select
+                          options={planCategoryOptions}
+                          value={planCategory}
+                          onChange={handlePlanCategoryChange}
+                          styles={customSelectStyles}
+                          placeholder="Select Plan Category"
+                        />
+                      </div>
 
-                   <div className="col-xl-3 col-lg-6 col-md-6 col-sm-12">
-                     <label className="form-label fw-bold text-dark">Plan Coverage</label>
-                     <Select
-                       options={planCoverageOptions}
-                       value={planCoverage}
-                       onChange={handlePlanCoverageChange}
-                       styles={customSelectStyles}
-                       placeholder="Select Plan Coverage"
-                     />
-                   </div>
+                      <div className="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+                        <label className="form-label fw-bold text-dark">Plan Coverage</label>
+                        <Select
+                          options={planCoverageOptions}
+                          value={planCoverage}
+                          onChange={handlePlanCoverageChange}
+                          styles={customSelectStyles}
+                          placeholder="Select Plan Coverage"
+                        />
+                      </div>
 
-                   <div className=" d-flex flex-column col-xl-3 col-lg-6 col-md-6 col-sm-12">
-                     <label className="form-label fw-bold text-dark">Depart Date</label>
-                     <div className="d-flex flex-column position-relative" >
-                     <DatePicker
-                       selected={departDate}
-                       onChange={handleDepartDateChange}
-                       dateFormat="dd/MM/yyyy"
-                       placeholderText="Select Date"
-                      className="form-control"
-                       style={{width: "100%"}}
-                       ref={departDateRef}
-                       minDate={new Date()}
-                       />
-                         <FaCalendarAlt style={{position: 
-                          'absolute', right:"10",top:"50%", 
-                          transform: "translateY(-50%)" ,color: "gray"}}/>
-                       </div>
-                   </div>
+                      <div className=" d-flex flex-column col-xl-3 col-lg-6 col-md-6 col-sm-12">
+                        <label className="form-label fw-bold text-dark">Depart Date</label>
+                        <div className="d-flex flex-column position-relative" >
+                          <DatePicker
+                            selected={departDate}
+                            onChange={handleDepartDateChange}
+                            dateFormat="dd/MM/yyyy"
+                            placeholderText="Select Date"
+                            className="form-control"
+                            style={{ width: "100%" }}
+                            ref={departDateRef}
+                            minDate={new Date()}
+                          />
+                          <FaCalendarAlt style={{
+                            position:
+                              'absolute', right: "10", top: "50%",
+                            transform: "translateY(-50%)", color: "gray"
+                          }} />
+                        </div>
+                      </div>
 
-                   <div className="col-xl-3 col-lg-6 col-md-6 col-sm-12">
-                     <label className="form-label fw-bold text-dark">Return Date</label>
-                     <div className="d-flex flex-column position-relative" >
-                     <DatePicker
-                       selected={returnDate}
-                       onChange={handleReturnDateChange}
-                       dateFormat="dd/MM/yyyy"
-                       placeholderText="Select Date"
-                       className="form-control"
-                       style={{width: "100%"}}
-                       ref={returnDateRef}
-                       minDate={departDate}
-                     />
-                          <FaCalendarAlt style={{position: 
-                          'absolute', right:"10",top:"50%", 
-                          transform: "translateY(-50%)" ,color: "gray"}}/>
-                       </div>
-                   </div>
-                 </div>
-                   </div>
-                 </>
-               )}
+                      <div className="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+                        <label className="form-label fw-bold text-dark">Return Date</label>
+                        <div className="d-flex flex-column position-relative" >
+                          <DatePicker
+                            selected={returnDate}
+                            onChange={handleReturnDateChange}
+                            dateFormat="dd/MM/yyyy"
+                            placeholderText="Select Date"
+                            className="form-control"
+                            style={{ width: "100%" }}
+                            ref={returnDateRef}
+                            minDate={departDate}
+                          />
+                          <FaCalendarAlt style={{
+                            position:
+                              'absolute', right: "10", top: "50%",
+                            transform: "translateY(-50%)", color: "gray"
+                          }} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
 
-               {/* Annual Multi Trip Form Fields */}
-               {planType.value === 2 && (
-                 <>
-                   <div className="tab-indicator">
-                     📅 Annual Multi Trip Insurance - Year-round coverage for multiple journeys
-                   </div>
-                   <div className="form-section">
-                     <div className="row gy-3 gx-md-3 gx-sm-2">
-                       <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                         <label className="form-label fw-bold text-dark">Plan Category</label>
-                         <Select
-                           options={planCategoryOptions}
-                           value={planCategory}
-                           onChange={handlePlanCategoryChange}
-                           styles={customSelectStyles}
-                           placeholder="Select Plan Category"
-                         />
-                       </div>
+              {/* Annual Multi Trip Form Fields */}
+              {planType.value === 2 && (
+                <>
+                  <div className="tab-indicator">
+                    📅 Annual Multi Trip Insurance - Year-round coverage for multiple journeys
+                  </div>
+                  <div className="form-section">
+                    <div className="row gy-3 gx-md-3 gx-sm-2">
+                      <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <label className="form-label fw-bold text-dark">Plan Category</label>
+                        <Select
+                          options={planCategoryOptions}
+                          value={planCategory}
+                          onChange={handlePlanCategoryChange}
+                          styles={customSelectStyles}
+                          placeholder="Select Plan Category"
+                        />
+                      </div>
 
-                       <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                         <label className="form-label fw-bold text-dark">Plan Coverage</label>
-                         <Select
-                           options={planCoverageOptions}
-                           value={planCoverage}
-                           onChange={handlePlanCoverageChange}
-                           styles={customSelectStyles}
-                           placeholder="Select Plan Coverage"
-                         />
-                       </div>
+                      <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <label className="form-label fw-bold text-dark">Plan Coverage</label>
+                        <Select
+                          options={planCoverageOptions}
+                          value={planCoverage}
+                          onChange={handlePlanCoverageChange}
+                          styles={customSelectStyles}
+                          placeholder="Select Plan Coverage"
+                        />
+                      </div>
 
-                       <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                         <label className="form-label fw-bold text-dark">Policy Start Date</label>
+                      <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <label className="form-label fw-bold text-dark">Policy Start Date</label>
                         <div className="d-flex  flex-column position-relative">
-                         <DatePicker
-                           selected={departDate}
-                           onChange={handleDepartDateChange}
-                           dateFormat="dd/MM/yyyy"
-                           placeholderText="Select Date"
-                           className="form-control"
-                           ref={departDateRef}
-                           minDate={new Date()}
-                         />
-                          <FaCalendarAlt style={{position: 
-                          'absolute', right:"10",top:"50%", 
-                          transform: "translateY(-50%)" ,color: "gray"}}/>
-                       </div>
-                       </div>
-                     </div>
-                   </div>
-                 </>
-               )}
+                          <DatePicker
+                            selected={departDate}
+                            onChange={handleDepartDateChange}
+                            dateFormat="dd/MM/yyyy"
+                            placeholderText="Select Date"
+                            className="form-control"
+                            ref={departDateRef}
+                            minDate={new Date()}
+                          />
+                          <FaCalendarAlt style={{
+                            position:
+                              'absolute', right: "10", top: "50%",
+                            transform: "translateY(-50%)", color: "gray"
+                          }} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
 
-                {/* Single Trip - Second Row */}
-               {planType.value === 1 && (
-                 <div className="row gy-3 gx-md-3 gx-sm-2 mt-3">
-                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-                     <label className="form-label fw-bold text-dark">Trip Duration (Days)</label>
-                     <input
-                       type="number"
-                       className="form-control text-center"
-                       value={duration}
-                       onChange={handleDurationChange}
-                       min="1"
-                       max="365"
-                       ref={durationRef}
-                     />
-                     <div className="info-text">
-                       <strong>Auto-calculated</strong> from travel dates
-                     </div>
-                     <div className="info-text mt-1">
-                       <strong>Total Days:</strong> {duration} day{duration !== 1 ? 's' : ''}
-                     </div>
-                   </div>
+              {/* Single Trip - Second Row */}
+              {planType.value === 1 && (
+                <div className="row gy-3 gx-md-3 gx-sm-2 mt-3">
+                  <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+                    <label className="form-label fw-bold text-dark">Trip Duration (Days)</label>
+                    <input
+                      type="number"
+                      className="form-control text-center"
+                      value={duration}
+                      onChange={handleDurationChange}
+                      min="1"
+                      max="365"
+                      ref={durationRef}
+                    />
+                    <div className="info-text">
+                      <strong>Auto-calculated</strong> from travel dates
+                    </div>
+                    <div className="info-text mt-1">
+                      <strong>Total Days:</strong> {duration} day{duration !== 1 ? 's' : ''}
+                    </div>
+                  </div>
 
-                   <div className="col-xl-3 col-lg-8 col-md-6 col-sm-12">
-                     <label className="form-label fw-bold text-dark">Travelers</label>
-                     <Select
-                       options={passengerOptions}
-                       value={{ value: passengerCount, label: passengerCount.toString() }}
-                       onChange={handlePassengerCountChange}
-                       styles={customSelectStyles}
-                       placeholder="Select Travelers"
-                       ref={passengerCountRef}
-                     />
-                     <div className="info-text">
-                       <strong>Single Trip:</strong> Min age 6 months | Max age 70 years
-                     </div>
-                   </div>
+                  <div className="col-xl-3 col-lg-8 col-md-6 col-sm-12">
+                    <label className="form-label fw-bold text-dark">Travelers</label>
+                    <Select
+                      options={passengerOptions}
+                      value={{ value: passengerCount, label: passengerCount.toString() }}
+                      onChange={handlePassengerCountChange}
+                      styles={customSelectStyles}
+                      placeholder="Select Travelers"
+                      ref={passengerCountRef}
+                    />
+                    <div className="info-text">
+                      <strong>Single Trip:</strong> Min age 6 months | Max age 70 years
+                    </div>
+                  </div>
 
-                   <div className="col-xl-6 col-lg-12 col-md-12 col-sm-12">
-                     <label className="form-label fw-bold text-dark">Traveler Ages</label>
-                     <div className="age-inputs">
-                       {Array.from({ length: passengerCount }, (_, index) => (
-                         <div key={index} className="age-input-group">
-                           <span className="fw-bold text-dark">Traveler {index + 1}</span>
-                           <input
-                             type="number"
-                             className="form-control text-center"
-                             value={passengerAges[index] || ''}
-                             onChange={(e) => handlePassengerAgeChange(index, e.target.value)}
-                             onInput={(e) => handlePassengerAgeChange(index, e.target.value)}
-                             onKeyUp={(e) => handlePassengerAgeChange(index, e.target.value)}
-                             min="0.5"
-                             max="70"
-                             step="0.5"
-                             placeholder="Age"
-                           />
-                         </div>
-                       ))}
-                     </div>
-                     <div className="info-text mt-2">
-                       <strong>Note:</strong> Ages can be in months (0.5 = 6 months) for infants
-                     </div>
-                   </div>
-                 </div>
-               )}
+                  <div className="col-xl-6 col-lg-12 col-md-12 col-sm-12">
+                    <label className="form-label fw-bold text-dark">Traveler Ages</label>
+                    <div className="age-inputs">
+                      {Array.from({ length: passengerCount }, (_, index) => (
+                        <div key={index} className="age-input-group">
+                          <span className="fw-bold text-dark">Traveler {index + 1}</span>
+                          <input
+                            type="number"
+                            className="form-control text-center"
+                            value={passengerAges[index] || ''}
+                            onChange={(e) => handlePassengerAgeChange(index, e.target.value)}
+                            onInput={(e) => handlePassengerAgeChange(index, e.target.value)}
+                            onKeyUp={(e) => handlePassengerAgeChange(index, e.target.value)}
+                            min="0.5"
+                            max="70"
+                            step="0.5"
+                            placeholder="Age"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    <div className="info-text mt-2">
+                      <strong>Note:</strong> Ages can be in months (0.5 = 6 months) for infants
+                    </div>
+                  </div>
+                </div>
+              )}
 
-               {/* Annual Multi Trip - Second Row */}
-               {planType.value === 2 && (
-                 <div className="row gy-3 gx-md-3 gx-sm-2 mt-3">
-                   <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
-                     <label className="form-label fw-bold text-dark">Policy Term (Days)</label>
-                     <input
-                       type="number"
-                       className="form-control text-center"
-                       value={duration}
-                       onChange={handleDurationChange}
-                       min="1"
-                       max="365"
-                       ref={durationRef}
-                     />
-                     
-                     <div className="info-text mt-2">
-                       <strong>Annual Policy:</strong> Maximum 1 year (365 days)
-                     </div>
-                     <div className="info-text mt-1">
-                       <strong>Policy End Date:</strong> {(() => {
-                         const endDate = new Date(departDate);
-                         endDate.setDate(departDate.getDate() + duration - 1);
-                         return endDate.toLocaleDateString('en-GB');
-                       })()}
-                     </div>
-                   </div>
+              {/* Annual Multi Trip - Second Row */}
+              {planType.value === 2 && (
+                <div className="row gy-3 gx-md-3 gx-sm-2 mt-3">
+                  <div className="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+                    <label className="form-label fw-bold text-dark">Policy Term (Days)</label>
+                    <input
+                      type="number"
+                      className="form-control text-center"
+                      value={duration}
+                      onChange={handleDurationChange}
+                      min="1"
+                      max="365"
+                      ref={durationRef}
+                    />
 
-                   <div className="col-xl-3 col-lg-8 col-md-6 col-sm-12">
-                     <label className="form-label fw-bold text-dark">Insured Members</label>
-                     <Select
-                       options={passengerOptions}
-                       value={{ value: passengerCount, label: passengerCount.toString() }}
-                       onChange={handlePassengerCountChange}
-                       styles={customSelectStyles}
-                       placeholder="Select Members"
-                       ref={passengerCountRef}
-                     />
-                     <div className="info-text">
-                       <strong>Annual Multi Trip:</strong> Min age 1 year | Max age 70 years
-                     </div>
-                     <div className="info-text mt-1">
-                       <strong>Coverage:</strong> Multiple trips within policy term
-                     </div>
-                   </div>
+                    <div className="info-text mt-2">
+                      <strong>Annual Policy:</strong> Maximum 1 year (365 days)
+                    </div>
+                    <div className="info-text mt-1">
+                      <strong>Policy End Date:</strong> {(() => {
+                        const endDate = new Date(departDate);
+                        endDate.setDate(departDate.getDate() + duration - 1);
+                        return endDate.toLocaleDateString('en-GB');
+                      })()}
+                    </div>
+                  </div>
 
-                   <div className="col-xl-6 col-lg-12 col-md-12 col-sm-12">
-                     <label className="form-label fw-bold text-dark">Member Ages</label>
-                     <div className="age-inputs">
-                       {Array.from({ length: passengerCount }, (_, index) => (
-                         <div key={index} className="age-input-group">
-                           <span className="fw-bold text-dark">Member {index + 1}</span>
-                           <input
-                             type="number"
-                             className="form-control text-center"
-                             value={passengerAges[index] || ''}
-                             onChange={(e) => handlePassengerAgeChange(index, e.target.value)}
-                             onInput={(e) => handlePassengerAgeChange(index, e.target.value)}
-                             onKeyUp={(e) => handlePassengerAgeChange(index, e.target.value)}
-                             min="1"
-                             max="70"
-                             step="1"
-                             placeholder="Age"
-                           />
-                         </div>
-                       ))}
-                     </div>
-                     <div className="info-text mt-2">
-                       <strong>Note:</strong> Ages must be in full years (minimum 1 year) for annual policies
-                     </div>
-                   </div>
-                 </div>
-               )}
+                  <div className="col-xl-3 col-lg-8 col-md-6 col-sm-12">
+                    <label className="form-label fw-bold text-dark">Insured Members</label>
+                    <Select
+                      options={passengerOptions}
+                      value={{ value: passengerCount, label: passengerCount.toString() }}
+                      onChange={handlePassengerCountChange}
+                      styles={customSelectStyles}
+                      placeholder="Select Members"
+                      ref={passengerCountRef}
+                    />
+                    <div className="info-text">
+                      <strong>Annual Multi Trip:</strong> Min age 1 year | Max age 70 years
+                    </div>
+                    <div className="info-text mt-1">
+                      <strong>Coverage:</strong> Multiple trips within policy term
+                    </div>
+                  </div>
+
+                  <div className="col-xl-6 col-lg-12 col-md-12 col-sm-12">
+                    <label className="form-label fw-bold text-dark">Member Ages</label>
+                    <div className="age-inputs">
+                      {Array.from({ length: passengerCount }, (_, index) => (
+                        <div key={index} className="age-input-group">
+                          <span className="fw-bold text-dark">Member {index + 1}</span>
+                          <input
+                            type="number"
+                            className="form-control text-center"
+                            value={passengerAges[index] || ''}
+                            onChange={(e) => handlePassengerAgeChange(index, e.target.value)}
+                            onInput={(e) => handlePassengerAgeChange(index, e.target.value)}
+                            onKeyUp={(e) => handlePassengerAgeChange(index, e.target.value)}
+                            min="1"
+                            max="70"
+                            step="1"
+                            placeholder="Age"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    <div className="info-text mt-2">
+                      <strong>Note:</strong> Ages must be in full years (minimum 1 year) for annual policies
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="row mt-4">
                 <div className="col-12 text-center">
