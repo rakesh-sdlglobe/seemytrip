@@ -66,12 +66,12 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
   // Handle authentication popup close
   const handleAuthClose = () => {
     setShowAuthPopup(false);
-    
+
     // Check if user is now authenticated after popup closes
     if (pendingBooking) {
       const token = localStorage.getItem('authToken');
       const user1 = getEncryptedItem('user1');
-      
+
       if (token && user1) {
         console.log('User authenticated after popup, proceeding with bus booking');
         proceedWithBooking();
@@ -135,17 +135,17 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
     // but do NOT persist any gender info to localStorage
     const parsedData = getEncryptedItem("busBookingData");
     if (parsedData) {
-        let passengerData = null;
-        if (parsedData.blockData?.Passenger) {
-          passengerData = parsedData.blockData.Passenger;
-        } else if (parsedData.bookingResult?.BookResult?.Passenger) {
-          passengerData = parsedData.bookingResult.BookResult.Passenger;
-        } else if (parsedData.GetBookingDetailResult?.Itinerary?.Passenger) {
-          passengerData = parsedData.GetBookingDetailResult.Itinerary.Passenger;
-        }
-        if (passengerData) {
-          setBookingDetails({ Passenger: passengerData });
-        }
+      let passengerData = null;
+      if (parsedData.blockData?.Passenger) {
+        passengerData = parsedData.blockData.Passenger;
+      } else if (parsedData.bookingResult?.BookResult?.Passenger) {
+        passengerData = parsedData.bookingResult.BookResult.Passenger;
+      } else if (parsedData.GetBookingDetailResult?.Itinerary?.Passenger) {
+        passengerData = parsedData.GetBookingDetailResult.Itinerary.Passenger;
+      }
+      if (passengerData) {
+        setBookingDetails({ Passenger: passengerData });
+      }
     }
     if (busBookingDetails?.GetBookingDetailResult?.Itinerary?.Passenger) {
       const passengerData = busBookingDetails.GetBookingDetailResult.Itinerary.Passenger;
@@ -1719,7 +1719,7 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
             zIndex: 9999,
             color: "white",
             padding: "16px 0",
-            background:"#fb6666",
+            background: "#fb6666",
             textAlign: "center",
             boxShadow: "0 -2px 10px rgba(0,0,0,0.15)",
           }}
@@ -1743,13 +1743,13 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
                   className={`subtab ${boardingSubTab === "boarding" ? "active" : ""}`}
                   onClick={() => setBoardingSubTab("boarding")}
                 >
-                  Boarding Points
+                  Pickup Point
                 </div>
                 <div
                   className={`subtab ${boardingSubTab === "dropping" ? "active" : ""}`}
                   onClick={() => setBoardingSubTab("dropping")}
                 >
-                  Dropping Points
+                  Drop Point
                 </div>
               </div>
               {boardingSubTab === "boarding" ? (
@@ -1824,13 +1824,13 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
               // Check if user is authenticated
               const token = localStorage.getItem('authToken');
               const user1 = getEncryptedItem('user1');
-              
-              console.log('Bus booking authentication check:', { 
-                hasToken: !!token, 
+
+              console.log('Bus booking authentication check:', {
+                hasToken: !!token,
                 hasUser1: !!user1,
                 busName: currentBus?.BusName || 'Unknown Bus'
               });
-              
+
               if (!token || !user1) {
                 // User is not authenticated, show authentication popup
                 console.log('User not authenticated, showing auth popup for bus booking');
@@ -1838,14 +1838,14 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
                 setShowAuthPopup(true);
                 return;
               }
-              
+
               console.log('User authenticated, proceeding with bus booking');
               // Only open modal if both boarding and dropping points are selected and user is authenticated
               if (selectedBoarding.trim() && selectedDropping.trim()) {
                 proceedWithBooking();
               }
             }}
-            style={{ padding: "12px 30px", fontSize: "16px", fontWeight: "600"  }}
+            style={{ padding: "12px 30px", fontSize: "16px", fontWeight: "600" }}
           >
             Book Now
           </button>
@@ -1891,10 +1891,10 @@ const BusSeatLayoutPage = ({ seatLayout: propSeatLayout, currentBus }) => {
       )}
 
       {/* Authentication Popup */}
-      <AuthPopup 
-        isOpen={showAuthPopup} 
-        onClose={handleAuthClose} 
-        mode="login" 
+      <AuthPopup
+        isOpen={showAuthPopup}
+        onClose={handleAuthClose}
+        mode="login"
       />
 
     </div>

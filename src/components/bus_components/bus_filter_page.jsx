@@ -1,27 +1,30 @@
 import { Link } from 'react-router-dom';
 import React, { useState, useEffect, useCallback } from 'react';
 import Skeleton from './FilterSkeleton';
+import { FaBed, FaChair, FaCloudSun, FaCouch, FaMoon, FaRegMoon, FaStar, FaSun } from 'react-icons/fa';
+import { BsSnow, BsSunriseFill, BsThermometerSun } from "react-icons/bs";
 
 // Constants (could be moved to separate file)
 const BUS_TYPE_OPTIONS = [
-  { id: 'ac', label: 'AC', icon: 'fas fa-snowflake' },
-  { id: 'nonac', label: 'Non-AC', icon: 'fas fa-snowflake-slash' },
-  { id: 'seater', label: 'Seater', icon: 'fas fa-chair' },
-  { id: 'sleeper', label: 'Sleeper', icon: 'fas fa-bed' },
-  { id: 'semiSleeper', label: 'Semi-Sleeper', icon: 'fas fa-couch' },
+  { id: 'ac', label: 'AC', icon: <BsSnow strokeWidth={1} /> },
+  { id: 'nonac', label: 'Non-AC', icon: <BsThermometerSun strokeWidth={1} /> },
+  { id: 'seater', label: 'Seater', icon: <FaChair strokeWidth={1} /> },
+  { id: 'sleeper', label: 'Sleeper', icon: <FaBed strokeWidth={1} /> },
+  { id: 'semiSleeper', label: 'Semi-Sleeper', icon: <FaCouch strokeWidth={1} /> },
 ];
 
 const TIME_BLOCKS = [
-  { id: 'earlyMorning', label: 'Early Morning', range: '4 - 8 AM', icon: 'fas fa-sun' },
-  { id: 'morning', label: 'Morning', range: '8 AM - 12 PM', icon: 'fas fa-sun' },
-  { id: 'afternoon', label: 'Afternoon', range: '12 - 4 PM', icon: 'fas fa-sun' },
-  { id: 'evening', label: 'Evening', range: '4 - 8 PM', icon: 'fas fa-moon' },
-  { id: 'night', label: 'Night', range: '8 PM - 12 AM', icon: 'fas fa-moon' },
-  { id: 'midnight', label: 'Midnight', range: '12 - 4 AM', icon: 'fas fa-moon' },
+  { id: 'earlyMorning', label: 'Early Morning', range: '4 - 8 AM', icon: <BsSunriseFill style={{ fontSize: "20px" }} /> },
+  { id: 'morning', label: 'Morning', range: '8 AM - 12 PM', icon: <FaSun /> },
+  { id: 'afternoon', label: 'Afternoon', range: '12 - 4 PM', icon: <FaCloudSun /> },
+  { id: 'evening', label: 'Evening', range: '4 - 8 PM', icon: <FaRegMoon /> },
+  { id: 'night', label: 'Night', range: '8 PM - 12 AM', icon: <FaMoon /> },
+  { id: 'midnight', label: 'Midnight', range: '12 - 4 AM', icon: <FaStar /> },
 ];
 
+
 const FILTER_OPTIONS = [
-  { id: 'busType', label: 'Bus Type', icon: 'fas fa-bus' },
+  { id: 'busType', label: 'Bus Type', icon: 'fas fa-clock' },
   { id: 'priceRange', label: 'Price Range', icon: 'fas fa-rupee-sign' },
   { id: 'departureTime', label: 'Departure Time', icon: 'fas fa-clock' },
   { id: 'arrivalTime', label: 'Arrival Time', icon: 'fas fa-clock' },
@@ -148,8 +151,8 @@ const PointsFilterSection = ({
                 fontSize: '0.875rem'
               }}
             />
-            <i 
-              className="fas fa-search position-absolute" 
+            <i
+              className="fas fa-search position-absolute"
               style={{
                 left: '12px',
                 top: '50%',
@@ -289,11 +292,11 @@ const PriceRangeSlider = ({ minPrice, maxPrice, currentMin, currentMax, onChange
             onChange={(e) => {
               const inputValue = e.target.value;
               setLocalMinValue(inputValue);
-              
+
               if (inputValue === '') {
                 return;
               }
-              
+
               const value = parseInt(inputValue);
               if (!isNaN(value)) {
                 const clampedValue = Math.max(minPrice, Math.min(value, currentMax - 100));
@@ -327,11 +330,11 @@ const PriceRangeSlider = ({ minPrice, maxPrice, currentMin, currentMax, onChange
             onChange={(e) => {
               const inputValue = e.target.value;
               setLocalMaxValue(inputValue);
-              
+
               if (inputValue === '') {
                 return;
               }
-              
+
               const value = parseInt(inputValue);
               if (!isNaN(value)) {
                 const clampedValue = Math.min(maxPrice, Math.max(value, currentMin + 100));
@@ -378,7 +381,7 @@ const BusFilterPage = ({
     min: minPrice,
     max: maxPrice
   });
-  
+
   // Search states for pickup and dropping points
   const [pickupSearchTerm, setPickupSearchTerm] = useState('');
   const [droppingSearchTerm, setDroppingSearchTerm] = useState('');
@@ -659,221 +662,223 @@ const BusFilterPage = ({
               </div>
             ))} */}
 
-               <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2 mb-0">
-                {BUS_TYPE_OPTIONS.map(opt => (
-                  <li className={opt.id === 'semiSleeper' ? 'col-12' : 'col-6'} key={opt.id}>
-                    <input
-                      type="checkbox"
-                      className="btn-check"
-                      id={`mobile_${opt.id}`}
-                      checked={filters.busTypes.includes(opt.id)}
-                      onChange={() => handleBusType(opt.id)}
-                      aria-label={opt.label}
-                    />
-                    <label className="btn btn-sm btn-bus-filter rounded-1 fw-medium full-width d-flex align-items-center justify-content-center gap-2" htmlFor={`mobile_${opt.id}`}>
-                      <i className={opt.icon} aria-hidden="true"></i>
-                      {opt.label}
-                    </label>
-                  </li>
-                ))}
-              </ul>
+            <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2 mb-0">
+              {BUS_TYPE_OPTIONS.map(opt => (
+                <li className={opt.id === 'semiSleeper' ? 'col-12' : 'col-6'} key={opt.id}>
+                  <input
+                    type="checkbox"
+                    className="btn-check"
+                    id={`mobile_${opt.id}`}
+                    checked={filters.busTypes.includes(opt.id)}
+                    onChange={() => handleBusType(opt.id)}
+                    aria-label={opt.label}
+                  />
+                  <label className="btn btn-sm btn-bus-filter rounded-1 fw-medium full-width d-flex align-items-center justify-content-center gap-2" htmlFor={`mobile_${opt.id}`}>
+                    <i aria-hidden="true">{opt.icon}</i>
+                    {opt.label}
+                  </label>
+                </li>
+              ))}
+            </ul>
           </div>
         );
 
-        case 'departureTime':
-          return (
-            
-            <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2 mb-0">
-              {TIME_BLOCKS.map(block => (
-                <li className="col-6" key={block.id}>
-                  <input
-                    type="checkbox"
-                    className="btn-check"
-                    id={`mobile_departure_${block.id}`}
-                    checked={filters.departureTimes.includes(block.id)}
-                    onChange={() => handleDepartureTime(block.id)}
-                    aria-label={`${block.label} (${block.range})`}
-                  />
-                  <label className="btn btn-md btn-bus-filter rounded-1 fw-medium full-width d-flex flex-column align-items-center justify-content-center gap-1" htmlFor={`mobile_departure_${block.id}`}>
-                    <i className={`${block.icon} fs-6`} aria-hidden="true"></i>
-                    <span className="small">{block.label}</span>
-                    <small className="text-muted" style={{ fontSize: '0.7rem' }}>{block.range}</small>
-                  </label>
-                </li>
-              ))}
-            </ul>
-          );
-  
-        case 'arrivalTime':
-          return (
-            <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2 mb-0">
-              {TIME_BLOCKS.map(block => (
-                <li className="col-6" key={block.id}>
-                  <input
-                    type="checkbox"
-                    className="btn-check"
-                    id={`mobile_arrival_${block.id}`}
-                    checked={filters.arrivalTimes.includes(block.id)}
-                    onChange={() => handleArrivalTime(block.id)}
-                    aria-label={`${block.label} (${block.range})`}
-                  />
-                  <label className="btn btn-md btn-bus-filter rounded-1 fw-medium full-width d-flex flex-column align-items-center justify-content-center gap-1" htmlFor={`mobile_arrival_${block.id}`}>
-                    <i className={`${block.icon} fs-6`} aria-hidden="true"></i>
-                    <span className="small">{block.label}</span>
-                    <small className="text-muted" style={{ fontSize: '0.7rem' }}>{block.range}</small>
-                  </label>
-                </li>
-              ))}
-            </ul>
-            
-          );
-  
-        case 'priceRange':
-          return (
-            <div className="filter-content">
-              <div className="price-range-mobile">
-                <PriceRangeSlider
-                  minPrice={minPrice}
-                  maxPrice={maxPrice}
-                  currentMin={priceRange.min}
-                  currentMax={priceRange.max}
-                  onChange={handlePriceRange}
+      case 'departureTime':
+        return (
+
+          <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2 mb-0">
+            {TIME_BLOCKS.map(block => (
+              <li className="col-6" key={block.id}>
+                <input
+                  type="checkbox"
+                  className="btn-check"
+                  id={`mobile_departure_${block.id}`}
+                  checked={filters.departureTimes.includes(block.id)}
+                  onChange={() => handleDepartureTime(block.id)}
+                  aria-label={`${block.label} (${block.range})`}
                 />
-              </div>
+                <label className="btn btn-md btn-bus-filter rounded-1 fw-medium full-width d-flex flex-column align-items-center justify-content-center gap-1" htmlFor={`mobile_departure_${block.id}`}>
+                  {/* <i className={`${block.icon} fs-6`} aria-hidden="true"></i> */}
+                  <i aria-hidden="true">{block.icon}</i>
+                  <span className="small">{block.label}</span>
+                  <small className="text-muted" style={{ fontSize: '0.7rem' }}>{block.range}</small>
+                </label>
+              </li>
+            ))}
+          </ul>
+        );
+
+      case 'arrivalTime':
+        return (
+          <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2 mb-0">
+            {TIME_BLOCKS.map(block => (
+              <li className="col-6" key={block.id}>
+                <input
+                  type="checkbox"
+                  className="btn-check"
+                  id={`mobile_arrival_${block.id}`}
+                  checked={filters.arrivalTimes.includes(block.id)}
+                  onChange={() => handleArrivalTime(block.id)}
+                  aria-label={`${block.label} (${block.range})`}
+                />
+                <label className="btn btn-md btn-bus-filter rounded-1 fw-medium full-width d-flex flex-column align-items-center justify-content-center gap-1" htmlFor={`mobile_arrival_${block.id}`}>
+                  {/* <i className={`${block.icon} fs-6`} aria-hidden="true"></i> */}
+                  <i aria-hidden="true">{block.icon}</i>
+                  <span className="small">{block.label}</span>
+                  <small className="text-muted" style={{ fontSize: '0.7rem' }}>{block.range}</small>
+                </label>
+              </li>
+            ))}
+          </ul>
+
+        );
+
+      case 'priceRange':
+        return (
+          <div className="filter-content">
+            <div className="price-range-mobile">
+              <PriceRangeSlider
+                minPrice={minPrice}
+                maxPrice={maxPrice}
+                currentMin={priceRange.min}
+                currentMax={priceRange.max}
+                onChange={handlePriceRange}
+              />
             </div>
-          );
-  
-        case 'priceSort':
-          return (
-            <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2 mb-0">
-              <li className="col-6">
+          </div>
+        );
+
+      case 'priceSort':
+        return (
+          <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2 mb-0">
+            <li className="col-6">
+              <input
+                type="checkbox"
+                className="btn-check"
+                id="mobile_price_low_high"
+                checked={filters.priceSorts?.includes('lowToHigh') || false}
+                onChange={() => handlePriceSort('lowToHigh')}
+                aria-label="Sort price low to high"
+              />
+              <label className="btn btn-sm btn-bus-filter rounded-1 fw-medium full-width d-flex align-items-center justify-content-center gap-2" htmlFor="mobile_price_low_high">
+                Low to High
+              </label>
+            </li>
+            <li className="col-6">
+              <input
+                type="checkbox"
+                className="btn-check"
+                id="mobile_price_high_low"
+                checked={filters.priceSorts?.includes('highToLow') || false}
+                onChange={() => handlePriceSort('highToLow')}
+                aria-label="Sort price high to low"
+              />
+              <label className="btn btn-sm btn-bus-filter rounded-1 fw-medium full-width d-flex align-items-center justify-content-center gap-2" htmlFor="mobile_price_high_low">
+                High to Low
+              </label>
+            </li>
+          </ul>
+        );
+
+
+      case 'droppingPoints':
+        return (
+          <div>
+            {/* Search Input for Mobile */}
+            <div className="mb-3">
+              <div className="position-relative">
                 <input
-                  type="checkbox"
-                  className="btn-check"
-                  id="mobile_price_low_high"
-                  checked={filters.priceSorts?.includes('lowToHigh') || false}
-                  onChange={() => handlePriceSort('lowToHigh')}
-                  aria-label="Sort price low to high"
+                  type="text"
+                  className="form-control form-control-sm h-10"
+                  placeholder="Search dropping points..."
+                  value={droppingSearchTerm}
+                  onChange={(e) => handleDroppingSearch(e.target.value)}
+                  style={{
+                    paddingLeft: '35px',
+                    border: '1px solid #dee2e6',
+                    borderRadius: '6px',
+                    fontSize: '0.875rem'
+                  }}
                 />
-                <label className="btn btn-sm btn-bus-filter rounded-1 fw-medium full-width d-flex align-items-center justify-content-center gap-2" htmlFor="mobile_price_low_high">
-                  Low to High
-                </label>
-              </li>
-              <li className="col-6">
-                <input
-                  type="checkbox"
-                  className="btn-check"
-                  id="mobile_price_high_low"
-                  checked={filters.priceSorts?.includes('highToLow') || false}
-                  onChange={() => handlePriceSort('highToLow')}
-                  aria-label="Sort price high to low"
-                />
-                <label className="btn btn-sm btn-bus-filter rounded-1 fw-medium full-width d-flex align-items-center justify-content-center gap-2" htmlFor="mobile_price_high_low">
-                  High to Low
-                </label>
-              </li>
-            </ul>
-          );
-  
-          
-        case 'droppingPoints':
-          return (
-            <div>
-              {/* Search Input for Mobile */}
-              <div className="mb-3">
-                <div className="position-relative">
-                  <input
-                    type="text"
-                    className="form-control form-control-sm h-10"
-                    placeholder="Search dropping points..."
-                    value={droppingSearchTerm}
-                    onChange={(e) => handleDroppingSearch(e.target.value)}
+                <i
+                  className="fas fa-search position-absolute"
+                  style={{
+                    left: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: '#6c757d',
+                    fontSize: '0.875rem'
+                  }}
+                ></i>
+                {droppingSearchTerm && (
+                  <button
+                    className="btn btn-sm position-absolute"
+                    onClick={() => handleDroppingSearch('')}
                     style={{
-                      paddingLeft: '35px',
-                      border: '1px solid #dee2e6',
-                      borderRadius: '6px',
-                      fontSize: '0.875rem'
-                    }}
-                  />
-                  <i 
-                    className="fas fa-search position-absolute" 
-                    style={{
-                      left: '12px',
+                      right: '8px',
                       top: '50%',
                       transform: 'translateY(-50%)',
-                      color: '#6c757d',
-                      fontSize: '0.875rem'
+                      padding: '2px 6px',
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#6c757d'
                     }}
-                  ></i>
-                  {droppingSearchTerm && (
-                    <button
-                      className="btn btn-sm position-absolute"
-                      onClick={() => handleDroppingSearch('')}
-                      style={{
-                        right: '8px',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        padding: '2px 6px',
-                        background: 'transparent',
-                        border: 'none',
-                        color: '#6c757d'
-                      }}
-                      aria-label="Clear search"
-                    >
-                      <i className="fas fa-times"></i>
-                    </button>
-                  )}
-                </div>
+                    aria-label="Clear search"
+                  >
+                    <i className="fas fa-times"></i>
+                  </button>
+                )}
               </div>
-  
-              {droppingPoints.length > 0 ? (
-                (() => {
-                  const filteredPoints = droppingPoints.filter(point =>
-                    point.toLowerCase().includes(droppingSearchTerm.toLowerCase())
-                  );
-                  return (
-                    <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2 mb-0">
-                      {(showAllDropping ? filteredPoints : filteredPoints.slice(0, 6)).map(point => (
-                        <li className="col-12" key={point}>
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              id={`mobile_dropping_${point}`}
-                              checked={filters.droppingPoints?.includes(point) || false}
-                              onChange={() => handleDroppingPoint(point)}
-                              aria-label={point}
-                            />
-                            <label className="form-check-label d-flex justify-content-between" htmlFor={`mobile_dropping_${point}`}>
-                              <span>{point}</span>
-                            </label>
-                          </div>
-                        </li>
-                      ))}
-                      {filteredPoints.length > 6 && (
-                        <li className="col-12">
-                          <div className="text-center mt-3">
-                            <button
-                              className="btn btn-link text-primary"
-                              onClick={() => setShowAllDropping(!showAllDropping)}
-                              aria-expanded={showAllDropping}
-                            >
-                              {showAllDropping ? 'Show Less' : `Show More (${filteredPoints.length - 6} more)`}
-                            </button>
-                          </div>
-                        </li>
-                      )}
-                    </ul>
-                  );
-                })()
-              ) : droppingSearchTerm ? (
-                <div className="text-center text-muted py-4">No dropping points found matching "{droppingSearchTerm}"</div>
-              ) : (
-                <div className="text-center text-muted py-4">No dropping points available</div>
-              )}
             </div>
-          );
-  
+
+            {droppingPoints.length > 0 ? (
+              (() => {
+                const filteredPoints = droppingPoints.filter(point =>
+                  point.toLowerCase().includes(droppingSearchTerm.toLowerCase())
+                );
+                return (
+                  <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2 mb-0">
+                    {(showAllDropping ? filteredPoints : filteredPoints.slice(0, 6)).map(point => (
+                      <li className="col-12" key={point}>
+                        <div className="form-check">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            id={`mobile_dropping_${point}`}
+                            checked={filters.droppingPoints?.includes(point) || false}
+                            onChange={() => handleDroppingPoint(point)}
+                            aria-label={point}
+                          />
+                          <label className="form-check-label d-flex justify-content-between" htmlFor={`mobile_dropping_${point}`}>
+                            <span>{point}</span>
+                          </label>
+                        </div>
+                      </li>
+                    ))}
+                    {filteredPoints.length > 6 && (
+                      <li className="col-12">
+                        <div className="text-center mt-3">
+                          <button
+                            className="btn btn-link text-primary"
+                            onClick={() => setShowAllDropping(!showAllDropping)}
+                            aria-expanded={showAllDropping}
+                          >
+                            {showAllDropping ? 'Show Less' : `Show More (${filteredPoints.length - 6} more)`}
+                          </button>
+                        </div>
+                      </li>
+                    )}
+                  </ul>
+                );
+              })()
+            ) : droppingSearchTerm ? (
+              <div className="text-center text-muted py-4">No dropping points found matching "{droppingSearchTerm}"</div>
+            ) : (
+              <div className="text-center text-muted py-4">No dropping points available</div>
+            )}
+          </div>
+        );
+
 
       case 'pickupPoints':
         return (
@@ -894,8 +899,8 @@ const BusFilterPage = ({
                     fontSize: '0.875rem'
                   }}
                 />
-                <i 
-                  className="fas fa-search position-absolute" 
+                <i
+                  className="fas fa-search position-absolute"
                   style={{
                     left: '12px',
                     top: '50%',
@@ -1208,7 +1213,8 @@ const BusFilterPage = ({
           <div className="filter-searchBar-body">
             {/* Bus Types */}
             <div className="searchBar-single px-3 py-3 border-bottom ">
-              <div className="searchBar-single-title d-flex mb-3">
+              <div className="searchBar-single-title  d-flex gap-2 align-items-center mb-3">
+                <i class="fa-solid fa-bus"></i>
                 <h6 className="sidebar-subTitle fs-6 fw-medium m-0">Bus Type</h6>
               </div>
               <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2 mb-0">
@@ -1223,7 +1229,7 @@ const BusFilterPage = ({
                       aria-label={opt.label}
                     />
                     <label className="btn btn-sm btn-bus-filter rounded-1 fw-medium full-width d-flex align-items-center justify-content-center gap-2" htmlFor={opt.id}>
-                      <i className={opt.icon} aria-hidden="true"></i>
+                      <i className='fs-6' aria-hidden="true">{opt.icon}</i>
                       {opt.label}
                     </label>
                   </li>
@@ -1233,7 +1239,8 @@ const BusFilterPage = ({
 
             {/* Price Sort */}
             <div className="searchBar-single px-3 py-3 border-bottom">
-              <div className="searchBar-single-title d-flex mb-3">
+              <div className="searchBar-single-title d-flex mb-3 gap-2 align-items-center">
+                <i class="fa-solid fa-sort"></i>
                 <h6 className="sidebar-subTitle fs-6 fw-medium m-0">Price Sort</h6>
               </div>
               <div className="searchBar-single-wrap">
@@ -1290,8 +1297,8 @@ const BusFilterPage = ({
             </FilterAccordion>
 
 
-                        {/* Departure Time */}
-                        <FilterAccordion
+            {/* Departure Time */}
+            <FilterAccordion
               title="Departure Time"
               icon="fas fa-clock icon-color"
               isOpen={accordionStates.departureTime}
@@ -1312,7 +1319,7 @@ const BusFilterPage = ({
                       aria-label={`${block.label} (${block.range})`}
                     />
                     <label className="btn btn-sm btn-bus-filter rounded-1 fw-medium full-width d-flex flex-column align-items-center justify-content-center gap-1" htmlFor={`departure_${block.id}`}>
-                      <i className={`${block.icon} fs-6`} aria-hidden="true"></i>
+                      <i className="fs-6" aria-hidden="true">{block.icon}</i>
                       <span className="small">{block.label}</span>
                       <small className="text-muted" style={{ fontSize: '0.7rem' }}>{block.range}</small>
                     </label>
@@ -1343,7 +1350,8 @@ const BusFilterPage = ({
                       aria-label={`${block.label} (${block.range})`}
                     />
                     <label className="btn btn-sm btn-bus-filter rounded-1 fw-medium full-width d-flex flex-column align-items-center justify-content-center gap-1" htmlFor={`arrival_${block.id}`}>
-                      <i className={`${block.icon} fs-6`} aria-hidden="true"></i>
+                      {/* <i className={`${block.icon} fs-6`} aria-hidden="true"></i> */}
+                      <i className="fs-6" aria-hidden="true">{block.icon}</i>
                       <span className="small">{block.label}</span>
                       <small className="text-muted" style={{ fontSize: '0.7rem' }}>{block.range}</small>
                     </label>

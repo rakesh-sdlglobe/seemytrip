@@ -5,14 +5,14 @@ import FooterDark from '../footer-dark';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSelector, useDispatch } from 'react-redux';
-import { 
-  selectBusBookingLoading, 
+import {
+  selectBusBookingLoading,
   selectBusBookingDetailsLoading,
   selectCreateBookingLoading,
   selectUpdateStatusLoading
 } from '../../store/Selectors/busSelectors';
-import { 
-  fetchBusBooking, 
+import {
+  fetchBusBooking,
   fetchBusBookingDetails,
   createBusBooking,
   updateBusBookingStatus,
@@ -52,26 +52,26 @@ const BusBookingPayment = () => {
   const updateStatusLoading = useSelector(selectUpdateStatusLoading);
   const [timeLeft, setTimeLeft] = useState(360); // 6 minutes in seconds
   const [isInitialized, setIsInitialized] = useState(false); // Prevent multiple initializations
-  
+
   // Check if block data is available - RUN ONLY ONCE
   useEffect(() => {
     if (isInitialized) return;
     setIsInitialized(true);
 
     // Check if we have the necessary data
-    const hasValidData = blockData && Object.keys(blockData).length > 0 && 
-                        busData && Object.keys(busData).length > 0;
+    const hasValidData = blockData && Object.keys(blockData).length > 0 &&
+      busData && Object.keys(busData).length > 0;
 
     if (!hasValidData) {
       // Try to get data from localStorage as fallback
       const storedBlockResponse = getEncryptedItem("blockResponse");
       const storedBusData = getEncryptedItem("selectedBusData");
-      
+
       if (storedBlockResponse && storedBusData) {
         // Data exists in localStorage, continue
         return;
       }
-      
+
       toast.error("No booking data found. Please start over.");
       navigate('/bus-list');
     }
@@ -103,14 +103,14 @@ const BusBookingPayment = () => {
 
     return () => clearInterval(timer);
   }, [blockData, navigate]);
-  
+
   // Format time
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
-  
+
   // Calculate total amount
   const calculateTotal = () => {
     try {
@@ -121,20 +121,20 @@ const BusBookingPayment = () => {
           total: 0
         };
       }
-      
+
       // Calculate base fare from passenger seat data
       const baseFare = blockData.Passenger.reduce((total, passenger) => {
-        const seatPrice = passenger.Seat?.PublishedPrice || 
-                         passenger.Seat?.SeatFare || 
-                         passenger.Seat?.Fare ||
-                         passenger.Fare ||
-                         0;
+        const seatPrice = passenger.Seat?.PublishedPrice ||
+          passenger.Seat?.SeatFare ||
+          passenger.Seat?.Fare ||
+          passenger.Fare ||
+          0;
         return total + (parseFloat(seatPrice) || 0);
       }, 0);
-      
+
       // Get assured charge from API
       const assuredCharge = blockData.AssuredCharge || 0;
-      
+
       return {
         baseFare: baseFare,
         assuredCharge: assuredCharge,
@@ -148,9 +148,9 @@ const BusBookingPayment = () => {
       };
     }
   };
-  
+
   const fareDetails = calculateTotal();
-  
+
   // Show loading state if component is not initialized or no data is available
   if (!isInitialized || !blockData || Object.keys(blockData).length === 0) {
     return (
@@ -161,7 +161,7 @@ const BusBookingPayment = () => {
           </div>
           <h5>Loading payment details...</h5>
           <p className="text-muted">Please wait while we prepare your payment page.</p>
-          <button 
+          <button
             className="btn btn-outline-primary mt-3"
             onClick={() => navigate('/bus-search')}
           >
@@ -171,7 +171,7 @@ const BusBookingPayment = () => {
       </div>
     );
   }
-  
+
   // Handle coupon application
   const handleApplyCoupon = () => {
     if (!couponCode.trim()) {
@@ -180,12 +180,12 @@ const BusBookingPayment = () => {
     }
     toast.info('Coupon code applied successfully!');
   };
-  
+
   // Validate block status before payment
   const validateBlockStatus = () => {
     const blockTimestamp = getEncryptedItem("blockTimestamp");
     const blockRequestData = getEncryptedItem("blockRequestData");
-    
+
     if (!blockTimestamp || !blockRequestData) {
       toast.error('No valid seat block found. Please start over.');
       navigate('/bus-list');
@@ -220,7 +220,7 @@ const BusBookingPayment = () => {
     const authData = getEncryptedItem("busAuthData") || {};
     const searchList = getEncryptedItem("busSearchList") || {};
     const blockRequestData = getEncryptedItem("blockRequestData") || {};
-    
+
     const TokenId = authData.TokenId || blockRequestData.TokenId;
     const EndUserIp = authData.EndUserIp || blockRequestData.EndUserIp;
     const TraceId = searchList?.BusSearchResult?.TraceId || blockRequestData.TraceId;
@@ -267,7 +267,7 @@ const BusBookingPayment = () => {
       };
 
       const result = await dispatch(createBusBooking(bookingData));
-      
+
       if (result && result.success) {
         toast.success('Booking saved to database successfully!');
         setEncryptedItem('currentBookingId', result.booking_id);
@@ -337,7 +337,7 @@ const BusBookingPayment = () => {
 
       // 5. Prepare navigation data
       const bookingData = prepareBookingData(bookingResult, bookingId);
-      
+
       // Store booking result in localStorage for seat layout refresh detection
       setEncryptedItem("bookingResult", bookingResult);
       setEncryptedItem("bookingTimestamp", Date.now().toString());
@@ -362,9 +362,9 @@ const BusBookingPayment = () => {
       }
 
       // 6. Navigate to confirmation
-      navigate('/bus-confirmation', { 
+      navigate('/bus-confirmation', {
         state: { bookingData },
-        replace: true 
+        replace: true
       });
 
       toast.success('Payment successful! Booking confirmed.');
@@ -374,38 +374,38 @@ const BusBookingPayment = () => {
       toast.error(error.message || "Payment failed");
     }
   };
-  
+
   // Format date
   const formatDate = (dateString) => {
     try {
       if (!dateString) return '';
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return '';
-      return date.toLocaleDateString('en-IN', { 
-        day: '2-digit', 
-        month: 'short' 
+      return date.toLocaleDateString('en-IN', {
+        day: '2-digit',
+        month: 'short'
       });
     } catch (error) {
       return '';
     }
   };
-  
+
   // Format time
   const formatTimeOnly = (dateString) => {
     try {
       if (!dateString) return '';
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return '';
-      return date.toLocaleTimeString('en-IN', { 
-        hour: '2-digit', 
+      return date.toLocaleTimeString('en-IN', {
+        hour: '2-digit',
         minute: '2-digit',
-        hour12: false 
+        hour12: false
       });
     } catch (error) {
       return '';
     }
   };
-  
+
   // Get gender text
   const getGenderText = (genderCode) => {
     if (genderCode === 1) return 'Male';
@@ -416,22 +416,22 @@ const BusBookingPayment = () => {
   // Format seat number to display properly (L1, U1, L2, U2, etc.)
   const formatSeatNumber = (seatLabel) => {
     if (!seatLabel) return "";
-    
+
     // If seat label already has L or U prefix, return as is
     if (seatLabel.startsWith('L') || seatLabel.startsWith('U')) {
       return seatLabel;
     }
-    
+
     // Try to get actual seat data from stored layout
     try {
       const seatLayoutData = getEncryptedItem("seatLayoutData") || {};
       const seatData = seatLayoutData.seats?.find(s => s.label === seatLabel);
-      
+
       if (seatData && seatData.deck) {
         const deckPrefix = seatData.deck.toUpperCase().charAt(0);
         return `${deckPrefix}${seatLabel}`;
       }
-      
+
       if (seatData && typeof seatData.isUpper === 'boolean') {
         const deckPrefix = seatData.isUpper ? "U" : "L";
         return `${deckPrefix}${seatLabel}`;
@@ -439,7 +439,7 @@ const BusBookingPayment = () => {
     } catch (error) {
       console.error('Error parsing seat layout data:', error);
     }
-    
+
     // Final fallback - return original label
     return seatLabel;
   };
@@ -450,11 +450,11 @@ const BusBookingPayment = () => {
       <div id="preloader">
         <div className="preloader"><span /><span /></div>
       </div>
-      
+
       <div id="main-wrapper">
         <Header02 />
         <div className="clearfix" />
-        
+
         <section className="pt-4 gray-simple position-relative">
           <div className="container">
             {/* Booking Stepper */}
@@ -517,14 +517,14 @@ const BusBookingPayment = () => {
                         Offers & Coupons
                       </h6>
                       <div className="d-flex">
-                        <input 
-                          type="text" 
-                          className="form-control me-2" 
+                        <input
+                          type="text"
+                          className="form-control me-2"
                           placeholder="Have a coupon code?"
                           value={couponCode}
                           onChange={(e) => setCouponCode(e.target.value)}
                         />
-                        <button 
+                        <button
                           className="btn btn-outline-primary"
                           onClick={handleApplyCoupon}
                         >
@@ -576,7 +576,7 @@ const BusBookingPayment = () => {
                             <span className="badge bg-primary fs-6">{formatDate(blockData.DepartureTime)}</span>
                           </div>
                         )}
-                        
+
                         {/* Main Route Display */}
                         <div className="bg-white p-3 rounded mb-3 border">
                           <div className="text-center">
@@ -584,16 +584,16 @@ const BusBookingPayment = () => {
                               <i className="fas fa-route me-2"></i>
                               Your Journey
                             </h5>
-                            <div className="d-flex justify-content-center align-items-center flex-wrap">
-                              <div className="text-center me-4">
+                            <div className="d-flex flex-column flex-md-row justify-content-center align-items-center flex-wrap">
+                              <div className="text-center ">
                                 <div className="fs-4 fw-bold text-success">
                                   {busData.OriginName || busData.Origin || (getEncryptedItem("busSearchparams") || {}).fromCityName || 'From City'}
                                 </div>
                                 <div className="small text-muted">Departure</div>
                               </div>
                               <div className="mx-3">
-                                <i className="fas fa-arrow-right fs-3 text-primary d-sm-none d-none"></i>
-                                <i className="fas fa-arrow-down fs-3 text-primary"></i>
+                                <i className="fas fa-arrow-down fs-3 text-muted d-block d-md-none"></i>
+                                <i className="fas fa-arrow-right fs-3 text-muted d-none d-md-block"></i>
                               </div>
                               <div className="text-center">
                                 <div className="fs-4 fw-bold text-danger">
@@ -611,7 +611,7 @@ const BusBookingPayment = () => {
                             {blockData.BusType || busData.BusType || 'Bus Type'} • 2 Yr Old Bus
                           </div>
                         </div>
-                        
+
                         {/* Departure */}
                         <div className="mb-3">
                           <div className="d-flex justify-content-between">
@@ -632,25 +632,25 @@ const BusBookingPayment = () => {
                                   if (selectedBoarding) {
                                     return selectedBoarding;
                                   }
-                                  
+
                                   // Fallback to blockData if available
                                   if (blockData.BoardingPointdetails?.CityPointName) {
                                     return `${blockData.BoardingPointdetails.CityPointName} - ${blockData.BoardingPointdetails.CityPointLocation || 'Location'}`;
                                   }
-                                  
+
                                   // Fallback to busData boarding points
                                   if (busData.BoardingPointsDetails && busData.BoardingPointsDetails.length > 0) {
                                     const firstBoardingPoint = busData.BoardingPointsDetails[0];
                                     return `${firstBoardingPoint.CityPointName} - ${firstBoardingPoint.CityPointLocation || 'Location'}`;
                                   }
-                                  
+
                                   return 'Boarding Point - Location';
                                 })()}
                               </div>
                             </div>
                           </div>
                         </div>
-                        
+
                         {/* Arrival */}
                         <div>
                           <div className="d-flex justify-content-between">
@@ -671,18 +671,18 @@ const BusBookingPayment = () => {
                                   if (selectedDropping) {
                                     return selectedDropping;
                                   }
-                                  
+
                                   // Fallback to blockData if available
                                   if (blockData.DroppingPointdetails?.CityPointName) {
                                     return `${blockData.DroppingPointdetails.CityPointName} - ${blockData.DroppingPointdetails.CityPointLocation || 'Location'}`;
                                   }
-                                  
+
                                   // Fallback to busData dropping points
                                   if (busData.DroppingPointsDetails && busData.DroppingPointsDetails.length > 0) {
                                     const firstDroppingPoint = busData.DroppingPointsDetails[0];
                                     return `${firstDroppingPoint.CityPointName} - ${firstDroppingPoint.CityPointLocation || 'Location'}`;
                                   }
-                                  
+
                                   return 'Dropping Point - Location';
                                 })()}
                               </div>
@@ -833,15 +833,15 @@ const BusBookingPayment = () => {
                             </h6>
                             <p className="text-muted mb-0 lh-base">
                               <i className="fas fa-lock me-1"></i>
-                              Pay securely using Razorpay. You can use Credit/Debit cards, UPI, Net Banking, 
+                              Pay securely using Razorpay. You can use Credit/Debit cards, UPI, Net Banking,
                               Wallets and more. Click on Pay Now below to proceed to secure payment gateway.
                             </p>
                           </div>
                           <div className="text-center">
-                            <img 
-                              src="https://razorpay.com/favicon.png" 
-                              alt="Razorpay" 
-                              style={{ width: '50px', height: '50px', objectFit: 'contain' }} 
+                            <img
+                              src="https://razorpay.com/favicon.png"
+                              alt="Razorpay"
+                              style={{ width: '50px', height: '50px', objectFit: 'contain' }}
                             />
                           </div>
                         </div>
@@ -850,7 +850,7 @@ const BusBookingPayment = () => {
 
                     {/* Proceed to Pay Button */}
                     <div className="text-center mt-5">
-                      <button 
+                      <button
                         className="btn btn-danger btn-lg px-5 py-3 fw-bold"
                         onClick={handleProceedToPay}
                         disabled={bookingLoading || createBookingLoading || updateStatusLoading}
@@ -869,9 +869,9 @@ const BusBookingPayment = () => {
                           </>
                         )}
                       </button>
-                      
 
-                      
+
+
                       <div className="text-center mt-3">
                         <i className="fas fa-info-circle me-1"></i>
                         <small className="text-muted">By proceeding, you agree to our terms and conditions</small>
