@@ -623,7 +623,7 @@ export const fetchBusBookingDetails = (bookingDetailsData) => async (dispatch) =
         statusData
       );
 
-      // console.log("Response from update bus booking status API:", response.data);
+      console.log("Response from update bus booking status API:", response.data);
 
       if (response.data && response.data.success) {
         dispatch(updateBusBookingStatusSuccess(response.data));

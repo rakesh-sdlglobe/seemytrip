@@ -129,6 +129,8 @@ import BusSeatLayoutPage from "./components/bus_components/BusSeatLayoutPage.jsx
 import { BusBookingPage } from "./components/bus_components/bus_booking_detail_page.jsx";
 import BoardingPointsPage from "./components/bus_components/BoardingPointsPage.jsx";
 import Bus_Comfirmation_Page from "./components/bus_components/Bus_Comfirmation_Page.jsx";
+import BusPaymentSuccess from "./components/bus_components/bus_payment_success.jsx";
+import BusPaymentFailure from "./components/bus_components/bus_payment_failure.jsx";
 import InsuranceBookingPage from './components/insurance_components/Insurance_Booking_Page';
 
 
@@ -264,6 +266,8 @@ function App() {
           <Route path="/boarding-points" element={<BoardingPointsPage />} />
           <Route path="/busBookingpayment" element={<BusBookingPayment />} />
           <Route path="/bus-confirmation" element={<Bus_Comfirmation_Page/>} />
+          <Route path="/bus-payment-success" element={<BusPaymentSuccess />} />
+          <Route path="/bus-payment-failure" element={<BusPaymentFailure />} />
 
           {/* Insurance Routes */}
           <Route path="/home-insurance" element={<InsuranceHome />} />

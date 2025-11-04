@@ -1,21 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Container, Row, Col, Card, Form, Alert } from 'react-bootstrap';
-import { FaInstagram, FaFacebook, FaTwitter, FaTimes } from 'react-icons/fa';
+import { FaInstagram, FaFacebook, FaTwitter } from 'react-icons/fa';
 import { Appstoreicon, offer, Playstoreicon, PopupImage } from '../assets/images';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInstagram, faFacebook, faXTwitter, faRoute } from '@fortawesome/free-brands-svg-icons';
+import trainImage  from '../assets/images/train-4 (1).png';
 
 const WelcomePopup = () => {
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(true);
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    const hasVisitedThisSession = sessionStorage.getItem('hasVisitedThisSession');
-    if (!hasVisitedThisSession) {
-      setShow(true);
-      sessionStorage.setItem('hasVisitedThisSession', 'true');
-    }
+    setShow(true);
   }, []);
 
   const handleSubmit = (e) => {
@@ -23,13 +20,10 @@ const WelcomePopup = () => {
     setSubmitted(true);
   };
 
-  const handleClose = () => setShow(false);
-
   return (
     <>
-      <Modal show={show} onHide={handleClose} centered dialogClassName="custom-modal-60w" className='welcome-popup'>
+      <Modal show={show} onHide={() => {}} centered dialogClassName="custom-modal-60w" className='welcome-popup' backdrop="static" keyboard={false}>
         <div className="modal-header-container">
-          <FaTimes className="close-icon" onClick={handleClose} />
           <div className="modal-image">
             <div className="image-overlay" />
             <div className="header-content">
@@ -56,7 +50,11 @@ const WelcomePopup = () => {
             </div>
           </div>
           <div className="text-overlay">
+            <img src={trainImage} alt="logo" className="img-fluid m-3" width={200} height={100} />
             <h2>Welcome to See My Trip!</h2>
+            <div className="coming-soon-container">
+              <span className="coming-soon-badge">Launching Soon</span>
+            </div>
             <p>Plan your journey and book all your travel needs with ease.</p>
           </div>
         </div>
@@ -129,15 +127,6 @@ const WelcomePopup = () => {
       margin: 2px;
     }
 
-    .close-icon {
-      position: absolute;
-      top: -10px;
-      right: -30px;
-      font-size: 24px;
-      color: white;
-      cursor: pointer;
-      z-index: 4;
-    }
 
     .explore-image {
       width: 100%;
@@ -201,6 +190,97 @@ const WelcomePopup = () => {
     .text-overlay h2,
     .text-overlay p {
       color: white !important;
+    }
+    
+    .text-overlay h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+      letter-spacing: 1px;
+    }
+    
+    .coming-soon-container {
+      display: inline-block;
+      position: relative;
+    }
+    
+    .coming-soon-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #cd2c22 0%, #ff6b6b 50%, #cd2c22 100%);
+      background-size: 200% 200%;
+      color: white;
+      padding: 12px 35px;
+      border-radius: 50px;
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      box-shadow: 0 8px 25px rgba(205, 44, 34, 0.4),
+                  0 0 30px rgba(205, 44, 34, 0.3),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      animation: gradientShift 3s ease infinite, pulseGlow 2s ease-in-out infinite;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .coming-soon-badge::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+      );
+      animation: shine 3s infinite;
+    }
+    
+    @keyframes gradientShift {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+    
+    @keyframes pulseGlow {
+      0%, 100% {
+        box-shadow: 0 8px 25px rgba(205, 44, 34, 0.4),
+                    0 0 30px rgba(205, 44, 34, 0.3),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        transform: scale(1);
+      }
+      50% {
+        box-shadow: 0 8px 35px rgba(205, 44, 34, 0.6),
+                    0 0 50px rgba(205, 44, 34, 0.5),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        transform: scale(1.02);
+      }
+    }
+    
+    @keyframes shine {
+      0% {
+        transform: translateX(-100%) translateY(-100%) rotate(45deg);
+      }
+      100% {
+        transform: translateX(100%) translateY(100%) rotate(45deg);
+      }
+    }
+    
+    .text-overlay p {
+      font-size: 1.1rem;
+      margin-top: 15px;
+      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+      opacity: 0.95;
     }
 
     .modal-image {
@@ -267,7 +347,7 @@ const WelcomePopup = () => {
     .text-overlay {
       position: absolute;
       top: 50%;
-      left: 30%;
+      left: 25%;
       transform: translateY(-50%);
       z-index: 2;
       color: white !important;
