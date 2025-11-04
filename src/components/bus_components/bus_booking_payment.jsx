@@ -19,6 +19,8 @@ import {
   fetchBusSeatLayout
 } from '../../store/Actions/busActions';
 import { getEncryptedItem, setEncryptedItem } from '../../utils/encryption';
+import { API_URL } from '../../store/Actions/authActions';
+import EasebuzzPaymentButton from '../paymentComponent/EasebuzzPaymentButton';
 
 const BusBookingPayment = () => {
   const location = useLocation();
@@ -308,71 +310,29 @@ const BusBookingPayment = () => {
     }
   };
 
-  // Main handler for payment
-  const handleProceedToPay = async () => {
-    if (!validateBlockStatus()) return;
+  // Prepare payment data for Easebuzz button
+  const getPaymentData = () => {
+    const phone = contactDetails?.phone || 
+                 blockData.Passenger?.[0]?.Phoneno || 
+                 '';
+    const email = contactDetails?.email || 
+                 blockData.Passenger?.[0]?.Email || 
+                 '';
+    const firstName = contactDetails?.firstName || 
+                     travelerDetails?.[Object.keys(travelerDetails)[0]]?.firstName || 
+                     blockData.Passenger?.[0]?.FirstName || 
+                     'Customer';
+    
+    const fromCity = ((getEncryptedItem("busSearchparams") || {}).fromCityName || busData.OriginName || 'From').substring(0, 30);
+    const toCity = ((getEncryptedItem("busSearchparams") || {}).toCityName || busData.DestinationName || 'To').substring(0, 30);
+    const productInfo = `BusBooking ${fromCity} ${toCity}`.trim();
 
-    try {
-      // 1. Book the bus
-      const bookingRequest = getBookingRequest();
-      const bookingResult = await dispatch(fetchBusBooking(bookingRequest));
+    return { phone, email, firstName, productInfo };
+  };
 
-      if (bookingResult?.BookResult?.ResponseStatus !== 1) {
-        throw new Error(bookingResult?.BookResult?.Error?.ErrorMessage || "Booking failed");
-      }
-
-      // 2. Save to database
-      const bookingId = await saveBookingToDatabase();
-      if (!bookingId) {
-        throw new Error("Failed to save booking to database");
-      }
-
-      // 3. Update booking status
-      await updateBookingStatus(bookingResult.BookResult);
-
-      // 4. Get booking details
-      const busId = bookingResult.BookResult.BusId;
-      const bookingDetailsRequest = getBookingDetailsRequest(busId);
-      await dispatch(fetchBusBookingDetails(bookingDetailsRequest));
-
-      // 5. Prepare navigation data
-      const bookingData = prepareBookingData(bookingResult, bookingId);
-
-      // Store booking result in localStorage for seat layout refresh detection
-      setEncryptedItem("bookingResult", bookingResult);
-      setEncryptedItem("bookingTimestamp", Date.now().toString());
-      setEncryptedItem("databaseBookingId", bookingId.toString());
-
-      // Fetch latest seat layout after successful booking
-      try {
-        const searchParams = getEncryptedItem("busSearchparams") || {};
-        const { TokenId, EndUserIp } = searchParams;
-        const currentBus = getEncryptedItem("selectedBusData") || {};
-
-        if (TokenId && EndUserIp && currentBus.ResultIndex && searchParams.TraceId) {
-          await dispatch(fetchBusSeatLayout(
-            TokenId,
-            EndUserIp,
-            currentBus.ResultIndex,
-            searchParams.TraceId
-          ));
-        }
-      } catch (error) {
-        console.error("Error fetching latest seat layout:", error);
-      }
-
-      // 6. Navigate to confirmation
-      navigate('/bus-confirmation', {
-        state: { bookingData },
-        replace: true
-      });
-
-      toast.success('Payment successful! Booking confirmed.');
-
-    } catch (error) {
-      console.error("Payment error:", error);
-      toast.error(error.message || "Payment failed");
-    }
+  // Validation function for Easebuzz payment
+  const validatePayment = () => {
+    return validateBlockStatus();
   };
 
   // Format date
@@ -818,57 +778,53 @@ const BusBookingPayment = () => {
                       </div>
                     </div>
 
-                    {/* Razorpay Section */}
+                    {/* Easebuzz Section */}
                     <div className="mb-4">
                       <h5 className="text-primary mb-4">
                         <i className="fas fa-shield-alt me-2"></i>
-                        Secure Payment with Razorpay
+                        Secure Payment with Easebuzz
                       </h5>
                       <div className="payment-option selected">
                         <div className="d-flex align-items-center p-4 border rounded shadow-sm">
                           <div className="flex-grow-1 me-4">
                             <h6 className="mb-2 fw-bold">
                               <i className="fas fa-credit-card me-2"></i>
-                              Razorpay
+                              Easebuzz
                             </h6>
                             <p className="text-muted mb-0 lh-base">
                               <i className="fas fa-lock me-1"></i>
-                              Pay securely using Razorpay. You can use Credit/Debit cards, UPI, Net Banking,
+                              Pay securely using Easebuzz. You can use Credit/Debit cards, UPI, Net Banking,
                               Wallets and more. Click on Pay Now below to proceed to secure payment gateway.
                             </p>
                           </div>
                           <div className="text-center">
-                            <img
-                              src="https://razorpay.com/favicon.png"
-                              alt="Razorpay"
-                              style={{ width: '50px', height: '50px', objectFit: 'contain' }}
-                            />
+                            <i className="fas fa-university text-primary" style={{ fontSize: '50px' }}></i>
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    {/* Proceed to Pay Button */}
+                    {/* Proceed to Pay Button - Using Global Easebuzz Component */}
                     <div className="text-center mt-5">
-                      <button
-                        className="btn btn-danger btn-lg px-5 py-3 fw-bold"
-                        onClick={handleProceedToPay}
+                      <EasebuzzPaymentButton
+                        amount={fareDetails.total}
+                        phone={getPaymentData().phone}
+                        email={getPaymentData().email}
+                        firstName={getPaymentData().firstName}
+                        productInfo={getPaymentData().productInfo}
+                        paymentType="BUS"
+                        metadata={{
+                          fareDetails,
+                          blockData,
+                          busData,
+                          formData
+                        }}
+                        onValidation={validatePayment}
                         disabled={bookingLoading || createBookingLoading || updateStatusLoading}
-                        style={{ minWidth: '200px' }}
-                      >
-                        {(bookingLoading || createBookingLoading || updateStatusLoading) ? (
-                          <>
-                            <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                            <i className="fas fa-cog me-2"></i>
-                            Processing...
-                          </>
-                        ) : (
-                          <>
-                            <i className="fas fa-lock me-2"></i>
-                            Pay Securely ₹{fareDetails.total > 0 ? fareDetails.total.toFixed(2) : '0.00'}
-                          </>
-                        )}
-                      </button>
+                        buttonClass="btn btn-danger btn-lg px-5 py-3 fw-bold"
+                        showError={true}
+                        environment="test"
+                      />
 
 
 

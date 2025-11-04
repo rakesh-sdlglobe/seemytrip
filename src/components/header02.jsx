@@ -146,10 +146,10 @@ const Header02 = () => {
      { to: "/home-bus", icon: "fa-solid fa-bus", text: "Buses" },
     { to: "/home-flight", icon: "fa-solid fa-plane", text: "Flights" },
     { to: "/home-hotel", icon: "fa-solid fa-hotel", text: "Hotels" },
-    { to: "/home-car", icon: "fa-solid fa-car", text: "Cabs" },
-    { to: "/home-cruise", icon: "fa-solid fa-ship", text: "Cruises" },
+    // { to: "/home-car", icon: "fa-solid fa-car", text: "Cabs" },
+    // { to: "/home-cruise", icon: "fa-solid fa-ship", text: "Cruises" },
     { to: "/home-insurance", icon: "fa-solid fa-shield-halved", text: "Insurance" },
-    { to: "/packages", icon: "fa-solid fa-suitcase-rolling", text: "Packages" },
+    // { to: "/packages", icon: "fa-solid fa-suitcase-rolling", text: "Packages" },
   ];
 
   const userMenuItems = [
@@ -304,8 +304,8 @@ const Header02 = () => {
               <ul className="nav-menu">
                 {navItems.map((item, index) => (
                   <li key={index} className="mt-3 ">
-                    <NavLink to={item.to} className="d-flex  flex-column align-items-center gap-3">
-                      <i className={`${item.icon} me-2 fa-lg`} />
+                    <NavLink to={item.to} className="d-flex  flex align-items-center gap-3">
+                      <i className={`${item.icon}  fa-lg`} />
                       {item.text}
                     </NavLink>
                   </li>
