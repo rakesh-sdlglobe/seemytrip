@@ -285,9 +285,9 @@ const Header02 = () => {
         <div className="container"  >
           <nav id="navigation" className="navigation navigation-landscape">
             <div className="nav-header">
-              {/* <NavLink to="/" className="nav-brand">
+              <NavLink to="/" className="nav-brand">
                 <img src={trainImage} className="logo" alt="Logo" />
-              </NavLink> */}
+              </NavLink>
               <div className="nav-toggle" />
 
               {/* Mobile version right-end Sign In/Register */}
