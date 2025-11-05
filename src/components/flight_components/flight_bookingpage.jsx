@@ -11,6 +11,7 @@ import { Indigo } from "../../assets/images";
 import FlightTraveller from "../flight_components/flightTraveller";
 import { fetchFlightsPriceValidate } from "../../store/Actions/flightActions";
 import { selectflightPriceValidate } from "../../store/Selectors/flightSelectors";
+const MAX_TRAVELERS = 9;
 
 export const FlightBookingpage01 = () => {
   const location = useLocation();
@@ -22,8 +23,21 @@ export const FlightBookingpage01 = () => {
   const [isHideBtnPrice, setIsHideBtnPrice] = useState(false);
   const [travellerDetails, setTravellerDetails] = useState([]);
   useEffect(() => {
-    console.log("Location State:", location.state);
-  }, [location.state]);
+    setTotalTravelers(
+      Number(fRequest?.Adults) +
+        Number(fRequest?.Children) +
+        Number(fRequest?.Infants) || 1
+    );
+    if (
+      Number(fRequest?.Adults) +
+        Number(fRequest?.Children) +
+        Number(fRequest?.Infants) >
+      MAX_TRAVELERS
+    ) {
+      toast.error(`You can book a maximum of ${MAX_TRAVELERS} travelers.`);
+      navigate("/flight-list", { state: { flightsearchrequest: fRequest } });
+    }
+  }, [fRequest, navigate]);
 
   // Function to validate prices
   const validatePrices = (travellerDetails) => {
@@ -74,7 +88,16 @@ export const FlightBookingpage01 = () => {
     };
     dispatch(fetchFlightsPriceValidate(PRICE_REQUEST));
   };
- useEffect(() => {
+  useEffect(() => {
+    if (
+      (pricedetails && pricedetails.StatusCode !== "S0001") ||
+      (pricedetails &&
+        pricedetails.FlightSearchResponse?.FlightResults.length === 0)
+    ) {
+      setIsLoadingPrice(false);
+      toast.error("Price validation failed. Please try again.");
+      return;
+    }
     if (pricedetails?.FlightSearchResponse?.FlightResults?.[0]) {
       setIsLoadingPrice(false);
       setIsHideBtnPrice(true);
@@ -84,45 +107,18 @@ export const FlightBookingpage01 = () => {
     navigate("/flight-list", { state: { flightsearchrequest: fRequest } });
   }, [navigate, fRequest]);
 
-  const MAX_TRAVELERS = 9;
-
   // State management
-  const [travelers, setTravelers] = useState([]);
-
-  const [contactDetails, setContactDetails] = useState({
-    email: "",
-    phone: "",
-    address: "",
-    state: "",
-  });
-
-  const validateBeforePayment = () => {
-    if (travelers.length === 0) {
-      toast.error("Please add at least one traveler");
-      return false;
-    }
-    if (
-      !contactDetails.email ||
-      !contactDetails.phone ||
-      !contactDetails.state
-    ) {
-      toast.error("Please fill all the required fields");
-      return false;
-    }
-    return true;
-  };
+  const [totalTravelers, setTotalTravelers] = useState(1);
 
   const handleProceedToPayment = (e) => {
     e.preventDefault();
-    if (validateBeforePayment()) {
-      navigate("/flight-seat-selection", {
-        state: {
-          flight,
-          travelers,
-          contactDetails,
-        },
-      });
-    }
+    navigate("/flight-seat-selection", {
+      state: {
+        flightResults: pricedetails?.FlightSearchResponse.FlightResults[0],
+        travellerDetails: travellerDetails,
+        fRequest: fRequest,
+      },
+    });
   };
 
   // Render functions
@@ -173,9 +169,9 @@ export const FlightBookingpage01 = () => {
         <h4 className="mb-0">Add Traveller</h4>
       </div>
 
-      {travelers.length < MAX_TRAVELERS ? (
+      {totalTravelers < MAX_TRAVELERS ? (
         <p className="text-muted small mb-4">
-          You can book up to 9 travelers at once. ({travelers.length}/9 added)
+          You can book up to 9 travelers at once. ({totalTravelers}/9 added)
         </p>
       ) : (
         <p className="text-danger small mb-4">

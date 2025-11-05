@@ -1,11 +1,29 @@
-import React from "react";
+import React,{ useRef, useEffect } from "react";
 import { Tabs, Tab } from "react-bootstrap";
-import { FaUtensils, FaPlane, FaCoffee, FaChair } from "react-icons/fa"; // For icons
-import { parse, format } from "date-fns"; // Add this import
+import { FaUtensils} from "react-icons/fa"; // For icons
+import { format } from "date-fns"; // Add this import
 import "../../assets/css/style.css";
-import { indigo } from "../../assets/images";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchFlightFareRule } from "../../store/Actions/flightActions";
+import { selectFlightFareRule } from "../../store/Selectors/flightSelectors";
+
 
 function FlightDetailsDropdown({ selectedFlight }) {
+    const dispatch = useDispatch();
+    const fareRuleDetails = useSelector(selectFlightFareRule);
+  const calledOnce = useRef(false);
+  useEffect(() => {
+    var payload = {
+      Credential: null,
+      ProviderName:selectedFlight.ProviderName,
+      ServiceIdentifier:selectedFlight.ServiceIdentifier,
+      OptionalToken:selectedFlight.OptionalToken
+    }
+    if (calledOnce.current) return;
+    dispatch(fetchFlightFareRule(payload));
+    calledOnce.current = true;
+  }, [dispatch,selectedFlight]);
+
   return (
     <div className="flight-details-container">
       {/* Tabs */}
@@ -16,12 +34,13 @@ function FlightDetailsDropdown({ selectedFlight }) {
         <Tab eventKey="fareSummary" title="FARE SUMMARY">
           <FareSummary flight={selectedFlight} />
         </Tab>
-        <Tab eventKey="cancellation" title="CANCELLATION">
-          <Cancellation flight={selectedFlight} />
-        </Tab>
-        <Tab eventKey="dateChange" title="DATE CHANGE">
+        {fareRuleDetails && fareRuleDetails !== "undefined" && fareRuleDetails?.FareRuleText && <Tab eventKey="cancellation" title="CANCELLATION">
+          <Cancellation fareRule={JSON.parse(fareRuleDetails?.FareRuleText)?.Response?.FareRules} />
+        </Tab>}
+        
+        {/* <Tab eventKey="dateChange" title="DATE CHANGE">
           <DateChange flight={selectedFlight} />
-        </Tab>
+        </Tab> */}
       </Tabs>
     </div>
   );
@@ -29,11 +48,6 @@ function FlightDetailsDropdown({ selectedFlight }) {
 
 // Flight Details Section
 function FlightDetails({ flight }) {
-  // Get journey date from sessionStorage and parse it
-  const storedDate = sessionStorage.getItem("journeyDate");
-  const journeyDate = storedDate
-    ? format(parse(storedDate, "dd/MM/yyyy", new Date()), "dd MMM yyyy")
-    : "Date not available";
 
   if (!flight) {
     return <div>No flight details available</div>;
@@ -63,8 +77,9 @@ function FlightDetails({ flight }) {
                   <div className="flight-info">
                     <div className="left-section">
                       <img
-                        src={flight.airlineLogo || indigo} // Airline logo
-                        alt={flight.airline}
+                        src={"https://cdn.sriggle.tech/media/airlinelogo/" +
+                                  subseg?.Airline?.AirlineCode  + ".png"} // Airline logo
+                        alt={subseg?.Airline?.AirlineCode }
                         className="airline-logo"
                       />
                       <div className="d-flex align-items-center">
@@ -78,25 +93,6 @@ function FlightDetails({ flight }) {
                       </div>
                     </div>
 
-                    {/* <div className="right-section">
-            <div className="time-info">
-              <div>
-                <strong>{flight.departureTime}</strong>
-               
-                <p>Terminal {flight.departureTerminal}</p>
-                <p>{flight.fromAirport}</p>
-              </div>
-              <div className="duration">
-                <p>{flight.duration}</p>
-              </div>
-              <div>
-                <strong>{flight.arrivalTime}</strong>
-               
-                <p>Terminal {flight.arrivalTerminal}</p>
-                <p>{flight.toAirport}</p>
-              </div>
-            </div>
-          </div> */}
                   </div>
                   <div className="d-flex justify-content-between">
                     <div className="flight-info-section col-6">
@@ -162,18 +158,12 @@ function FlightDetails({ flight }) {
                   </div>
                   {/* Features */}
                   <div className="flight-features">
-                    <span>
+                    {subseg.Meal && subseg.Meal !== "Not Available" && subseg.Meal !== "Meal Not Free" && (<>
+                     <span>
                       <FaUtensils /> Complimentary Meals
                     </span>
-                    <span>
-                      <FaPlane /> {flight.seatLayout || "3-3 Layout"}
-                    </span>
-                    <span>
-                      <FaCoffee /> Complimentary Beverages
-                    </span>
-                    <span>
-                      <FaChair /> {flight.seatInfo || "Standard Recliner"}
-                    </span>
+                    </>)}
+                    
                   </div>
                 </div>
               </>
@@ -219,36 +209,17 @@ function FareSummary({ flight }) {
 }
 
 // Cancellation Section
-function Cancellation() {
-  return (
-    <div className="cancellation">
-      <h5 className="cancellation-header">DEL-BLR</h5>
-      <div className="cancellation-table">
-        <div className="table-header">
-          <span className="table-col bold">Time frame</span>
-          <span className="table-col bold">Airline Fee + MMT Fee</span>
-        </div>
-        <div className="table-row">
-          <span className="table-col">0 hours to 2 hours*</span>
-          <span className="table-col">
-            ADULT : <strong>Non Refundable</strong>
-          </span>
-        </div>
-        <div className="table-row">
-          <span className="table-col">2 hours to 365 days*</span>
-          <span className="table-col">
-            ADULT : <strong>₹ 4,000 + ₹ 300</strong>
-          </span>
-        </div>
+function Cancellation({fareRule}) {
+  return (<>
+    
+    {fareRule && fareRule.length > 0 && fareRule.map((rule, index) => (
+      <div key={index} className="cancellation mb-4">
+      <h5 className="cancellation-header">{rule?.Origin}-{rule?.Destination}</h5>
+      <div className="cancellation-table" dangerouslySetInnerHTML={{ __html: rule.FareRuleDetail }}>
+        
       </div>
-      <p className="cancellation-note">
-        <span className="bold">*Important:</span> The airline fee is indicative.
-        MakeMyTrip does not guarantee the accuracy of this information. All fees
-        mentioned are per passenger. All refunds are subject to airline
-        approval.
-      </p>
-    </div>
-  );
+      </div>))}
+  </>);
 }
 
 // Date Change Section

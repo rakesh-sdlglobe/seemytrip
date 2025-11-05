@@ -321,7 +321,8 @@ const FlightSearchResult = ({ flightData, flightsearchrequest }) => {
                             <div className="airline-section">
                               <img
                                 className="img-fluid"
-                                src={indigo}
+                                src={"https://cdn.sriggle.tech/media/airlinelogo/" +
+                                  seg.Segments[0]?.Airline?.AirlineCode + ".png"}
                                 width={35}
                                 alt="Airline Logo"
                               />
