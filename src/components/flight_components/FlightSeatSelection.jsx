@@ -9,8 +9,12 @@ import { Indigo } from '../../assets/images';
 const FlightSeatSelection = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const flightData = location.state?.flightData;
-  const travelers = location.state?.travelers || [];
+  const flightResults = location.state?.flightResults || {};
+  const travellerDetails = location.state?.travellerDetails || [];
+  const fRequest = location.state?.fRequest;
+  const [TotalPrice, setTotalPrice] = useState(flightResults?.OfferedFare || 0);
+  const [selectedSeatPrice, setSelectedSeatPrice] = useState(0);
+
  const renderBookingStepper = () => (
     <div className="col-xl-12 col-lg-12 col-md-12">
       <div id="stepper" className="bs-stepper stepper-outline mb-5">
@@ -65,10 +69,10 @@ const FlightSeatSelection = () => {
   };
 
   const handleSeatSelection = (seatNumber, cabin, price) => {
-    if (Object.keys(selectedSeats).length >= travelers.length && !selectedSeats[seatNumber]) {
-      toast.error(`You can only select ${travelers.length} seats`);
-      return;
-    }
+    // if (Object.keys(selectedSeats).length >= travelers.length && !selectedSeats[seatNumber]) {
+    //   toast.error(`You can only select ${travelers.length} seats`);
+    //   return;
+    // }
 
     setSelectedSeats(prev => {
       if (prev[seatNumber]) {
@@ -122,10 +126,10 @@ const FlightSeatSelection = () => {
   };
 
   const handleProceedToPayment = () => {
-    if (Object.keys(selectedSeats).length !== travelers.length) {
-      toast.error(`Please select seats for all ${travelers.length} travelers`);
-      return;
-    }
+    // if (Object.keys(selectedSeats).length !== travelers.length) {
+    //   toast.error(`Please select seats for all ${travelers.length} travelers`);
+    //   return;
+    // }
     navigate('/flight-Bookingpage02', { 
       state: { 
         ...location.state,
@@ -175,12 +179,12 @@ const FlightSeatSelection = () => {
               <div className="card p-4 sticky-summary">
                 <h4 className="mb-3">Your Selection</h4>
                 <div className="selected-seats mb-3">
-                  {travelers.map((traveler, index) => (
+                  {travellerDetails.map((traveler, index) => (
                     <div key={index} className="selected-seat-item mb-2">
                       <div className="d-flex justify-content-between align-items-center">
-                        <span className="traveler-name">{traveler.name}</span>
+                        <span className="traveler-name">{traveler.Forename + ' ' + traveler.Surname}</span>
                         <span className="seat-number">
-                          {Object.keys(selectedSeats)[index] || 'Not selected'}
+                          {/* {Object.keys(selectedSeats)[index] || 'Not selected'} */}
                         </span>
                       </div>
                     </div>
@@ -209,7 +213,7 @@ const FlightSeatSelection = () => {
                   </div>
                   <div className="d-flex justify-content-between mb-2">
                     <span>Total Price</span>
-                    <span>₹{Object.values(selectedSeats).reduce((acc, seat) => acc + seat.price, 0)}</span>
+                    <span>₹ {TotalPrice.toLocaleString()}</span>
                   </div>
                 </div>
 

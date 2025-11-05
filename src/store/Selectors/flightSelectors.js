@@ -6,3 +6,13 @@ export const selectTotalFlight = (state) => state.flights?.flightResultList?.Tot
 export const selectTotalPages = (state) => state.flights?.flightResultList?.TotalPages;
 export const selectSessionId = (state) => state.flights?.flightResultList?.SessionId;
 export const selectflightPriceValidate = (state) => state.flights?.PriceValidate;
+export const selectFlightFareRule = (state) => state.flights?.flightFareRule;
+export const selectFlightFareRuleLoading = (state) => state.flights?.flightFareRuleLoading;
+export const selectFlightServiceTax = (state) => state.flights?.flightService;
+export const selectFlightServiceTaxLoading = (state) => state.flights?.flightService
+export const selectFlightPreBook = (state) => state.flights?.flightPreBook;
+export const selectFlightPreBookLoading = (state) => state.flights?.flightPreBookLoading;
+export const selectFlightBook = (state) => state.flights?.flightBook;
+export const selectFlightBookLoading = (state) => state.flights?.flightBookLoading;
+export const selectFlightBookDetails = (state) => state.flights?.flightBookDetails;
+export const selectFlightBookDetailsLoading = (state) => state.flights?.flightBookDetailsLoading;

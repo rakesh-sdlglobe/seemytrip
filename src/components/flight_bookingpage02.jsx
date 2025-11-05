@@ -1,54 +1,330 @@
-import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import Header02 from './header02';
-import { creditcard, Netbanking, rupay, UPI, wallets } from '../assets/images';
-import FooterDark from './footer-dark';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
+import React, { useState, useEffect, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import Header02 from "./header02";
+import FooterDark from "./footer-dark";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { format } from "date-fns";
+import {
+  fetchFlightServiceTax,
+  fetchFlightPreBook,
+  fetchFlightBook,
+} from "../store/Actions/flightActions";
+import {
+  selectFlightServiceTax,
+  selectFlightPreBook,
+  selectFlightBook,
+} from "../store/Selectors/flightSelectors";
+import { selectUserProfile } from "../store/Selectors/userSelector";
+import { selectGoogleUser } from "../store/Selectors/authSelectors";
+import { selectEmailUser } from "../store/Selectors/emailSelector";
+import { loadRazorpayScript } from "../utils/loadRazorpay";
+export const RAZORPAY_KEY = process.env.REACT_APP_RAZORPAY_KEY_ID;
+// Load Razorpay SDK
+const loadRazorpay = async () => {
+  const res = await loadRazorpayScript();
+  if (!res) {
+    alert("Razorpay SDK failed to load. Check your internet.");
+    return;
+  }
+};
+const generateUniqueString = () => {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+};
+// Sanitize traveller details to remove any unwanted properties
+const sanitizeTravellerDetails = (details) => {
+  return details.map((traveller) => {
+    const cleanTraveller = {};
+    for (const key in traveller) {
+      const value = traveller[key];
+      if (
+        typeof value !== "object" ||
+        value === null ||
+        value instanceof Date
+      ) {
+        cleanTraveller[key] = value;
+      } else if (Array.isArray(value)) {
+        cleanTraveller[key] = value;
+      } else {
+        // Skip DOM elements, React refs, or synthetic events
+        if (
+          value.tagName ||
+          value.nativeEvent ||
+          value._reactName ||
+          value.currentTarget
+        ) {
+          continue;
+        }
+        cleanTraveller[key] = JSON.parse(JSON.stringify(value));
+      }
+    }
+    return cleanTraveller;
+  });
+};
 const FlightBookingPage02 = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { flightData, travelers, selectedSeats } = location.state || {};
+  const dispatch = useDispatch();
+  const fServiceTax = useSelector(selectFlightServiceTax);
+  const userProfile = useSelector(selectUserProfile);
+  const googleUser = useSelector(selectGoogleUser);
+  const emailuser = useSelector(selectEmailUser);
+  const userEmail = googleUser?.email || emailuser || "No email available";
+  const { flightResults, fRequest, travellerDetails, selectedSeats } =
+    location.state || {};
 
-  const [selectedPayment, setSelectedPayment] = useState('');
+  console.log("Selected flightResults:", flightResults);
+  const [totalFare, setTotalFare] = useState(flightResults.OfferedFare || 0);
+  const [TaxSummary, setTaxSummary] = useState([]);
+  const prebookResponse = useSelector(selectFlightPreBook);
+  const bookedResponse = useSelector(selectFlightBook);
 
-  // Calculate total fare
-  const calculateFare = () => {
-    const baseFare = 5000; // Base fare per person
-    const taxes = 700; // Taxes per person
-    const seatCharges = selectedSeats ? 
-      Object.values(selectedSeats).reduce((acc, seat) => acc + seat.price, 0) : 0;
-    
-    return {
-      baseFare: baseFare * (travelers?.length || 1),
-      taxes: taxes * (travelers?.length || 1),
-      seatCharges,
-      total: (baseFare + taxes) * (travelers?.length || 1) + seatCharges
-    };
-  };
-
-  const handlePaymentSelection = (method) => {
-    setSelectedPayment(method);
-  };
-
-  const handleProceedToPay = () => {
-    if (!selectedPayment) {
-      toast.error('Please select a payment method');
+  useEffect(() => {
+    if (!flightResults || !fRequest || !travellerDetails) {
       return;
     }
-    navigate('/booking-page-success');
+    let ServiceDetials = [
+      {
+        SearchType: "Flight",
+        ServiceIndex: 0,
+        ProviderName: flightResults.ProviderName,
+        ServiceIdentifer: flightResults.ServiceIdentifier,
+        Currency: null,
+        ServiceBookPrice: flightResults.OfferedFare,
+        OptionalToken: flightResults.OptionalToken,
+        FromDate: format(flightResults.DepartureTime, "yyyy-MM-dd"),
+        ToDate: format(flightResults.ArrivalTime, "yyyy-MM-dd"),
+        DiscountType: null,
+        DiscountValue: 0.0,
+        DiscountedAmount: 0.0,
+        ServiceTaxes: null,
+        ServiceTypeId: null,
+        ProviderPrice: 0.0,
+        PaxDetail: {
+          Senior: 0,
+          Adults: fRequest.Adults,
+          Youth: 0,
+          Children: fRequest.Children,
+          Infants: fRequest.Infants,
+          Saver: 0,
+          FreeChild: 0,
+        },
+        IsDom: fRequest.isDom,
+        SrvCityId: 0,
+        IsPkgComp: false,
+        AddonPrice: 0.0,
+        AddonType: null,
+      },
+    ];
+    // Fetch service tax details
+    const servicetaxrequest = {
+      Credential: null,
+      ServiceDetails: ServiceDetials,
+      TaxSummary: null,
+      TaxKey: null,
+      BookCurrency: fRequest.Currency || "INR",
+    };
+    dispatch(fetchFlightServiceTax(servicetaxrequest));
+  }, [flightResults, fRequest, travellerDetails, dispatch]);
+
+  useEffect(() => {
+    if (fServiceTax && fServiceTax.StatusCode !== "S0001") {
+      toast.error("Failed to fetch service tax details");
+    }
+    if (fServiceTax) {
+      const totalAmount = fServiceTax.ServiceDetails.reduce(
+        (total, tax) => total + (tax.ServiceBookPrice || 0),
+        0
+      );
+      const taxAmount = fServiceTax.TaxSummary.reduce(
+        (total, tax) => total + (tax.TaxValue || 0),
+        0
+      );
+      setTotalFare(
+        parseFloat(totalAmount.toFixed(2)) + parseFloat(taxAmount.toFixed(2))
+      );
+      setTaxSummary(fServiceTax.TaxSummary || []);
+    }
+  }, [fServiceTax, setTotalFare, setTaxSummary]);
+  const makeBookingRequest = useCallback(
+    (total) => {
+      let GUID = generateUniqueString();
+      const sanitizedTravellerDetails =
+        sanitizeTravellerDetails(travellerDetails);
+      let LeadTraveller = sanitizedTravellerDetails.find(
+        (traveller) => traveller.LeadPax
+      );
+      const ServiceTaxes = fServiceTax.ServiceDetails[0]?.ServiceTaxes || [];
+      const taxAmount = fServiceTax.TaxSummary.reduce(
+        (total, tax) => total + (tax.TaxValue || 0),
+        0
+      );
+      const BookDetails = [];
+      BookDetails.push({
+        SearchType: "Flight",
+        BookSearchType: "Flight",
+        bookingNo:
+          prebookResponse?.BookingsStatus.length > 0
+            ? prebookResponse?.BookingsStatus[0]?.BookingId
+            : null,
+        UniqueReferencekey: GUID,
+        FlightServiceDetail: {
+          UniqueReferencekey: GUID,
+          ServiceBookPrice: flightResults.OfferedFare,
+          ProviderName: flightResults.ProviderName,
+          ServiceIdentifer: flightResults.ServiceIdentifier,
+          OptionalToken: flightResults.OptionalToken,
+          Image:
+            "https://cdn.sriggle.in/media/airlinelogo/" +
+            flightResults.AirlineCode +
+            ".png",
+          FromDate: fRequest.DepartDate,
+          ToDate: fRequest.ReturnDate || fRequest.DepartDate,
+          Adults: fRequest.Adults,
+          Children: fRequest.Children,
+          Infants: fRequest.Infants,
+          Paxs: travellerDetails,
+          searchkey: flightResults.searchkey,
+          IsLCC: flightResults.IsLCC,
+          GstAllowed: flightResults.GstAllowed,
+          IsGstMandatory: flightResults.IsGstMandatory,
+          DiscountType: "A",
+          DiscountValue: 0.0,
+          DiscountedAmount: 0.0,
+          ServiceTaxes: ServiceTaxes,
+          TaxAmount: taxAmount,
+        },
+        StatusMessage: null,
+        PackageRefId: null,
+        BooknowPackageRefId: null,
+        CartType: null,
+      });
+      const reservation = {
+        ReservationId: prebookResponse?.ReservationId || "",
+        BookingType: "C",
+        CartReservId: prebookResponse?.ReservationId || "",
+        ReservationName: LeadTraveller?.Forename + " " + LeadTraveller?.Surname,
+        ReservationArrivalDate: fRequest.DepartDate,
+        ReservationCurrency: fRequest.Currency || "INR",
+        ReservationAmount: total,
+        MemberId: userEmail || LeadTraveller?.PaxEmail, // pass user email id
+        TempMemberId: userEmail || LeadTraveller?.PaxEmail, // pass user email id
+        BookingDetails: BookDetails,
+        Credential: null,
+        AgreeTNC: true,
+        GSTNumber: null,
+        GSTName: null,
+        GSTAddress: null,
+        GSTPhone: null,
+        GSTEmail: null,
+      };
+      console.log("PreBook Reservation Request:", reservation);
+      return reservation;
+    },
+    [travellerDetails, flightResults, fRequest, fServiceTax, prebookResponse]
+  );
+  const BookingComplete = useCallback(
+    (total) => {
+      let BookRequest = makeBookingRequest(total);
+      dispatch(fetchFlightBook(BookRequest));
+    },
+    [dispatch, makeBookingRequest]
+  );
+
+  // make payment when prebookResponse is available
+  useEffect(() => {
+    loadRazorpay();
+    if (prebookResponse) {
+      if (typeof window.Razorpay === "undefined") {
+        alert("Razorpay SDK not available");
+        return;
+      }
+
+      let amount = totalFare * 100; // Convert to paise
+      let currency = fRequest.Currency || "INR";
+      const sanitizedTravellerDetails =
+        sanitizeTravellerDetails(travellerDetails);
+      let LeadTraveller = sanitizedTravellerDetails.find(
+        (traveller) => traveller.LeadPax
+      );
+      const { Forename, Surname, PaxEmail, PaxMobile } = LeadTraveller;
+
+      const options = {
+        key: RAZORPAY_KEY, // from Razorpay dashboard
+        amount: amount, // amount in paise
+        currency: currency,
+        name: "seemytrip",
+        description: "Flight Booking Payment",
+        handler: function (response) {
+          console.log("Payment response:", response);
+          BookingComplete(amount);
+        },
+        theme: {
+          color: "#3399cc",
+        },
+        prefill: {
+          name: `${Forename + " "} ${Surname}`,
+          email: PaxEmail || "",
+          contact: PaxMobile || "",
+        },
+      };
+
+      const paymentObject = new window.Razorpay(options);
+      paymentObject.on("payment.failed", function (response) {
+        console.error("Payment failed:", response);
+        alert(
+          `Payment failed! Reason: ${
+            response.error.description || "Unknown error"
+          }`
+        );
+      });
+      paymentObject.open();
+    }
+  }, [
+    prebookResponse,
+    totalFare,
+    //navigate,
+    travellerDetails,
+    fRequest,
+    BookingComplete,
+  ]);
+
+  useEffect(() => {
+    if (!bookedResponse) return;
+    if (bookedResponse.StatusCode === "S0001") {
+      const confirmationData = {
+        ReservationId: bookedResponse?.ReservationId || null,
+      };
+
+      navigate("/booking-page-success", { state: confirmationData });
+    } else {
+      toast.error(
+        "Your booking failed. Please contact support your ReservationReference is " +
+          bookedResponse?.ReservationReference
+      );
+    }
+  }, [bookedResponse, navigate, totalFare, travellerDetails]);
+  const handleProceedToPay = () => {
+    handlePreBook();
+    //navigate("/booking-page-success");
   };
 
-  const fares = calculateFare();
+  const handlePreBook = () => {
+    const reservationRequest = makeBookingRequest(totalFare);
+    dispatch(fetchFlightPreBook(reservationRequest));
+  };
 
   return (
     <div id="main-wrapper">
       <ToastContainer />
       <Header02 />
-      
-      <section className="pt-4 gray-simple position-relative" style={{ minHeight: '100vh' }}>
+
+      <section
+        className="pt-4 gray-simple position-relative"
+        style={{ minHeight: "100vh" }}
+      >
         <div className="container">
           {/* Booking Stepper */}
           <div className="row mb-4">
@@ -60,7 +336,9 @@ const FlightBookingPage02 = () => {
                       <button className="step-trigger mb-0">
                         <span className="bs-stepper-circle">1</span>
                       </button>
-                      <h6 className="bs-stepper-label d-none d-md-block">Flight Review</h6>
+                      <h6 className="bs-stepper-label d-none d-md-block">
+                        Flight Review
+                      </h6>
                     </div>
                   </div>
                   <div className="line" />
@@ -69,7 +347,9 @@ const FlightBookingPage02 = () => {
                       <button className="step-trigger mb-0">
                         <span className="bs-stepper-circle">2</span>
                       </button>
-                      <h6 className="bs-stepper-label d-none d-md-block">Seat Selection</h6>
+                      <h6 className="bs-stepper-label d-none d-md-block">
+                        Seat Selection
+                      </h6>
                     </div>
                   </div>
                   <div className="line" />
@@ -78,7 +358,9 @@ const FlightBookingPage02 = () => {
                       <button className="step-trigger mb-0">
                         <span className="bs-stepper-circle">3</span>
                       </button>
-                      <h6 className="bs-stepper-label d-none d-md-block">Make Payment</h6>
+                      <h6 className="bs-stepper-label d-none d-md-block">
+                        Make Payment
+                      </h6>
                     </div>
                   </div>
                 </div>
@@ -90,24 +372,138 @@ const FlightBookingPage02 = () => {
             {/* Left Column - Payment Options */}
             <div className="col-xl-8 col-lg-8 col-md-12">
               <div className="card p-4 mb-4">
-                <h4 className="mb-4">Payment Options</h4>
+                <h4 className="mb-4">Flight Details</h4>
+                <div className="flights-list-item">
+                  <div className="d-flex align-items-center justify-content-between">
+                    {flightResults &&
+                      flightResults.Segments &&
+                      flightResults.Segments.map((seg, sIdx) => (
+                        <>
+                          <div className="flights-list-item d-block">
+                            {/* Airline Info */}
+                            <div className="airline-section">
+                              <img
+                                className="img-fluid"
+                                src={
+                                  "https://cdn.sriggle.tech/media/airlinelogo/" +
+                                  seg.Segments[0]?.Airline?.AirlineCode +
+                                  ".png"
+                                }
+                                width={35}
+                                alt="Airline Logo"
+                              />
+                              <div>
+                                <div className="text-dark fw-medium">
+                                  {" "}
+                                  {seg.AirlineName}
+                                </div>
+                                <div className="text-sm text-muted">
+                                  {seg.Segments[0]?.Airline?.AirlineCode +
+                                    " " +
+                                    seg.Segments[0]?.Airline?.FlightNumber +
+                                    " " +
+                                    seg.Segments[0]?.Airline?.FareClass}
+                                </div>
+                              </div>
+                            </div>
 
+                            {/* Flight Info */}
+                            <div className="flight-info-section">
+                              {/* Departure */}
+                              <div className="time-airport-group">
+                                <div className="text-dark fw-bold">
+                                  {format(
+                                    new Date(seg.Segments[0]?.Origin?.DepTime),
+                                    "HH:mm"
+                                  )}
+                                </div>
+                                <div className="text-muted text-sm">
+                                  {
+                                    seg.Segments[0]?.Origin?.Airport
+                                      ?.AirportCode
+                                  }
+                                </div>
+                              </div>
+
+                              {/* Duration & Stops */}
+                              <div className="flight-duration-section">
+                                <div className="text-dark small">
+                                  {seg.TotalDuraionTime}
+                                </div>
+                                <div className="flightLine"></div>
+                                <div className="text-muted small">
+                                  {seg.Stops === 0
+                                    ? "Direct"
+                                    : seg.Stops
+                                    ? `${seg.Stops} Stop${
+                                        seg.Stops > 1 ? "s" : ""
+                                      }`
+                                    : "Direct"}
+                                </div>
+                              </div>
+
+                              {/* Arrival */}
+                              <div className="time-airport-group">
+                                <div className="text-dark fw-bold">
+                                  {format(
+                                    new Date(
+                                      seg.Segments[
+                                        seg.Segments.length - 1
+                                      ]?.Destination?.ArrTime
+                                    ),
+                                    "HH:mm"
+                                  )}
+                                  {seg.NextDay && seg.NextDay !== "" && (
+                                    <div className="small text-danger">
+                                      {seg.NextDay}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="text-muted text-sm">
+                                  {
+                                    seg.Segments[seg.Segments.length - 1]
+                                      ?.Destination?.Airport?.AirportCode
+                                  }
+                                </div>
+                                <div className="text-dark">
+                                  {seg.Segments[0]?.NoOfSeatAvailable &&
+                                    seg.Segments[0]?.NoOfSeatAvailable !== "" &&
+                                    seg.Segments[0]?.NoOfSeatAvailable < 15 && (
+                                      <div className="small text-danger">
+                                        {seg.Segments[0]?.NoOfSeatAvailable}
+                                        {" Seat available"}
+                                      </div>
+                                    )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      ))}
+                  </div>
+                </div>
                 {/* Payment Methods */}
-                {[
-                  { id: 'upi', name: 'UPI', icon: UPI },
-                  { id: 'debit', name: 'Debit Card', icon: creditcard },
-                  { id: 'rupay', name: 'RuPay Debit Card', icon: rupay },
-                  { id: 'credit', name: 'Credit Card', icon: creditcard },
-                  { id: 'netbanking', name: 'Netbanking', icon: Netbanking },
-                  { id: 'wallets', name: 'Wallets', icon: wallets },
+                {/* {[
+                  { id: "upi", name: "UPI", icon: UPI },
+                  { id: "debit", name: "Debit Card", icon: creditcard },
+                  { id: "rupay", name: "RuPay Debit Card", icon: rupay },
+                  { id: "credit", name: "Credit Card", icon: creditcard },
+                  { id: "netbanking", name: "Netbanking", icon: Netbanking },
+                  { id: "wallets", name: "Wallets", icon: wallets },
                 ].map((method) => (
-                  <div 
+                  <div
                     key={method.id}
-                    className={`payment-option mb-3 p-3 border rounded d-flex align-items-center justify-content-between ${selectedPayment === method.id ? 'selected' : ''}`}
+                    className={`payment-option mb-3 p-3 border rounded d-flex align-items-center justify-content-between ${
+                      selectedPayment === method.id ? "selected" : ""
+                    }`}
                     onClick={() => handlePaymentSelection(method.id)}
                   >
                     <div className="d-flex align-items-center">
-                      <img src={method.icon} alt={method.name} className="payment-icon me-3" />
+                      <img
+                        src={method.icon}
+                        alt={method.name}
+                        className="payment-icon me-3"
+                      />
                       <label className="form-check-label mb-0">
                         <strong>{method.name}</strong>
                       </label>
@@ -120,7 +516,7 @@ const FlightBookingPage02 = () => {
                       onChange={() => {}}
                     />
                   </div>
-                ))}
+                ))} */}
               </div>
             </div>
 
@@ -136,27 +532,43 @@ const FlightBookingPage02 = () => {
 
                     <div className="fare-details">
                       <div className="d-flex justify-content-between mb-2">
-                        <span>Base Fare ({travelers?.length || 1} Traveler{(travelers?.length || 1) > 1 ? 's' : ''})</span>
-                        <span>₹{fares.baseFare.toFixed(2)}</span>
+                        <span>Base Fare </span>
+                        <span>
+                          ₹
+                          {flightResults.OfferedFare.toFixed(
+                            2
+                          ).toLocaleString()}
+                        </span>
                       </div>
-                      <div className="d-flex justify-content-between mb-2">
-                        <span>Taxes & Fees</span>
-                        <span>₹{fares.taxes.toFixed(2)}</span>
-                      </div>
-                      {fares.seatCharges > 0 && (
+                      {TaxSummary &&
+                        TaxSummary.length > 0 &&
+                        TaxSummary.map((tax, index) => (
+                          <>
+                            <div className="d-flex justify-content-between mb-2">
+                              <span>{tax.TaxName}</span>
+                              <span>
+                                ₹{tax.TaxValue.toFixed(2).toLocaleString()}
+                              </span>
+                            </div>
+                          </>
+                        ))}
+
+                      {/* {fares.seatCharges > 0 && (
                         <div className="d-flex justify-content-between mb-2">
                           <span>Seat Charges</span>
                           <span>₹{fares.seatCharges.toFixed(2)}</span>
                         </div>
-                      )}
+                      )} */}
 
                       <div className="d-flex justify-content-between mt-3 pt-3 border-top">
                         <strong>Total Amount</strong>
-                        <strong>₹{fares.total.toFixed(2)}</strong>
+                        <strong>
+                          ₹{totalFare.toFixed(2).toLocaleString()}
+                        </strong>
                       </div>
                     </div>
 
-                    <button 
+                    <button
                       className="btn btn-primary w-100 mt-4"
                       onClick={handleProceedToPay}
                     >
@@ -166,7 +578,9 @@ const FlightBookingPage02 = () => {
                     <div className="text-center mt-3">
                       <small className="text-muted">
                         By clicking on 'Proceed to Pay', I agree to the
-                        <Link to="#" className="ms-1">Terms & Conditions</Link>
+                        <Link to="#" className="ms-1">
+                          Terms & Conditions
+                        </Link>
                       </small>
                     </div>
                   </div>
@@ -206,7 +620,7 @@ const FlightBookingPage02 = () => {
 
         .payment-option:hover {
           background-color: #f8f9fa;
-          border-color: #cd2c22!important;
+          border-color: #cd2c22 !important;
           transform: translateX(4px);
         }
 
@@ -328,7 +742,6 @@ const FlightBookingPage02 = () => {
           min-height: 100vh;
         }
 
-
         /* Responsive Adjustments */
         @media (max-width: 768px) {
           .card {
@@ -448,7 +861,7 @@ const FlightBookingPage02 = () => {
           .sticky-wrapper {
             height: auto;
           }
-          
+
           .sticky-summary {
             position: relative;
             top: 0;
