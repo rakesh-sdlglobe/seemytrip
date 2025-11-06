@@ -124,7 +124,7 @@ const Home = () => {
             Train Status & Welcome Section
         ============================================ */}
         <HorizontalContainer />
-        <WelcomePopup />
+        <WelcomePopup /> 
 
         {/* ============================================
             Features & Benefits Section
