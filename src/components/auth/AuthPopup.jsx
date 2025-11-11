@@ -11,10 +11,14 @@ import {
   selectError,
 } from "../../store/Selectors/authSelectors";
 import { trainImage } from '../../assets/images';
-import { sendVerificationOTP, verifyEmailOTP } from '../../store/Actions/emailAction';
+import { sendVerificationOTP, verifyEmailOTP, defaultEmailLogin } from '../../store/Actions/emailAction';
 import { selectOTPSent } from '../../store/Selectors/emailSelector';
 import { selectOTPError } from '../../store/Selectors/emailSelector';
 
+
+const defaultLoginEmail = process.env.REACT_APP_DEFAULT_LOGIN_EMAIL
+  ? process.env.REACT_APP_DEFAULT_LOGIN_EMAIL.toLowerCase()
+  : null;
 
 const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
   const dispatch = useDispatch();
@@ -64,7 +68,8 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
       return;
     }
 
-    const inputType = validateInput(inputValue);
+    const normalizedInput = inputValue.trim();
+    const inputType = validateInput(normalizedInput);
     if (!inputType) {
       setErrorMessage('Please enter a valid email or mobile number');
       return;
@@ -79,8 +84,18 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
     setErrorMessage('');
     
     try {
-      
-      dispatch(sendVerificationOTP(inputValue));
+      const isDefaultEmailLogin =
+        inputType === 'email' &&
+        defaultLoginEmail &&
+        normalizedInput.toLowerCase() === defaultLoginEmail;
+
+      if (isDefaultEmailLogin) {
+        await dispatch(defaultEmailLogin(normalizedInput.toLowerCase()));
+        onClose();
+        return;
+      }
+
+      await dispatch(sendVerificationOTP(normalizedInput));
       setShowOtpField(true);
       setOtpTimer(60);
       setCanResendOtp(false);
@@ -96,7 +111,11 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
         });
       }, 1000);
     } catch (error) {
-      setErrorMessage('Failed to send OTP. Please try again.');
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        'Failed to send OTP. Please try again.';
+      setErrorMessage(message);
     } finally {
       setIsLoading(false);
     }
@@ -111,7 +130,8 @@ const AuthPopup = ({ isOpen, onClose, mode = 'login' }) => {
     setErrorMessage('');
     setIsLoading(true);
     try {
-      dispatch(verifyEmailOTP(inputValue, otp));
+      const normalizedInput = inputValue.trim();
+      dispatch(verifyEmailOTP(normalizedInput, otp));
       onClose();
     } catch (error) {
       setErrorMessage('Invalid OTP. Please try again.');

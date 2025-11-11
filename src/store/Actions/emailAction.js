@@ -59,6 +59,40 @@ export const verifyEmailOTP = (email, otp) => async (dispatch) => {
 };
 
 
+export const defaultEmailLogin = (email) => async (dispatch) => {
+  try {
+    dispatch(setOTPError(''));
+    dispatch(setOTPSent(false));
+
+    const response = await axios.post(`${API_URL}/default-login`, { email });
+    const { token, email: useremail, firstName, user1 } = response?.data || {};
+
+    if (!token || !useremail) {
+      throw new Error('Invalid response from server');
+    }
+
+    localStorage.setItem('authToken', token);
+    localStorage.setItem('user', JSON.stringify({
+      email: useremail,
+      firstName: firstName
+    }));
+
+    if (user1) {
+      setEncryptedItem('user1', user1);
+    }
+
+    dispatch(setUsername(firstName));
+    dispatch(setEmailUser(useremail, firstName));
+  } catch (error) {
+    const errorMessage =
+      error.response?.data?.message ||
+      error.message ||
+      'Default login failed';
+    dispatch(setOTPError(errorMessage));
+    throw error;
+  }
+};
+
 export const logoutEmailUser = (navigate) => (dispatch) => {
   localStorage.removeItem('authToken');
   localStorage.removeItem('user');
