@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import '../assets/css/bootstrap.min.css';
 import '../assets/css/animation.css';
 import '../assets/css/dropzone.min.css';
@@ -23,11 +24,34 @@ const MyBooking = () => {
   const [showModal, setShowModal] = useState(false); // Manage modal visibility
   const [selectedBooking, setSelectedBooking] = useState(null); // Store selected booking
   const [activeFilter, setActiveFilter] = useState('all'); // Add this state
-
   const handleOpenModal = (booking) => {
     setSelectedBooking(booking);
     setShowModal(true);
   };
+
+  const userId= 45
+  const baseurl = process.env.REACT_APP_API_URL;
+
+  useEffect(() => {
+    axios.get(`${baseurl}/bus/userBookings/${userId}`)
+    .then(response => {
+      console.log("data based on user data",response.data);
+    })
+    .catch(error => {
+      console.log("error based on user data",error);
+    });
+  }, []);
+
+  useEffect(() => {
+    axios.get(`${baseurl}/insurance/userBookings/${userId}`)
+    .then(response => {
+      console.log("data based on user data",response.data);
+    })
+    .catch(error => {
+      console.log("error based on user data",error);
+    });
+  }, []);
+
 
   const handleCloseModal = () => {
     setShowModal(false);
