@@ -24,7 +24,6 @@ import {
 } from "../assets/images";
 
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
 
 // Components
 import Header02 from "./header02";
@@ -36,6 +35,7 @@ import WelcomePopup from "./WelcomePopup";
 import AppApk from "./App_apk_promotion";
 import Whyseemytrip from "./Whyseemytrip";
 import TrainRoutesTabs from "./Trainroutestabs";
+import { useState } from "react";
 
 const Home = () => {
   const [activeTab, setActiveTab] = useState("Trains");
