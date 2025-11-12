@@ -70,7 +70,7 @@ You should see:
 
 ### Test with URL Parameter:
 ```
-http://localhost:3000/insurance-booking-details?bookingId=2013507
+http://:3000/insurance-booking-details?bookingId=2013507
 ```
 
 ### Test with Navigation State:
