@@ -287,7 +287,7 @@ export const fetchHotelPrice = (RequestPriceValidation) => {
       console.log("Final Payload to API:", payload);
 
       const response = await axios.post(
-        `${API_URL}/hotels//getPriceValidation`,
+        `${API_URL}/hotels/getPriceValidation`,
         payload
       );
       console.log("Data from B2B/PriceValidation API:", response.data);
@@ -390,7 +390,7 @@ export const fetchHotelPayment = (paymentRequest) => {
       console.log("Final Payload to API for Payment:", payload);
 
       const response = await axios.post(
-        `${API_URL}/hotels//processPayment`,
+        `${API_URL}/hotels/processPayment`,
         payload
       );
       console.log("Data from fetchHotelPayment API:", response.data);
