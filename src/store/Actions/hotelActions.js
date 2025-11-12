@@ -251,7 +251,7 @@ export const fetchHotelDetails = (HotelId, searchParams) => {
       console.log("Final Payload to API:", payload);
 
       const response = await axios.post(
-        `http://localhost:3002/api/hotels/getHoteldetails`,
+        `${API_URL}/hotels/getHoteldetails`,
         payload
       );
       console.log("Data from fetchHotelDetails API:", response.data);
@@ -287,7 +287,7 @@ export const fetchHotelPrice = (RequestPriceValidation) => {
       console.log("Final Payload to API:", payload);
 
       const response = await axios.post(
-        `http://localhost:3002/api/hotels/getPriceValidation`,
+        `${API_URL}/hotels//getPriceValidation`,
         payload
       );
       console.log("Data from B2B/PriceValidation API:", response.data);
@@ -320,7 +320,7 @@ export const fetchHotelServiceTax = (ServiceTaxRequest) => {
       console.log("Final Payload to API for Service Tax:", payload);
 
       const response = await axios.post(
-        `http://localhost:3002/api/hotels/getHotelServiceTax`,
+        `${API_URL}/hotels/getHotelServiceTax`,
         payload
       );
       console.log("Data from fetchHotelServiceTax API:", response.data);
@@ -354,7 +354,7 @@ export const fetchHotelPrebook = (prebookRequest) => {
       console.log("Final Payload to API for Prebook:", payload);
 
       const response = await axios.post(
-        `http://localhost:3002/api/hotels/getHotelPrebook`,
+        `${API_URL}/hotels/getHotelPrebook`,
         payload
       );
       console.log("Data from fetchHotelPrebook API:", response.data);
@@ -390,7 +390,7 @@ export const fetchHotelPayment = (paymentRequest) => {
       console.log("Final Payload to API for Payment:", payload);
 
       const response = await axios.post(
-        `http://localhost:3002/api/hotels/processPayment`,
+        `${API_URL}/hotels//processPayment`,
         payload
       );
       console.log("Data from fetchHotelPayment API:", response.data);
@@ -426,7 +426,7 @@ export const fetchHotelBooked = (bookedRequest) => {
       console.log("Final Payload to API for Booking:", payload);
 
       const response = await axios.post(
-        `http://localhost:3002/api/hotels/getHotelBooked`,
+        `${API_URL}/hotels/getHotelBooked`,
         payload
       );
       console.log("Data from fetchHotelBooked API:", response.data);
@@ -462,7 +462,7 @@ export const fetchHotelBookedDetail = (bookedDetailRequest) => {
       console.log("Final Payload to API for Booking Detail:", payload);
 
       const response = await axios.post(
-        `http://localhost:3002/api/hotels/getHotelBookedDetails`,
+        `${API_URL}/hotels/getHotelBookedDetails`,
         payload
       );
       console.log("Data from fetchHotelBookedDetail API:", response.data);

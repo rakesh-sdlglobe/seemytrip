@@ -263,7 +263,7 @@ const BusPaymentSuccess = () => {
         toast.warning('Payment successful but some processing failed: ' + (error.message || "Unknown error"));
         setTimeout(() => {
           const existingBookingData = getEncryptedItem("busBookingData");
-          navigate('/bus-confirmation', {
+          navigate('/bus-booking-failed', {
             state: { bookingData: existingBookingData || {} },
             replace: true
           });

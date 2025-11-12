@@ -132,6 +132,7 @@ import Bus_Comfirmation_Page from "./components/bus_components/Bus_Comfirmation_
 import BusPaymentSuccess from "./components/bus_components/bus_payment_success.jsx";
 import BusPaymentFailure from "./components/bus_components/bus_payment_failure.jsx";
 import InsuranceBookingPage from './components/insurance_components/Insurance_Booking_Page';
+import Bus_booking_failed from "./components/bus_components/Bus_booking_failed.jsx";
 
 
 function App() {
@@ -268,6 +269,8 @@ function App() {
           <Route path="/bus-confirmation" element={<Bus_Comfirmation_Page/>} />
           <Route path="/bus-payment-success" element={<BusPaymentSuccess />} />
           <Route path="/bus-payment-failure" element={<BusPaymentFailure />} />
+          <Route path="/bus-booking-failed" element={<Bus_booking_failed />} />
+
 
           {/* Insurance Routes */}
           <Route path="/home-insurance" element={<InsuranceHome />} />
