@@ -480,6 +480,58 @@ export const fetchBusBookingDetails = (bookingDetailsData) => async (dispatch) =
   };
 
 
+  export const FETCH_BUS_BOOKING_CANCEL_REQUEST = "FETCH_BUS_CANCEL_BOOKING_REQUEST";
+  export const FETCH_BUS_BOOKING_CANCEL_SUCCESS = "FETCH_BUS_BOOKING_CANCEL_SUCCESS";
+  export const FETCH_BUS_BOOKING_CANCEL_FAILURE = "FETCH_BUS_BOOKING_CANCEL_FAILURE";
+  export const CLEAR_BUS_CANCEL_STATE = "CLEAR_BUS_CANCEL_STATE";
+
+  export const fetchBusBookingCancelRequest = () => ({
+    type: FETCH_BUS_BOOKING_CANCEL_REQUEST,
+  });
+  
+  export const fetchBusBookingCancelSuccess = (bookingCancelData) => ({
+    type: FETCH_BUS_BOOKING_CANCEL_SUCCESS,
+    payload: bookingCancelData,
+  });
+
+  export const fetchBusBookingCancelFailure = (error) => ({
+    type: FETCH_BUS_BOOKING_CANCEL_FAILURE,
+    payload: error,
+  });
+
+  export const clearBusCancelState = () => ({
+    type: CLEAR_BUS_CANCEL_STATE,
+  });
+
+  export const fetchBusBookingCancel = (bookingCancelData) => async (dispatch) => { 
+    try {
+      dispatch(fetchBusBookingCancelRequest());
+      
+      const response = await axios.post(`${API_URL}/bus/busBookingCancel`, bookingCancelData);
+
+      console.log("Response from cancel bus booking API:", response.data);
+
+      if (response.data) {
+        dispatch(fetchBusBookingCancelSuccess(response.data));
+        return response.data;
+      } else {
+        const errorMsg = { message: "Failed to cancel bus booking" };
+        dispatch(fetchBusBookingCancelFailure(errorMsg));
+        return null;
+      }
+    } catch (error) {
+      console.error("Error cancelling bus booking:", error);
+      const errorMsg = {
+        message: error.response?.data?.message || error.message || "Failed to cancel bus booking",
+        error: error.response?.data || error
+      };
+      dispatch(fetchBusBookingCancelFailure(errorMsg));
+      return null;
+    }
+  }
+    
+
+
   export const CREATE_BUS_BOOKING_REQUEST = "CREATE_BUS_BOOKING_REQUEST";
   export const CREATE_BUS_BOOKING_SUCCESS = "CREATE_BUS_BOOKING_SUCCESS";
   export const CREATE_BUS_BOOKING_FAILURE = "CREATE_BUS_BOOKING_FAILURE";
@@ -526,21 +578,13 @@ export const fetchBusBookingDetails = (bookingDetailsData) => async (dispatch) =
     try {
       dispatch(createBusBookingRequest());
 
-      // Get the search response from localStorage
-      const searchResponse = getEncryptedItem('busSearchResponse') || {};
-      
-      // Add the search response to the booking data
-      const bookingDataWithSearch = {
-        ...bookingData,
-        searchResponse: searchResponse
-      };
-
+      // Send booking data directly (no need to add searchResponse anymore)
       const response = await axios.post(
         `${API_URL}/bus/createBusBooking`,
-        bookingDataWithSearch
+        bookingData
       );
 
-      // console.log("Response from create bus booking API:", response.data);
+      console.log("Response from create bus booking API:", response.data);
 
       if (response.data.success) {
         dispatch(createBusBookingSuccess(response.data));

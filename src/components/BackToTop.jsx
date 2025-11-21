@@ -74,7 +74,7 @@ const BackToTop = () => {
         </Link>
       )}
       
-      <style jsx>{`
+      <style>{`
         .back-to-top-button:hover {
           transform: translateY(-3px);
           box-shadow: 0 8px 25px rgba(205, 44, 34, 0.4);

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Header02 from '../header02';
 import FooterDark from '../footer-dark';
@@ -7,61 +7,78 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { fetchBusBookingDetails } from '../../store/Actions/busActions';
 import { selectBusBookingDetails, selectBusBookingDetailsLoading } from '../../store/Selectors/busSelectors';
-import { getEncryptedItem } from '../../utils/encryption';
 import logo from '../../assets/images/train-4 (1).png'
 
 const Bus_Comfirmation_Page = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const dispatch = useDispatch();
-  const [bookingData, setBookingData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Redux selectors
   const bookingDetails = useSelector(selectBusBookingDetails);
+  console.log("bookingDetails",bookingDetails);
   const bookingDetailsLoading = useSelector(selectBusBookingDetailsLoading);
 
   useEffect(() => {
-    // Get booking data from location state or localStorage
-    const data = location.state?.bookingData || getEncryptedItem("busBookingData") || {};
+    // Get booking data from location state only (no local storage)
+    const bookingData = location.state?.bookingData || {};
+    
+    // Extract required parameters from bookingData passed from payment success page
+    const busId = bookingData?.bookingResult?.BookResult?.BusId || 
+                  bookingData?.blockData?.BusId;
+    
+    // Get API parameters from bookingData (should be passed from payment success)
+    const TokenId = bookingData?.tokenId || bookingData?.blockData?.TokenId;
+    const EndUserIp = bookingData?.endUserIp || bookingData?.blockData?.EndUserIp;
 
-    if (data && Object.keys(data).length > 0) {
-      setBookingData(data);
-      
-      // Fetch booking details from API if we have booking information
-      if (data.blockData?.BookingId || data.bookingId) {
-        // Use the same function as in payment page
-        const busId = data.busData?.bus_id || data.blockData?.BusId || data.bookingResult?.BookResult?.BusId;
-        
-        if (busId) {
-          // Get parameters from localStorage like in payment page
-          const authData = getEncryptedItem("busAuthData") || {};
-          const searchList = getEncryptedItem("busSearchList") || {};
-          const blockRequestData = getEncryptedItem("blockRequestData") || {};
-
-          const TokenId = authData.TokenId || blockRequestData.TokenId;
-          const EndUserIp = authData.EndUserIp || blockRequestData.EndUserIp;
-          const TraceId = searchList?.BusSearchResult?.TraceId || blockRequestData.TraceId;
-
-          const bookingDetailsData = {
-            EndUserIp,
-            TraceId,
-            TokenId,
-            BusId: busId,
-            IsBaseCurrencyRequired: false
-          };
-
-          dispatch(fetchBusBookingDetails(bookingDetailsData));
-        }
-      }
-    } else {
-      toast.error("No booking data found. Please start over.");
-      navigate('/bus-list');
+    if (!busId || !TokenId || !EndUserIp) {
+      const errorMsg = "Booking details not found. Please check your booking or contact support.";
+      setError(errorMsg);
+      setLoading(false);
+      toast.error(errorMsg);
+      setTimeout(() => {
+        navigate('/bus-list');
+      }, 3000);
       return;
     }
 
-    setLoading(false);
+    // Fetch booking details from API only (no local storage)
+    const bookingDetailsData = {
+      EndUserIp,
+      TokenId,
+      BusId: busId,
+      IsBaseCurrencyRequired: false
+    };
+
+    console.log('Fetching booking details with:', bookingDetailsData);
+    dispatch(fetchBusBookingDetails(bookingDetailsData))
+      .then((response) => {
+        console.log('Booking details API response:', response);
+        // Don't set loading to false here - let Redux state handle it
+      })
+      .catch((err) => {
+        console.error('Error fetching booking details:', err);
+        setError('Failed to fetch booking details. Please try again.');
+        setLoading(false);
+        toast.error('Failed to fetch booking details.');
+      });
   }, [location.state, navigate, dispatch]);
+
+  // Update loading state based on Redux state
+  useEffect(() => {
+    if (!bookingDetailsLoading && bookingDetails) {
+      setLoading(false);
+      // Verify data structure
+      if (bookingDetails.GetBookingDetailResult?.Itinerary) {
+        console.log('Booking details loaded successfully');
+      } else {
+        console.warn('Booking details structure unexpected:', bookingDetails);
+      }
+    }
+  }, [bookingDetailsLoading, bookingDetails]);
 
   // Format date
   const formatDate = (dateString) => {
@@ -120,108 +137,144 @@ const Bus_Comfirmation_Page = () => {
     return 'BUS' + Math.random().toString(36).substr(2, 9).toUpperCase();
   };
 
-  // Get booking details from API response or fallback to local data
+  // Get booking details from API response only (no local storage)
   const getBookingDetails = () => {
-    if (bookingDetails && bookingDetails.BookResult) {
-      return bookingDetails.BookResult;
+    console.log('Raw bookingDetails from Redux:', bookingDetails);
+    if (bookingDetails && bookingDetails.GetBookingDetailResult && bookingDetails.GetBookingDetailResult.Itinerary) {
+      const itinerary = bookingDetails.GetBookingDetailResult.Itinerary;
+      console.log('Extracted Itinerary:', itinerary);
+      return itinerary;
     }
-    return bookingData?.blockData || {};
+    console.warn('Booking details not found in expected structure');
+    return {};
   };
 
-  // Get travel name from API or local data
+  // Get all data from booking details API only (no local storage)
   const getTravelName = () => {
     const details = getBookingDetails();
-    return details.TravelName || 
-           bookingData?.busData?.TravelName || 
-           bookingData?.busData?.TravelsName || 
-           '';
+    return details.TravelName || '';
   };
 
-  // Get bus type from API or local data
   const getBusType = () => {
     const details = getBookingDetails();
-    return details.BusType || 
-           bookingData?.busData?.BusType || 
-           '';
+    return details.BusType || '';
   };
 
-  // Get ticket price from API or local data
+  const getBusId = () => {
+    const details = getBookingDetails();
+    return details.BusId || null;
+  };
+
   const getTicketPrice = () => {
     const details = getBookingDetails();
-    return details.TotalFare || 
-           bookingData?.fareDetails?.total || 
-           '';
+    return details.Price?.PublishedPriceRoundedOff ||  0;
   };
 
-  // Get origin city from API or local data
   const getOriginCity = () => {
     const details = getBookingDetails();
-    return details.OriginName || 
-           bookingData?.fromCity ||
-           bookingData?.busData?.OriginName || 
-           bookingData?.busData?.Origin || 
-           '';
+    return details.Origin || '';
   };
 
-  // Get destination city from API or local data
   const getDestinationCity = () => {
     const details = getBookingDetails();
-    return details.DestinationName || 
-           bookingData?.toCity ||
-           bookingData?.busData?.DestinationName || 
-           bookingData?.busData?.Destination || 
-           '';
+    return details.Destination || '';
   };
 
-  // Get boarding point details from API or local data
   const getBoardingPoint = () => {
     const details = getBookingDetails();
     return details.BoardingPointdetails?.CityPointName || 
-           details.BoardingPointdetails?.CityPointLocation ||
-           bookingData?.selectedBoardingPoint ||
-           bookingData?.blockData?.BoardingPointdetails?.CityPointName || 
-           bookingData?.blockData?.BoardingPointdetails?.CityPointLocation ||
-           '';
+           details.BoardingPointdetails?.CityPointLocation || '';
   };
 
-  // Get dropping point details from API or local data
   const getDroppingPoint = () => {
     const details = getBookingDetails();
+    // API response may not have DroppingPointdetails, use Destination as fallback
     return details.DroppingPointdetails?.CityPointName || 
-           details.DroppingPointdetails?.CityPointLocation ||
-           bookingData?.selectedDroppingPoint ||
-           bookingData?.blockData?.DroppingPointdetails?.CityPointName || 
-           bookingData?.blockData?.DroppingPointdetails?.CityPointLocation ||
-           '';
+           details.DroppingPointdetails?.CityPointLocation || 
+           details.Destination || '';
   };
 
-  // Get passenger details from API or local data
   const getPassengerDetails = () => {
     const details = getBookingDetails();
-    return details.Passenger || 
-           bookingData?.blockData?.Passenger || 
-           [];
+    return details.Passenger || [];
   };
 
-  // Get contact information from API or local data
   const getContactInfo = () => {
     const details = getBookingDetails();
     return {
-      phone1: details.ContactNumber1 || details.ContactNumber || '',
-      phone2: details.ContactNumber2 || '',
-      landmark: details.Landmark || ''
+      phone1: details.BoardingPointdetails?.CityPointContactNumber || '',
+      phone2: '',
+      landmark: details.BoardingPointdetails?.CityPointLandmark || ''
     };
   };
 
+  const getTicketNo = () => {
+    const details = getBookingDetails();
+    return details.TicketNo || '';
+  };
+
+  const getPNR = () => {
+    const details = getBookingDetails();
+    return details.TravelOperatorPNR || '';
+  };
+
+  const getDepartureTime = () => {
+    const details = getBookingDetails();
+    return details.DepartureTime || '';
+  };
+
+  const getArrivalTime = () => {
+    const details = getBookingDetails();
+    return details.ArrivalTime || '';
+  };
+
+  if (error) {
+    return (
+      <div>
+        <ToastContainer />
+        <Header02 />
+        <div className="clearfix" />
+        <section className="pt-4 gray-simple position-relative">
+          <div className="container">
+            <div className="row justify-content-center">
+              <div className="col-xl-8 col-lg-10 col-md-12">
+                <div className="card border-danger">
+                  <div className="card-body text-center p-5">
+                    <i className="fas fa-exclamation-triangle text-danger" style={{ fontSize: '64px' }}></i>
+                    <h3 className="mt-3 mb-3">Error Loading Booking</h3>
+                    <p className="text-muted">{error}</p>
+                    <button 
+                      className="btn btn-primary mt-3"
+                      onClick={() => navigate('/bus-list')}
+                    >
+                      Go to Bus Search
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <FooterDark />
+      </div>
+    );
+  }
+
   if (loading || bookingDetailsLoading) {
     return (
-      <div className="d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
-        <div className="text-center">
-          <div className="spinner-border text-primary mb-3" role="status">
-            <span className="visually-hidden">Loading...</span>
+      <div>
+        <ToastContainer />
+        <Header02 />
+        <div className="clearfix" />
+        <div className="d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
+          <div className="text-center">
+            <div className="spinner-border text-primary mb-3" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <h5>Loading confirmation details...</h5>
           </div>
-          <h5>Loading confirmation details...</h5>
         </div>
+        <FooterDark />
       </div>
     );
   }
@@ -256,7 +309,7 @@ const Bus_Comfirmation_Page = () => {
                     <div className="banner-center">
                       <h2 className="banner-title">SeeMyTrip Ticket Information</h2>
                       <p className="banner-route">
-                        {getOriginCity()}-{getDestinationCity()} on {formatDate(bookingData?.blockData?.DepartureTime)}
+                        {getOriginCity()}-{getDestinationCity()} on {formatDate(getDepartureTime())}
                       </p>
                     </div>
                     <div className="banner-right">
@@ -275,11 +328,15 @@ const Bus_Comfirmation_Page = () => {
                     <div className="banner-divider"></div>
                     <div className="ticket-details">
                       <span className="ticket-info">
-                        <strong>Ticket Number:</strong> {bookingData?.bookingResult?.BookResult?.TicketNo || 'N/A'}
+                        <strong>Ticket Number:</strong> {getTicketNo() || 'N/A'}
                       </span>
                       <span className="separator">|</span>
                       <span className="ticket-info">
-                        <strong>PNR No:</strong> {bookingData?.bookingResult?.BookResult?.TravelOperatorPNR || 'N/A'}
+                        <strong>PNR No:</strong> {getPNR() || 'N/A'}
+                      </span>
+                      <span className="separator">|</span>
+                      <span className="ticket-info">
+                        <strong>BUS ID:</strong> {getBusId() || 'N/A'}
                       </span>
                     </div>
                   </div>
@@ -301,7 +358,7 @@ const Bus_Comfirmation_Page = () => {
                         <span className="fw-semibold text-dark fs-6">Journey Date and Time</span>
                       </div>
                       <div className="ms-5">
-                        <span className="text-muted">{formatDateTime(bookingData?.blockData?.DepartureTime)}</span>
+                        <span className="text-muted">{formatDateTime(getDepartureTime())}</span>
                       </div>
                     </div>
 
@@ -318,9 +375,14 @@ const Bus_Comfirmation_Page = () => {
                             <div className="fw-semibold text-dark mb-1">
                               {getTravelName()}
                             </div>
-                            <div className="text-muted small">
+                            <div className="text-muted small mb-1">
                               {getBusType()}
                             </div>
+                            {getBusId() && (
+                              <div className="text-muted small">
+                                Bus ID: {getBusId()}
+                              </div>
+                            )}
                           </div>
                         </div>
                         
@@ -351,7 +413,7 @@ const Bus_Comfirmation_Page = () => {
                           </div>
                           <div className="ms-5">
                             <div className="fw-bold text-dark fs-5 mb-1">
-                              {bookingData?.bookingResult?.BookResult?.TicketNo || 'N/A'}
+                              {getTicketNo() || 'N/A'}
                             </div>
                             <div className="text-muted small">Your unique ticket identifier</div>
                           </div>
@@ -365,7 +427,7 @@ const Bus_Comfirmation_Page = () => {
                           </div>
                           <div className="ms-5">
                             <div className="fw-bold text-dark fs-5 mb-1">
-                              {bookingData?.bookingResult?.BookResult?.TravelOperatorPNR || 'N/A'}
+                              {getPNR() || 'N/A'}
                             </div>
                             <div className="text-muted small">Operator's booking reference</div>
                           </div>
@@ -419,7 +481,7 @@ const Bus_Comfirmation_Page = () => {
                               {getDroppingPoint()}
                             </div>
                             <div className="text-muted small fw-medium mt-2">
-                              DROPPING DATE & TIME: {formatDateTime(bookingData?.blockData?.ArrivalTime)}
+                              DROPPING DATE & TIME: {formatDateTime(getArrivalTime())}
                             </div>
                           </div>
                         </div>
