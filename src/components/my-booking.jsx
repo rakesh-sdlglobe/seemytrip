@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useSelector, useDispatch  } from 'react-redux';
+import { selectUserProfile } from '../store/Selectors/userSelector';
 import '../assets/css/bootstrap.min.css';
 import '../assets/css/animation.css';
 import '../assets/css/dropzone.min.css';
@@ -19,38 +21,60 @@ import TopHeader from './topHeader';
 import SideBarProfilePage from './sidebar_profilepage';
 import PersonalBooking from './personal-booking';
 import ManageBookingModal from './ManageBookingModal'; // Import the modal
+import My_Bus_Booking from './bus_components/My_Bus_Booking_Profile/My_Bus_Booking';
+import { getUserProfile } from '../store/Actions/userActions';
 
 const MyBooking = () => {
   const [showModal, setShowModal] = useState(false); // Manage modal visibility
   const [selectedBooking, setSelectedBooking] = useState(null); // Store selected booking
   const [activeFilter, setActiveFilter] = useState('all'); // Add this state
+  
+  // Get user from Redux store
+  
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getUserProfile());
+  }, [dispatch]);
+
+  const user = useSelector(selectUserProfile);
+  useEffect(() => {
+    console.log("user",user);
+  }, [user]);
+  const userId = user?.user_id;
+  
   const handleOpenModal = (booking) => {
     setSelectedBooking(booking);
     setShowModal(true);
   };
 
-  const userId= 45
   const baseurl = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
-    axios.get(`${baseurl}/bus/userBookings/${userId}`)
-    .then(response => {
-      console.log("data based on user data",response.data);
-    })
-    .catch(error => {
-      console.log("error based on user data",error);
-    });
-  }, []);
+    if (userId) {
+      console.log("Fetching bus bookings for user_id:", userId);
+      axios.get(`${baseurl}/bus/userBookings/${userId}`)
+      .then(response => {
+        console.log("data based on user data",response.data);
+      })
+      .catch(error => {
+        console.log("error based on user data",error);
+      });
+    }
+  }, [userId, baseurl]);
 
   useEffect(() => {
-    axios.get(`${baseurl}/insurance/userBookings/${userId}`)
-    .then(response => {
-      console.log("data based on user data",response.data);
-    })
-    .catch(error => {
-      console.log("error based on user data",error);
-    });
-  }, []);
+    if (userId) {
+      console.log("Fetching insurance bookings for user_id:", userId);
+      axios.get(`${baseurl}/insurance/userBookings/${userId}`)
+      .then(response => {
+        console.log("data based on user data",response.data);
+      })
+      .catch(error => {
+        console.log("error based on user data",error);
+      });
+    }
+  }, [userId, baseurl]);
 
 
   const handleCloseModal = () => {
@@ -100,6 +124,7 @@ const MyBooking = () => {
                   <div className="card-header">
                     <h4><i className="fa-solid fa-ticket me-2" />My Bookings</h4>
                   </div>
+                  <My_Bus_Booking/>
                   <div className="card-body">
                     <div className="row align-items-center justify-content-start">
                       <div className="col-xl-12 col-lg-12 col-md-12 mb-4">

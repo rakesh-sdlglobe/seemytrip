@@ -23,6 +23,10 @@ import {
     FETCH_BUS_BOOKING_DETAILS_SUCCESS,
     FETCH_BUS_BOOKING_DETAILS_FAILURE,
     FETCH_BUS_BOOKING_DETAILS_REQUEST,
+    FETCH_BUS_BOOKING_CANCEL_REQUEST,
+    FETCH_BUS_BOOKING_CANCEL_SUCCESS,
+    FETCH_BUS_BOOKING_CANCEL_FAILURE,
+    CLEAR_BUS_CANCEL_STATE,
     CREATE_BUS_BOOKING_REQUEST,
     CREATE_BUS_BOOKING_SUCCESS,
     CREATE_BUS_BOOKING_FAILURE,
@@ -62,6 +66,9 @@ const initialState = {
     error: null,
     bookingLoading: false,
     bookingDetailsLoading: false,
+    bookingCancelLoading: false,
+    busBookingCancelData: null,
+    cancelBookingError: null,
     createBookingLoading: false,
     userBookingsLoading: false,
     bookingDetailsDbLoading: false,
@@ -172,6 +179,20 @@ const busReducer = (state = initialState, action) => {
             break;
         case FETCH_BUS_BOOKING_DETAILS_FAILURE:
             newState = { ...state, bookingDetailsLoading: false, error: action.payload };
+            break;
+
+        // BOOKING CANCEL
+        case FETCH_BUS_BOOKING_CANCEL_REQUEST:
+            newState = { ...state, cancelBookingLoading: true, busBookingCancelData: null, cancelBookingError: null };
+            break;
+        case FETCH_BUS_BOOKING_CANCEL_SUCCESS:
+            newState = { ...state, cancelBookingLoading: false, busBookingCancelData: action.payload, cancelBookingError: null };
+            break;
+        case FETCH_BUS_BOOKING_CANCEL_FAILURE:
+            newState = { ...state, cancelBookingLoading: false, busBookingCancelData: null, cancelBookingError: action.payload };
+            break;
+        case CLEAR_BUS_CANCEL_STATE:
+            newState = { ...state, busBookingCancelData: null, cancelBookingError: null, cancelBookingLoading: false };
             break;
 
         // CREATE BUS BOOKING

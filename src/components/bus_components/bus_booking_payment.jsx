@@ -6,40 +6,31 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  selectBusBookingLoading,
-  selectBusBookingDetailsLoading,
-  selectCreateBookingLoading,
-  selectUpdateStatusLoading
+  selectCreateBookingLoading
 } from '../../store/Selectors/busSelectors';
-import {
-  fetchBusBooking,
-  fetchBusBookingDetails,
-  createBusBooking,
-  updateBusBookingStatus,
-  fetchBusSeatLayout
-} from '../../store/Actions/busActions';
-import { getEncryptedItem, setEncryptedItem } from '../../utils/encryption';
+import { getEncryptedItem } from '../../utils/encryption';
 import { API_URL } from '../../store/Actions/authActions';
-import EasebuzzPaymentButton from '../paymentComponent/EasebuzzPaymentButton';
+import { 
+  initiateEasebuzzPayment, 
+  clearEasebuzzPaymentState 
+} from '../../store/Actions/easebuzzPaymentActions';
+import { 
+  selectInitiatePaymentLoading, 
+  selectInitiatePaymentError 
+} from '../../store/Selectors/easebuzzPaymentSelectors';
 
 const BusBookingPayment = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // Cleanup function to clear localStorage when component unmounts
-  useEffect(() => {
-    return () => {
-      // Don't clear localStorage on unmount as user might want to return
-      // Only clear if explicitly navigating away
-    };
-  }, []);
-
-  // Get data from navigation state or localStorage
-  const blockResponse = location.state?.blockData || getEncryptedItem("blockResponse") || {};
-  const blockData = blockResponse.BlockResult || blockResponse;
+  // Get block data from Redux store (simple and easy)
+  const busblockdata = useSelector((state) => state.bus.busBlock);
+  const blockData = busblockdata?.BlockResult 
   const busData = location.state?.busData || getEncryptedItem("selectedBusData") || {};
   const formData = location.state?.formData || {};
+  
+
 
   // Extract form data
   const travelerDetails = formData.travelerDetails || {};
@@ -48,10 +39,9 @@ const BusBookingPayment = () => {
 
   // State for payment
   const [couponCode, setCouponCode] = useState('');
-  const bookingLoading = useSelector(selectBusBookingLoading);
-  const bookingDetailsLoading = useSelector(selectBusBookingDetailsLoading);
   const createBookingLoading = useSelector(selectCreateBookingLoading);
-  const updateStatusLoading = useSelector(selectUpdateStatusLoading);
+  const paymentLoading = useSelector(selectInitiatePaymentLoading);
+  const paymentError = useSelector(selectInitiatePaymentError);
   const [timeLeft, setTimeLeft] = useState(360); // 6 minutes in seconds
   const [isInitialized, setIsInitialized] = useState(false); // Prevent multiple initializations
 
@@ -65,24 +55,23 @@ const BusBookingPayment = () => {
       busData && Object.keys(busData).length > 0;
 
     if (!hasValidData) {
-      // Try to get data from localStorage as fallback
-      const storedBlockResponse = getEncryptedItem("blockResponse");
+      // Try to get data from Redux store as fallback
       const storedBusData = getEncryptedItem("selectedBusData");
 
-      if (storedBlockResponse && storedBusData) {
-        // Data exists in localStorage, continue
+      if (busblockdata && storedBusData) {
+        // Data exists in Redux store, continue
         return;
       }
 
       toast.error("No booking data found. Please start over.");
       navigate('/bus-list');
     }
-  }, [isInitialized, blockData, busData, navigate]);
+  }, [isInitialized, blockData, busData, busblockdata, navigate]);
 
   // Separate function for session expiry
   const handleSessionExpiry = () => {
     toast.error('Booking session expired. Please start over.');
-    localStorage.removeItem("blockResponse");
+    // Block data is in Redux store, no need to remove from localStorage
     localStorage.removeItem("blockTimestamp");
     localStorage.removeItem("blockRequestData");
     navigate('/bus-search');
@@ -113,38 +102,67 @@ const BusBookingPayment = () => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Calculate total amount
+  // Calculate total amount based on Price object structure from blockData
   const calculateTotal = () => {
     try {
       if (!blockData || !blockData.Passenger || blockData.Passenger.length === 0) {
         return {
           baseFare: 0,
+          discount: 0,
           assuredCharge: 0,
           total: 0
         };
       }
 
-      // Calculate base fare from passenger seat data
-      const baseFare = blockData.Passenger.reduce((total, passenger) => {
-        const seatPrice = passenger.Seat?.PublishedPrice ||
-          passenger.Seat?.SeatFare ||
-          passenger.Seat?.Fare ||
-          passenger.Fare ||
-          0;
-        return total + (parseFloat(seatPrice) || 0);
-      }, 0);
+      // Calculate totals directly from blockData using reduce
+      const priceTotals = blockData.Passenger.reduce((totals, passenger) => {
+        // Access Price object from passenger.Seat.Price
+        const price = passenger?.Seat?.Price || {};
+        
+        // Extract price values from Price object
+        const basePrice = parseFloat(price.BasePrice || 0);
+        const publishedPrice = parseFloat(price.PublishedPriceRoundedOff || price.PublishedPrice || 0);
+        const offeredPrice = parseFloat(price.OfferedPriceRoundedOff || price.OfferedPrice || 0);
+        const discountFromField = parseFloat(price.Discount || 0);
+        
+        // Use OfferedPrice if positive, otherwise use PublishedPrice
+        const seatPrice = (offeredPrice > 0) ? offeredPrice : publishedPrice;
+        
+        // Calculate discount: use Discount field if available, otherwise calculate as difference
+        const calculatedDiscount = discountFromField > 0 
+          ? discountFromField 
+          : Math.max(0, publishedPrice - seatPrice);
+        
+        totals.baseFare += seatPrice || 0;
+        totals.publishedPrice += publishedPrice || 0;
+        totals.discount += calculatedDiscount || 0;
+        
+        return totals;
+      }, {
+        baseFare: 0,
+        publishedPrice: 0,
+        discount: 0
+      });
 
-      // Get assured charge from API
-      const assuredCharge = blockData.AssuredCharge || 0;
+      // Get assured charge directly from blockData
+      const assuredCharge = parseFloat(blockData.AssuredCharge || 0);
+
+      // Calculate final total: Base fare + AssuredCharge
+      const finalTotal = priceTotals.baseFare + assuredCharge;
 
       return {
-        baseFare: baseFare,
+        baseFare: priceTotals.baseFare, // Final fare after discounts (OfferedPrice)
+        publishedPrice: priceTotals.publishedPrice, // Original published price
+        discount: priceTotals.discount, // Total discount applied
         assuredCharge: assuredCharge,
-        total: baseFare + assuredCharge
+        total: finalTotal
       };
     } catch (error) {
+      console.error('Error calculating total:', error);
       return {
         baseFare: 0,
+        publishedPrice: 0,
+        discount: 0,
         assuredCharge: 0,
         total: 0
       };
@@ -201,8 +219,7 @@ const BusBookingPayment = () => {
 
     if (timeDiff > maxBlockTime) {
       toast.error('Seat block has expired. Please start over.');
-      // Clear expired data
-      localStorage.removeItem("blockResponse");
+      // Clear expired data (block data is in Redux store, no need to remove from localStorage)
       localStorage.removeItem("blockTimestamp");
       localStorage.removeItem("blockRequestData");
       navigate('/bus-list');
@@ -210,104 +227,6 @@ const BusBookingPayment = () => {
     }
 
     return true;
-  };
-
-  // Helper: Prepare booking request (usually same as block request)
-  const getBookingRequest = () => {
-    return getEncryptedItem("blockRequestData") || {};
-  };
-
-  // Helper: Prepare booking details request
-  const getBookingDetailsRequest = (busId) => {
-    const authData = getEncryptedItem("busAuthData") || {};
-    const searchList = getEncryptedItem("busSearchList") || {};
-    const blockRequestData = getEncryptedItem("blockRequestData") || {};
-
-    const TokenId = authData.TokenId || blockRequestData.TokenId;
-    const EndUserIp = authData.EndUserIp || blockRequestData.EndUserIp;
-    const TraceId = searchList?.BusSearchResult?.TraceId || blockRequestData.TraceId;
-
-    const requestData = {
-      EndUserIp,
-      TraceId,
-      TokenId,
-      BusId: busId,
-      IsBaseCurrencyRequired: false
-    };
-
-    return requestData;
-  };
-
-  // Helper function to prepare booking data
-  const prepareBookingData = (bookingResult, bookingId) => {
-    return {
-      blockData,
-      busData,
-      formData,
-      fareDetails,
-      bookingResult,
-      bookingId,
-      selectedBoardingPoint: getEncryptedItem("selectedBoardingPoint") || "",
-      selectedDroppingPoint: getEncryptedItem("selectedDroppingPoint") || "",
-      fromCity: (getEncryptedItem("busSearchparams") || {}).fromCityName || "",
-      toCity: (getEncryptedItem("busSearchparams") || {}).toCityName || ""
-    };
-  };
-
-  // Save booking to database using Redux
-  const saveBookingToDatabase = async () => {
-    try {
-      const bookingData = {
-        user_id: 1, // Replace with actual user ID from your auth context
-        busData,
-        blockData,
-        contactDetails,
-        addressDetails,
-        travelerDetails,
-        fareDetails,
-        token_id: (getEncryptedItem("busAuthData") || {}).TokenId
-      };
-
-      const result = await dispatch(createBusBooking(bookingData));
-
-      if (result && result.success) {
-        toast.success('Booking saved to database successfully!');
-        setEncryptedItem('currentBookingId', result.booking_id);
-        return result.booking_id;
-      } else {
-        toast.error('Failed to save booking to database');
-        return null;
-      }
-    } catch (error) {
-      console.error('Error saving booking to database:', error);
-      toast.error('Error saving booking to database');
-      return null;
-    }
-  };
-
-  // Update booking status using Redux
-  const updateBookingStatus = async (bookResult) => {
-    try {
-      const bookingId = getEncryptedItem('currentBookingId');
-      if (!bookingId) return;
-
-      const statusData = {
-        booking_status: 'Confirmed',
-        payment_status: 'Completed',
-        ticket_no: bookResult.TicketNo,
-        travel_operator_pnr: bookResult.TravelOperatorPNR
-      };
-
-      const result = await dispatch(updateBusBookingStatus(bookingId, statusData));
-
-      if (result && result.success) {
-        // Booking status updated successfully
-      } else {
-        console.error('Failed to update booking status');
-      }
-    } catch (error) {
-      console.error('Error updating booking status:', error);
-    }
   };
 
   // Prepare payment data for Easebuzz button
@@ -333,6 +252,78 @@ const BusBookingPayment = () => {
   // Validation function for Easebuzz payment
   const validatePayment = () => {
     return validateBlockStatus();
+  };
+
+  // Generate unique transaction ID
+  const generateTransactionId = () => {
+    const timestamp = Date.now();
+    const random = Math.floor(Math.random() * 10000);
+    return `BUS_${timestamp}_${random}`;
+  };
+
+  // Handle Easebuzz payment initiation using Redux
+  const handleEasebuzzPayment = async () => {
+    try {
+      // Clear any previous payment errors
+      dispatch(clearEasebuzzPaymentState());
+
+      // Validate before payment
+      if (!validatePayment()) {
+        return;
+      }
+
+      // Get payment data
+      const paymentData = getPaymentData();
+      
+      // Validate required fields
+      if (!paymentData.phone || !paymentData.email || !paymentData.firstName) {
+        toast.error('Please provide valid phone, email, and first name');
+        return;
+      }
+
+      if (!fareDetails.total || fareDetails.total <= 0) {
+        toast.error('Invalid payment amount');
+        return;
+      }
+
+      // Generate transaction ID
+      const txnid = generateTransactionId();
+
+      // Prepare product info (limit to 100 characters)
+      const productinfo = paymentData.productInfo.substring(0, 100);
+
+      // Prepare callback URLs
+      const backendUrl = API_URL.replace('/api', '');
+      const surl = `${backendUrl}/api/easebuzzPayment/payment_callback?txnid=${txnid}&status=success`;
+      const furl = `${backendUrl}/api/easebuzzPayment/payment_callback?txnid=${txnid}&status=failure`;
+
+
+      // Call Redux action to initiate payment
+      const response = await dispatch(initiateEasebuzzPayment({
+        txnid,
+        amount: parseFloat(fareDetails.total).toFixed(2),
+        productinfo,
+        firstname: paymentData.firstName,
+        phone: paymentData.phone,
+        email: paymentData.email,
+        surl,
+        furl
+      }));
+
+      if (response && response.success) {
+        // Backend now returns the paymentUrl directly (no need to construct it in frontend)
+        const paymentUrl = response.paymentUrl;
+        
+        if (paymentUrl) {
+          // Redirect to Easebuzz payment page (URL constructed by backend)
+          window.location.href = paymentUrl;
+        } else {
+          toast.error('Payment link not received. Please try again.');
+        }
+      }
+    } catch (error) {
+      toast.error(error.message || "Payment initiation failed");
+    }
   };
 
   // Format date
@@ -397,7 +388,7 @@ const BusBookingPayment = () => {
         return `${deckPrefix}${seatLabel}`;
       }
     } catch (error) {
-      console.error('Error parsing seat layout data:', error);
+      // Error parsing seat layout data - use fallback
     }
 
     // Final fallback - return original label
@@ -500,20 +491,45 @@ const BusBookingPayment = () => {
                         <i className="fas fa-calculator me-2 text-info"></i>
                         Fare Details
                       </h6>
+                      
+                      {fareDetails.publishedPrice > fareDetails.baseFare && (
+                        <div className="d-flex justify-content-between mb-2">
+                          <span className="text-muted">
+                            <i className="fas fa-tag me-1"></i>
+                            Published Price
+                          </span>
+                          <span className="text-decoration-line-through text-muted">₹{fareDetails.publishedPrice.toFixed(2)}</span>
+                        </div>
+                      )}
+                      
                       <div className="d-flex justify-content-between mb-2">
                         <span className="text-muted">
                           <i className="fas fa-ticket-alt me-1"></i>
-                          Total Fare (inclusive)
+                          Base Fare
                         </span>
                         <span className="fw-bold">₹{fareDetails.baseFare > 0 ? fareDetails.baseFare.toFixed(2) : '0.00'}</span>
                       </div>
-                      <div className="d-flex justify-content-between mb-2">
-                        <span className="text-muted">
-                          <i className="fas fa-shield-alt me-1"></i>
-                          Assured Charge
-                        </span>
-                        <span className="fw-bold">₹{fareDetails.assuredCharge > 0 ? fareDetails.assuredCharge.toFixed(2) : '0.00'}</span>
-                      </div>
+                      
+                      {fareDetails.discount > 0 && (
+                        <div className="d-flex justify-content-between mb-2">
+                          <span className="text-success">
+                            <i className="fas fa-percent me-1"></i>
+                            Discount
+                          </span>
+                          <span className="fw-bold text-success">-₹{fareDetails.discount.toFixed(2)}</span>
+                        </div>
+                      )}
+                      
+                      {fareDetails.assuredCharge > 0 && (
+                        <div className="d-flex justify-content-between mb-2">
+                          <span className="text-muted">
+                            <i className="fas fa-shield-alt me-1"></i>
+                            Assured Charge
+                          </span>
+                          <span className="fw-bold">₹{fareDetails.assuredCharge.toFixed(2)}</span>
+                        </div>
+                      )}
+                      
                       <hr />
                       <div className="d-flex justify-content-between">
                         <span className="fw-bold">
@@ -804,27 +820,36 @@ const BusBookingPayment = () => {
                       </div>
                     </div>
 
-                    {/* Proceed to Pay Button - Using Global Easebuzz Component */}
+                    {/* Proceed to Pay Button - Using Redux Directly */}
                     <div className="text-center mt-5">
-                      <EasebuzzPaymentButton
-                        amount={fareDetails.total}
-                        phone={getPaymentData().phone}
-                        email={getPaymentData().email}
-                        firstName={getPaymentData().firstName}
-                        productInfo={getPaymentData().productInfo}
-                        paymentType="BUS"
-                        metadata={{
-                          fareDetails,
-                          blockData,
-                          busData,
-                          formData
-                        }}
-                        onValidation={validatePayment}
-                        disabled={bookingLoading || createBookingLoading || updateStatusLoading}
-                        buttonClass="btn btn-danger btn-lg px-5 py-3 fw-bold"
-                        showError={true}
-                        environment="test"
-                      />
+                      {/* Error Display */}
+                      {paymentError && (
+                        <div className="alert alert-danger mb-3">
+                          <i className="fas fa-exclamation-triangle me-2"></i>
+                          {paymentError}
+                        </div>
+                      )}
+
+                      {/* Payment Button */}
+                      <button
+                        className="btn btn-danger btn-lg px-5 py-3 fw-bold"
+                        onClick={handleEasebuzzPayment}
+                        disabled={createBookingLoading || paymentLoading}
+                        style={{ minWidth: '200px' }}
+                      >
+                        {paymentLoading ? (
+                          <>
+                            <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                            <i className="fas fa-cog me-2"></i>
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            <i className="fas fa-lock me-2"></i>
+                            Pay Securely ₹{fareDetails.total > 0 ? parseFloat(fareDetails.total).toFixed(2) : '0.00'}
+                          </>
+                        )}
+                      </button>
 
 
 

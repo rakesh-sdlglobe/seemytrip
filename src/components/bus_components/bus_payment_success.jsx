@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Header02 from '../header02';
 import FooterDark from '../footer-dark';
 import { toast, ToastContainer } from 'react-toastify';
@@ -8,16 +8,18 @@ import 'react-toastify/dist/ReactToastify.css';
 import {
   fetchBusBooking,
   fetchBusBookingDetails,
-  createBusBooking,
   updateBusBookingStatus,
   fetchBusSeatLayout
 } from '../../store/Actions/busActions';
-import { getEncryptedItem, setEncryptedItem } from '../../utils/encryption';
+import { getEasebuzzTransactionDetails } from '../../store/Actions/easebuzzPaymentActions';
+import { selectUserProfile } from '../../store/Selectors/userSelector';
+import { getUserProfile } from '../../store/Actions/userActions';
+import { getEncryptedItem } from '../../utils/encryption';
+import { saveBusBookingToDatabase } from '../../utils/busBookingDatabase';
 
 /**
  * Bus Payment Success Page
  * Handles payment success callback from Easebuzz
- * Similar to Razorpay handler pattern but adapted for redirect-based flow
  */
 const BusPaymentSuccess = () => {
   const navigate = useNavigate();
@@ -27,12 +29,34 @@ const BusPaymentSuccess = () => {
   const [error, setError] = useState(null);
   const isProcessingRef = useRef(false); // Prevent duplicate processing
 
+  // Get user from Redux store
+  const user = useSelector(selectUserProfile);
+  const user_id = user?.user_id;
+
   const txnid = searchParams.get('txnid');
+
+  // Load user profile on mount (handles page refresh)
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      if (!user) {
+        console.log("Loading user profile from API...");
+        await dispatch(getUserProfile());
+      }
+    };
+    
+    loadUserProfile();
+  }, [dispatch, user]);
 
   useEffect(() => {
     if (!txnid) {
       setError('Transaction ID not found');
       setProcessing(false);
+      return;
+    }
+
+    // Wait for user_id to be available before processing payment
+    if (!user_id) {
+      console.log("Waiting for user profile to load...");
       return;
     }
 
@@ -42,7 +66,7 @@ const BusPaymentSuccess = () => {
       handlePaymentSuccess();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [txnid]);
+  }, [txnid, user_id]);
 
   // Helper: Prepare booking request
   const getBookingRequest = () => {
@@ -52,28 +76,41 @@ const BusPaymentSuccess = () => {
   // Helper: Prepare booking details request
   const getBookingDetailsRequest = (busId) => {
     const authData = getEncryptedItem("busAuthData") || {};
-    const searchList = getEncryptedItem("busSearchList") || {};
     const blockRequestData = getEncryptedItem("blockRequestData") || {};
 
     const TokenId = authData.TokenId || blockRequestData.TokenId;
     const EndUserIp = authData.EndUserIp || blockRequestData.EndUserIp;
-    const TraceId = searchList?.BusSearchResult?.TraceId || blockRequestData.TraceId;
 
     return {
       EndUserIp,
-      TraceId,
       TokenId,
       BusId: busId,
       IsBaseCurrencyRequired: false
     };
   };
 
-  // Helper: Prepare booking data
+  // Helper: Prepare booking data (no payment data from local storage)
   const prepareBookingData = (bookingResult, bookingId) => {
     const blockData = getEncryptedItem("blockResponse")?.BlockResult || getEncryptedItem("blockResponse") || {};
     const busData = getEncryptedItem("selectedBusData") || {};
-    const formData = getEncryptedItem("easebuzzPaymentData")?.formData || {};
-    const fareDetails = getEncryptedItem("easebuzzPaymentData")?.fareDetails || {};
+    
+    // Extract form data from blockData instead of payment storage
+    const formData = {
+      contactDetails: {
+        phone: blockData.Passenger?.[0]?.Phoneno || '',
+        email: blockData.Passenger?.[0]?.Email || '',
+        firstName: blockData.Passenger?.[0]?.FirstName || ''
+      },
+      travelerDetails: blockData.Passenger || [],
+      addressDetails: {}
+    };
+    
+    // Extract fare details from blockData
+    const fareDetails = {
+      total: blockData.TotalFare || 0,
+      baseFare: blockData.BaseFare || 0,
+      taxes: blockData.Tax || 0
+    };
 
     return {
       blockData,
@@ -89,73 +126,82 @@ const BusPaymentSuccess = () => {
     };
   };
 
-  // Save booking to database
-  const saveBookingToDatabase = async () => {
+
+  // Update booking status (no local storage)
+  const updateBookingStatus = async (bookResult, bookingId) => {
     try {
-      const blockData = getEncryptedItem("blockResponse")?.BlockResult || getEncryptedItem("blockResponse") || {};
-      const busData = getEncryptedItem("selectedBusData") || {};
-      const formData = getEncryptedItem("easebuzzPaymentData")?.formData || {};
-      const fareDetails = getEncryptedItem("easebuzzPaymentData")?.fareDetails || {};
-
-      const bookingData = {
-        user_id: 1,
-        busData,
-        blockData,
-        contactDetails: formData.contactDetails || {},
-        addressDetails: formData.addressDetails || {},
-        travelerDetails: formData.travelerDetails || {},
-        fareDetails,
-        token_id: (getEncryptedItem("busAuthData") || {}).TokenId,
-        payment_status: 'Completed',
-        payment_transaction_id: txnid
-      };
-
-      const result = await dispatch(createBusBooking(bookingData));
-
-      if (result && result.success) {
-        setEncryptedItem('currentBookingId', result.booking_id);
-        return result.booking_id;
-      } else {
-        throw new Error('Failed to save booking to database');
-      }
-    } catch (error) {
-      console.error('Error saving booking to database:', error);
-      throw error;
-    }
-  };
-
-  // Update booking status (with duplicate prevention)
-  const updateBookingStatus = async (bookResult) => {
-    try {
-      const bookingId = getEncryptedItem('currentBookingId');
       if (!bookingId) {
         console.log('No booking ID found, skipping status update');
         return;
       }
 
-      // Check if status was already updated for this transaction
-      const statusUpdateKey = `booking_status_updated_${txnid}`;
-      const alreadyUpdated = getEncryptedItem(statusUpdateKey);
+      // Fetch transaction details from Easebuzz to get easepayid, payment_status, and payment_method
+      let easebuzzPaymentId = null;
+      let paymentStatus = null;
+      let paymentMethod = null;
       
-      if (alreadyUpdated) {
-        console.log('Booking status already updated for this transaction, skipping');
-        return;
+      try {
+        console.log('Fetching transaction details for txnid:', txnid);
+        const transactionResponse = await dispatch(getEasebuzzTransactionDetails({ txnid }));
+        
+        // Extract data from response
+        // Response structure: { status: true, msg: [{ easepayid: "...", status: "success", payment_source: "Easebuzz", card_type: "...", ... }] }
+        if (transactionResponse && transactionResponse.status === true && 
+            transactionResponse.msg && transactionResponse.msg.length > 0) {
+          const transactionData = transactionResponse.msg[0];
+          
+          // Extract easepayid
+          easebuzzPaymentId = transactionData.easepayid;
+          console.log('✅ Extracted easepayid:', easebuzzPaymentId);
+          
+          // Extract payment status from API response
+          // Map "success" to "Completed", "failure" to "Failed", etc.
+          if (transactionData.status) {
+            const apiStatus = transactionData.status.toLowerCase();
+            if (apiStatus === 'success') {
+              paymentStatus = 'Completed';
+            } else if (apiStatus === 'failure' || apiStatus === 'failed') {
+              paymentStatus = 'Failed';
+            } else {
+              paymentStatus = transactionData.status; // Use the actual status from API
+            }
+            console.log('✅ Extracted payment_status:', paymentStatus, '(from API status:', transactionData.status, ')');
+          }
+          
+          // Extract payment method from API response
+          // Priority: bank_name > payment_source > card_type
+          if (transactionData.bank_name && transactionData.bank_name !== 'NA') {
+            paymentMethod = transactionData.bank_name;
+          } else if (transactionData.payment_source && transactionData.payment_source !== 'NA') {
+            paymentMethod = transactionData.payment_source;
+          } else if (transactionData.card_type && transactionData.card_type !== 'NA') {
+            // If card_type is available and not "NA", use it
+            paymentMethod = transactionData.card_type;
+          }
+          console.log('✅ Extracted payment_method:', paymentMethod);
+          
+        } else {
+          console.warn('⚠️ Transaction details response format unexpected:', transactionResponse);
+        }
+      } catch (transactionError) {
+        console.error('Error fetching transaction details:', transactionError);
+        // Continue with status update even if transaction details fetch fails
       }
 
       const statusData = {
         booking_status: 'Confirmed',
-        payment_status: 'Completed',
+        payment_status: paymentStatus,
+        payment_method: paymentMethod,
         ticket_no: bookResult.TicketNo,
         travel_operator_pnr: bookResult.TravelOperatorPNR,
-        payment_transaction_id: txnid
+        payment_transaction_id: txnid,
+        easebuzz_payment_id: easebuzzPaymentId
       };
 
       console.log('Updating booking status:', { bookingId, statusData });
       const result = await dispatch(updateBusBookingStatus(bookingId, statusData));
       
-      // Mark as updated only if successful
       if (result && result.success) {
-        setEncryptedItem(statusUpdateKey, 'true');
         console.log('Booking status updated successfully');
       }
     } catch (error) {
@@ -163,28 +209,11 @@ const BusPaymentSuccess = () => {
     }
   };
 
-  // Handle payment success (similar to Razorpay handler pattern)
+
+  // Handle payment success 
   const handlePaymentSuccess = async () => {
     try {
-      // 1. Verify transaction ID
-      const storedTxnId = getEncryptedItem('easebuzzTxnId');
-      if (storedTxnId !== txnid) {
-        throw new Error('Transaction ID mismatch');
-      }
-
-      // 2. Check if already processed
-      const processKey = `payment_processed_${txnid}`;
-      const alreadyProcessed = getEncryptedItem(processKey);
-      if (alreadyProcessed) {
-        console.log('Payment already processed, redirecting to confirmation');
-        const existingBookingData = getEncryptedItem("busBookingData");
-        setProcessing(false);
-        navigate('/bus-confirmation', {
-          state: { bookingData: existingBookingData || {} },
-          replace: true
-        });
-        return;
-      }
+      // No payment data stored in local storage - process directly
 
       // 3. Book the bus (similar to Razorpay pattern - process after payment)
       const bookingRequest = getBookingRequest();
@@ -195,32 +224,47 @@ const BusPaymentSuccess = () => {
       const bookingResult = await dispatch(fetchBusBooking(bookingRequest));
 
       if (bookingResult?.BookResult?.ResponseStatus !== 1) {
+        // Booking failed - redirect to booking failed page where refund will be processed
         throw new Error(bookingResult?.BookResult?.Error?.ErrorMessage || "Booking failed");
       }
 
-      // 4. Save to database
-      const bookingId = await saveBookingToDatabase();
+      // 4. Get booking details first (GetBookingDetailResult)
+      const busId = bookingResult.BookResult.BusId;
+      const bookingDetailsRequest = getBookingDetailsRequest(busId);
+      const busBookingDetails = await dispatch(fetchBusBookingDetails(bookingDetailsRequest));
+      
+      if (!busBookingDetails || !busBookingDetails.GetBookingDetailResult) {
+        throw new Error("Failed to get booking details. Please try again.");
+      }
+
+      // 5. Save to database (pass busBookingDetails from GetBookingDetailResult)
+      if (!user_id) {
+        throw new Error("User not found. Please log in again.");
+      }
+      
+      const bookingId = await saveBusBookingToDatabase({ 
+        txnid, 
+        dispatch, 
+        user_id: user_id, // Pass user_id from Redux
+        busBookingDetails: busBookingDetails 
+      });
       if (!bookingId) {
         throw new Error("Failed to save booking to database");
       }
 
-      // 5. Update booking status (only once)
+      // 6. Update booking status
       if (bookingResult?.BookResult) {
-        await updateBookingStatus(bookingResult.BookResult);
+        await updateBookingStatus(bookingResult.BookResult, bookingId);
       }
 
-      // 6. Get booking details
-      const busId = bookingResult.BookResult.BusId;
-      const bookingDetailsRequest = getBookingDetailsRequest(busId);
-      await dispatch(fetchBusBookingDetails(bookingDetailsRequest));
-
-      // 7. Prepare and store booking data
+      // 7. Prepare booking data (no local storage - pass via state only)
       const bookingData = prepareBookingData(bookingResult, bookingId);
-      setEncryptedItem("bookingResult", bookingResult);
-      setEncryptedItem("bookingTimestamp", Date.now().toString());
-      setEncryptedItem("databaseBookingId", bookingId.toString());
-      setEncryptedItem("busBookingData", bookingData);
-      setEncryptedItem(processKey, 'true'); // Mark as processed
+      
+      // Add API parameters needed for booking details API (from bookingRequest used earlier, not local storage)
+      const requestData = getBookingRequest();
+      bookingData.tokenId = requestData.TokenId;
+      bookingData.endUserIp = requestData.EndUserIp;
+      bookingData.traceId = requestData.TraceId;
 
       // 8. Fetch latest seat layout
       try {
@@ -253,30 +297,16 @@ const BusPaymentSuccess = () => {
     } catch (error) {
       console.error("Payment processing error:", error);
       
-      // Check if booking was already created
-      const bookingId = getEncryptedItem('currentBookingId');
-      const bookingResult = getEncryptedItem('bookingResult');
-      
-      if (bookingId || bookingResult) {
-        // Booking exists, show success with warning
-        setProcessing(false);
-        toast.warning('Payment successful but some processing failed: ' + (error.message || "Unknown error"));
-        setTimeout(() => {
-          const existingBookingData = getEncryptedItem("busBookingData");
-          navigate('/bus-booking-failed', {
-            state: { bookingData: existingBookingData || {} },
-            replace: true
-          });
-        }, 2000);
-      } else {
-        // Booking failed
-        setError(error.message || "Failed to process payment");
-        setProcessing(false);
-        toast.error(error.message || "Failed to process payment");
-        setTimeout(() => {
-          navigate('/bus-payment-failure?txnid=' + txnid);
-        }, 3000);
-      }
+      // Booking failed - redirect to booking failed page where refund will be processed
+      setError(error.message || "Failed to process payment");
+      setProcessing(false);
+      toast.error(error.message || "Failed to process payment");
+      setTimeout(() => {
+        navigate(`/bus-booking-failed?txnid=${txnid}`, {
+          state: { txnid },
+          replace: true
+        });
+      }, 2000);
     }
   };
 

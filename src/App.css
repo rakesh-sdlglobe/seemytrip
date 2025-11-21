@@ -33,6 +33,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -138,7 +139,7 @@
     margin: 1rem;
     max-width: calc(100% - 2rem);
   }
-  
+
   .map-modal .modal-title {
     font-size: 1.1rem;
   }
