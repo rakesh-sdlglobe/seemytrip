@@ -641,6 +641,47 @@ export const fetchBusBookingDetails = (bookingDetailsData) => async (dispatch) =
     }
   };
 
+  // Get bus booking details from database based on booking id
+  export const fetchBusBookingDetailsDbRequest = () => ({
+    type: FETCH_BUS_BOOKING_DETAILS_DB_REQUEST,
+  });
+
+  export const fetchBusBookingDetailsDbSuccess = (bookingDetails) => ({
+    type: FETCH_BUS_BOOKING_DETAILS_DB_SUCCESS,
+    payload: bookingDetails,
+  });
+
+  export const fetchBusBookingDetailsDbFailure = (error) => ({
+    type: FETCH_BUS_BOOKING_DETAILS_DB_FAILURE,
+    payload: error,
+  });
+
+  export const fetchBusBookingDetailsDb = (bookingId) => async (dispatch) => {
+    // console.log("Fetching bus booking details from database for booking:", bookingId);
+
+    try {
+      dispatch(fetchBusBookingDetailsDbRequest());
+
+      const response = await axios.get(
+        `${API_URL}/bus/bookingDetails/${bookingId}`
+      );
+
+      // console.log("Response from bus booking details DB API:", response.data);
+
+      if (response.data && response.data.success) {
+        dispatch(fetchBusBookingDetailsDbSuccess(response.data));
+        return response.data;
+      } else {
+        dispatch(fetchBusBookingDetailsDbFailure(response.data.message || "Failed to fetch booking details"));
+        return null;
+      }
+    } catch (error) {
+      // console.error("Error fetching bus booking details from database:", error);
+      dispatch(fetchBusBookingDetailsDbFailure(error.response?.data?.message || error.message || "Failed to fetch booking details"));
+      return null;
+    }
+  };
+
   // Update bus booking status
   export const updateBusBookingStatusRequest = () => ({
     type: UPDATE_BUS_BOOKING_STATUS_REQUEST,

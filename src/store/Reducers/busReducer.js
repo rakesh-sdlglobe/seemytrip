@@ -222,15 +222,15 @@ const busReducer = (state = initialState, action) => {
             newState = { ...state, userBookingsLoading: false, error: action.payload };
             break;
 
-        // FETCH BUS BOOKING DETAILS FROM DB
+        // FETCH BUS BOOKING DETAILS FROM DB USING BOOKING ID
         case FETCH_BUS_BOOKING_DETAILS_DB_REQUEST:
-            newState = { ...state, bookingDetailsDbLoading: true, error: null };
+            newState = { ...state, bookingDetailsDbLoading: true, busBookingDetailsDb: null, error: null };
             break;
         case FETCH_BUS_BOOKING_DETAILS_DB_SUCCESS:
             newState = { ...state, bookingDetailsDbLoading: false, busBookingDetailsDb: action.payload, error: null };
             break;
         case FETCH_BUS_BOOKING_DETAILS_DB_FAILURE:
-            newState = { ...state, bookingDetailsDbLoading: false, error: action.payload };
+            newState = { ...state, bookingDetailsDbLoading: false, busBookingDetailsDb: null, error: action.payload };
             break;
 
         // UPDATE BUS BOOKING STATUS

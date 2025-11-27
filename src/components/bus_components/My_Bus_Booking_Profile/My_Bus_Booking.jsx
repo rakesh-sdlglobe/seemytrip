@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectUserBusBookings, selectCancelBookingLoading } from '../../../store/Selectors/busSelectors';
+import { selectUserBusBookings, selectCancelBookingLoading, selectBusBookingDetailsLoading } from '../../../store/Selectors/busSelectors';
 import Booking_Details_Model from './Booking_Details_Model';
 import Booking_Cancellation_Modal from './Booking_Cancellation_Modal';
 import { selectUserProfile } from '../../../store/Selectors/userSelector';
@@ -13,6 +13,8 @@ const My_Bus_Booking = () => {
     const [showModal, setShowModal] = useState(false);
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [bookingToCancel, setBookingToCancel] = useState(null);
+    const [loadingBookingId, setLoadingBookingId] = useState(null);
+    const bookingDetailsLoading = useSelector(selectBusBookingDetailsLoading);
 
     const user = useSelector(selectUserProfile);
     const cancelBookingLoading = useSelector(selectCancelBookingLoading);
@@ -33,6 +35,7 @@ const My_Bus_Booking = () => {
     console.log("userBusBookings new", userBusBookings);
 
     const handleViewDetails = (booking) => {
+        setLoadingBookingId(booking.booking_id);
         setSelectedBooking(booking);
         setShowModal(true);
     };
@@ -40,7 +43,15 @@ const My_Bus_Booking = () => {
     const handleCloseModal = () => {
         setShowModal(false);
         setSelectedBooking(null);
+        setLoadingBookingId(null);
     };
+    
+    // Open modal after data is loaded
+    useEffect(() => {
+        if (selectedBooking && !bookingDetailsLoading && loadingBookingId === selectedBooking.booking_id) {
+            setLoadingBookingId(null);
+        }
+    }, [bookingDetailsLoading, selectedBooking, loadingBookingId]);
 
     const handleCancelBooking = (booking) => {
         setBookingToCancel(booking);
@@ -152,8 +163,16 @@ const My_Bus_Booking = () => {
                             <button 
                                 className="btn btn-md btn-light-seegreen fw-medium mb-0"
                                 onClick={() => handleViewDetails(booking)}
+                                disabled={loadingBookingId === booking.booking_id && bookingDetailsLoading}
                             >
-                                View Booking Details
+                                {loadingBookingId === booking.booking_id && bookingDetailsLoading ? (
+                                    <>
+                                        <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                                        Loading...
+                                    </>
+                                ) : (
+                                    'View Booking Details'
+                                )}
                             </button>
                             {booking.booking_status !== 'Cancelled' && booking.bus_id && (
                                 <button 

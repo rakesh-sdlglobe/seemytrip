@@ -28,6 +28,16 @@ export const selectRefundData = (state) =>
 export const selectRefundError = (state) => 
   state.easebuzzPayment.refundError;
 
+// Refund Status Selectors
+export const selectRefundStatusLoading = (state) => 
+  state.easebuzzPayment.refundStatusLoading;
+
+export const selectRefundStatusData = (state) => 
+  state.easebuzzPayment.refundStatusData;
+
+export const selectRefundStatusError = (state) => 
+  state.easebuzzPayment.refundStatusError;
+
 // General Selectors
 export const selectEasebuzzPaymentLoading = (state) => 
   state.easebuzzPayment.loading;
@@ -46,5 +56,15 @@ export const selectTransactionStatus = (state) => {
 export const selectRefundStatus = (state) => {
   const refundData = selectRefundData(state);
   return refundData?.status || refundData?.data?.status || null;
+};
+
+export const selectRefundStatusDetails = (state) => {
+  const refundStatusData = selectRefundStatusData(state);
+  return refundStatusData || null;
+};
+
+export const selectRefundStatusList = (state) => {
+  const refundStatusData = selectRefundStatusData(state);
+  return refundStatusData?.refunds || [];
 };
 
