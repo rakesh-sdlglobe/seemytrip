@@ -102,68 +102,63 @@ const BusBookingPayment = () => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Calculate total amount based on Price object structure from blockData
+  // Calculate total amount based on: Base Price, Discount, Offered Price, TDS
   const calculateTotal = () => {
     try {
       if (!blockData || !blockData.Passenger || blockData.Passenger.length === 0) {
         return {
-          baseFare: 0,
+          basePrice: 0,
           discount: 0,
-          assuredCharge: 0,
+          offeredPrice: 0,
+          tds: 0,
           total: 0
         };
       }
 
-      // Calculate totals directly from blockData using reduce
+      // Calculate totals from all passengers
       const priceTotals = blockData.Passenger.reduce((totals, passenger) => {
-        // Access Price object from passenger.Seat.Price
         const price = passenger?.Seat?.Price || {};
         
-        // Extract price values from Price object
-        const basePrice = parseFloat(price.BasePrice || 0);
-        const publishedPrice = parseFloat(price.PublishedPriceRoundedOff || price.PublishedPrice || 0);
+        // Base Price (PublishedPriceRoundedOff)
+        const basePrice = parseFloat(price.PublishedPriceRoundedOff || price.PublishedPrice || 0);
+        
+        // Offered Price (OfferedPriceRoundedOff)
         const offeredPrice = parseFloat(price.OfferedPriceRoundedOff || price.OfferedPrice || 0);
-        const discountFromField = parseFloat(price.Discount || 0);
         
-        // Use OfferedPrice if positive, otherwise use PublishedPrice
-        const seatPrice = (offeredPrice > 0) ? offeredPrice : publishedPrice;
+        // TDS from Price object
+        const tds = parseFloat(price.TDS || 0);
         
-        // Calculate discount: use Discount field if available, otherwise calculate as difference
-        const calculatedDiscount = discountFromField > 0 
-          ? discountFromField 
-          : Math.max(0, publishedPrice - seatPrice);
-        
-        totals.baseFare += seatPrice || 0;
-        totals.publishedPrice += publishedPrice || 0;
-        totals.discount += calculatedDiscount || 0;
+        totals.basePrice += basePrice;
+        totals.offeredPrice += offeredPrice;
+        totals.tds += tds;
         
         return totals;
       }, {
-        baseFare: 0,
-        publishedPrice: 0,
-        discount: 0
+        basePrice: 0,
+        offeredPrice: 0,
+        tds: 0
       });
 
-      // Get assured charge directly from blockData
-      const assuredCharge = parseFloat(blockData.AssuredCharge || 0);
+      // Calculate discount: Base Price - Offered Price
+      const discount = priceTotals.basePrice - priceTotals.offeredPrice;
 
-      // Calculate final total: Base fare + AssuredCharge
-      const finalTotal = priceTotals.baseFare + assuredCharge;
+      // Final Amount = Offered Price + TDS
+      const finalTotal = priceTotals.offeredPrice + priceTotals.tds;
 
       return {
-        baseFare: priceTotals.baseFare, // Final fare after discounts (OfferedPrice)
-        publishedPrice: priceTotals.publishedPrice, // Original published price
-        discount: priceTotals.discount, // Total discount applied
-        assuredCharge: assuredCharge,
+        basePrice: priceTotals.basePrice,
+        discount: discount,
+        offeredPrice: priceTotals.offeredPrice,
+        tds: priceTotals.tds,
         total: finalTotal
       };
     } catch (error) {
       console.error('Error calculating total:', error);
       return {
-        baseFare: 0,
-        publishedPrice: 0,
+        basePrice: 0,
         discount: 0,
-        assuredCharge: 0,
+        offeredPrice: 0,
+        tds: 0,
         total: 0
       };
     }
@@ -492,41 +487,39 @@ const BusBookingPayment = () => {
                         Fare Details
                       </h6>
                       
-                      {fareDetails.publishedPrice > fareDetails.baseFare && (
-                        <div className="d-flex justify-content-between mb-2">
-                          <span className="text-muted">
-                            <i className="fas fa-tag me-1"></i>
-                            Published Price
-                          </span>
-                          <span className="text-decoration-line-through text-muted">₹{fareDetails.publishedPrice.toFixed(2)}</span>
-                        </div>
-                      )}
-                      
                       <div className="d-flex justify-content-between mb-2">
                         <span className="text-muted">
                           <i className="fas fa-ticket-alt me-1"></i>
-                          Base Fare
+                          Base Price
                         </span>
-                        <span className="fw-bold">₹{fareDetails.baseFare > 0 ? fareDetails.baseFare.toFixed(2) : '0.00'}</span>
+                        <span className="fw-bold">₹{fareDetails.basePrice > 0 ? fareDetails.basePrice.toFixed(2) : '0.00'}</span>
                       </div>
                       
                       {fareDetails.discount > 0 && (
                         <div className="d-flex justify-content-between mb-2">
                           <span className="text-success">
                             <i className="fas fa-percent me-1"></i>
-                            Discount
+                            Discount/Offer
                           </span>
                           <span className="fw-bold text-success">-₹{fareDetails.discount.toFixed(2)}</span>
                         </div>
                       )}
                       
-                      {fareDetails.assuredCharge > 0 && (
+                      <div className="d-flex justify-content-between mb-2">
+                        <span className="text-muted">
+                          <i className="fas fa-tag me-1"></i>
+                          Offered Price
+                        </span>
+                        <span className="fw-bold">₹{fareDetails.offeredPrice > 0 ? fareDetails.offeredPrice.toFixed(2) : '0.00'}</span>
+                      </div>
+                      
+                      {fareDetails.tds > 0 && (
                         <div className="d-flex justify-content-between mb-2">
                           <span className="text-muted">
-                            <i className="fas fa-shield-alt me-1"></i>
-                            Assured Charge
+                            <i className="fas fa-file-invoice me-1"></i>
+                            TDS
                           </span>
-                          <span className="fw-bold">₹{fareDetails.assuredCharge.toFixed(2)}</span>
+                          <span className="fw-bold">+₹{fareDetails.tds.toFixed(2)}</span>
                         </div>
                       )}
                       
@@ -534,7 +527,7 @@ const BusBookingPayment = () => {
                       <div className="d-flex justify-content-between">
                         <span className="fw-bold">
                           <i className="fas fa-rupee-sign me-1"></i>
-                          Total Amount To Be Paid
+                          Final Amount
                         </span>
                         <span className="fw-bold text-success fs-5">₹{fareDetails.total > 0 ? fareDetails.total.toFixed(2) : '0.00'}</span>
                       </div>

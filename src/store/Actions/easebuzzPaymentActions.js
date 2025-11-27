@@ -16,10 +16,16 @@ export const INITIATE_EASEBUZZ_REFUND_REQUEST = "INITIATE_EASEBUZZ_REFUND_REQUES
 export const INITIATE_EASEBUZZ_REFUND_SUCCESS = "INITIATE_EASEBUZZ_REFUND_SUCCESS";
 export const INITIATE_EASEBUZZ_REFUND_FAILURE = "INITIATE_EASEBUZZ_REFUND_FAILURE";
 
+// Action types for Get Refund Status
+export const GET_EASEBUZZ_REFUND_STATUS_REQUEST = "GET_EASEBUZZ_REFUND_STATUS_REQUEST";
+export const GET_EASEBUZZ_REFUND_STATUS_SUCCESS = "GET_EASEBUZZ_REFUND_STATUS_SUCCESS";
+export const GET_EASEBUZZ_REFUND_STATUS_FAILURE = "GET_EASEBUZZ_REFUND_STATUS_FAILURE";
+
 // Clear payment state
 export const CLEAR_EASEBUZZ_PAYMENT_STATE = "CLEAR_EASEBUZZ_PAYMENT_STATE";
 export const CLEAR_EASEBUZZ_TRANSACTION_STATE = "CLEAR_EASEBUZZ_TRANSACTION_STATE";
 export const CLEAR_EASEBUZZ_REFUND_STATE = "CLEAR_EASEBUZZ_REFUND_STATE";
+export const CLEAR_EASEBUZZ_REFUND_STATUS_STATE = "CLEAR_EASEBUZZ_REFUND_STATUS_STATE";
 
 // Action creators for Initiate Payment
 export const initiateEasebuzzPaymentRequest = () => ({
@@ -66,6 +72,21 @@ export const initiateEasebuzzRefundFailure = (error) => ({
   payload: error,
 });
 
+// Action creators for Get Refund Status
+export const getEasebuzzRefundStatusRequest = () => ({
+  type: GET_EASEBUZZ_REFUND_STATUS_REQUEST,
+});
+
+export const getEasebuzzRefundStatusSuccess = (data) => ({
+  type: GET_EASEBUZZ_REFUND_STATUS_SUCCESS,
+  payload: data,
+});
+
+export const getEasebuzzRefundStatusFailure = (error) => ({
+  type: GET_EASEBUZZ_REFUND_STATUS_FAILURE,
+  payload: error,
+});
+
 // Clear state actions
 export const clearEasebuzzPaymentState = () => ({
   type: CLEAR_EASEBUZZ_PAYMENT_STATE,
@@ -77,6 +98,10 @@ export const clearEasebuzzTransactionState = () => ({
 
 export const clearEasebuzzRefundState = () => ({
   type: CLEAR_EASEBUZZ_REFUND_STATE,
+});
+
+export const clearEasebuzzRefundStatusState = () => ({
+  type: CLEAR_EASEBUZZ_REFUND_STATUS_STATE,
 });
 
 // Thunk Actions
@@ -211,3 +236,41 @@ export const initiateEasebuzzRefund = (refundData) => async (dispatch) => {
   }
 };
 
+/**
+ * Get Easebuzz Refund Status
+ * @param {Object} refundStatusData - Refund status data containing:
+ *   - easebuzz_id: Easebuzz transaction ID (required)
+ *   - merchant_refund_id: Unique merchant refund ID (optional, for filtering)
+ */
+export const getEasebuzzRefundStatus = (refundStatusData) => async (dispatch) => {
+  try {
+    dispatch(getEasebuzzRefundStatusRequest());
+
+    // Validate required fields
+    if (!refundStatusData.easebuzz_id || !refundStatusData.easebuzz_id.trim()) {
+      throw new Error("easebuzz_id is required");
+    }
+
+    const response = await axios.post(
+      `${API_URL}/easebuzzPayment/get_refund_status`,
+      refundStatusData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      }
+    );
+
+    if (response.data) {
+      dispatch(getEasebuzzRefundStatusSuccess(response.data));
+      return response.data;
+    } else {
+      throw new Error("No refund status data received");
+    }
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || error.response?.data?.error || error.message || "Failed to get refund status";
+    dispatch(getEasebuzzRefundStatusFailure(errorMessage));
+    throw error;
+  }
+};

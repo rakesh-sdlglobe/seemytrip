@@ -167,7 +167,7 @@ const Bus_Comfirmation_Page = () => {
 
   const getTicketPrice = () => {
     const details = getBookingDetails();
-    return details.Price?.PublishedPriceRoundedOff ||  0;
+    return details.InvoiceAmount ||  0;
   };
 
   const getOriginCity = () => {

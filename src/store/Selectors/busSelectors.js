@@ -29,3 +29,7 @@ export const selectBookingStatsLoading = (state) => state.bus.bookingStatsLoadin
 
 export const selectUserBusBookings = (state) => state.bus.userBusBookings;
 export const selectBusBookingStats = (state) => state.bus.busBookingStats;
+
+// Bus booking details from database selectors
+export const selectBusBookingDetailsDbLoading = (state) => state.bus.bookingDetailsDbLoading;
+export const selectBusBookingDetailsDb = (state) => state.bus.busBookingDetailsDb;

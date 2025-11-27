@@ -8,9 +8,13 @@ import {
   INITIATE_EASEBUZZ_REFUND_REQUEST,
   INITIATE_EASEBUZZ_REFUND_SUCCESS,
   INITIATE_EASEBUZZ_REFUND_FAILURE,
+  GET_EASEBUZZ_REFUND_STATUS_REQUEST,
+  GET_EASEBUZZ_REFUND_STATUS_SUCCESS,
+  GET_EASEBUZZ_REFUND_STATUS_FAILURE,
   CLEAR_EASEBUZZ_PAYMENT_STATE,
   CLEAR_EASEBUZZ_TRANSACTION_STATE,
   CLEAR_EASEBUZZ_REFUND_STATE,
+  CLEAR_EASEBUZZ_REFUND_STATUS_STATE,
 } from '../Actions/easebuzzPaymentActions';
 
 const initialState = {
@@ -28,6 +32,11 @@ const initialState = {
   refundLoading: false,
   refundData: null,
   refundError: null,
+
+  // Refund Status State
+  refundStatusLoading: false,
+  refundStatusData: null,
+  refundStatusError: null,
 
   // General loading state
   loading: false,
@@ -145,6 +154,42 @@ const easebuzzPaymentReducer = (state = initialState, action) => {
       };
       break;
 
+    // Get Refund Status
+    case GET_EASEBUZZ_REFUND_STATUS_REQUEST:
+      newState = {
+        ...state,
+        refundStatusLoading: true,
+        refundStatusError: null,
+      };
+      break;
+
+    case GET_EASEBUZZ_REFUND_STATUS_SUCCESS:
+      newState = {
+        ...state,
+        refundStatusLoading: false,
+        refundStatusData: action.payload,
+        refundStatusError: null,
+      };
+      break;
+
+    case GET_EASEBUZZ_REFUND_STATUS_FAILURE:
+      newState = {
+        ...state,
+        refundStatusLoading: false,
+        refundStatusData: null,
+        refundStatusError: action.payload,
+      };
+      break;
+
+    case CLEAR_EASEBUZZ_REFUND_STATUS_STATE:
+      newState = {
+        ...state,
+        refundStatusLoading: false,
+        refundStatusData: null,
+        refundStatusError: null,
+      };
+      break;
+
     default:
       return state;
   }
@@ -153,7 +198,8 @@ const easebuzzPaymentReducer = (state = initialState, action) => {
   newState.loading =
     newState.initiatePaymentLoading ||
     newState.transactionLoading ||
-    newState.refundLoading;
+    newState.refundLoading ||
+    newState.refundStatusLoading;
 
   return newState;
 };
