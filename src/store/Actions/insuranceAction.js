@@ -436,7 +436,7 @@ export const getInsuranceBookingDetails = (bookingDetailsData) => async (dispatc
     }
     
     const response = await axios.post(`${API_URL}/insurance/GetInsuranceBookingDetails`, bookingDetailsData);
-    
+    console.log("response", response.data);
     if (response.data) {
       dispatch(insuranceBookingDetailsSuccess(response.data));
       return response.data;
@@ -533,13 +533,14 @@ export const getUserInsuranceBookings = (userId) => async (dispatch) => {
     dispatch(getUserInsuranceBookingsRequest());
     
     const response = await axios.get(`${API_URL}/insurance/userBookings/${userId}`);
-    
+    console.log("redux", response.data);
     if (response.data && response.data.success) {
       dispatch(getUserInsuranceBookingsSuccess(response.data));
       return response.data;
     } else {
       throw new Error('Invalid response from get user insurance bookings API');
     }
+    
   } catch (error) {
     const errorMessage = error.response?.data?.message || error.message || 'Failed to get user insurance bookings';
     dispatch(getUserInsuranceBookingsFailure(errorMessage));

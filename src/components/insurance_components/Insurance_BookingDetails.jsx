@@ -3,9 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header02 from '../header02';
 import Footer from '../footer';
-import { getInsuranceBookingDetails, bookInsurance, getInsurancePolicy, updateInsuranceBookingStatus } from '../../store/Actions/insuranceAction';
-import { getEncryptedItem } from '../../utils/encryption';
-import { loadRazorpayScript } from '../../utils/loadRazorpay';
+import { getInsuranceBookingDetails } from '../../store/Actions/insuranceAction';
 import { 
   FaShieldAlt, 
   FaCheckCircle, 
@@ -44,7 +42,6 @@ import {
   FaReceipt
 } from 'react-icons/fa';
 
-export const RAZORPAY_KEY = process.env.REACT_APP_RAZORPAY_KEY_ID;
 
 const Insurance_BookingDetails = () => {
   const navigate = useNavigate();
@@ -65,15 +62,6 @@ const Insurance_BookingDetails = () => {
   const [error, setError] = useState(null);
   const [bookingId, setBookingId] = useState(null);
   
-  // Review and payment state
-  const [selectedPlan, setSelectedPlan] = useState(null);
-  const [searchCriteria, setSearchCriteria] = useState({});
-  const [passengerDetails, setPassengerDetails] = useState([]);
-  const [priceDetails, setPriceDetails] = useState({});
-  const [authData, setAuthData] = useState({});
-  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-  const [isGeneratingPolicy, setIsGeneratingPolicy] = useState(false);
-  const [isReviewMode, setIsReviewMode] = useState(false);
   const [activeTab, setActiveTab] = useState('price');
 
   // Function to fetch booking details from API
@@ -129,18 +117,6 @@ const Insurance_BookingDetails = () => {
           return;
         }
         
-        // Check if this is review mode (coming from booking page)
-        if (location.state && location.state.selectedPlan) {
-          setIsReviewMode(true);
-          setSelectedPlan(location.state.selectedPlan);
-          setSearchCriteria(location.state.searchCriteria || {});
-          setPassengerDetails(location.state.passengerDetails || []);
-          setPriceDetails(location.state.priceDetails || {});
-          setAuthData(location.state.authData || {});
-          setIsLoading(false);
-          return;
-        }
-        
         // Get data from navigation state only
         if (location.state && location.state.policyResponse) {
           setPolicyData(location.state.policyResponse);
@@ -159,199 +135,6 @@ const Insurance_BookingDetails = () => {
     loadPolicyData();
   }, [location.state, dispatch]);
 
-  // Load Razorpay SDK
-  const loadRazorpay = async () => {
-    const res = await loadRazorpayScript();
-    if (!res) {
-      alert("Razorpay SDK failed to load. Check your internet.");
-      return false;
-    }
-    return true;
-  };
-
-  // Handle booking and payment
-  const handleBookAndPay = async () => {
-    try {
-      if (!authData.TokenId) {
-        alert('Authentication required. Please search for insurance plans again.');
-        navigate('/home-insurance');
-        return;
-      }
-
-      // Prepare booking payload
-      const bookingPayload = {
-        TokenId: authData.TokenId,
-        EndUserIp: authData.EndUserIp || '127.0.0.1',
-        TraceId: location.state?.traceId || '',
-        ResultIndex: selectedPlan?.ResultIndex || 1,
-        Passenger: passengerDetails
-      };
-      
-      const result = await dispatch(bookInsurance(bookingPayload));
-      
-      if (result && result.Response) {
-        if (result.Response.ResponseStatus === 1) {
-          // Success - now initiate payment
-          await initiatePayment(result, authData);
-        } else if (result.Response.Error && result.Response.Error.ErrorCode !== 0) {
-          // Handle error response with detailed error info
-          const errorCode = result.Response.Error.ErrorCode;
-          const errorMessage = result.Response.Error.ErrorMessage;
-          alert(`Booking failed: ${errorMessage} (Code: ${errorCode})`);
-        } else {
-          // Unknown error
-          alert('Booking failed. Please try again.');
-        }
-      } else {
-        // No response or invalid response
-        alert('Booking failed. Please try again.');
-      }
-    } catch (error) {
-      alert('Booking failed. Please try again.');
-    }
-  };
-
-  // Initiate payment after successful booking
-  const initiatePayment = async (bookingResult, authData) => {
-    try {
-      setIsProcessingPayment(true);
-      
-      // Load Razorpay SDK
-      const razorpayLoaded = await loadRazorpay();
-      if (!razorpayLoaded) {
-        setIsProcessingPayment(false);
-        return;
-      }
-
-      // Calculate total amount from price details - use exact API price
-      const totalAmount = priceDetails.total || 0;
-      const amountInPaise = Math.round(totalAmount * 100); // Convert to paise
-
-      // Get passenger details for payment
-      const leadPassenger = passengerDetails.find(p => p.RelationShipToInsured === 'Self') || passengerDetails[0];
-      
-      if (!leadPassenger) {
-        alert('No passenger details found for payment');
-        setIsProcessingPayment(false);
-        return;
-      }
-
-      // Prepare Razorpay options
-      const options = {
-        key: RAZORPAY_KEY,
-        amount: amountInPaise,
-        currency: 'INR',
-        name: 'SeeMyTrip',
-        description: 'Insurance Policy Payment',
-        handler: async function (response) {
-          console.log('Payment response:', response);
-          try {
-            // Payment successful, now generate policy
-            await generatePolicyAfterPayment(response, bookingResult, authData);
-          } catch (error) {
-            console.error('Error generating policy after payment:', error);
-            alert('Payment successful but policy generation failed. Please contact support.');
-            setIsProcessingPayment(false);
-          }
-        },
-        theme: {
-          color: '#3399cc',
-        },
-        prefill: {
-          name: `${leadPassenger.Title} ${leadPassenger.FirstName} ${leadPassenger.LastName}`,
-          email: leadPassenger.EmailId || '',
-          contact: leadPassenger.PhoneNumber || '',
-        },
-      };
-
-      // Open Razorpay payment modal
-      const paymentObject = new window.Razorpay(options);
-      
-      // Handle payment failure
-      paymentObject.on('payment.failed', function (response) {
-        console.error('Payment failed:', response);
-        alert(`Payment failed! Reason: ${response.error.description || 'Unknown error'}`);
-        setIsProcessingPayment(false);
-      });
-
-      paymentObject.open();
-
-    } catch (error) {
-      console.error('Error initiating payment:', error);
-      alert('Failed to initiate payment. Please try again.');
-      setIsProcessingPayment(false);
-    }
-  };
-
-  // Generate policy after successful payment
-  const generatePolicyAfterPayment = async (paymentResponse, bookingResult, authData) => {
-    try {
-      setIsGeneratingPolicy(true);
-
-      // Prepare policy generation payload
-      const policyPayload = {
-        EndUserIp: authData.EndUserIp || "127.0.0.1",
-        TokenId: authData.TokenId || "",
-        BookingId: bookingResult.Response?.Itinerary?.BookingId || 0,
-      };
-
-      // Call the policy generation API
-      const policyResponse = await dispatch(getInsurancePolicy(policyPayload));
-
-      if (policyResponse && policyResponse.Response && policyResponse.Response.ResponseStatus === 1) {
-        // Success - policy generated, now update booking status in database
-        const bookingId = bookingResult.Response?.Itinerary?.BookingId;
-        const policyNumber = policyResponse.Response?.Itinerary?.PassengerInfo?.[0]?.PolicyNo || 
-                           policyResponse.Response?.Itinerary?.PolicyNo || 
-                           `POL${Date.now()}`;
-        
-        // Update booking status with payment and policy details
-        try {
-          const statusUpdateData = {
-            booking_status: 'Confirmed',
-            payment_status: 'Paid',
-            policy_number: policyNumber,
-            transaction_id: paymentResponse.razorpay_payment_id,
-            payment_method: 'Razorpay',
-            razorpay_payment_id: paymentResponse.razorpay_payment_id,
-            total_premium: priceDetails.total || 0,
-            base_premium: priceDetails.base || priceDetails.total || 0
-          };
-          
-          console.log("💳 Updating booking status with:", statusUpdateData);
-          await dispatch(updateInsuranceBookingStatus(bookingId, statusUpdateData));
-          console.log("✅ Booking status updated successfully");
-        } catch (updateError) {
-          console.error("❌ Failed to update booking status:", updateError);
-          // Don't fail the flow, just log the error
-        }
-        
-        // Navigate to generate policy page
-        navigate('/insurance-generate-policy', { 
-          state: {
-            bookingResponse: bookingResult,
-            passengers: passengerDetails,
-            priceDetails: priceDetails,
-            policyResponse: policyResponse,
-            paymentResponse: paymentResponse
-          }
-        });
-      } else {
-        // Handle error response
-        const errorCode = policyResponse?.Response?.Error?.ErrorCode;
-        const errorMessage = policyResponse?.Response?.Error?.ErrorMessage || 'Policy generation failed';
-        alert(`Payment successful but policy generation failed: ${errorMessage}`);
-        setIsGeneratingPolicy(false);
-        setIsProcessingPayment(false);
-      }
-
-    } catch (error) {
-      console.error('Error generating policy:', error);
-      alert('Payment successful but policy generation failed. Please contact support.');
-      setIsGeneratingPolicy(false);
-      setIsProcessingPayment(false);
-    }
-  };
 
   // Handle navigation to insurance home
   const handleGoHome = () => {
@@ -511,7 +294,7 @@ const Insurance_BookingDetails = () => {
   }
 
   // Show main content
-  if (!isReviewMode && (!policyData || !passengerData)) {
+  if (!policyData || !passengerData) {
     return (
       <>
         <Header02 />
@@ -541,296 +324,6 @@ const Insurance_BookingDetails = () => {
     );
   }
 
-  // Render review mode content
-  if (isReviewMode) {
-    return (
-      <>
-        <Header02 />
-        
-        <div className="container-fluid py-4 bg-light min-vh-100">
-          <div className="container-xl">
-            {/* Review Header */}
-            <div className="row mb-4">
-              <div className="col-12">
-                <div className="card border-0 shadow-sm bg-primary bg-opacity-10">
-                  <div className="card-body text-center py-5">
-                    <div className="bg-primary bg-opacity-10 rounded-circle d-inline-flex p-3 mb-3">
-                      <FaShieldAlt className="text-primary" size={40} />
-                    </div>
-                    <h3 className="text-primary mb-2 fw-bold">Review Your Insurance Details</h3>
-                    <p className="text-muted mb-0">
-                      Please review your details and proceed with payment to complete your insurance booking.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="row g-4">
-              {/* Left Column - Review Details */}
-              <div className="col-lg-8">
-                {/* Insurance Plan Overview */}
-                <div className="card border-0 shadow-sm mb-4">
-                  <div className="card-header bg-white border-0 pt-4">
-                    <h5 className="mb-0 fw-bold text-dark">Insurance Plan Overview</h5>
-                  </div>
-                  <div className="card-body">
-                    <div className="row align-items-center">
-                      <div className="col-md-6">
-                        <div className="d-flex align-items-center">
-                          <div className="bg-primary bg-opacity-10 p-3 rounded me-3">
-                            <FaShieldAlt className="text-primary" size={24} />
-                          </div>
-                          <div>
-                            <h4 className="mb-0 fw-bold text-primary">
-                              {(() => {
-                                const price = selectedPlan?.Price?.OfferedPriceRoundedOff || selectedPlan?.Price?.OfferedPrice || 0;
-                                const days = searchCriteria.days || 7;
-                                return `₹${price} for ${days} DAYS`;
-                              })()}
-                            </h4>
-                            <span className="badge bg-warning text-dark mt-1">
-                              {searchCriteria.planCoverage === 4 ? 'India' : 
-                              searchCriteria.planCoverage === 1 ? 'US' :
-                              searchCriteria.planCoverage === 2 ? 'Non-US' :
-                              searchCriteria.planCoverage === 3 ? 'WorldWide' :
-                              searchCriteria.planCoverage === 5 ? 'Asia' :
-                              searchCriteria.planCoverage === 6 ? 'Canada' :
-                              searchCriteria.planCoverage === 7 ? 'Australia' :
-                              searchCriteria.planCoverage === 8 ? 'Schenegen Countries' : 'Coverage'}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-md-6">
-                        <div className="bg-light p-3 rounded">
-                          <div className="d-flex justify-content-between mb-2">
-                            <span className="text-muted">Start Date:</span>
-                            <span className="fw-bold">
-                              {(() => {
-                                if (searchCriteria.departDate) {
-                                  return new Date(searchCriteria.departDate).toLocaleDateString('en-GB', { 
-                                    day: '2-digit', 
-                                    month: 'short', 
-                                    year: 'numeric' 
-                                  });
-                                }
-                                return 'N/A';
-                              })()}
-                            </span>
-                          </div>
-                          <div className="d-flex justify-content-between mb-2">
-                            <span className="text-muted">End Date:</span>
-                            <span className="fw-bold">
-                              {(() => {
-                                // If returnDate exists, use it; otherwise calculate it from departDate and duration
-                                if (searchCriteria.returnDate) {
-                                  return new Date(searchCriteria.returnDate).toLocaleDateString('en-GB', { 
-                                    day: '2-digit', 
-                                    month: 'short', 
-                                    year: 'numeric' 
-                                  });
-                                } else if (searchCriteria.departDate && searchCriteria.duration) {
-                                  const endDate = new Date(searchCriteria.departDate);
-                                  endDate.setDate(endDate.getDate() + (searchCriteria.duration - 1));
-                                  return endDate.toLocaleDateString('en-GB', { 
-                                    day: '2-digit', 
-                                    month: 'short', 
-                                    year: 'numeric' 
-                                  });
-                                }
-                                return 'N/A';
-                              })()}
-                            </span>
-                          </div>
-                          <div className="d-flex justify-content-between">
-                            <span className="text-muted">No. of Passengers:</span>
-                            <span className="fw-bold">{passengerDetails.length}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Passenger Details Review */}
-                <div className="card border-0 shadow-sm">
-                  <div className="card-header bg-white border-0">
-                    <h5 className="mb-0 fw-bold text-dark">
-                      <FaUser className="me-2 text-primary" />
-                      Passenger Details
-                    </h5>
-                  </div>
-                  <div className="card-body">
-                    {passengerDetails.map((passenger, index) => (
-                      <div key={index} className="border-bottom pb-3 mb-3">
-                        <div className="d-flex align-items-center mb-3">
-                          <div className="bg-primary bg-opacity-10 p-2 rounded me-2">
-                            <FaUser className="text-primary" />
-                          </div>
-                          <h6 className="text-primary mb-0">Passenger {index + 1}</h6>
-                        </div>
-                        <div className="row">
-                          <div className="col-md-6">
-                            <div className="mb-2">
-                              <small className="text-muted">Name</small>
-                              <p className="mb-0 fw-medium">{passenger.Title} {passenger.FirstName} {passenger.LastName}</p>
-                            </div>
-                            <div className="mb-2">
-                              <small className="text-muted">Gender</small>
-                              <p className="mb-0">{passenger.Gender === '1' ? 'Male' : 'Female'}</p>
-                            </div>
-                            <div className="mb-2">
-                              <small className="text-muted">Date of Birth</small>
-                              <p className="mb-0">{passenger.DOBDay}/{passenger.DOBMonth}/{passenger.DOBYear}</p>
-                            </div>
-                            <div className="mb-2">
-                              <small className="text-muted">Phone</small>
-                              <p className="mb-0">{passenger.PhoneNumber}</p>
-                            </div>
-                            <div className="mb-2">
-                              <small className="text-muted">Email</small>
-                              <p className="mb-0">{passenger.EmailId}</p>
-                            </div>
-                          </div>
-                          <div className="col-md-6">
-                            <div className="d-flex align-items-center mb-3">
-                              <div className="bg-success bg-opacity-10 p-2 rounded me-2">
-                                <FaUserTie className="text-success" />
-                              </div>
-                              <h6 className="text-success mb-0">Beneficiary</h6>
-                            </div>
-                            <div className="mb-2">
-                              <small className="text-muted">Name</small>
-                              <p className="mb-0 fw-medium">{passenger.BeneficiaryTitle} {passenger.BeneficiaryFirstName} {passenger.BeneficiaryLastName}</p>
-                            </div>
-                            <div className="mb-2">
-                              <small className="text-muted">Relation</small>
-                              <p className="mb-0">{passenger.RelationShipToInsured}</p>
-                            </div>
-                            <div className="mb-2">
-                              <small className="text-muted">Passport</small>
-                              <p className="mb-0">{passenger.PassportNo}</p>
-                            </div>
-                            <div className="mb-2">
-                              <small className="text-muted">Address</small>
-                              <p className="mb-0 small">{passenger.AddressLine1}, {passenger.CityCode}, {passenger.State} - {passenger.PinCode}</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Column - Price Details & Payment */}
-              <div className="col-lg-4">
-                <div className="card border-0 shadow-sm sticky-top" style={{ top: '100px' }}>
-                  <div className="card-header bg-primary text-white">
-                    <h6 className="mb-0">
-                      <FaReceipt className="me-2" />
-                      Price Details
-                    </h6>
-                  </div>
-                  <div className="card-body">
-                    <div className="mb-3">
-                      <div className="d-flex justify-content-between mb-2">
-                        <span>Base Premium</span>
-                        <span>₹{priceDetails.basePrice || 0}</span>
-                      </div>
-                      <div className="d-flex justify-content-between mb-2">
-                        <span className="text-muted">Taxes & Fees</span>
-                        <span>₹{(priceDetails.total || 0) - (priceDetails.basePrice || 0)}</span>
-                      </div>
-                      <hr />
-                      <div className="d-flex justify-content-between">
-                        <span className="fw-bold fs-5">Total Amount</span>
-                        <span className="fw-bold fs-5 text-primary">₹{priceDetails.total || 0}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Payment Button */}
-                <div className="card border-0 shadow-sm mt-4">
-                  <div className="card-body text-center">
-                    <button
-                      className="btn btn-success btn-lg w-100 py-3 fw-bold"
-                      onClick={handleBookAndPay}
-                      disabled={isProcessingPayment || isGeneratingPolicy}
-                    >
-                      {isProcessingPayment ? (
-                        <>
-                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                          Processing Payment...
-                        </>
-                      ) : isGeneratingPolicy ? (
-                        <>
-                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                          Generating Policy...
-                        </>
-                      ) : (
-                        <>
-                          <FaCreditCard className="me-2" />
-                          Pay & Book Now
-                        </>
-                      )}
-                    </button>
-                    <p className="text-muted small mt-3 mb-0">
-                      <FaShieldAlt className="me-1" />
-                      Secure payment powered by Razorpay
-                    </p>
-                  </div>
-                </div>
-
-                {/* Support Info */}
-                <div className="card border-0 shadow-sm mt-4">
-                  <div className="card-body">
-                    <h6 className="fw-bold mb-3">Need Help?</h6>
-                    <div className="d-flex align-items-center mb-2">
-                      <FaPhone className="text-muted me-2" />
-                      <span className="small">+1-800-123-4567</span>
-                    </div>
-                    <div className="d-flex align-items-center mb-2">
-                      <FaEnvelope className="text-muted me-2" />
-                      <span className="small">support@seemytrip.com</span>
-                    </div>
-                    <div className="d-flex align-items-center">
-                      <FaWhatsapp className="text-muted me-2" />
-                      <span className="small">+1-800-123-4567</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Navigation Buttons */}
-            <div className="row mt-4">
-              <div className="col-12">
-                <div className="d-flex justify-content-between">
-                  <button
-                    className="btn btn-outline-secondary d-flex align-items-center"
-                    onClick={() => navigate('/insurance-booking')}
-                  >
-                    <FaArrowLeft className="me-2" />
-                    Back to Edit Details
-                  </button>
-                  <button
-                    className="btn btn-outline-danger"
-                    onClick={handleGoHome}
-                  >
-                    Cancel Booking
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <Footer />
-      </>
-    );
-  }
 
   const itinerary = policyData.Response?.Itinerary;
   const statusInfo = getPolicyStatus(passengerData.PolicyStatus);
@@ -876,25 +369,7 @@ const Insurance_BookingDetails = () => {
       
       <div className="container-fluid py-4 bg-light min-vh-100">
         <div className="container-xl">
-          {/* Success Header - Show only when coming from policy generation */}
-          {/* {location.state?.showSuccessMessage && (
-            <div className="row mb-4">
-              <div className="col-12">
-                <div className="card border-0 shadow-sm bg-success bg-opacity-10">
-                  <div className="card-body text-center p-5">
-                    <div className="bg-success bg-opacity-10 rounded-circle d-inline-flex p-4 mb-3">
-                      <FaCheckCircle className="text-success" size={40} />
-                    </div>
-                    <h2 className="text-success mb-2 fw-bold">🎉 Policy Generated Successfully!</h2>
-                    <p className="text-muted mb-0">Your travel insurance policy has been generated and is now active and ready for use.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )} */}
-          
-
-        <div className="row mb-4">
+          <div className="row mb-4">
             <div className="col-12">
               <div className="card border-success">
                 <div className="card-body text-center p-4">
@@ -1079,7 +554,7 @@ const Insurance_BookingDetails = () => {
                              <div className="col-md-6">
                                <div className="p-3 border rounded">
                                  <label className="form-label fw-bold text-muted small">Payment Method</label>
-                                 <p className="mb-0 fw-bold">Razorpay</p>
+                                 <p className="mb-0 fw-bold">Easebuzz</p>
                                </div>
                              </div>
                            </div>
@@ -1510,15 +985,6 @@ const Insurance_BookingDetails = () => {
                       <FaShare className="me-2" />
                       Share Policy
                     </button>
-                    {/* <button
-                      className="btn btn-outline-warning d-flex align-items-center justify-content-center"
-                      onClick={() => {
-                        // Save to bookmarks or favorites
-                      }}
-                    >
-                      <FaBookmark className="me-2" />
-                      Save to Favorites
-                    </button> */}
                     <button
                       className="btn  btn-outline-danger d-flex align-items-center justify-content-center"
                       onClick={handleCancelInsurance}
@@ -1603,18 +1069,6 @@ const Insurance_BookingDetails = () => {
         </div>
       </div>
 
-      <style jsx>{`
-        }
-        @media (max-width: 576px) {
-          .btn{
-            height: 40px;
-            padding: 0px 10px;
-          }
-        }
-        
-        
-        
-      `}</style>  
 
 
 

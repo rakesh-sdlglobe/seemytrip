@@ -290,6 +290,48 @@ const Booking_Details_Model = ({ booking, onClose }) => {
       setTimeout(() => setCopied(false), 2000);
     }
   };
+
+  // Determine trip status based on cancellation status and departure date
+  const getTripStatus = () => {
+    // Check if trip is cancelled first
+    const isCancelled = booking?.booking_status === 'Cancelled' || 
+                       booking?.booking_status === 'cancelled' ||
+                       itinerary?.Status === 'Cancelled' ||
+                       itinerary?.Status === 'cancelled';
+    
+    if (isCancelled) {
+      return { status: 'cancelled', title: 'Trip Cancelled' };
+    }
+
+    const departureDateString = itinerary.DepartureTime || booking.departure_time || booking.boarding_point_time || booking.journey_date;
+    
+    if (!departureDateString) {
+      return { status: 'completed', title: 'Trip Completed' };
+    }
+
+    try {
+      const departureDate = new Date(departureDateString);
+      const today = new Date();
+      
+      // Reset time to compare only dates
+      today.setHours(0, 0, 0, 0);
+      departureDate.setHours(0, 0, 0, 0);
+      
+      if (isNaN(departureDate.getTime())) {
+        return { status: 'completed', title: 'Trip Completed' };
+      }
+
+      if (departureDate > today) {
+        return { status: 'upcoming', title: 'Upcoming Trip' };
+      } else {
+        return { status: 'completed', title: 'Trip Completed' };
+      }
+    } catch (error) {
+      return { status: 'completed', title: 'Trip Completed' };
+    }
+  };
+
+  const tripStatus = getTripStatus();
   
 
   return (
@@ -309,9 +351,13 @@ const Booking_Details_Model = ({ booking, onClose }) => {
           </div>
         ) : (
           <>
-            {/* Trip Completed Header */}
-            <div className="trip-completed-header">
-              <h2 className="trip-completed-title">Trip Completed</h2>
+            {/* Trip Status Header */}
+            <div className={`trip-status-header ${
+              tripStatus.status === 'upcoming' ? 'trip-upcoming' : 
+              tripStatus.status === 'cancelled' ? 'trip-cancelled' : 
+              'trip-completed'
+            }`}>
+              <h2 className="trip-status-title">{tripStatus.title}</h2>
             </div>
 
             <div className="booking-details-container">
@@ -675,17 +721,39 @@ const Booking_Details_Model = ({ booking, onClose }) => {
           transform: rotate(90deg);
         }
 
-        .trip-completed-header {
-          background: linear-gradient(135deg, #90EE90 0%, #7FCD7F 100%);
+        .trip-status-header {
           padding: 20px 30px;
           border-radius: 12px 12px 0 0;
         }
 
-        .trip-completed-title {
-          color: #006400;
+        .trip-status-header.trip-completed {
+          background: linear-gradient(135deg, #90EE90 0%, #7FCD7F 100%);
+        }
+
+        .trip-status-header.trip-upcoming {
+          background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+        }
+
+        .trip-status-header.trip-cancelled {
+          background: linear-gradient(135deg, #FF6B6B 0%, #EE5A52 100%);
+        }
+
+        .trip-status-title {
           font-size: 24px;
           font-weight: 700;
           margin: 0;
+        }
+
+        .trip-status-header.trip-completed .trip-status-title {
+          color: #006400;
+        }
+
+        .trip-status-header.trip-upcoming .trip-status-title {
+          color: #FFFFFF;
+        }
+
+        .trip-status-header.trip-cancelled .trip-status-title {
+          color: #FFFFFF;
         }
 
         .booking-details-container {
@@ -1279,11 +1347,11 @@ const Booking_Details_Model = ({ booking, onClose }) => {
             padding: 20px;
           }
 
-          .trip-completed-header {
+          .trip-status-header {
             padding: 15px 20px;
           }
 
-          .trip-completed-title {
+          .trip-status-title {
             font-size: 20px;
           }
 

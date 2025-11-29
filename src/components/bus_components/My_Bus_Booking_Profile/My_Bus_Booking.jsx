@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectUserBusBookings, selectCancelBookingLoading, selectBusBookingDetailsLoading } from '../../../store/Selectors/busSelectors';
 import Booking_Details_Model from './Booking_Details_Model';
@@ -6,7 +6,7 @@ import Booking_Cancellation_Modal from './Booking_Cancellation_Modal';
 import { selectUserProfile } from '../../../store/Selectors/userSelector';
 import { fetchUserBusBookings } from '../../../store/Actions/busActions';
 
-const My_Bus_Booking = () => {
+const My_Bus_Booking = ({ activeFilter = 'all' }) => {
     const dispatch = useDispatch();
     const userBusBookings = useSelector(selectUserBusBookings);
     const [selectedBooking, setSelectedBooking] = useState(null);
@@ -18,21 +18,67 @@ const My_Bus_Booking = () => {
 
     const user = useSelector(selectUserProfile);
     const cancelBookingLoading = useSelector(selectCancelBookingLoading);
-    console.log("user",user);
-    console.log("user_id", user?.user_id);
     
     // Fetch bus bookings when component mounts or user_id changes
     useEffect(() => {
-        console.log("user",user);
-        console.log("user_id", user?.user_id);
-        
         if (user?.user_id) {
-            console.log("Fetching bus bookings for user_id:", user.user_id);
             dispatch(fetchUserBusBookings(user.user_id));
         }
     }, [user?.user_id, dispatch]);
 
-    console.log("userBusBookings new", userBusBookings);
+    // Determine trip status for a booking (same logic as Booking_Details_Model)
+    const getTripStatus = (booking) => {
+        // Check if trip is cancelled first
+        const isCancelled = booking?.booking_status === 'Cancelled' || 
+                           booking?.booking_status === 'cancelled';
+        
+        if (isCancelled) {
+            return 'cancelled';
+        }
+
+        const departureDateString = booking.departure_time || booking.boarding_point_time || booking.journey_date;
+        
+        if (!departureDateString) {
+            return 'completed';
+        }
+
+        try {
+            const departureDate = new Date(departureDateString);
+            const today = new Date();
+            
+            // Reset time to compare only dates
+            today.setHours(0, 0, 0, 0);
+            departureDate.setHours(0, 0, 0, 0);
+            
+            if (isNaN(departureDate.getTime())) {
+                return 'completed';
+            }
+
+            if (departureDate > today) {
+                return 'upcoming';
+            } else {
+                return 'completed';
+            }
+        } catch (error) {
+            return 'completed';
+        }
+    };
+
+    // Filter bookings based on activeFilter
+    const filteredBookings = useMemo(() => {
+        if (!userBusBookings || userBusBookings.length === 0) {
+            return [];
+        }
+
+        if (activeFilter === 'all') {
+            return userBusBookings;
+        }
+
+        return userBusBookings.filter(booking => {
+            const status = getTripStatus(booking);
+            return status === activeFilter;
+        });
+    }, [userBusBookings, activeFilter]);
 
     const handleViewDetails = (booking) => {
         setLoadingBookingId(booking.booking_id);
@@ -120,19 +166,23 @@ const My_Bus_Booking = () => {
         }
     };
 
-    if (!userBusBookings || userBusBookings.length === 0) {
+    if (!filteredBookings || filteredBookings.length === 0) {
         return (
             <div className="text-center py-5">
                 <i className="fa-solid fa-bus fs-1 text-muted mb-3"></i>
-                <h5>No bus bookings found</h5>
-                <p className="text-muted">You don't have any bus bookings at the moment.</p>
+                <h5>No {activeFilter === 'all' ? '' : activeFilter} bookings found</h5>
+                <p className="text-muted">
+                    {activeFilter === 'all' 
+                        ? "You don't have any bus bookings at the moment." 
+                        : `You don't have any ${activeFilter} bookings at the moment.`}
+                </p>
             </div>
         );
     }
 
     return (
         <div>
-            {userBusBookings.map((booking, index) => (
+            {filteredBookings.map((booking, index) => (
                 <div className="card border br-dashed mb-4" key={booking.booking_id || index}>
                     <div className="card-header nds-block border-bottom flex-column flex-md-row justify-content-between align-items-center">
                         <div className="d-flex align-items-center">
@@ -174,11 +224,17 @@ const My_Bus_Booking = () => {
                                     'View Booking Details'
                                 )}
                             </button>
-                            {booking.booking_status !== 'Cancelled' && booking.bus_id && (
+                            {booking.booking_status !== 'Cancelled' && 
+                             booking.booking_status !== 'cancelled' && 
+                             booking.bus_id && (
                                 <button 
                                     className="btn btn-md btn-danger fw-medium mb-0"
                                     onClick={() => handleCancelBooking(booking)}
-                                    disabled={cancelBookingLoading}
+                                    disabled={cancelBookingLoading || getTripStatus(booking) === 'completed'}
+                                    style={{
+                                        cursor: (cancelBookingLoading || getTripStatus(booking) === 'completed') ? 'not-allowed' : 'pointer',
+                                        opacity: (cancelBookingLoading || getTripStatus(booking) === 'completed') ? 0.6 : 1
+                                    }}
                                 >
                                     Cancel Booking
                                 </button>

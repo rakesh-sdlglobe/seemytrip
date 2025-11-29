@@ -3,15 +3,20 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header02 from '../header02';
 import Footer from '../footer';
-import { bookInsurance, getInsurancePolicy, updateInsuranceBookingStatus } from '../../store/Actions/insuranceAction';
-import { loadRazorpayScript } from '../../utils/loadRazorpay';
+import { 
+  initiateEasebuzzPayment, 
+  clearEasebuzzPaymentState 
+} from '../../store/Actions/easebuzzPaymentActions';
+import { 
+  selectInitiatePaymentLoading, 
+  selectInitiatePaymentError 
+} from '../../store/Selectors/easebuzzPaymentSelectors';
+import { API_URL } from '../../store/Actions/authActions';
 import { 
   FaCreditCard,
   FaExclamationTriangle,
   FaArrowLeft
 } from 'react-icons/fa';
-
-export const RAZORPAY_KEY = process.env.REACT_APP_RAZORPAY_KEY_ID;
 
 /**
  * Insurance Payment Page Component
@@ -25,10 +30,8 @@ const Insurance_Payment_Page = () => {
   const dispatch = useDispatch();
   
   // Redux state
-  const { 
-    bookingLoading, 
-    bookingError
-  } = useSelector(state => state.insurance);
+  const paymentLoading = useSelector(selectInitiatePaymentLoading);
+  const paymentError = useSelector(selectInitiatePaymentError);
   
   // Local state management
   const [selectedPlan, setSelectedPlan] = useState(null);
@@ -37,7 +40,6 @@ const Insurance_Payment_Page = () => {
   const [priceDetails, setPriceDetails] = useState({});
   const [authData, setAuthData] = useState({});
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-  const [isGeneratingPolicy, setIsGeneratingPolicy] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -60,21 +62,18 @@ const Insurance_Payment_Page = () => {
   useEffect(() => {
     return () => {
       setIsProcessingPayment(false);
-      setIsGeneratingPolicy(false);
+      dispatch(clearEasebuzzPaymentState());
     };
-  }, []);
+  }, [dispatch]);
 
-  // Load Razorpay SDK
-  const loadRazorpay = async () => {
-    const res = await loadRazorpayScript();
-    if (!res) {
-      alert("Razorpay SDK failed to load. Check your internet.");
-      return false;
-    }
-    return true;
+  // Generate unique transaction ID
+  const generateTransactionId = () => {
+    const timestamp = Date.now();
+    const random = Math.floor(Math.random() * 10000);
+    return `INS_${timestamp}_${random}`;
   };
 
-  // Handle booking and payment
+  // Handle payment first, then booking
   const handleBookAndPay = async () => {
     try {
       // Show spinner immediately when button is clicked
@@ -87,78 +86,28 @@ const Insurance_Payment_Page = () => {
         return;
       }
 
-      // Prepare booking payload
-      const bookingPayload = {
-        TokenId: authData.TokenId,
-        EndUserIp: authData.EndUserIp || '127.0.0.1',
-        TraceId: location.state?.traceId || '',
-        ResultIndex: selectedPlan?.ResultIndex || 1,
-        Passenger: passengerDetails
-      };
-      
-      
-      const result = await dispatch(bookInsurance(bookingPayload));
-      
-      if (result && result.Response) {
-        if (result.Response.ResponseStatus === 1) {
-          // Success - now initiate payment
-          await initiatePayment(result, authData);
-        } else if (result.Response.Error && result.Response.Error.ErrorCode !== 0) {
-          // Handle error response with detailed error info
-          const errorCode = result.Response.Error.ErrorCode;
-          const errorMessage = result.Response.Error.ErrorMessage;
-          
-          // Check for trace ID expiration
-          if (errorCode === 1001 || errorMessage.toLowerCase().includes('trace') || 
-              errorMessage.toLowerCase().includes('expire') || errorMessage.toLowerCase().includes('invalid trace')) {
-            // Trace ID has expired
-            alert('Your search session has expired. Please start a new search to continue.');
-            navigate('/home-insurance');
-            setIsProcessingPayment(false);
-            return;
-          }
-          
-          alert(`Booking failed: ${errorMessage} (Code: ${errorCode})`);
-          setIsProcessingPayment(false);
-        } else {
-          // Unknown error
-          alert('Booking failed. Please try again.');
-          setIsProcessingPayment(false);
-        }
-      } else {
-        // No response or invalid response
-        alert('Booking failed. Please try again.');
-        setIsProcessingPayment(false);
-      }
+      // First initiate payment - booking will happen after payment success
+      await initiatePayment();
     } catch (error) {
-      // Check if error message indicates trace expiration
-      if (error.message && (error.message.toLowerCase().includes('trace') || 
-          error.message.toLowerCase().includes('expire') || 
-          error.message.toLowerCase().includes('invalid trace'))) {
-        alert('Your search session has expired. Please start a new search to continue.');
-        navigate('/home-insurance');
-        setIsProcessingPayment(false);
-        return;
-      }
-      
-      alert('Booking failed. Please try again.');
+      alert('Failed to initiate payment. Please try again.');
       setIsProcessingPayment(false);
     }
   };
 
-  // Initiate payment after successful booking
-  const initiatePayment = async (bookingResult, authData) => {
+  // Initiate Easebuzz payment - redirects to payment page
+  const initiatePayment = async () => {
     try {
-      // Load Razorpay SDK
-      const razorpayLoaded = await loadRazorpay();
-      if (!razorpayLoaded) {
+      // Clear any previous payment errors
+      dispatch(clearEasebuzzPaymentState());
+
+      // Calculate total amount from price details
+      const totalAmount = priceDetails.total || 0;
+      
+      if (!totalAmount || totalAmount <= 0) {
+        alert('Invalid payment amount');
         setIsProcessingPayment(false);
         return;
       }
-
-      // Calculate total amount from price details - use exact API price
-      const totalAmount = priceDetails.total || 0;
-      const amountInPaise = Math.round(totalAmount * 100); // Convert to paise
 
       // Get passenger details for payment
       const leadPassenger = passengerDetails.find(p => p.RelationShipToInsured === 'Self') || passengerDetails[0];
@@ -169,144 +118,71 @@ const Insurance_Payment_Page = () => {
         return;
       }
 
-      // Prepare Razorpay options
-      const options = {
-        key: RAZORPAY_KEY,
-        amount: amountInPaise,
-        currency: 'INR',
-        name: 'SeeMyTrip',
-        description: 'Insurance Policy Payment',
-        handler: async function (response) {
-          try {
-            await generatePolicyAfterPayment(response, bookingResult, authData);
-          } catch (error) {
-            alert('Payment successful but policy generation failed. Please contact support.');
-            setIsProcessingPayment(false);
-            setIsGeneratingPolicy(false);
-          }
-        },
-        theme: {
-          color: '#3399cc',
-        },
-        prefill: {
-          name: `${leadPassenger.Title} ${leadPassenger.FirstName} ${leadPassenger.LastName}`,
-          email: leadPassenger.EmailId || '',
-          contact: leadPassenger.PhoneNumber || '',
-        },
-      };
-
-      // Open Razorpay payment modal
-      const paymentObject = new window.Razorpay(options);
-      
-      paymentObject.on('payment.failed', function (response) {
-        alert(`Payment failed! Reason: ${response.error.description || 'Unknown error'}`);
+      // Validate required fields
+      if (!leadPassenger.EmailId || !leadPassenger.PhoneNumber) {
+        alert('Please provide valid email and phone number for payment');
         setIsProcessingPayment(false);
-        setIsGeneratingPolicy(false);
-      });
-
-      // Handle payment modal dismissal (when user cancels or closes)
-      paymentObject.on('payment.dismissed', function (response) {
-        setIsProcessingPayment(false);
-        setIsGeneratingPolicy(false);
-      });
-
-      // Add a timeout to reset loading state if payment modal doesn't trigger events
-      const paymentTimeout = setTimeout(() => {
-        // Check if we're still processing payment after 30 seconds
-        if (isProcessingPayment) {
-          setIsProcessingPayment(false);
-          setIsGeneratingPolicy(false);
-        }
-      }, 30000); // 30 seconds timeout
-
-      // Clear timeout when payment succeeds or fails
-      paymentObject.on('payment.success', function (response) {
-        clearTimeout(paymentTimeout);
-      });
-
-      paymentObject.on('payment.failed', function (response) {
-        clearTimeout(paymentTimeout);
-      });
-
-      paymentObject.on('payment.dismissed', function (response) {
-        clearTimeout(paymentTimeout);
-      });
-
-      paymentObject.open();
-
-    } catch (error) {
-      alert('Failed to initiate payment. Please try again.');
-      setIsProcessingPayment(false);
-      setIsGeneratingPolicy(false);
-    }
-  };
-
-  // Generate policy after successful payment
-  const generatePolicyAfterPayment = async (paymentResponse, bookingResult, authData) => {
-    try {
-      // Switch from processing payment to generating policy
-      setIsProcessingPayment(false);
-      setIsGeneratingPolicy(true);
-
-      // Prepare policy generation payload
-      const policyPayload = {
-        EndUserIp: authData.EndUserIp || "127.0.0.1",
-        TokenId: authData.TokenId || "",
-        BookingId: bookingResult.Response?.Itinerary?.BookingId || 0,
-      };
-
-      // Call the policy generation API
-      const policyResponse = await dispatch(getInsurancePolicy(policyPayload));
-
-      if (policyResponse && policyResponse.Response && policyResponse.Response.ResponseStatus === 1) {
-        // Success - policy generated, now update booking status in database
-        const bookingId = bookingResult.Response?.Itinerary?.BookingId;
-        const policyNumber = policyResponse.Response?.Itinerary?.PassengerInfo?.[0]?.PolicyNo || 
-                           policyResponse.Response?.Itinerary?.PolicyNo || 
-                           `POL${Date.now()}`;
-        
-        // Update booking status with payment and policy details
-        try {
-          const statusUpdateData = {
-            booking_status: 'Confirmed',
-            payment_status: 'Paid',
-            policy_number: policyNumber,
-            transaction_id: paymentResponse.razorpay_payment_id,
-            payment_method: 'Razorpay',
-            razorpay_payment_id: paymentResponse.razorpay_payment_id,
-            total_premium: priceDetails.total || 0,
-            base_premium: priceDetails.base || priceDetails.total || 0
-          };
-          
-          await dispatch(updateInsuranceBookingStatus(bookingId, statusUpdateData));
-        } catch (updateError) {
-          // Don't fail the flow, just log the error
-        }
-        
-        // Navigate to generate policy page
-        navigate('/insurance-generate-policy', { 
-          state: {
-            bookingResponse: bookingResult,
-            passengers: passengerDetails,
-            priceDetails: priceDetails,
-            policyResponse: policyResponse,
-            paymentResponse: paymentResponse,
-            bookingId: bookingId
-          }
-        });
-      } else {
-        // Handle error response
-        const errorCode = policyResponse?.Response?.Error?.ErrorCode;
-        const errorMessage = policyResponse?.Response?.Error?.ErrorMessage || 'Policy generation failed';
-        alert(`Payment successful but policy generation failed: ${errorMessage}`);
-        setIsGeneratingPolicy(false);
+        return;
       }
 
+      // Generate transaction ID
+      const txnid = generateTransactionId();
+
+      // Prepare product info
+      const planName = selectedPlan?.PlanName || 'Insurance Policy';
+      const productinfo = `Insurance ${planName.substring(0, 80)}`.trim();
+
+      // Prepare callback URLs
+      const backendUrl = API_URL.replace('/api', '');
+      const surl = `${backendUrl}/api/easebuzzPayment/payment_callback?txnid=${txnid}&status=success&type=insurance`;
+      const furl = `${backendUrl}/api/easebuzzPayment/payment_callback?txnid=${txnid}&status=failure&type=insurance`;
+
+      // Store booking data in localStorage before redirect (for success page)
+      const bookingDataToStore = {
+        selectedPlan,
+        searchCriteria,
+        passengerDetails,
+        priceDetails,
+        authData,
+        traceId: location.state?.traceId || '',
+        txnid,
+        timestamp: Date.now()
+      };
+      localStorage.setItem('insurance_booking_data', JSON.stringify(bookingDataToStore));
+
+      // Call Redux action to initiate payment
+      const response = await dispatch(initiateEasebuzzPayment({
+        txnid,
+        amount: parseFloat(totalAmount).toFixed(2),
+        productinfo,
+        firstname: `${leadPassenger.FirstName} ${leadPassenger.LastName}`.trim() || 'Customer',
+        phone: leadPassenger.PhoneNumber,
+        email: leadPassenger.EmailId,
+        surl,
+        furl
+      }));
+
+      if (response && response.success) {
+        // Backend returns the paymentUrl directly
+        const paymentUrl = response.paymentUrl;
+        
+        if (paymentUrl) {
+          // Redirect to Easebuzz payment page
+          window.location.href = paymentUrl;
+        } else {
+          alert('Payment link not received. Please try again.');
+          setIsProcessingPayment(false);
+        }
+      } else {
+        setIsProcessingPayment(false);
+      }
     } catch (error) {
-      alert('Payment successful but policy generation failed. Please contact support.');
-      setIsGeneratingPolicy(false);
+      console.error('Payment initiation error:', error);
+      alert(error.message || 'Failed to initiate payment. Please try again.');
+      setIsProcessingPayment(false);
     }
   };
+
 
   const handleGoHome = () => {
     navigate('/insurance-search');
@@ -536,20 +412,20 @@ const Insurance_Payment_Page = () => {
                     </div>
                   
                   {/* Payment Button */}
+                  {paymentError && (
+                    <div className="alert alert-danger mb-3">
+                      <small>{paymentError}</small>
+                    </div>
+                  )}
                   <button
                     className="btn btn-success btn-lg w-100"
                     onClick={handleBookAndPay}
-                    disabled={isProcessingPayment || isGeneratingPolicy}
+                    disabled={isProcessingPayment || paymentLoading}
                   >
-                    {isProcessingPayment ? (
+                    {isProcessingPayment || paymentLoading ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2"></span>
                         Processing Payment...
-                      </>
-                    ) : isGeneratingPolicy ? (
-                      <>
-                        <span className="spinner-border spinner-border-sm me-2"></span>
-                        Generating Policy...
                       </>
                     ) : (
                       <>
@@ -559,7 +435,7 @@ const Insurance_Payment_Page = () => {
                     )}
                   </button>
                   <p className="text-muted small mt-2 mb-0 text-center">
-                    Secure payment powered by Razorpay
+                    Secure payment powered by Easebuzz
                   </p>
                 </div>
               </div>

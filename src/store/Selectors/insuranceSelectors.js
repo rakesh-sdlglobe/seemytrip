@@ -159,3 +159,10 @@ export const selectInsurancePlansByCoverage = (state, coverage) => {
   const plans = selectInsurancePlans(state);
   return plans.filter(plan => plan.coverage === coverage);
 };
+
+// database selectors
+// User Insurance Bookings selectors
+export const selectUserInsuranceBookings = (state) => selectInsuranceState(state);
+export const selectUserInsuranceBookingsLoading = (state) => selectUserInsuranceBookings(state).userInsuranceBookingsLoading;
+export const selectUserInsuranceBookingsData = (state) => selectUserInsuranceBookings(state).userInsuranceBookingsData;
+export const selectUserInsuranceBookingsError = (state) => selectUserInsuranceBookings(state).userInsuranceBookingsError;

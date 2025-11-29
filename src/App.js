@@ -57,6 +57,8 @@ import InsuranceList from './components/insurance_components/InsuranceList';
 import InsuranceGeneratePolicy from './components/insurance_components/Insurance_Generate_Policy';
 import InsuranceBookingDetails from './components/insurance_components/Insurance_BookingDetails';
 import InsurancePaymentPage from './components/insurance_components/Insurance_Payment_Page';
+import InsurancePaymentSuccess from './components/insurance_components/Insurance_Payment_Success';
+import InsurancePaymentFailure from './components/insurance_components/Insurance_Payment_Failure';
 import InsuranceSearchPage from './components/insurance_components/insurance_search_page';
 import InsuranceCancelPage from './components/insurance_components/Insurance_Cancel_Page';
 
@@ -281,6 +283,8 @@ function App() {
           <Route path="/insurance-booking-page" element={<InsuranceBookingPage />} />
           <Route path="/insurance-booking" element={<InsuranceBookingPage />} />
           <Route path="/insurance-payment" element={<InsurancePaymentPage />} />
+          <Route path="/insurance-payment-success" element={<InsurancePaymentSuccess />} />
+          <Route path="/insurance-payment-failure" element={<InsurancePaymentFailure />} />
           <Route path="/insurance-generate-policy" element={<InsuranceGeneratePolicy />} />
           <Route path="/insurance-booking-details" element={<InsuranceBookingDetails />} />
           <Route path="/insurance-cancel" element={<InsuranceCancelPage />} />
