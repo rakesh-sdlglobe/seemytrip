@@ -289,8 +289,8 @@ const BusBookingPayment = () => {
 
       // Prepare callback URLs
       const backendUrl = API_URL.replace('/api', '');
-      const surl = `${backendUrl}/api/easebuzzPayment/payment_callback?txnid=${txnid}&status=success`;
-      const furl = `${backendUrl}/api/easebuzzPayment/payment_callback?txnid=${txnid}&status=failure`;
+      const surl = `${backendUrl}/api/easebuzzPayment/payment_callback?txnid=${txnid}&status=success&type=bus`;
+      const furl = `${backendUrl}/api/easebuzzPayment/payment_callback?txnid=${txnid}&status=failure&type=bus`;
 
 
       // Call Redux action to initiate payment

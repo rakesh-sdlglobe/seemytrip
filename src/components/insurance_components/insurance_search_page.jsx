@@ -25,10 +25,15 @@ const InsuranceSearch = () => {
   const location = useLocation();
 
   // State for form inputs - Updated to match API specification
-  const [departDate, setDepartDate] = useState(new Date());
+  const [departDate, setDepartDate] = useState(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to start of day
+    return today;
+  });
   const [returnDate, setReturnDate] = useState(() => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0); // Set to start of day
     return tomorrow;
   });
   const [duration, setDuration] = useState(2);
@@ -97,14 +102,35 @@ const InsuranceSearch = () => {
       if (params.departDate) {
         const departDate = new Date(params.departDate);
         if (!isNaN(departDate.getTime())) {
-          setDepartDate(departDate);
+          departDate.setHours(0, 0, 0, 0);
+          // Only use saved date if it's today or in the future
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          if (departDate >= today) {
+            setDepartDate(departDate);
+          } else {
+            // If saved date is in the past, use today's date
+            setDepartDate(today);
+          }
         }
+      } else {
+        // No saved depart date, use today
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        setDepartDate(today);
       }
       if (params.returnDate) {
         const returnDate = new Date(params.returnDate);
         if (!isNaN(returnDate.getTime())) {
+          returnDate.setHours(0, 0, 0, 0);
           setReturnDate(returnDate);
         }
+      } else {
+        // No saved return date, use tomorrow
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
+        setReturnDate(tomorrow);
       }
       if (params.duration) setDuration(params.duration);
       if (params.passengerCount) setPassengerCount(params.passengerCount);

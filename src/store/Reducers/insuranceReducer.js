@@ -21,7 +21,11 @@ import {
   SEND_SELECTED_QUOTES_SUCCESS,
   SEND_SELECTED_QUOTES_FAILURE,
   CLEAR_INSURANCE_ERROR,
-  CLEAR_INSURANCE_DATA
+  CLEAR_INSURANCE_DATA,
+  GET_USER_INSURANCE_BOOKINGS_REQUEST,
+  GET_USER_INSURANCE_BOOKINGS_SUCCESS,
+  GET_USER_INSURANCE_BOOKINGS_FAILURE,
+  CLEAR_USER_INSURANCE_BOOKINGS_DATA
 } from '../Actions/insuranceAction';
 
 const initialState = {
@@ -62,7 +66,12 @@ const initialState = {
   
   // General state
   isAuthenticated: false,
-  lastAction: null
+  lastAction: null,
+
+  // User Insurance Bookings state
+  userInsuranceBookingsLoading: false,
+  userInsuranceBookings: [],
+  userInsuranceBookingsError: null,
 };
 
 const insuranceReducer = (state = initialState, action) => {
@@ -274,7 +283,31 @@ const insuranceReducer = (state = initialState, action) => {
         cancelData: null,
         emailData: null
       };
-      
+
+      //database cases
+      // Get User Insurance Bookings
+      case GET_USER_INSURANCE_BOOKINGS_REQUEST:
+        return {
+          ...state,
+          userInsuranceBookingsLoading: true,
+          userInsuranceBookingsError: null,
+          lastAction: 'GET_USER_INSURANCE_BOOKINGS_REQUEST'
+        };
+      case GET_USER_INSURANCE_BOOKINGS_SUCCESS:
+        return {
+          ...state,
+          userInsuranceBookingsLoading: false,
+          userInsuranceBookingsData: action.payload,
+          userInsuranceBookingsError: null,
+          lastAction: 'GET_USER_INSURANCE_BOOKINGS_SUCCESS'
+        };
+      case GET_USER_INSURANCE_BOOKINGS_FAILURE:
+        return {
+          ...state,
+          userInsuranceBookingsLoading: false,
+          userInsuranceBookingsError: action.payload,
+          lastAction: 'GET_USER_INSURANCE_BOOKINGS_FAILURE'
+        };
     default:
       return state;
   }

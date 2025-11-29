@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useSelector, useDispatch  } from 'react-redux';
-import { selectUserProfile } from '../store/Selectors/userSelector';
+import React, { useEffect, useState, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectUserBusBookings } from '../store/Selectors/busSelectors';
+import { selectUserInsuranceBookingsData } from '../store/Selectors/insuranceSelectors';
 import '../assets/css/bootstrap.min.css';
 import '../assets/css/animation.css';
 import '../assets/css/dropzone.min.css';
@@ -19,81 +19,198 @@ import Header02 from './header02';
 import Footer from './footer';
 import TopHeader from './topHeader';
 import SideBarProfilePage from './sidebar_profilepage';
-import PersonalBooking from './personal-booking';
-import ManageBookingModal from './ManageBookingModal'; // Import the modal
-import My_Bus_Booking from './bus_components/My_Bus_Booking_Profile/My_Bus_Booking';
+import MyBusBookingComponent from './bus_components/My_Bus_Booking_Profile/My_Bus_Booking';
 import { getUserProfile } from '../store/Actions/userActions';
+import MyInsuranceBookingComponent from './insurance_components/My_insurance_Booking_Profile/My_Insurance_Booking';
 
 const MyBooking = () => {
-  const [showModal, setShowModal] = useState(false); // Manage modal visibility
-  const [selectedBooking, setSelectedBooking] = useState(null); // Store selected booking
-  const [activeFilter, setActiveFilter] = useState('all'); // Add this state
-  
-  // Get user from Redux store
-  
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [activeTab, setActiveTab] = useState('bus'); // 'bus' or 'insurance'
   const dispatch = useDispatch();
+  const userBusBookings = useSelector(selectUserBusBookings);
+  const userInsuranceBookingsData = useSelector(selectUserInsuranceBookingsData);
 
   useEffect(() => {
     dispatch(getUserProfile());
   }, [dispatch]);
 
-  const user = useSelector(selectUserProfile);
-  useEffect(() => {
-    console.log("user",user);
-  }, [user]);
-  const userId = user?.user_id;
-  
-  const handleOpenModal = (booking) => {
-    setSelectedBooking(booking);
-    setShowModal(true);
+  // Extract insurance bookings array from response data
+  const userInsuranceBookings = useMemo(() => {
+    if (!userInsuranceBookingsData) return [];
+    if (Array.isArray(userInsuranceBookingsData.bookings)) {
+      return userInsuranceBookingsData.bookings;
+    }
+    if (Array.isArray(userInsuranceBookingsData)) {
+      return userInsuranceBookingsData;
+    }
+    return [];
+  }, [userInsuranceBookingsData]);
+
+  // Determine trip status for a bus booking
+  const getBusTripStatus = (booking) => {
+    const isCancelled = booking?.booking_status === 'Cancelled' || 
+                       booking?.booking_status === 'cancelled';
+    
+    if (isCancelled) {
+      return 'cancelled';
+    }
+
+    const departureDateString = booking.departure_time || booking.boarding_point_time || booking.journey_date;
+    
+    if (!departureDateString) {
+      return 'completed';
+    }
+
+    try {
+      const departureDate = new Date(departureDateString);
+      const today = new Date();
+      
+      today.setHours(0, 0, 0, 0);
+      departureDate.setHours(0, 0, 0, 0);
+      
+      if (isNaN(departureDate.getTime())) {
+        return 'completed';
+      }
+
+      if (departureDate > today) {
+        return 'upcoming';
+      } else {
+        return 'completed';
+      }
+    } catch (error) {
+      return 'completed';
+    }
   };
 
-  const baseurl = process.env.REACT_APP_API_URL;
-
-  useEffect(() => {
-    if (userId) {
-      console.log("Fetching bus bookings for user_id:", userId);
-      axios.get(`${baseurl}/bus/userBookings/${userId}`)
-      .then(response => {
-        console.log("data based on user data",response.data);
-      })
-      .catch(error => {
-        console.log("error based on user data",error);
-      });
+  // Determine trip status for an insurance booking
+  const getInsuranceTripStatus = (booking) => {
+    const isCancelled = booking?.booking_status === 'Cancelled' || 
+                       booking?.booking_status === 'cancelled';
+    
+    if (isCancelled) {
+      return 'cancelled';
     }
-  }, [userId, baseurl]);
 
-  useEffect(() => {
-    if (userId) {
-      console.log("Fetching insurance bookings for user_id:", userId);
-      axios.get(`${baseurl}/insurance/userBookings/${userId}`)
-      .then(response => {
-        console.log("data based on user data",response.data);
-      })
-      .catch(error => {
-        console.log("error based on user data",error);
-      });
+    const travelStartDate = booking.travel_start_date || booking.travelStartDate || booking.start_date;
+    const travelEndDate = booking.travel_end_date || booking.travelEndDate || booking.end_date;
+    
+    if (!travelStartDate) {
+      return 'completed';
     }
-  }, [userId, baseurl]);
 
+    try {
+      const startDate = new Date(travelStartDate);
+      const today = new Date();
+      
+      today.setHours(0, 0, 0, 0);
+      startDate.setHours(0, 0, 0, 0);
+      
+      if (isNaN(startDate.getTime())) {
+        return 'completed';
+      }
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setSelectedBooking(null);
+      if (startDate > today) {
+        return 'upcoming';
+      } else {
+        if (travelEndDate) {
+          const endDate = new Date(travelEndDate);
+          endDate.setHours(0, 0, 0, 0);
+          if (endDate < today) {
+            return 'completed';
+          }
+        }
+        return 'completed';
+      }
+    } catch (error) {
+      return 'completed';
+    }
   };
+
+  // Calculate counts for bus bookings
+  const busTabCounts = useMemo(() => {
+    if (!userBusBookings || userBusBookings.length === 0) {
+      return { all: 0, upcoming: 0, cancelled: 0, completed: 0 };
+    }
+
+    const counts = {
+      all: userBusBookings.length,
+      upcoming: 0,
+      cancelled: 0,
+      completed: 0
+    };
+
+    userBusBookings.forEach(booking => {
+      const status = getBusTripStatus(booking);
+      if (status === 'upcoming') counts.upcoming++;
+      else if (status === 'cancelled') counts.cancelled++;
+      else if (status === 'completed') counts.completed++;
+    });
+
+    return counts;
+  }, [userBusBookings]);
+
+  // Calculate counts for insurance bookings
+  const insuranceTabCounts = useMemo(() => {
+    if (!userInsuranceBookings || userInsuranceBookings.length === 0) {
+      return { all: 0, upcoming: 0, cancelled: 0, completed: 0 };
+    }
+
+    const counts = {
+      all: userInsuranceBookings.length,
+      upcoming: 0,
+      cancelled: 0,
+      completed: 0
+    };
+
+    userInsuranceBookings.forEach(booking => {
+      const status = getInsuranceTripStatus(booking);
+      if (status === 'upcoming') counts.upcoming++;
+      else if (status === 'cancelled') counts.cancelled++;
+      else if (status === 'completed') counts.completed++;
+    });
+
+    return counts;
+  }, [userInsuranceBookings]);
+
+  // Get current tab counts based on active tab
+  const currentTabCounts = activeTab === 'bus' ? busTabCounts : insuranceTabCounts;
 
   return (
     <div>
       <style>
         {`
         .btn-light-seegreen {
-  color: #28a745; /* Set a visible color for the button text */
-}
-
-.btn-light-seegreen:hover {
-  background-color: #28a745 !important; /* Change the background color on hover if needed */
-  color: #ffffff; /* Ensure the text stays visible on hover */
-}
+          color: #28a745;
+        }
+        .btn-light-seegreen:hover {
+          background-color: #28a745 !important;
+          color: #ffffff;
+        }
+        .booking-tabs .btn-check:checked + label {
+          background-color: #28a745;
+          color: #ffffff;
+          border-color: #28a745;
+        }
+        .booking-type-tabs {
+          border-bottom: 2px solid #e9ecef;
+          margin-bottom: 1.5rem;
+        }
+        .booking-type-tabs .nav-link {
+          color: #6c757d;
+          border: none;
+          border-bottom: 3px solid transparent;
+          padding: 0.75rem 1.5rem;
+          font-weight: 500;
+        }
+        .booking-type-tabs .nav-link.active {
+          color: #28a745;
+          border-bottom-color: #28a745;
+          background-color: transparent;
+        }
+        .booking-type-tabs .nav-link:hover {
+          color: #28a745;
+          border-bottom-color: #28a745;
+        }
         `}
       </style>
       <div id="preloader">
@@ -107,8 +224,22 @@ const MyBooking = () => {
           <div className="container">
             <div className="row align-items-center justify-content-center">
               <div className="col-xl-12 col-lg-12 col-md-12 mb-4">
-                <button className="btn btn-dark fw-medium full-width d-block d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDashboard" aria-controls="offcanvasDashboard"><i className="fa-solid fa-gauge me-2" />Dashboard Navigation</button>
-                <div className="offcanvas offcanvas-start" data-bs-scroll="true" data-bs-backdrop="false" tabIndex={-1} id="offcanvasDashboard" aria-labelledby="offcanvasScrollingLabel">
+                <button 
+                  className="btn btn-dark fw-medium full-width d-block d-lg-none" 
+                  data-bs-toggle="offcanvas" 
+                  data-bs-target="#offcanvasDashboard" 
+                  aria-controls="offcanvasDashboard"
+                >
+                  <i className="fa-solid fa-gauge me-2" />Dashboard Navigation
+                </button>
+                <div 
+                  className="offcanvas offcanvas-start" 
+                  data-bs-scroll="true" 
+                  data-bs-backdrop="false" 
+                  tabIndex={-1} 
+                  id="offcanvasDashboard" 
+                  aria-labelledby="offcanvasScrollingLabel"
+                >
                   <div className="offcanvas-header gray-simple">
                     <h5 className="offcanvas-title" id="offcanvasScrollingLabel">Offcanvas with body scrolling</h5>
                     <button type="button" className="btn-close" data-bs-dismiss="offcanvas" aria-label="Close" />
@@ -124,11 +255,35 @@ const MyBooking = () => {
                   <div className="card-header">
                     <h4><i className="fa-solid fa-ticket me-2" />My Bookings</h4>
                   </div>
-                  <My_Bus_Booking/>
                   <div className="card-body">
+                    {/* Booking Type Tabs (Bus/Insurance) */}
+                    <ul className="nav booking-type-tabs mb-4" role="tablist">
+                      <li className="nav-item" role="presentation">
+                        <button
+                          className={`nav-link ${activeTab === 'bus' ? 'active' : ''}`}
+                          onClick={() => setActiveTab('bus')}
+                          type="button"
+                        >
+                          <i className="fa-solid fa-bus me-2" />
+                          Bus Bookings
+                        </button>
+                      </li>
+                      <li className="nav-item" role="presentation">
+                        <button
+                          className={`nav-link ${activeTab === 'insurance' ? 'active' : ''}`}
+                          onClick={() => setActiveTab('insurance')}
+                          type="button"
+                        >
+                          <i className="fa-solid fa-shield-halved me-2" />
+                          Insurance Bookings
+                        </button>
+                      </li>
+                    </ul>
+
+                    {/* Filter Tabs */}
                     <div className="row align-items-center justify-content-start">
                       <div className="col-xl-12 col-lg-12 col-md-12 mb-4">
-                        <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2">
+                        <ul className="row align-items-center justify-content-between p-0 gx-3 gy-2 booking-tabs">
                           <li className="col-md-3 col-6">
                             <input 
                               type="radio" 
@@ -139,97 +294,58 @@ const MyBooking = () => {
                               name="bookingFilter"
                             />
                             <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="allbkk">
-                              All Booking (24)
+                              All Booking ({currentTabCounts.all})
                             </label>
                           </li>
                           <li className="col-md-3 col-6">
                             <input 
                               type="radio" 
                               className="btn-check" 
-                              id="processing"
-                              checked={activeFilter === 'processing'}
-                              onChange={() => setActiveFilter('processing')}
+                              id="upcoming"
+                              checked={activeFilter === 'upcoming'}
+                              onChange={() => setActiveFilter('upcoming')}
                               name="bookingFilter"
                             />
-                            <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="processing">
-                              Processing (02)
+                            <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="upcoming">
+                              Upcoming ({currentTabCounts.upcoming})
                             </label>
                           </li>
                           <li className="col-md-3 col-6">
-                            <input type="checkbox" className="btn-check" id="cancelled"  checked={activeFilter === 'cancelled'}
-                              onChange={() => setActiveFilter('cancelled')}/>
-                            <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="cancelled">Cancelled (04)</label>
+                            <input 
+                              type="radio" 
+                              className="btn-check" 
+                              id="cancelled" 
+                              checked={activeFilter === 'cancelled'}
+                              onChange={() => setActiveFilter('cancelled')}
+                              name="bookingFilter"
+                            />
+                            <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="cancelled">
+                              Cancelled ({currentTabCounts.cancelled})
+                            </label>
                           </li>
                           <li className="col-md-3 col-6">
-                            <input type="checkbox" className="btn-check" id="completed" checked={activeFilter === 'completed'}
-                              onChange={() => setActiveFilter('completed')}/>
-                            <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="completed">Completed (10)</label>
+                            <input 
+                              type="radio" 
+                              className="btn-check" 
+                              id="completed" 
+                              checked={activeFilter === 'completed'}
+                              onChange={() => setActiveFilter('completed')}
+                              name="bookingFilter"
+                            />
+                            <label className="btn btn-sm btn-secondary rounded-1 fw-medium px-4 full-width" htmlFor="completed">
+                              Completed ({currentTabCounts.completed})
+                            </label>
                           </li>
                         </ul>
                       </div>
                     </div>
-                    <div className="row align-items-center justify-content-start">
-                      <div className="col-xl-12 col-lg-12 col-md-12">
-                        {activeFilter === 'all' ? (
-                          // Your existing booking card code
-                          <div className="card border br-dashed mb-4">
-                            <div className="card-header nds-block border-bottom flex-column flex-md-row justify-content-between align-items-center">
-                              <div className="d-flex align-items-center">
-                                <div className="square--50 circle bg-light-purple text-purple flex-shrink-0"><i className="fa-solid fa-train" /></div>
-                                <div className="ms-2">
-                                  <h6 className="card-title text-dark fs-5 mb-1">Mumbai To Delhi</h6>
-                                  <ul className="nav nav-divider small">
-                                    <li className="nav-item text-muted">Booking ID: BKR24530</li>
-                                    <li className="nav-item ms-2"><span className="label bg-light-success text-success">First class</span></li>
-                                  </ul>
-                                </div>
-                              </div>
-                              <div className="mt-2 mt-md-0">
-                                <a href="##" className="btn btn-md btn-light-seegreen fw-medium mb-0" onClick={() => handleOpenModal({ 
-                                  id: 'BKR24530',
-                                  from: 'Mumbai',
-                                  to: 'Delhi',
-                                  departureTime: 'Fri 12 Aug 14:00 PM',
-                                  arrivalTime: 'Fri 12 Aug 18:00 PM',
-                                  operatorName: 'Rajesh Sharma',
-                                  vehicleNumber: '12345',
-                                  seatNumbers: ['1A', '1B'],
-                                  price: 100,
-                                  status: 'Processing',
-                                  travelDate: '2024-08-12',
-                                  bookingDate: '2024-08-01',
-                                  type: 'First class'
-                                })}>
-                                  Manage Booking
-                                </a>
-                              </div>
-                            </div>
-                            <div className="card-body">
-                              <div className="row g-3">
-                                <div className="col-sm-6 col-md-4">
-                                  <span>Departure time</span>
-                                  <h6 className="mb-0">Fri 12 Aug 14:00 PM</h6>
-                                </div>
-                                <div className="col-sm-6 col-md-4">
-                                  <span>Arrival time</span>
-                                  <h6 className="mb-0">Fri 12 Aug 18:00 PM</h6>
-                                </div>
-                                <div className="col-md-4">
-                                  <span>Booked by</span>
-                                  <h6 className="mb-0">Rajesh Sharma</h6>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="text-center py-5">
-                            <i className="fa-solid fa-ticket-simple fs-1 text-muted mb-3"></i>
-                            <h5>No {activeFilter} bookings found</h5>
-                            <p className="text-muted">You don't have any {activeFilter} bookings at the moment.</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+
+                    {/* Booking Content */}
+                    {activeTab === 'bus' ? (
+                      <MyBusBookingComponent activeFilter={activeFilter} />
+                    ) : (
+                      <MyInsuranceBookingComponent activeFilter={activeFilter} />
+                    )}
                   </div>
                 </div>
               </div>
@@ -238,19 +354,6 @@ const MyBooking = () => {
         </section>
       </div>
       <Footer />
-      
-      {/* Pass the modal data here */}
-      {showModal && selectedBooking && (
-        <ManageBookingModal
-          booking={selectedBooking}
-          onClose={handleCloseModal}
-          onCancel={() => {
-            // Handle cancellation logic here
-            setShowModal(false);
-            alert('Booking cancelled!');
-          }}
-        />
-      )}
     </div>
   );
 };
